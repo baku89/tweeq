@@ -48,26 +48,6 @@ export default defineComponent({
 @import '@/common.styl'
 
 .InputNumber
-	height var(--input-height)
-	border 1px solid transparent
-	border-radius var(--input-border-radius)
-	background var(--base01)
-	color var(--base06)
-	cursor col-resize
-	input-transition(border-color)
+	input()
 	font-numeric()
-
-	&::selection
-		background var(--base03)
-
-	&:hover, &:focus, &:focus-within
-		border-color var(--base08)
-		color var(--base06)
-
-	&:focus.invalid
-		border-color var(--base0B)
-		box-shadow 0 0 0 1px var(--base0B)
-
-	&:focus
-		box-shadow 0 0 0 1px var(--base08)
 </style>

@@ -5,8 +5,9 @@
 
 <script lang="ts">
 import {computed, defineComponent} from 'vue'
-import {mapKeys} from 'lodash'
+import {chain, fromPairs, mapKeys} from 'lodash'
 import {useLocalStorage} from '@vueuse/core'
+import chroma from 'chroma-js'
 
 import {Theme} from '@/Theme'
 
@@ -22,27 +23,31 @@ export default defineComponent({
 			name: 'Default Light',
 			author: 'Chris Kempson <http://chriskempson.com>',
 			colors: {
-				base00: '#f8f8f8',
-				base01: '#e8e8e8',
-				base02: '#d8d8d8',
-				base03: '#b8b8b8',
-				base04: '#585858',
-				base05: '#383838',
-				base06: '#282828',
-				base07: '#181818',
-				base08: '#ab4642',
-				base09: '#dc9656',
-				base0A: '#f7ca88',
-				base0B: '#a1b56c',
-				base0C: '#86c1b9',
-				base0D: '#7cafc2',
-				base0E: '#ba8baf',
-				base0F: '#a16946',
+				base00: '#181818',
+				base01: '#151515',
+				base02: '#464646',
+				base03: '#747474',
+				base04: '#B9B9B9',
+				base05: '#D0D0D0',
+				base06: '#E8E8E8',
+				base07: '#EEEEEE',
+				base08: '#FD886B',
+				base09: '#FC4769',
+				base0A: '#FECB6E',
+				base0B: '#32CCDC',
+				base0C: '#ACDDFD',
+				base0D: '#20BCFC',
+				base0E: '#BA8CFC',
+				base0F: '#B15F4A',
 			},
 		} as Theme)
 
 		const style = computed(() => {
-			return mapKeys(theme.value.colors, (_, key) => `--${key}`)
+			return chain(theme.value.colors)
+				.toPairs()
+				.map(([k, v]) => [`--${k}`, chroma(v).rgb().join(',')])
+				.fromPairs()
+				.value()
 		})
 
 		return {
@@ -60,8 +65,12 @@ export default defineComponent({
 
 .GlispUI
 	glisp-ui-root()
-	background var(--base00)
+	background base16('00')
 	font-ui()
+
+	::selection
+		background base16('accent', 0.2)
+
 	overscroll-behavior none
 	--input-border-radius 2px
 	--input-height 1.8em

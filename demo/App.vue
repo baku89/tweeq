@@ -1,7 +1,9 @@
 <template lang="pug">
 GlispUI.App
 	h1 Glisp UI
-	p Glisp UI is a components library that bundles various types of UI for building professional design tool. Originally developed for Glisp.
+	p
+		:markdown-it
+			Glisp UI is a components library that bundles various types of UI for building professional design tool. Originally developed for [Glisp](https://glisp.app/docs).
 	SchemeViewer
 	InputNumber(:modelValue='200')
 </template>

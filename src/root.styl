@@ -1,4 +1,5 @@
 @import './reset.styl'
+@import './common.styl'
 
 glisp-ui-root()
 	// Reset styles
@@ -22,5 +23,10 @@ glisp-ui-root()
 			-moz-appearance textfield
 
 	// Common styles
+	color base16('04')
+
 	h1, h2, h3
 		font-heading()
+
+	a
+		color base16('0D')
