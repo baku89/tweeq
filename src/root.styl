@@ -1,0 +1,26 @@
+@import './reset.styl'
+
+glisp-ui-root()
+	// Reset styles
+	reset-local()
+
+	&, *, ::after, ::before
+		box-sizing border-box
+		outline none
+
+	input
+		margin inherit
+		font inherit
+
+		// Chrome, Safari, Edge, Opera
+		&::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+			margin 0
+			-webkit-appearance none
+
+		// Firefox
+		&[type=number]
+			-moz-appearance textfield
+
+	// Common styles
+	h1, h2, h3
+		font-heading()
