@@ -1,12 +1,13 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
+import stylusAlias from 'vite-plugin-stylus-alias'
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
 	console.log('** mode **', mode)
 	return {
-		plugins: [vue()],
+		plugins: [vue(), stylusAlias()],
 		resolve: {
 			alias: {
 				'@': path.resolve(__dirname, './src'),

@@ -44,6 +44,7 @@
 		"stylus": "^0.58.1",
 		"typescript": "^4.5.4",
 		"vite": "^2.9.9",
+		"vite-plugin-stylus-alias": "^1.1.2",
 		"vue-tsc": "^0.37.0"
 	}
 }
