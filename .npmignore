@@ -1,0 +1,7 @@
+src
+public
+node_modules
+demo
+.vscode
+index.html
+vite.config.ts

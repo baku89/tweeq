@@ -1,0 +1,49 @@
+{
+	"name": "glisp-ui",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"serve": "vite",
+		"build": "vite build && vue-tsc --emitDeclarationOnly",
+		"preview": "vite preview"
+	},
+	"files": [
+		"dist"
+	],
+	"types": "./lib/index.d.ts",
+	"main": "./dist/index.umd.js",
+	"module": "./dist/index.es.js",
+	"dependencies": {
+		"vue": "^3.2.25"
+	},
+	"exports": {
+		".": {
+			"import": "./dist/index.es.js",
+			"require": "./dist/index.umd.js"
+		},
+		"./style.css": {
+			"import": "./dist/style.css",
+			"require": "./dist/style.css"
+		}
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.182",
+		"@typescript-eslint/eslint-plugin": "^5.27.1",
+		"@vitejs/plugin-vue": "^2.3.3",
+		"@vue/eslint-config-prettier": "^7.0.0",
+		"@vue/eslint-config-typescript": "^10.0.0",
+		"@vueuse/core": "^8.6.0",
+		"eslint": "^8.17.0",
+		"eslint-plugin-simple-import-sort": "^7.0.0",
+		"eslint-plugin-unused-imports": "^2.0.0",
+		"eslint-plugin-vue": "^9.1.0",
+		"lodash": "^4.17.21",
+		"prettier": "^2.6.2",
+		"prettier-plugin-md-nocjsp": "^1.2.0",
+		"pug": "^3.0.2",
+		"stylus": "^0.58.1",
+		"typescript": "^4.5.4",
+		"vite": "^2.9.9",
+		"vue-tsc": "^0.37.0"
+	}
+}
