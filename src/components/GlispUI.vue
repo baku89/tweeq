@@ -4,8 +4,8 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from 'vue'
-import {chain, fromPairs, mapKeys} from 'lodash'
+import {computed, defineComponent, watchEffect} from 'vue'
+import {chain, toPairs} from 'lodash'
 import {useLocalStorage} from '@vueuse/core'
 import chroma from 'chroma-js'
 
@@ -50,6 +50,19 @@ export default defineComponent({
 				.value()
 		})
 
+		watchEffect(() => {
+			let overlays = document.getElementById('GlispUI__overlays')
+			if (!overlays) {
+				overlays = document.createElement('div')
+				overlays.id = 'GlispUI__overlays'
+				document.body.appendChild(overlays)
+			}
+
+			for (const [name, color] of toPairs(style.value)) {
+				overlays.style.setProperty(name, color)
+			}
+		})
+
 		return {
 			style,
 		}
@@ -76,4 +89,9 @@ export default defineComponent({
 	--input-height 1.8em
 	--input-horiz-margin 0.6em
 	--popup-border-radius 4px
+
+#GlispUI__overlays
+	position fixed
+	z-index 1000
+	overflow visible
 </style>
