@@ -82,7 +82,7 @@ export default defineComponent({
 	font-ui()
 
 	::selection
-		background base16('accent', 0.2)
+		background base16('03', 0.5)
 
 	overscroll-behavior none
 	--input-border-radius 2px
