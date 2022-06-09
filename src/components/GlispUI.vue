@@ -86,8 +86,8 @@ export default defineComponent({
 
 	overscroll-behavior none
 	--input-border-radius 2px
-	--input-height 1.8em
-	--input-horiz-margin 0.6em
+	--input-width 24px
+	--input-horiz-margin 6px
 	--popup-border-radius 4px
 
 #GlispUI__overlays
