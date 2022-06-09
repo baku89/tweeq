@@ -1,6 +1,6 @@
 import {unrefElement} from '@vueuse/core'
 import {vec2} from 'gl-matrix'
-import {reactive, Ref, ref, toRefs, watch} from 'vue'
+import {reactive, Ref, toRefs, watch} from 'vue'
 
 interface DragState {
 	xy: vec2
