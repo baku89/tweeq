@@ -5,11 +5,13 @@ GlispUI.App
 		:markdown-it
 			Glisp UI is a components library that bundles various types of UI for building professional design tool. Originally developed for [Glisp](https://glisp.app/docs).
 	SchemeViewer
-	InputNumber(:modelValue='200')
+	.App__number-wrapper
+		p {{number.toString()}}
+		InputNumber.number-input(v-model='number')
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, ref} from 'vue'
 
 import GlispUI from '@/components/GlispUI.vue'
 import InputNumber from '@/components/InputNumber.vue'
@@ -22,12 +24,15 @@ export default defineComponent({
 		SchemeViewer,
 	},
 	name: 'App',
+	setup() {
+		return {number: ref(0)}
+	},
 })
 </script>
 
 <style lang="stylus">
 html
-	font-size 16px
+	font-size 14px
 
 body
 	margin 0
@@ -36,5 +41,17 @@ body
 
 .App
 	padding 1em
-	height 100vh
+	min-height 100vh
+	height 100%
+
+	&__number-wrapper
+		display flex
+		flex-direction column
+		justify-content center
+		align-items center
+		padding 4em 0
+		font-numeric()
+
+		.number-input
+			width 10em
 </style>
