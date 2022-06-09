@@ -20,17 +20,17 @@ global-reset()
 		border none
 
 nested-reset()
-	div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, abbr, acronym, address, code, del, dfn, em, img, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, caption, tbody, tfoot, thead, tr
+	:where(div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, abbr, acronym, address, code, del, dfn, em, img, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, caption, tbody, tfoot, thead, tr)
 		reset-box-model()
 		reset-font()
 
-	table
+	:where(table)
 		reset-table()
 
-	caption, th, td
+	:where(caption, th, td)
 		reset-table-cell()
 
-	a img
+	:where(a img)
 		border none
 
 reset-box-model()
@@ -62,14 +62,14 @@ reset-table-cell()
 	font-weight normal
 
 reset-html5()
-	article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, main
+	:where(article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, main)
 		reset-box-model()
 		display block
 
-	audio, canvas, video
+	:where(audio, canvas, video)
 		display inline-block
 		*display inline
 		*zoom 1
 
-	audio:not([controls]), [hidden]
+	:where(audio:not([controls]), [hidden])
 		display none
