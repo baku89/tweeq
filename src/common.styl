@@ -26,23 +26,24 @@ base16(name, opacity = 1)
 	else
 		unquote('rgba(var(' + varName + '), ' + opacity + ')')
 
-input()
-	height var(--input-height)
-	border 1px solid transparent
+input($focus-selector)
+	height var(--input-width)
+	border 1px solid base16('02', 0.5)
 	border-radius var(--input-border-radius)
 	background base16('01')
-	color base16('06')
+	color base16('05')
+	line-height var(--input-width)
 	cursor col-resize
-	input-transition(border-color)
-	font-numeric()
+	input-transition(box-shadow)
+
+	input&, & input
+		display block
+		margin-top -1px
+		padding 0 0.6em
 
 	&:hover, &:focus, &:focus-within
 		border-color base16('accent')
 		color base16('06')
 
-	&:focus.invalid
-		border-color base16('08')
-		box-shadow 0 0 0 1px base16('08')
-
-	&:focus
+	&:focus, &:focus-within, &{$focus-selector}
 		box-shadow 0 0 0 1px base16('accent')
