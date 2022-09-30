@@ -3,7 +3,7 @@ font-monospace()
 	font-variant-ligatures contextual
 
 font-heading()
-	font-family monotype-grotesque, sans-serif
+	font-family Inter, sans-serif
 
 font-ui()
 	font-family Inter, -apple-system, system-ui, 'system-ui', Helvetica, Arial, sans-serif, 'Apple Color Emoji'
@@ -36,7 +36,6 @@ input($focus-selector)
 	border-radius var(--input-border-radius)
 	background base16('01')
 	color base16('05')
-	line-height calc(var(--input-height) - 0.6em)
 	cursor col-resize
 	input-transition(box-shadow)
 	font-size var(--input-font-size)
@@ -45,6 +44,7 @@ input($focus-selector)
 		display block
 		margin-top -1px
 		padding 0.3em 0.6em
+		line-height calc(var(--input-height) - 0.3em)
 
 	&:hover, &:focus, &:focus-within
 		box-shadow 0 0 0 1px inset base16('accent')
