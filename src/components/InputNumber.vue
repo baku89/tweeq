@@ -3,30 +3,34 @@
 	input.InputNumber__input(
 		ref='input',
 		type='text',
+		min='0',
 		inputmode='numeric',
-		pattern='[0-9]*',
+		pattern='d\*',
 		:value='display',
 		@focus='onFocus',
 		@input='onInput',
 		@blur='onBlur'
 	)
-	.InputNumber__chevrons(v-if='tweakMode === "value"')
-		ChevronLeft.dec(:class='{active: tweakDirection < 0}' :size='height')
-		ChevronRight.inc(:class='{active: tweakDirection > 0}' :size='height')
+	.InputNumber__cursor(
+		v-if='tweaking'
+		:class='{floating: !pointerLocked}'
+		:style='cursorStyle')
+		IconDec.dec(:class='{active: tweakMode === "value" && tweakDirection < 0}' :size='height')
+		IconInc.inc(:class='{active: tweakMode === "value" && tweakDirection > 0}' :size='height')
 
 teleport(to='#GlispUI__overlays')
 	svg.InputNumber__overlay(v-if='tweaking')
-		g(v-if='tweakMode === "speed"',
-			:transform='`translate(${left - overlayExpansion}, ${top + height / 2})`')
-			line.scale(v-bind='scaleAttrs(0)')
-			line.scale(v-bind='scaleAttrs(1)')
-			line.scale(v-bind='scaleAttrs(2)')
+		g(:transform='`translate(${left + width / 2 + scaleOffset}, ${top + height / 2})`')
+			g(v-if='tweakMode === "speed"')
+				line.scale(v-bind='scaleAttrs(0)')
+				line.scale(v-bind='scaleAttrs(1)')
+				line.scale(v-bind='scaleAttrs(2)')
 </template>
 
 <script lang="ts">
-import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
-import ChevronRight from 'vue-material-design-icons/ChevronRight.vue'
-import {computed, defineComponent, ref, watchEffect} from 'vue'
+import IconDec from 'vue-material-design-icons/Minus.vue'
+import IconInc from 'vue-material-design-icons/Plus.vue'
+import {computed, defineComponent, ref, watch, watchEffect} from 'vue'
 import {useDrag} from '@/use/useDrag'
 import {useElementBounding, useKeyModifier} from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
@@ -38,8 +42,8 @@ import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep} from '@/util'
 export default defineComponent({
 	name: 'InputNumber',
 	components: {
-		ChevronLeft,
-		ChevronRight,
+		IconDec,
+		IconInc,
 	},
 	props: {
 		modelValue: {
@@ -82,12 +86,13 @@ export default defineComponent({
 		const tweakInitialValue = ref(props.modelValue)
 
 		const tweakDirection = ref(0)
+		const pointerSize = ref(0)
 
-		let tweakTimer = -1
+		let resetTweakModeTimer = -1
 		let tweakMode = ref<null | 'value' | 'speed'>(null)
 		let speedDeltaY = 0
 
-		const {dragging: tweaking} = useDrag(root, {
+		const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			lockPointer: true,
 			onClick() {
 				input.value?.focus()
@@ -102,12 +107,27 @@ export default defineComponent({
 				speedDeltaY = 0
 				tweakMode.value = null
 			},
-			onDrag(state) {
+			onDrag(state, event) {
 				const [dx, dy] = state.delta
 
-				const isMouse = state.event.pointerType === 'mouse'
+				const isMouse = event.pointerType === 'mouse'
 
 				tweakDirection.value = dx
+				pointerSize.value =
+					event.width *
+					0.75 *
+					smoothstep(
+						(event.width * 1.5) / 2,
+						(event.width * 0.5) / 2,
+						Math.abs(state.xy[1] - (bound.top.value + bound.height.value / 2))
+					)
+
+				if (state.pointerLocked) {
+					scaleOffset.value = 0
+				} else {
+					scaleOffset.value =
+						state.xy[0] - (bound.x.value + bound.width.value / 2)
+				}
 
 				if (!tweakMode.value) {
 					if (isMouse) {
@@ -125,10 +145,8 @@ export default defineComponent({
 					speedMultiplierDrag.value = Math.pow(0.98, speedDeltaY)
 				}
 
-				if (isMouse) {
-					clearTimeout(tweakTimer)
-					tweakTimer = setTimeout(() => (tweakMode.value = null), 250)
-				}
+				clearTimeout(resetTweakModeTimer)
+				resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 250)
 			},
 			onDragEnd() {
 				display.value = toFixedWithNoTrailingZeros(
@@ -189,7 +207,10 @@ export default defineComponent({
 			}
 		})
 
-		const overlayExpansion = computed(() => bound.height.value * 10)
+		const scaleWidth = computed(
+			() => bound.width.value + bound.height.value * 20
+		)
+		const scaleOffset = ref(0)
 
 		const scaleAttrs = (offset: number) => {
 			const precision = unsignedMod(-Math.log10(speed.value) + offset, 3)
@@ -197,14 +218,28 @@ export default defineComponent({
 			const opacity = smoothstep(1, 2, precision)
 
 			return {
-				x2: bound.width.value + overlayExpansion.value * 2,
+				x1: scaleWidth.value / -2,
+				x2: scaleWidth.value / 2,
 				style: {
-					strokeDashoffset: -(overlayExpansion.value + bound.width.value / 2),
+					strokeDashoffset: -(scaleWidth.value / 2),
 					strokeDasharray: `0 ${Math.pow(10, precision)}`,
 					opacity,
 				},
 			}
 		}
+
+		const cursorStyle = computed(() => {
+			return {
+				transform: `translateX(${scaleOffset.value}px)`,
+				width: `${pointerSize.value}px`,
+				marginLeft: `${pointerSize.value / -2}px`,
+				opacity: smoothstep(
+					bound.width.value * 0.5,
+					bound.width.value * 0.6,
+					Math.abs(scaleOffset.value)
+				),
+			}
+		})
 
 		// For iPad. Swiping with second finger to change the drag speed
 		window.addEventListener('touchstart', (e: TouchEvent) => {
@@ -213,26 +248,31 @@ export default defineComponent({
 			const secondTouch = e.touches.item(1)
 			if (!secondTouch) return
 
-			const initialX = secondTouch.clientX
+			const ox = secondTouch.clientX
 			const initialSpeedMultiplierDrag = speedMultiplierDrag.value
 
-			function onSecondTouchMove(e: TouchEvent) {
-				if (!tweaking.value) {
-					window.removeEventListener('touchmove', onSecondTouchMove)
-					window.removeEventListener('touchend', onSecondTouchEnd)
-					return
-				}
+			const stop = watch(tweaking, () => {
+				window.removeEventListener('touchmove', onSecondTouchMove)
+				window.removeEventListener('touchend', onSecondTouchEnd)
+				stop()
+			})
 
+			window.addEventListener('touchmove', onSecondTouchMove)
+			window.addEventListener('touchend', onSecondTouchEnd)
+
+			clearTimeout(resetTweakModeTimer)
+
+			function onSecondTouchMove(e: TouchEvent) {
+				const firstTouch = e.touches.item(0)
 				const secondTouch = e.touches.item(1)
-				if (!secondTouch) return
+				if (!firstTouch || !secondTouch) return
+
+				const cx = firstTouch.clientX
+				const x = secondTouch.clientX
 
 				tweakMode.value = 'speed'
 
-				const x = secondTouch.clientX
-
-				const center = bound.x.value + bound.width.value / 2
-
-				const mul = Math.abs((initialX - center) / (x - center))
+				const mul = Math.abs((ox - cx) / (x - cx))
 				speedMultiplierDrag.value = initialSpeedMultiplierDrag * mul
 			}
 
@@ -244,9 +284,6 @@ export default defineComponent({
 				window.removeEventListener('touchmove', onSecondTouchMove)
 				window.removeEventListener('touchend', onSecondTouchEnd)
 			}
-
-			window.addEventListener('touchmove', onSecondTouchMove)
-			window.addEventListener('touchend', onSecondTouchEnd)
 		})
 
 		return {
@@ -257,14 +294,16 @@ export default defineComponent({
 			onInput,
 			onBlur,
 			tweaking,
+			pointerLocked,
 			...bound,
-			overlayExpansion,
-			speed,
+			scaleWidth,
+			scaleOffset,
 			tweakDirection,
 			tweakInitialValue,
 			tweakPrecision,
 			tweakMode,
 			scaleAttrs,
+			cursorStyle,
 		}
 	},
 })
@@ -287,9 +326,13 @@ export default defineComponent({
 		&:focus
 			pointer-events auto
 
-	&__chevrons
+	&__cursor
 		position absolute
 		inset 0
+
+		&:not(.floating)
+			width auto !important
+			opacity 1 !important
 
 		.dec, .inc
 			position absolute
@@ -297,8 +340,9 @@ export default defineComponent({
 			height 100%
 			text-align center
 			font-code()
-			color base16('02')
-			input-transition(color)
+			color base16('03')
+			transition .2s ease color
+			transform scale(.75)
 
 		.active
 			color base16('accent')
@@ -308,6 +352,15 @@ export default defineComponent({
 
 		.inc
 			left 100%
+
+		&.floating
+			inset auto
+			top 0
+			bottom 0
+			left 50%
+			margin-left calc(-1px * var(--height))
+			input-transition(width, margin-left)
+
 
 	&__overlay
 		position fixed
@@ -320,4 +373,7 @@ export default defineComponent({
 			stroke-width 4
 			stroke-linecap round
 			stroke base16('accent')
+
+		.pointer
+			fill base16('accent')
 </style>
