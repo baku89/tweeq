@@ -206,6 +206,49 @@ export default defineComponent({
 			}
 		}
 
+		// For iPad. Swiping with second finger to change the drag speed
+		window.addEventListener('touchstart', (e: TouchEvent) => {
+			if (!tweaking.value) return
+
+			const secondTouch = e.touches.item(1)
+			if (!secondTouch) return
+
+			const initialX = secondTouch.clientX
+			const initialSpeedMultiplierDrag = speedMultiplierDrag.value
+
+			function onSecondTouchMove(e: TouchEvent) {
+				if (!tweaking.value) {
+					window.removeEventListener('touchmove', onSecondTouchMove)
+					window.removeEventListener('touchend', onSecondTouchEnd)
+					return
+				}
+
+				const secondTouch = e.touches.item(1)
+				if (!secondTouch) return
+
+				tweakMode.value = 'speed'
+
+				const x = secondTouch.clientX
+
+				const center = bound.x.value + bound.width.value / 2
+
+				const mul = Math.abs((initialX - center) / (x - center))
+				speedMultiplierDrag.value = initialSpeedMultiplierDrag * mul
+			}
+
+			function onSecondTouchEnd() {
+				if (!e.touches.item(1)) return
+
+				tweakMode.value = 'value'
+
+				window.removeEventListener('touchmove', onSecondTouchMove)
+				window.removeEventListener('touchend', onSecondTouchEnd)
+			}
+
+			window.addEventListener('touchmove', onSecondTouchMove)
+			window.addEventListener('touchend', onSecondTouchEnd)
+		})
+
 		return {
 			root,
 			input,
