@@ -74,7 +74,7 @@ export function useDrag(
 			dragDelayTimer = setTimeout(fireDragStart, dragDelaySeconds * 1000)
 
 			window.addEventListener('pointermove', onPointerMove)
-			window.addEventListener('pointerup', onPointerUp, {once: true})
+			window.addEventListener('pointerup', onPointerUp)
 		}
 
 		function onPointerMove(event: PointerEvent) {
@@ -107,6 +107,8 @@ export function useDrag(
 		}
 
 		function onPointerUp(event: PointerEvent) {
+			if (!event.isPrimary) return
+
 			if (lockPointer && 'exitPointerLock' in document) {
 				document.exitPointerLock()
 			}
@@ -124,6 +126,7 @@ export function useDrag(
 			state.initial = vec2.create()
 			state.delta = vec2.create()
 			window.removeEventListener('pointermove', onPointerMove)
+			window.removeEventListener('pointerup', onPointerUp)
 		}
 	}
 
