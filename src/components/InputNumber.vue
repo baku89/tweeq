@@ -2,65 +2,49 @@
 .InputNumber(ref='root', :class='{tweaking}', v-bind='$attrs')
 	input.InputNumber__input(
 		ref='input',
+		type='text',
+		inputmode='numeric',
+		pattern='[0-9]*',
 		:value='display',
 		@focus='onFocus',
 		@input='onInput',
 		@blur='onBlur'
 	)
-	.InputNumber__chevrons(v-if='tweaking')
-		.dec(:class='{active: modelValue < tweakOrigin}') &lt;
-		.inc(:class='{active: tweakOrigin < modelValue}') &gt;
+	.InputNumber__chevrons(v-if='tweakMode === "value"')
+		ChevronLeft.dec(:class='{active: tweakDirection < 0}' :size='height')
+		ChevronRight.inc(:class='{active: tweakDirection > 0}' :size='height')
 
 teleport(to='#GlispUI__overlays')
 	svg.InputNumber__overlay(v-if='tweaking')
-		defs
-			linearGradient#gradient
-				stop(offset='0%', stop-color='white', stop-opacity='0')
-				stop(offset='10%', stop-color='white', stop-opacity='1')
-				stop(offset='90%', stop-color='white', stop-opacity='1')
-				stop(offset='100%', stop-color='white', stop-opacity='0')
-			mask#mask
-				rect(
-					:x='left - 300',
-					:y='top',
-					:width='width + 600',
-					:height='height',
-					fill='url(#gradient)'
-				)
-		line.dashed(
-			:x1='left - 300',
-			:y1='top + height / 2',
-			:x2='right + 300',
-			:y2='top + height / 2',
-			:style='{strokeDashoffset, strokeDasharray: `0.01 ${100 / speed}`}'
-		)
-		line.zero(
-			:x1='left - 300',
-			:y1='top + height / 2',
-			:x2='right + 300',
-			:y2='top + height / 2',
-			:style='{strokeDashoffset: strokeDashoffset - tweakOrigin * (1 / speed)}'
-		)
+		g(v-if='tweakMode === "speed"',
+			:transform='`translate(${left - overlayExpansion}, ${top + height / 2})`')
+			line.scale(v-bind='scaleAttrs(0)')
+			line.scale(v-bind='scaleAttrs(1)')
+			line.scale(v-bind='scaleAttrs(2)')
 </template>
 
 <script lang="ts">
+import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
+import ChevronRight from 'vue-material-design-icons/ChevronRight.vue'
 import {computed, defineComponent, ref, watchEffect} from 'vue'
 import {useDrag} from '@/use/useDrag'
 import {useElementBounding, useKeyModifier} from '@vueuse/core'
+import {useWheel} from '@vueuse/gesture'
+import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep} from '@/util'
 
 /**
  * Input for number
  */
 export default defineComponent({
 	name: 'InputNumber',
+	components: {
+		ChevronLeft,
+		ChevronRight,
+	},
 	props: {
 		modelValue: {
 			type: Number,
 			required: true,
-		},
-		displayPrecision: {
-			type: Number,
-			default: 4,
 		},
 		step: {
 			type: Number,
@@ -73,6 +57,7 @@ export default defineComponent({
 		const root = ref()
 		const input = ref<HTMLInputElement | null>(null)
 
+		const local = ref(props.modelValue)
 		const display = ref(props.modelValue.toString())
 
 		const bound = useElementBounding(root)
@@ -94,69 +79,89 @@ export default defineComponent({
 			const tweakPrecision = Math.max(0, Math.ceil(-Math.log10(speed.value)))
 			return Math.max(tweakPrecision, displayPrecision.value)
 		})
+		const tweakInitialValue = ref(props.modelValue)
 
-		const strokeDashoffset = computed(() => {
-			const gap = 1 / speed.value
-			const centerX = 300 + bound.width.value / 2
-			return -(centerX - props.modelValue * gap)
-		})
-
-		const tweakOrigin = ref(props.modelValue)
+		const tweakDirection = ref(0)
 
 		let tweakTimer = -1
-		let tweakMode: null | 'value' | 'speed' = null
+		let tweakMode = ref<null | 'value' | 'speed'>(null)
 		let speedDeltaY = 0
 
-		const {dragging: tweaking, xy} = useDrag(root, {
+		const {dragging: tweaking} = useDrag(root, {
 			lockPointer: true,
 			onClick() {
 				input.value?.focus()
 			},
 			onDragStart() {
-				tweakOrigin.value = props.modelValue
+				tweakInitialValue.value = props.modelValue
+				speedMultiplierDrag.value = 1
 
 				const floats = /\.[0-9]*$/.exec(display.value)
 				displayPrecision.value = floats ? floats[0].length - 1 : 0
 
 				speedDeltaY = 0
-				tweakMode = null
+				tweakMode.value = null
 			},
 			onDrag(state) {
 				const [dx, dy] = state.delta
 
-				if (!tweakMode) {
-					tweakMode = Math.abs(dx) >= Math.abs(dy) ? 'value' : 'speed'
+				const isMouse = state.event.pointerType === 'mouse'
+
+				tweakDirection.value = dx
+
+				if (!tweakMode.value) {
+					if (isMouse) {
+						tweakMode.value = Math.abs(dx) >= Math.abs(dy) ? 'value' : 'speed'
+					} else {
+						tweakMode.value = 'value'
+					}
 				}
 
-				if (tweakMode === 'value') {
-					const value = props.modelValue + dx * speed.value
-					emit('update:modelValue', value)
+				if (tweakMode.value === 'value') {
+					local.value = props.modelValue + dx * speed.value
+					emit('update:modelValue', local.value)
 				} else {
 					speedDeltaY += dy
 					speedMultiplierDrag.value = Math.pow(0.98, speedDeltaY)
 				}
 
-				clearTimeout(tweakTimer)
-				tweakTimer = setTimeout(() => (tweakMode = null), 250)
+				if (isMouse) {
+					clearTimeout(tweakTimer)
+					tweakTimer = setTimeout(() => (tweakMode.value = null), 250)
+				}
 			},
 			onDragEnd() {
-				display.value = props.modelValue
-					.toFixed(tweakPrecision.value)
-					.replace(/\.?[0]*$/, '')
+				display.value = toFixedWithNoTrailingZeros(
+					props.modelValue,
+					tweakPrecision.value
+				)
+				tweakMode.value = null
 			},
 		})
+
+		useWheel(
+			({delta: [, y], event}) => {
+				event.preventDefault()
+
+				local.value = props.modelValue + y * speed.value
+				display.value = props.modelValue.toFixed(tweakPrecision.value)
+
+				emit('update:modelValue', local.value)
+			},
+			{domTarget: root, eventOptions: {passive: false}}
+		)
 
 		let hasChanged = false
 		let initialDisplay = ''
 
-		const onFocus = (e: InputEvent) => {
+		const onFocus = (e: FocusEvent) => {
 			const el = e.target as HTMLInputElement
 			el.select()
 			hasChanged = false
 			initialDisplay = display.value
 		}
 
-		const onInput = (e: InputEvent) => {
+		const onInput = (e: Event) => {
 			const el = e.target as HTMLInputElement
 
 			display.value = el.value
@@ -164,9 +169,10 @@ export default defineComponent({
 			let value = parseFloat(el.value)
 			if (isNaN(value)) return
 
+			local.value = value
 			hasChanged = true
 
-			emit('update:modelValue', value)
+			emit('update:modelValue', local.value)
 		}
 
 		const onBlur = () => {
@@ -183,6 +189,23 @@ export default defineComponent({
 			}
 		})
 
+		const overlayExpansion = computed(() => bound.height.value * 10)
+
+		const scaleAttrs = (offset: number) => {
+			const precision = unsignedMod(-Math.log10(speed.value) + offset, 3)
+
+			const opacity = smoothstep(1, 2, precision)
+
+			return {
+				x2: bound.width.value + overlayExpansion.value * 2,
+				style: {
+					strokeDashoffset: -(overlayExpansion.value + bound.width.value / 2),
+					strokeDasharray: `0 ${Math.pow(10, precision)}`,
+					opacity,
+				},
+			}
+		}
+
 		return {
 			root,
 			input,
@@ -191,11 +214,14 @@ export default defineComponent({
 			onInput,
 			onBlur,
 			tweaking,
-			xy,
 			...bound,
+			overlayExpansion,
 			speed,
-			strokeDashoffset,
-			tweakOrigin,
+			tweakDirection,
+			tweakInitialValue,
+			tweakPrecision,
+			tweakMode,
+			scaleAttrs,
 		}
 	},
 })
@@ -210,6 +236,7 @@ export default defineComponent({
 	font-numeric()
 	text-align right
 	user-select none
+	-webkit-user-select none
 
 	&__input
 		pointer-events none
@@ -221,18 +248,17 @@ export default defineComponent({
 		position absolute
 		inset 0
 
-		*
+		.dec, .inc
 			position absolute
-			width var(--input-width)
+			aspect-ratio 1
 			height 100%
 			text-align center
 			font-code()
-			color base16('03', 0.5)
-			input-transition()
+			color base16('02')
+			input-transition(color)
 
 		.active
 			color base16('accent')
-			font-weight bold
 
 		.dec
 			right 100%
@@ -246,20 +272,9 @@ export default defineComponent({
 		pointer-events none
 		inset 0
 
-		.dashed
+		.scale
 			fill none
-			stroke base16('03')
 			stroke-width 4
 			stroke-linecap round
-			stroke-dasharray 0.1 99.9
-
-		.zero
-			fill none
 			stroke base16('accent')
-			stroke-width 8
-			stroke-linecap round
-			stroke-dasharray 0.1 10000
-
-.material-symbols-outlined
-	font-variation-settings 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 48
 </style>
