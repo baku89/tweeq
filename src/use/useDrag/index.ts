@@ -8,7 +8,7 @@ interface DragState {
 	initial: vec2
 	delta: vec2
 	dragging: boolean
-	event: PointerEvent
+	pointerLocked: boolean
 }
 
 type PointerType = 'mouse' | 'pen' | 'touch'
@@ -19,9 +19,9 @@ interface UseDragOptions {
 	dragDelaySeconds?: number
 
 	onClick?: () => void
-	onDrag?: (state: DragState) => void
-	onDragStart?: (state: DragState) => void
-	onDragEnd?: (state: DragState) => void
+	onDrag?: (state: DragState, event: PointerEvent) => void
+	onDragStart?: (state: DragState, event: PointerEvent) => void
+	onDragEnd?: (state: DragState, event: PointerEvent) => void
 }
 
 export function useDrag(
@@ -44,6 +44,7 @@ export function useDrag(
 		delta: vec2.create(),
 
 		dragging: false,
+		pointerLocked: false,
 	})
 
 	let dragDelayTimer = -1
@@ -54,11 +55,14 @@ export function useDrag(
 		function fireDragStart(event: PointerEvent) {
 			if (lockPointer && 'requestPointerLock' in el) {
 				el.requestPointerLock()
+				state.pointerLocked = true
+			} else {
+				state.pointerLocked = false
 			}
 
 			state.dragging = true
 			state.initial = vec2.clone(state.previous)
-			onDragStart?.({...state, event})
+			onDragStart?.(state, event)
 		}
 
 		function onPointerDown(event: PointerEvent) {
@@ -92,7 +96,7 @@ export function useDrag(
 			if (vec2.squaredLength(state.delta) === 0) return
 
 			if (state.dragging) {
-				onDrag?.({...state, event})
+				onDrag?.(state, event)
 			} else {
 				// Determine whether dragging has started
 				const d = vec2.dist(state.initial, state.xy)
@@ -112,9 +116,10 @@ export function useDrag(
 			if (lockPointer && 'exitPointerLock' in document) {
 				document.exitPointerLock()
 			}
+			state.pointerLocked = false
 
 			if (state.dragging) {
-				onDragEnd?.({...state, event})
+				onDragEnd?.(state, event)
 			} else {
 				onClick?.()
 			}
