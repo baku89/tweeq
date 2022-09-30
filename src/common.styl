@@ -12,8 +12,13 @@ font-numeric()
 	font-ui()
 	font-variant-numeric tabular-nums
 
-input-transition($prop = all)
-	transition $prop 0.1s ease
+input-transition(prop = all)
+	values = ()
+
+	for p in arguments
+		push(values, p + ' 0.1s ease')
+
+	transition unquote(join(',', values))
 
 base16(name, opacity = 1)
 	varName = '--base' + name
