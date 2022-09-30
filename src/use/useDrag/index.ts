@@ -14,6 +14,7 @@ interface DragState {
 type PointerType = 'mouse' | 'pen' | 'touch'
 
 interface UseDragOptions {
+	disabled?: Ref<boolean>
 	lockPointer?: boolean
 	pointerType?: PointerType[]
 	dragDelaySeconds?: number
@@ -27,6 +28,7 @@ interface UseDragOptions {
 export function useDrag(
 	target: Ref<null | HTMLElement>,
 	{
+		disabled,
 		lockPointer = false,
 		pointerType = ['mouse', 'pen', 'touch'],
 		dragDelaySeconds = 0.5,
@@ -66,6 +68,7 @@ export function useDrag(
 		}
 
 		function onPointerDown(event: PointerEvent) {
+			if (disabled?.value) return
 			if (event.button === 2) return // Ignore right click
 			if (!event.isPrimary) return
 			if (!pointerType.includes(event.pointerType as PointerType)) return
@@ -82,6 +85,7 @@ export function useDrag(
 		}
 
 		function onPointerMove(event: PointerEvent) {
+			if (disabled?.value) return
 			if (!event.isPrimary) return
 
 			if ('movementX' in event) {
@@ -111,6 +115,7 @@ export function useDrag(
 		}
 
 		function onPointerUp(event: PointerEvent) {
+			if (disabled?.value) return
 			if (!event.isPrimary) return
 
 			if (lockPointer && 'exitPointerLock' in document) {
