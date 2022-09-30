@@ -1,5 +1,5 @@
 <template lang="pug">
-.InputNumber(ref='root', :class='{tweaking}', v-bind='$attrs')
+.InputNumber(ref='root', :class='{tweaking, invalid}', v-bind='$attrs')
 	input.InputNumber__input(
 		ref='input',
 		type='text',
@@ -56,6 +56,10 @@ export default defineComponent({
 			default: 0.1,
 		},
 		disabled: {
+			type: Boolean,
+			default: false,
+		},
+		invalid: {
 			type: Boolean,
 			default: false,
 		},
