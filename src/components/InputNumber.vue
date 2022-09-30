@@ -7,6 +7,7 @@
 		inputmode='numeric',
 		pattern='d\*',
 		:value='display',
+		:disabled='disabled'
 		@focus='onFocus',
 		@input='onInput',
 		@blur='onBlur'
@@ -54,6 +55,10 @@ export default defineComponent({
 			type: Number,
 			default: 0.1,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['update:modelValue'],
 	inheritAttrs: false,
@@ -77,8 +82,6 @@ export default defineComponent({
 			() => speedMultiplierKey.value * speedMultiplierDrag.value
 		)
 
-		const {focused} = useFocus(input)
-
 		const displayPrecision = ref(0)
 
 		const tweakPrecision = computed(() => {
@@ -96,7 +99,7 @@ export default defineComponent({
 
 		const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			lockPointer: true,
-			disabled: focused,
+			disabled: computed(() => props.disabled || useFocus(input).focused.value),
 			onClick() {
 				input.value?.focus()
 			},
@@ -210,21 +213,19 @@ export default defineComponent({
 			}
 		})
 
-		const scaleWidth = computed(
-			() => bound.width.value + bound.height.value * 20
-		)
 		const scaleOffset = ref(0)
 
 		const scaleAttrs = (offset: number) => {
 			const precision = unsignedMod(-Math.log10(speed.value) + offset, 3)
+			const halfWidth = (bound.width.value + bound.height.value * 20) / 2
 
 			const opacity = smoothstep(1, 2, precision)
 
 			return {
-				x1: scaleWidth.value / -2,
-				x2: scaleWidth.value / 2,
+				x1: -halfWidth,
+				x2: halfWidth,
 				style: {
-					strokeDashoffset: -(scaleWidth.value / 2),
+					strokeDashoffset: -halfWidth,
 					strokeDasharray: `0 ${Math.pow(10, precision)}`,
 					opacity,
 				},
@@ -299,7 +300,6 @@ export default defineComponent({
 			tweaking,
 			pointerLocked,
 			...bound,
-			scaleWidth,
 			scaleOffset,
 			tweakDirection,
 			tweakInitialValue,
