@@ -6,7 +6,7 @@ font-heading()
 	font-family monotype-grotesque, sans-serif
 
 font-ui()
-	font-family -apple-system, system-ui, 'system-ui', Helvetica, Arial, sans-serif, 'Apple Color Emoji'
+	font-family Inter, -apple-system, system-ui, 'system-ui', Helvetica, Arial, sans-serif, 'Apple Color Emoji'
 
 font-numeric()
 	font-ui()
@@ -24,7 +24,7 @@ base16(name, opacity = 1)
 	varName = '--base' + name
 
 	if (name == 'accent')
-		varName = '--base0A'
+		varName = '--base0D'
 
 	if (opacity == 1)
 		unquote('rgb(var(' + varName + '))')
@@ -32,23 +32,23 @@ base16(name, opacity = 1)
 		unquote('rgba(var(' + varName + '), ' + opacity + ')')
 
 input($focus-selector)
-	height var(--input-width)
-	border 1px solid base16('02', 0.5)
+	height var(--input-height)
 	border-radius var(--input-border-radius)
 	background base16('01')
 	color base16('05')
-	line-height var(--input-width)
+	line-height calc(var(--input-height) - 0.6em)
 	cursor col-resize
 	input-transition(box-shadow)
+	font-size var(--input-font-size)
 
 	input&, & input
 		display block
 		margin-top -1px
-		padding 0 0.6em
+		padding 0.3em 0.6em
 
 	&:hover, &:focus, &:focus-within
-		border-color base16('accent')
+		box-shadow 0 0 0 1px inset base16('accent')
 		color base16('06')
 
 	&:focus, &:focus-within, &{$focus-selector}
-		box-shadow 0 0 0 1px base16('accent')
+		box-shadow 0 0 0 1px inset base16('accent'), 0 0 0 1px base16('accent')

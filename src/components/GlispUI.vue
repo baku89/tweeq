@@ -80,18 +80,25 @@ export default defineComponent({
 	glisp-ui-root()
 	background base16('00')
 	font-ui()
+	user-select none
+	-webkit-user-select none
 
 	::selection
 		background base16('03', 0.5)
 
 	overscroll-behavior none
-	--input-border-radius 2px
-	--input-width 24px
+	--input-border-radius 4px
+	--input-height 24px
 	--input-horiz-margin 6px
+	--input-font-size 11px
+	--input-vert-margin 10px
 	--popup-border-radius 4px
 
 #GlispUI__overlays
 	position fixed
 	z-index 1000
 	overflow visible
+	width 0
+	height 0
+	mix-blend-mode lighten
 </style>

@@ -38,6 +38,7 @@ body
 	margin 0
 	padding 0
 	overscroll-behavior none
+	touch-action none
 
 .App
 	padding 1em
