@@ -32,7 +32,7 @@ import IconDec from 'vue-material-design-icons/Minus.vue'
 import IconInc from 'vue-material-design-icons/Plus.vue'
 import {computed, defineComponent, ref, watch, watchEffect} from 'vue'
 import {useDrag} from '@/use/useDrag'
-import {useElementBounding, useKeyModifier} from '@vueuse/core'
+import {useElementBounding, useFocus, useKeyModifier} from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
 import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep} from '@/util'
 
@@ -77,6 +77,8 @@ export default defineComponent({
 			() => speedMultiplierKey.value * speedMultiplierDrag.value
 		)
 
+		const {focused} = useFocus(input)
+
 		const displayPrecision = ref(0)
 
 		const tweakPrecision = computed(() => {
@@ -94,6 +96,7 @@ export default defineComponent({
 
 		const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			lockPointer: true,
+			disabled: focused,
 			onClick() {
 				input.value?.focus()
 			},
