@@ -4,8 +4,7 @@
 	"version": "0.0.0",
 	"scripts": {
 		"serve": "vite",
-		"build": "vite build && vue-tsc --emitDeclarationOnly",
-		"preview": "vite preview"
+		"build": "vite build && vue-tsc --emitDeclarationOnly"
 	},
 	"files": [
 		"dist"

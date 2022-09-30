@@ -25,7 +25,4 @@ module.exports = {
 		'unused-imports/no-unused-imports-ts': 'error',
 		'vue/no-unused-components': 'warn',
 	},
-	globals: {
-		__PAGES__: 'readonly',
-	},
 }

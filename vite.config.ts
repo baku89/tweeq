@@ -13,6 +13,9 @@ export default defineConfig(({mode}) => {
 				'@': path.resolve(__dirname, './src'),
 			},
 		},
+		server: {
+			host: true,
+		},
 		publicDir: mode === 'development' ? undefined : false,
 		build: {
 			target: 'esnext',
