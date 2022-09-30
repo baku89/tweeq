@@ -11,6 +11,8 @@
 		@focus='onFocus',
 		@input='onInput',
 		@blur='onBlur'
+		@keydown.up.prevent='increment(1)'
+		@keydown.down.prevent='increment(-1)'
 	)
 	.InputNumber__cursor(
 		v-if='tweaking'
@@ -36,6 +38,7 @@ import {useDrag} from '@/use/useDrag'
 import {useElementBounding, useFocus, useKeyModifier} from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
 import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep} from '@/util'
+import {clamp} from 'lodash'
 
 /**
  * Input for number
@@ -51,10 +54,6 @@ export default defineComponent({
 			type: Number,
 			required: true,
 		},
-		step: {
-			type: Number,
-			default: 0.1,
-		},
 		disabled: {
 			type: Boolean,
 			default: false,
@@ -62,6 +61,14 @@ export default defineComponent({
 		invalid: {
 			type: Boolean,
 			default: false,
+		},
+		maxSpeed: {
+			type: Number,
+			default: 1000,
+		},
+		minSpeed: {
+			type: Number,
+			default: 0.0001,
 		},
 	},
 	emits: ['update:modelValue'],
@@ -81,16 +88,20 @@ export default defineComponent({
 		const speedMultiplierKey = computed(() => {
 			return (alt.value ? 0.1 : 1) * (shift.value ? 10 : 1)
 		})
-		const speedMultiplierDrag = ref(1)
-		const speed = computed(
-			() => speedMultiplierKey.value * speedMultiplierDrag.value
-		)
+		const speedMultiplierGesture = ref(1)
+		const speed = computed(() => {
+			return speedMultiplierKey.value * speedMultiplierGesture.value
+		})
 
+		const getDisplayPrecision = () => {
+			const floats = /\.[0-9]*$/.exec(display.value)
+			return floats ? floats[0].length - 1 : 0
+		}
 		const displayPrecision = ref(0)
 
 		const tweakPrecision = computed(() => {
-			const tweakPrecision = Math.max(0, Math.ceil(-Math.log10(speed.value)))
-			return Math.max(tweakPrecision, displayPrecision.value)
+			const prec = Math.max(0, Math.ceil(-Math.log10(speed.value)))
+			return Math.max(prec, displayPrecision.value)
 		})
 		const tweakInitialValue = ref(props.modelValue)
 
@@ -99,7 +110,6 @@ export default defineComponent({
 
 		let resetTweakModeTimer = -1
 		let tweakMode = ref<null | 'value' | 'speed'>(null)
-		let speedDeltaY = 0
 
 		const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			lockPointer: true,
@@ -108,26 +118,23 @@ export default defineComponent({
 				input.value?.focus()
 			},
 			onDragStart() {
-				tweakInitialValue.value = props.modelValue
-				speedMultiplierDrag.value = 1
-
-				const floats = /\.[0-9]*$/.exec(display.value)
-				displayPrecision.value = floats ? floats[0].length - 1 : 0
-
-				speedDeltaY = 0
 				tweakMode.value = null
+				tweakInitialValue.value = props.modelValue
+				speedMultiplierGesture.value = 1
+				displayPrecision.value = getDisplayPrecision()
 			},
 			onDrag(state, event) {
 				const [dx, dy] = state.delta
 
-				const isMouse = event.pointerType === 'mouse'
+				const isMouse =
+					event.pointerType === 'mouse' || event.pointerType === 'pen'
 
 				tweakDirection.value = dx
 				pointerSize.value =
 					event.width *
 					0.75 *
 					smoothstep(
-						(event.width * 1.5) / 2,
+						(event.width * 0.7) / 2,
 						(event.width * 0.5) / 2,
 						Math.abs(state.xy[1] - (bound.top.value + bound.height.value / 2))
 					)
@@ -151,12 +158,17 @@ export default defineComponent({
 					local.value = props.modelValue + dx * speed.value
 					emit('update:modelValue', local.value)
 				} else {
-					speedDeltaY += dy
-					speedMultiplierDrag.value = Math.pow(0.98, speedDeltaY)
+					speedMultiplierGesture.value = clamp(
+						speedMultiplierGesture.value * Math.pow(0.98, dy),
+						props.minSpeed,
+						props.maxSpeed
+					)
 				}
 
-				clearTimeout(resetTweakModeTimer)
-				resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 250)
+				if (isMouse) {
+					clearTimeout(resetTweakModeTimer)
+					resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 250)
+				}
 			},
 			onDragEnd() {
 				display.value = toFixedWithNoTrailingZeros(
@@ -164,6 +176,7 @@ export default defineComponent({
 					tweakPrecision.value
 				)
 				tweakMode.value = null
+				speedMultiplierGesture.value = 1
 			},
 		})
 
@@ -171,7 +184,7 @@ export default defineComponent({
 			({delta: [, y], event}) => {
 				event.preventDefault()
 
-				local.value = props.modelValue + y * speed.value
+				local.value = props.modelValue + y * speedMultiplierGesture.value
 				display.value = props.modelValue.toFixed(tweakPrecision.value)
 
 				emit('update:modelValue', local.value)
@@ -203,10 +216,22 @@ export default defineComponent({
 			emit('update:modelValue', local.value)
 		}
 
+		const increment = (delta: number) => {
+			const prec = Math.max(
+				getDisplayPrecision(),
+				-Math.log10(speedMultiplierKey.value)
+			)
+			local.value += delta * speedMultiplierKey.value
+			display.value = toFixedWithNoTrailingZeros(local.value, prec)
+			hasChanged = true
+			emit('update:modelValue', local.value)
+		}
+
 		const onBlur = () => {
 			if (hasChanged) {
 				display.value = props.modelValue.toString()
 			} else {
+				// 変な文字を打ったときはhasChanged === falseなので、これでリセットをかける
 				display.value = initialDisplay
 			}
 		}
@@ -220,7 +245,10 @@ export default defineComponent({
 		const scaleOffset = ref(0)
 
 		const scaleAttrs = (offset: number) => {
-			const precision = unsignedMod(-Math.log10(speed.value) + offset, 3)
+			const precision = unsignedMod(
+				-Math.log10(speedMultiplierGesture.value) + offset,
+				3
+			)
 			const halfWidth = (bound.width.value + bound.height.value * 20) / 2
 
 			const opacity = smoothstep(1, 2, precision)
@@ -257,7 +285,7 @@ export default defineComponent({
 			if (!secondTouch) return
 
 			const ox = secondTouch.clientX
-			const initialSpeedMultiplierDrag = speedMultiplierDrag.value
+			const initialSpeedMultiplierGesture = speedMultiplierGesture.value
 
 			const stop = watch(tweaking, () => {
 				window.removeEventListener('touchmove', onSecondTouchMove)
@@ -267,8 +295,6 @@ export default defineComponent({
 
 			window.addEventListener('touchmove', onSecondTouchMove)
 			window.addEventListener('touchend', onSecondTouchEnd)
-
-			clearTimeout(resetTweakModeTimer)
 
 			function onSecondTouchMove(e: TouchEvent) {
 				const firstTouch = e.touches.item(0)
@@ -281,7 +307,11 @@ export default defineComponent({
 				tweakMode.value = 'speed'
 
 				const mul = Math.abs((ox - cx) / (x - cx))
-				speedMultiplierDrag.value = initialSpeedMultiplierDrag * mul
+				speedMultiplierGesture.value = clamp(
+					initialSpeedMultiplierGesture * mul,
+					props.minSpeed,
+					props.maxSpeed
+				)
 			}
 
 			function onSecondTouchEnd() {
@@ -301,6 +331,7 @@ export default defineComponent({
 			onFocus,
 			onInput,
 			onBlur,
+			increment,
 			tweaking,
 			pointerLocked,
 			...bound,
