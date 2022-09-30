@@ -4,10 +4,11 @@ GlispUI.App
 	p
 		:markdown-it
 			Glisp UI is a components library that bundles various types of UI for building professional design tool. Originally developed for [Glisp](https://glisp.app/docs).
-	SchemeViewer
+	//- SchemeViewer
 	.App__number-wrapper
-		p {{number.toString()}}
-		InputNumber.number-input(v-model='number')
+		.container
+			p.raw Raw Value = {{number.toString()}}
+			InputNumber.number-input(v-model='number')
 </template>
 
 <script lang="ts">
@@ -51,8 +52,16 @@ body
 		justify-content center
 		align-items center
 		padding 4em 0
-		font-numeric()
 
-		.number-input
-			width 10em
+	.container
+		display flex
+		flex-direction column
+		align-items center
+		width 10em
+
+	.raw
+		width 100%
+		text-align left
+		font-numeric()
+		white-space nowrap
 </style>
