@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 .InputNumber(ref='root', :class='{tweaking}', v-bind='$attrs')
 	input.InputNumber__input(
 		ref='input',

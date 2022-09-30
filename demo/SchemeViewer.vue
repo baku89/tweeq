@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 ul.SchemeViewer
 	li
 		.color.border(style='background: rgb(var(--base00))') 00

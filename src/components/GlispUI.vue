@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 .GlispUI(:style='style')
 	slot
 </template>
