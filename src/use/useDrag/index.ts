@@ -8,16 +8,14 @@ interface DragState {
 	initial: vec2
 	delta: vec2
 	dragging: boolean
+	event: PointerEvent
 }
 
 type PointerType = 'mouse' | 'pen' | 'touch'
 
-const defaultHandler = () => null
-
 interface UseDragOptions {
 	lockPointer?: boolean
 	pointerType?: PointerType[]
-	minDragDistance?: number
 	dragDelaySeconds?: number
 
 	onClick?: () => void
@@ -31,15 +29,14 @@ export function useDrag(
 	{
 		lockPointer = false,
 		pointerType = ['mouse', 'pen', 'touch'],
-		minDragDistance = navigator.maxTouchPoints > 0 ? 7 : 3,
 		dragDelaySeconds = 0.5,
-		onClick = defaultHandler,
-		onDrag = defaultHandler,
-		onDragStart = defaultHandler,
-		onDragEnd = defaultHandler,
+		onClick,
+		onDrag,
+		onDragStart,
+		onDragEnd,
 	}: UseDragOptions = {}
 ) {
-	const state = reactive<DragState>({
+	const state = reactive<Omit<DragState, 'event'>>({
 		// All coordinates are relative to the viewport
 		xy: vec2.create(),
 		previous: vec2.create(),
@@ -54,42 +51,40 @@ export function useDrag(
 	function setup(el: HTMLElement) {
 		el.addEventListener('pointerdown', onPointerDown)
 
-		function fireDragStart() {
+		function fireDragStart(event: PointerEvent) {
 			if (lockPointer && 'requestPointerLock' in el) {
 				el.requestPointerLock()
 			}
 
 			state.dragging = true
 			state.initial = vec2.clone(state.previous)
-			onDragStart(state)
+			onDragStart?.({...state, event})
 		}
 
-		function onPointerDown(e: PointerEvent) {
-			if (e.button === 2) return // Ignore right click
-			if (!pointerType.includes(e.pointerType as PointerType)) return
+		function onPointerDown(event: PointerEvent) {
+			if (event.button === 2) return // Ignore right click
+			if (!event.isPrimary) return
+			if (!pointerType.includes(event.pointerType as PointerType)) return
 
 			// Initialzize pointer position
-			state.xy = vec2.fromValues(e.clientX, e.clientY)
+			state.xy = vec2.fromValues(event.clientX, event.clientY)
 			state.previous = vec2.clone(state.xy)
 			state.initial = vec2.clone(state.xy)
 
-			// Fire onDragstart and onDrag immediately
-			if (minDragDistance === 0) {
-				fireDragStart()
-			} else {
-				dragDelayTimer = setTimeout(fireDragStart, dragDelaySeconds * 1000)
-			}
+			dragDelayTimer = setTimeout(fireDragStart, dragDelaySeconds * 1000)
 
 			window.addEventListener('pointermove', onPointerMove)
 			window.addEventListener('pointerup', onPointerUp, {once: true})
 		}
 
-		function onPointerMove(e: PointerEvent) {
-			if ('movementX' in e) {
-				const movement = vec2.fromValues(e.movementX, e.movementY)
+		function onPointerMove(event: PointerEvent) {
+			if (!event.isPrimary) return
+
+			if ('movementX' in event) {
+				const movement = vec2.fromValues(event.movementX, event.movementY)
 				state.xy = vec2.add(vec2.create(), state.xy, movement)
 			} else {
-				state.xy = vec2.fromValues(e.clientX, e.clientY)
+				state.xy = vec2.fromValues(event.clientX, event.clientY)
 			}
 
 			state.delta = vec2.sub(vec2.create(), state.xy, state.previous)
@@ -97,12 +92,13 @@ export function useDrag(
 			if (vec2.squaredLength(state.delta) === 0) return
 
 			if (state.dragging) {
-				onDrag(state)
+				onDrag?.({...state, event})
 			} else {
 				// Determine whether dragging has started
 				const d = vec2.dist(state.initial, state.xy)
+				const minDragDistance = event.pointerType === 'mouse' ? 3 : 7
 				if (d >= minDragDistance) {
-					fireDragStart()
+					fireDragStart(event)
 					clearTimeout(dragDelayTimer)
 				}
 			}
@@ -110,15 +106,15 @@ export function useDrag(
 			state.previous = vec2.clone(state.xy)
 		}
 
-		function onPointerUp() {
+		function onPointerUp(event: PointerEvent) {
 			if (lockPointer && 'exitPointerLock' in document) {
 				document.exitPointerLock()
 			}
 
 			if (state.dragging) {
-				onDragEnd(state)
+				onDragEnd?.({...state, event})
 			} else {
-				onClick()
+				onClick?.()
 			}
 
 			// Reset
