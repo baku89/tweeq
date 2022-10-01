@@ -57,7 +57,7 @@ input($focus-selector = ':focus')
 		cursor col-resize
 
 		&:hover, &:focus, &:focus-within
-			box-shadow 0 0 0 1px inset base16('accent')
+			box-shadow 0 0 0 0 inset base16('accent'), 0 0 0 1px inset base16('accent')
 			color base16('06')
 
 		&:focus, &:focus-within, &{$focus-selector}
