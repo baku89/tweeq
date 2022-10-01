@@ -1,6 +1,6 @@
 <template lang="pug">
 .InputNumber(ref='root', :class='{tweaking, invalid}', v-bind='$attrs')
-	input.InputNumber__input(
+	input.input(
 		ref='input',
 		type='text',
 		min='0',
@@ -14,12 +14,16 @@
 		@keydown.up.prevent='increment(1)'
 		@keydown.down.prevent='increment(-1)'
 	)
-	.InputNumber__cursor(
+	.cursor(
 		v-if='tweaking'
 		:class='{floating: !pointerLocked}'
 		:style='cursorStyle')
 		IconDec.dec(:class='{active: tweakMode === "value" && tweakDirection < 0}' :size='height')
 		IconInc.inc(:class='{active: tweakMode === "value" && tweakDirection > 0}' :size='height')
+
+	.bar(v-if='hasRange')
+		.fill(:style='{width: `${width * ((modelValue - min) / (max - min))}px`}')
+			.tip
 
 teleport(to='#GlispUI__overlays')
 	svg.InputNumber__overlay(v-if='tweaking')
@@ -37,7 +41,7 @@ import {computed, defineComponent, ref, watch, watchEffect} from 'vue'
 import {useDrag} from '@/use/useDrag'
 import {useElementBounding, useFocus, useKeyModifier} from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
-import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep} from '@/util'
+import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep, fit} from '@/util'
 import {clamp} from 'lodash'
 
 /**
@@ -53,6 +57,14 @@ export default defineComponent({
 		modelValue: {
 			type: Number,
 			required: true,
+		},
+		min: {
+			type: Number,
+			default: Number.MIN_SAFE_INTEGER,
+		},
+		max: {
+			type: Number,
+			default: Number.MAX_SAFE_INTEGER,
 		},
 		disabled: {
 			type: Boolean,
@@ -84,6 +96,14 @@ export default defineComponent({
 
 		const alt = useKeyModifier('Alt')
 		const shift = useKeyModifier('Shift')
+
+		const hasRange = computed(() => {
+			return (
+				props.min !== Number.MIN_SAFE_INTEGER &&
+				props.max !== Number.MAX_SAFE_INTEGER
+			)
+		})
+		const maxSpeed = computed(() => (hasRange.value ? 1 : props.maxSpeed))
 
 		const speedMultiplierKey = computed(() => {
 			return (alt.value ? 0.1 : 1) * (shift.value ? 10 : 1)
@@ -117,7 +137,20 @@ export default defineComponent({
 			onClick() {
 				input.value?.focus()
 			},
-			onDragStart() {
+			onDragStart(state, event) {
+				const isTipDragged = (event.target as Element).classList.contains('tip')
+				if (hasRange.value && !isTipDragged) {
+					// Absolute mode
+					local.value = fit(
+						state.xy[0],
+						bound.left.value,
+						bound.right.value,
+						props.min,
+						props.max
+					)
+					emit('update:modelValue', local.value)
+				}
+
 				tweakMode.value = null
 				tweakInitialValue.value = props.modelValue
 				speedMultiplierGesture.value = 1
@@ -155,13 +188,18 @@ export default defineComponent({
 				}
 
 				if (tweakMode.value === 'value') {
-					local.value = props.modelValue + dx * speed.value
+					const baseSpeed = hasRange.value
+						? (props.max - props.min) / bound.width.value
+						: 1
+
+					local.value = props.modelValue + dx * baseSpeed * speed.value
+					local.value = clamp(local.value, props.min, props.max)
 					emit('update:modelValue', local.value)
 				} else {
 					speedMultiplierGesture.value = clamp(
 						speedMultiplierGesture.value * Math.pow(0.98, dy),
 						props.minSpeed,
-						props.maxSpeed
+						maxSpeed.value
 					)
 				}
 
@@ -185,6 +223,7 @@ export default defineComponent({
 				event.preventDefault()
 
 				local.value = props.modelValue + y * speedMultiplierGesture.value
+				local.value = clamp(local.value, props.min, props.max)
 				display.value = props.modelValue.toFixed(tweakPrecision.value)
 
 				emit('update:modelValue', local.value)
@@ -210,7 +249,7 @@ export default defineComponent({
 			let value = parseFloat(el.value)
 			if (isNaN(value)) return
 
-			local.value = value
+			local.value = clamp(value, props.min, props.max)
 			hasChanged = true
 
 			emit('update:modelValue', local.value)
@@ -222,6 +261,7 @@ export default defineComponent({
 				-Math.log10(speedMultiplierKey.value)
 			)
 			local.value += delta * speedMultiplierKey.value
+			local.value = clamp(local.value, props.min, props.max)
 			display.value = toFixedWithNoTrailingZeros(local.value, prec)
 			hasChanged = true
 			emit('update:modelValue', local.value)
@@ -310,7 +350,7 @@ export default defineComponent({
 				speedMultiplierGesture.value = clamp(
 					initialSpeedMultiplierGesture * mul,
 					props.minSpeed,
-					props.maxSpeed
+					maxSpeed.value
 				)
 			}
 
@@ -328,6 +368,7 @@ export default defineComponent({
 			root,
 			input,
 			display,
+			hasRange,
 			onFocus,
 			onInput,
 			onBlur,
@@ -358,13 +399,13 @@ export default defineComponent({
 	user-select none
 	-webkit-user-select none
 
-	&__input
+	.input
 		pointer-events none
 
 		&:focus
 			pointer-events auto
 
-	&__cursor
+	.cursor
 		position absolute
 		inset 0
 
@@ -399,6 +440,34 @@ export default defineComponent({
 			margin-left calc(-1px * var(--height))
 			input-transition(width, margin-left)
 
+	.bar
+		position absolute
+		inset 0
+		mix-blend-mode lighten
+		border-radius var(--input-border-radius)
+		overflow hidden
+
+	.fill
+		position absolute
+		height 100%
+		background base16('03')
+
+	.tip
+		position absolute
+		height 100%
+		width 1px
+		right -1px
+
+		&:before
+			content ''
+			position absolute
+			display block
+			height 100%
+			left calc(var(--input-height) / -2)
+			right @left
+
+	.tip:hover, &.tweaking .tip
+			background base16('accent')
 
 	&__overlay
 		position fixed
