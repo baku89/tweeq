@@ -66,6 +66,14 @@ export default defineComponent({
 			type: Number,
 			default: Number.MAX_SAFE_INTEGER,
 		},
+		clampMin: {
+			type: Boolean,
+			default: true,
+		},
+		clampMax: {
+			type: Boolean,
+			default: true,
+		},
 		disabled: {
 			type: Boolean,
 			default: false,
@@ -103,7 +111,13 @@ export default defineComponent({
 				props.max !== Number.MAX_SAFE_INTEGER
 			)
 		})
-		const maxSpeed = computed(() => (hasRange.value ? 1 : props.maxSpeed))
+
+		const validMin = computed(() =>
+			props.clampMin ? props.min : Number.MIN_SAFE_INTEGER
+		)
+		const validMax = computed(() =>
+			props.clampMax ? props.max : Number.MAX_SAFE_INTEGER
+		)
 
 		const speedMultiplierKey = computed(() => {
 			return (alt.value ? 0.1 : 1) * (shift.value ? 10 : 1)
@@ -139,7 +153,8 @@ export default defineComponent({
 			},
 			onDragStart(state, event) {
 				const isTipDragged = (event.target as Element).classList.contains('tip')
-				if (hasRange.value && !isTipDragged) {
+				const insideRange = props.min <= local.value && local.value <= props.max
+				if (hasRange.value && insideRange && !isTipDragged) {
 					// Absolute mode
 					local.value = fit(
 						state.xy[0],
@@ -193,13 +208,13 @@ export default defineComponent({
 						: 1
 
 					local.value = props.modelValue + dx * baseSpeed * speed.value
-					local.value = clamp(local.value, props.min, props.max)
+					local.value = clamp(local.value, validMin.value, validMax.value)
 					emit('update:modelValue', local.value)
 				} else {
 					speedMultiplierGesture.value = clamp(
 						speedMultiplierGesture.value * Math.pow(0.98, dy),
 						props.minSpeed,
-						maxSpeed.value
+						props.maxSpeed
 					)
 				}
 
@@ -223,7 +238,7 @@ export default defineComponent({
 				event.preventDefault()
 
 				local.value = props.modelValue + y * speedMultiplierGesture.value
-				local.value = clamp(local.value, props.min, props.max)
+				local.value = clamp(local.value, validMin.value, validMax.value)
 				display.value = props.modelValue.toFixed(tweakPrecision.value)
 
 				emit('update:modelValue', local.value)
@@ -249,7 +264,7 @@ export default defineComponent({
 			let value = parseFloat(el.value)
 			if (isNaN(value)) return
 
-			local.value = clamp(value, props.min, props.max)
+			local.value = clamp(value, validMin.value, validMax.value)
 			hasChanged = true
 
 			emit('update:modelValue', local.value)
@@ -261,7 +276,7 @@ export default defineComponent({
 				-Math.log10(speedMultiplierKey.value)
 			)
 			local.value += delta * speedMultiplierKey.value
-			local.value = clamp(local.value, props.min, props.max)
+			local.value = clamp(local.value, validMin.value, validMax.value)
 			display.value = toFixedWithNoTrailingZeros(local.value, prec)
 			hasChanged = true
 			emit('update:modelValue', local.value)
@@ -350,7 +365,7 @@ export default defineComponent({
 				speedMultiplierGesture.value = clamp(
 					initialSpeedMultiplierGesture * mul,
 					props.minSpeed,
-					maxSpeed.value
+					props.maxSpeed
 				)
 			}
 
