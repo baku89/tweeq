@@ -35,14 +35,16 @@ teleport(to='#GlispUI__overlays')
 </template>
 
 <script lang="ts">
-import IconDec from 'vue-material-design-icons/Minus.vue'
-import IconInc from 'vue-material-design-icons/Plus.vue'
-import {computed, defineComponent, ref, watch, watchEffect} from 'vue'
-import {useDrag} from '@/use/useDrag'
 import {useElementBounding, useFocus, useKeyModifier} from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
-import {toFixedWithNoTrailingZeros, unsignedMod, smoothstep, fit} from '@/util'
+import {vec2} from 'gl-matrix'
 import {clamp} from 'lodash'
+import {computed, defineComponent, ref, watch, watchEffect} from 'vue'
+import IconDec from 'vue-material-design-icons/Minus.vue'
+import IconInc from 'vue-material-design-icons/Plus.vue'
+
+import {useDrag} from '@/use/useDrag'
+import {fit, smoothstep, toFixedWithNoTrailingZeros, unsignedMod} from '@/util'
 
 /**
  * Input for number

@@ -29,6 +29,6 @@ export function fit01(value: number, lower: number, upper: number) {
 export const unsignedMod = (x: number, y: number) => ((x % y) + y) % y
 
 export const smoothstep = (min: number, max: number, value: number) => {
-	var x = Math.max(0, Math.min(1, (value - min) / (max - min)))
+	const x = Math.max(0, Math.min(1, (value - min) / (max - min)))
 	return x * x * (3 - 2 * x)
 }

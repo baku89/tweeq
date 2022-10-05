@@ -4,14 +4,14 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, watchEffect} from 'vue'
-import {chain, toPairs} from 'lodash'
+import '@/Typekit'
+
 import {useLocalStorage} from '@vueuse/core'
 import chroma from 'chroma-js'
+import {chain, toPairs} from 'lodash'
+import {computed, defineComponent, watchEffect} from 'vue'
 
 import {Theme} from '@/Theme'
-
-import '@/Typekit'
 
 /**
  * Manages UI Scheme for the whole library

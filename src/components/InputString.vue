@@ -9,7 +9,6 @@
 </template>
 
 <script lang="ts">
-import _ from 'lodash'
 import {defineComponent} from 'vue'
 
 export default defineComponent({
