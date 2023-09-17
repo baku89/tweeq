@@ -18,6 +18,24 @@ import GlispUI from '@/components/GlispUI.vue'
 import InputNumber from '@/components/InputNumber.vue'
 import SchemeViewer from './SchemeViewer.vue'
 
+import {
+	argbFromHex,
+	themeFromSourceColor,
+	applyTheme,
+} from '@material/material-color-utilities'
+
+// Get the theme from a hex color
+const theme = themeFromSourceColor(argbFromHex('#8ED662'), [
+	{
+		name: 'custom-1',
+		value: argbFromHex('#ff0000'),
+		blend: true,
+	},
+])
+
+// Apply the theme to the body by updating custom properties for material tokens
+applyTheme(theme, {target: document.body, dark: true})
+
 export default defineComponent({
 	components: {
 		GlispUI,
