@@ -1,24 +1,23 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "umd",
-		"strict": true,
-		"allowJs": true,
-		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"experimentalDecorators": true,
-		"inlineSourceMap": true,
-		"baseUrl": ".",
-		"outDir": "lib",
-		"declaration": true,
-		"emitDeclarationOnly": true,
-		"lib": ["esnext", "dom"],
+		"target": "ES2022",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"skipLibCheck": true,
-		"jsx": "preserve",
-		"paths": {
-			"@/*": ["src/*"]
-		}
+
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true
 	},
-	"types": ["vite/client"],
-	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.d.tsx", "src/**/*.vue"]
+	"include": ["src"]
 }

@@ -10,9 +10,14 @@
 </template>
 
 <script lang="ts" setup>
-import {useElementBounding, useElementSize, useWindowSize} from '@vueuse/core'
+import {
+	useElementBounding,
+	useElementSize,
+	useEventListener,
+	useWindowSize,
+} from '@vueuse/core'
 import {scalar, Vec2} from 'linearly'
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 
 type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
 type PlacementAlign = 'start' | 'end'
@@ -137,14 +142,21 @@ watch(
 	{immediate: true}
 )
 
-onMounted(() => {
-	$popover.value?.addEventListener('toggle', e => {
+useEventListener(
+	$popover,
+	'toggle',
+	e => {
+		e.preventDefault()
 		const opened = (e as ToggleEvent).newState === 'open'
+
+		console.warn('toggle', opened)
+
 		if (opened !== props.open) {
 			emit('update:open', opened)
 		}
-	})
-})
+	},
+	{passive: false}
+)
 </script>
 
 <style lang="stylus" scoped>
