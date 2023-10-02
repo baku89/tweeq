@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"serve": "vite",
+		"dev": "vite",
 		"build": "vite build && vue-tsc --emitDeclarationOnly",
 		"preview": "vite preview"
 	},
