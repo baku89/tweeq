@@ -44,8 +44,7 @@ watch(
 		if (open) return
 		display.value = labelizer.value(modelValue)
 		displayEdited.value = false
-	},
-	{flush: 'post'}
+	}
 )
 
 watch(open, (open, oldOpen) => {
@@ -55,25 +54,24 @@ watch(open, (open, oldOpen) => {
 })
 
 const filteredOptions = computed(() => {
-	if (!display.value || !displayEdited.value) return props.options
+	if (display.value === '' || !displayEdited.value) return props.options
 
-	return search(display.value, props.options as any[], {
+	const ret = search(display.value, props.options as any[], {
 		keySelector: labelizer.value,
 	}) as T[]
+
+	return ret
 })
 
-watch(filteredOptions, options => {
-	if (!options.includes(props.modelValue)) {
-		emit('update:modelValue', options[0])
+watch(filteredOptions, filteredOptions => {
+	if (!filteredOptions.includes(props.modelValue)) {
+		emit('update:modelValue', filteredOptions[0])
 	}
 })
 
-function onFocus() {
+function onInput() {
+	displayEdited.value = true
 	open.value = true
-}
-
-function onBlur() {
-	open.value = false
 }
 
 function onSelect(option: T, e: PointerEvent) {
@@ -101,11 +99,11 @@ function onPressArrow(isUp: boolean) {
 		<InputString
 			v-model="display"
 			:theme="theme"
+			:forceUpdateOnFocusing="true"
 			class="input"
-			@click="onFocus"
-			@blur="onBlur"
-			@input="displayEdited = true"
-			@input.enter="open = false"
+			@focus="open = true"
+			@blur="open = false"
+			@input="onInput"
 			@keydown.enter.prevent="open = !open"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
@@ -113,12 +111,7 @@ function onPressArrow(isUp: boolean) {
 		<SvgIcon mode="block" class="chevron">
 			<path d="M11 13 L16 18 21 13" />
 		</SvgIcon>
-		<Popover
-			:reference="$root"
-			:open="open"
-			placement="bottom"
-			@update:open="onBlur"
-		>
+		<Popover v-model:open="open" :reference="$root" placement="bottom">
 			<ul
 				class="select"
 				:style="{width: inputWidth + 'px'}"

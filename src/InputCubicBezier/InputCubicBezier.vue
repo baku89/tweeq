@@ -83,9 +83,6 @@ const easingPath = computed(() => {
 .floating
 	width var(--tq-popup-width)
 	height var(--tq-popup-width)
-	padding var(--tq-popup-padding)
-	border 1px solid var(--tq-color-pane-border)
-	border-radius var(--tq-popup-border-radius)
 	position relative
-	box-shadow 0 0 20px -15px var(--tq-color-shadow)
+	popup-style()
 </style>

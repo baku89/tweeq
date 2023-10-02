@@ -1,16 +1,19 @@
 <template>
-	<div
-		ref="$popover"
-		class="Popover"
-		popover
-		:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
-	>
-		<slot />
-	</div>
+	<teleport to="body">
+		<div
+			v-if="open"
+			ref="$popover"
+			class="Popover"
+			:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
+		>
+			<slot />
+		</div>
+	</teleport>
 </template>
 
 <script lang="ts" setup>
 import {
+	onClickOutside,
 	useElementBounding,
 	useElementSize,
 	useEventListener,
@@ -18,6 +21,8 @@ import {
 } from '@vueuse/core'
 import {scalar, Vec2} from 'linearly'
 import {computed, ref, watch} from 'vue'
+
+import {isDecendantElementOf} from './util'
 
 type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
 type PlacementAlign = 'start' | 'end'
@@ -60,11 +65,11 @@ const popoverSize = useElementSize($popover)
 const windowSize = useWindowSize()
 
 const offset = computed<Vec2>(() => {
+	if (!$reference.value) throw new Error('Cannot align the popover')
+
 	if (!$popover.value) return [0, 0]
 
 	let placement = props.placement
-
-	if (!$reference.value) throw new Error('Cannot align the popover')
 
 	let x = 0
 	let y = 0
@@ -134,32 +139,23 @@ const offset = computed<Vec2>(() => {
 	return [x, y]
 })
 
-watch(
-	() => [props.open, $popover.value] as const,
-	([open, $popover]) => {
-		$popover?.togglePopover(open)
-	},
-	{immediate: true}
-)
+onClickOutside($popover, e => {
+	if (isDecendantElementOf(e.target as Element, $reference.value as Element)) {
+		return
+	}
+	emit('update:open', false)
+})
 
-useEventListener(
-	$popover,
-	'toggle',
-	e => {
-		e.preventDefault()
-		const opened = (e as ToggleEvent).newState === 'open'
-
-		console.warn('toggle', opened)
-
-		if (opened !== props.open) {
-			emit('update:open', opened)
-		}
-	},
-	{passive: false}
-)
+useEventListener('keydown', e => {
+	if (e.key === 'Escape' && props.open) {
+		emit('update:open', false)
+	}
+})
 </script>
 
 <style lang="stylus" scoped>
 .Popover
 	overflow visible
+	position fixed
+	z-index 1100
 </style>

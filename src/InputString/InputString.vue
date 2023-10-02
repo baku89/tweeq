@@ -12,21 +12,26 @@ interface Props {
 	theme?: InputTheme
 	font?: InputFont
 	validator?: Validator<string>
+	forceUpdateOnFocusing?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	validator: identity,
 })
 
-const value = ref(props.modelValue)
+const display = ref(props.modelValue)
 const $input = ref<null | HTMLInputElement>(null)
 const focusing = useFocus($input).focused
 
 watch(
 	() => [focusing.value, props.modelValue] as const,
 	([focusing, modelValue]) => {
-		if (!focusing) {
-			value.value = modelValue
+		if (focusing) {
+			if (props.forceUpdateOnFocusing) {
+				display.value = modelValue
+			}
+		} else {
+			display.value = modelValue
 		}
 	},
 	{immediate: true}
@@ -46,7 +51,7 @@ function onFocus(e: Event) {
 
 function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
-	value.value = newValue
+	display.value = newValue
 
 	const validatedValue = props.validator(newValue)
 
@@ -68,7 +73,7 @@ function onBlur(e: Event) {
 			ref="$input"
 			class="input"
 			type="text"
-			:value="value"
+			:value="display"
 			:disabled="disabled"
 			:invalid="invalid"
 			@focus="onFocus"
