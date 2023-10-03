@@ -25,92 +25,68 @@ function onInput(e: InputEvent) {
 
 <template>
 	<div class="InputCheckbox">
-		<div class="InputCheckbox__checkbox">
+		<div class="checkbox">
 			<input
 				:id="id"
 				:checked="!!modelValue"
-				class="InputCheckbox__input"
+				class="input"
 				type="checkbox"
-				@input="onInput"
+				@input="onInput($event as InputEvent)"
 			/>
-			<div class="InputCheckbox__frame">
-				<SvgIcon mode="block" class="InputCheckbox__checkmark">
-					<path d="M5,19l8,6L27,9" />
-				</SvgIcon>
-			</div>
+			<SvgIcon mode="block" class="checkmark">
+				<path d="M5,19l8,6L27,9" />
+			</SvgIcon>
 		</div>
-		<label v-if="label" class="InputCheckbox__label" :for="id">
+		<label v-if="label" class="label" :for="id">
 			{{ label }}
 		</label>
 	</div>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 .InputCheckbox
 	display flex
 	align-items center
 
-	&__checkbox
-		position relative
-		width var(--tq-input-height)
-		height var(--tq-input-height)
+.checkbox
+	position relative
+	input-base()
+	width var(--tq-input-height)
 
-	&__input
-		display block
-		width var(--tq-input-height)
-		height var(--tq-input-height)
-		opacity 0
+	&:focus-within
+		background var(--tq-color-input-hover)
 
-	&__frame
-		position absolute
-		top 0
-		left 0
-		width 100%
-		height 100%
-		border-radius var(--tq-input-border-radius)
-		background var(--tq-color-input)
-		color transparent
-		color var(--tq-color-primary)
-		line-height 1em
-		pointer-events none
-		hover-transition(box-shadow)
+.input
+	display block
+	width var(--tq-input-height)
+	height var(--tq-input-height)
+	margin 0 !important
+	opacity 0
 
-	&__checkmark
-		position relative
-		top 0%
-		left 0%
-		width 100%
-		height 100%
-		color var(--tq-color-primary)
-		text-align center
-		line-height var(--tq-input-height)
-		pointer-events none
-		stroke-dasharray 32
-		stroke-dashoffset 32
-		stroke-width 3px
-		stroke-linecap round
-		stroke-linejoin round
-		hover-transition(stroke-dashoffset)
+.checkmark
+	position absolute
+	top 0
+	left 0
+	width 100%
+	height 100%
+	color var(--tq-color-primary)
+	pointer-events none
+	text-align center
+	line-height var(--tq-input-height)
+	stroke-dasharray 32
+	stroke-dashoffset 32
+	stroke-width 3px
+	stroke-linecap round
+	stroke-linejoin round
+	hover-transition(stroke-dashoffset)
 
-	&__input:checked + &__frame > &__checkmark
+	input:checked + &
 		stroke-dashoffset 0
 
 
-	// Hover and Focus
-	&:hover &__frame,
-	&:focus-within &__frame
-		box-shadow 0 0 0 1px var(--tq-color-primary)
-		color var(--tq-color-primary)
-
-	// Label
-	&__label
-		margin-left 0.3em
-		color base16('05')
-
-	// Exp
-	&.exp > &__frame
-		border-color var(--red)
-		color var(--red)
+// Label
+.label
+	margin-left 9px
 </style>
