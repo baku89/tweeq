@@ -247,7 +247,7 @@ watch(
 		} else if (focusing) {
 			display.value = toFixed(modelValue, props.precision)
 		} else {
-			display.value = modelValue.toFixed(props.precision) + props.unit
+			display.value = toFixed(modelValue, props.precision) + props.unit
 		}
 	},
 	{flush: 'sync'}
