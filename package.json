@@ -30,6 +30,7 @@
 		"case": "^1.6.3",
 		"chroma-js": "^2.4.2",
 		"eslint": "^8.50.0",
+		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"eslint-plugin-vue": "^9.17.0",

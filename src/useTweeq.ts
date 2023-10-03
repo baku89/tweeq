@@ -22,12 +22,6 @@ export function useTweeq(appId: string, options: TweeqOptions = {}) {
 
 	const actions = provideActions()
 
-	// window.addEventListener('keydown', e => {
-	// 	if (e.metaKey || e.ctrlKey) {
-	// 		e.preventDefault()
-	// 	}
-	// })
-
 	useInputColor()
 
 	return {appStorage, theme, ...actions}

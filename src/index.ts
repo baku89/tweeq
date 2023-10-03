@@ -15,6 +15,7 @@ import InputSeed from './InputSeed'
 import InputString from './InputString'
 import Markdown from './Markdown'
 import MonacoEditor, {ErrorInfo} from './MonacoEditor'
+import PaneSplit from './PaneSplit'
 import {Parameter, ParameterGrid} from './ParameterGrid'
 import RoundButton from './RoundButton'
 import {Tab, Tabs} from './Tabs'
@@ -40,6 +41,7 @@ export default {
 	InputString,
 	Markdown,
 	MonacoEditor,
+	PaneSplit,
 	ParameterGrid,
 	Parameter,
 	RoundButton,

@@ -1,12 +1,20 @@
 import * as Bndr from 'bndr-js'
-import {inject, InjectionKey, onBeforeUnmount, provide, reactive} from 'vue'
+import {title} from 'case'
+import {
+	inject,
+	InjectionKey,
+	onBeforeUnmount,
+	onUnmounted,
+	provide,
+	reactive,
+} from 'vue'
 
 export interface Action {
 	id: string
-	label: string
+	label?: string
 	shortLabel?: string
 	icon?: string
-	input?: string
+	input?: string | string[]
 	perform(): any
 }
 
@@ -23,6 +31,10 @@ export function provideActions() {
 
 	function registerActions(actions: Action[]) {
 		for (const action of actions) {
+			if (!action.label) {
+				action.label = title(action.id)
+			}
+
 			if (action.id in actions) {
 				throw new Error(`Action ${action.id} is already registered`)
 			}
@@ -30,10 +42,20 @@ export function provideActions() {
 			allActions[action.id] = action
 
 			if (action.input) {
-				const emitter = keyboard.keydown(action.input)
-				emitter?.on(() => action.perform())
+				const inputs = Array.isArray(action.input)
+					? action.input
+					: [action.input]
 
-				Emitters.set(action.id, emitter)
+				for (const input of inputs) {
+					const emitter = keyboard.keydown(input, {
+						capture: true,
+						preventDefault: true,
+					})
+					emitter.on(() => {
+						runBeforeActionPerformHooks(action)
+						action.perform()
+					})
+				}
 			}
 		}
 
@@ -51,10 +73,31 @@ export function provideActions() {
 			throw new Error(`Action ${id} is not registered`)
 		}
 
+		for (const hook of onBeforeActionPerformHooks) {
+			hook(action)
+		}
+
+		runBeforeActionPerformHooks(action)
 		action.perform()
 	}
 
-	return {registerActions, performAction}
+	function runBeforeActionPerformHooks(action: Action) {
+		for (const hook of onBeforeActionPerformHooks) {
+			hook(action)
+		}
+	}
+
+	const onBeforeActionPerformHooks = new Set<(action: Action) => void>()
+
+	function onBeforeActionPerform(hook: (action: Action) => void) {
+		onBeforeActionPerformHooks.add(hook)
+
+		onUnmounted(() => {
+			onBeforeActionPerformHooks.delete(hook)
+		})
+	}
+
+	return {registerActions, performAction, onBeforeActionPerform}
 }
 
 export function useActions() {

@@ -17,9 +17,13 @@ defineSlots<{
 	<div class="TitleBar">
 		<ColorIcon class="icon" :src="icon" />
 		<span class="app-name">{{ name }}</span>
-		<slot name="left" />
+		<div class="left">
+			<slot name="left" />
+		</div>
 		<div class="spacer" />
-		<slot name="right" />
+		<div class="right">
+			<slot name="right" />
+		</div>
 	</div>
 </template>
 
@@ -35,15 +39,22 @@ defineSlots<{
 	position fixed
 	background linear-gradient(to bottom, var(--tq-color-bg), transparent)
 	backdrop-filter blur(2px)
-	gap .6rem
-	padding .4rem .4rem .4rem .6rem
+	gap 9px
+	padding 6px
 	-webkit-app-region: drag;
 	app-region: drag;
-	line-height calc(var(--titlebar-area-height) - 0.8rem)
+	line-height calc(var(--titlebar-area-height) - 12px)
+
+	--tq-input-height calc(var(--titlebar-area-height) - 12px)
 
 	@media (display-mode: window-controls-overlay)
 		background linear-gradient(to bottom, var(--tq-color-bg) 20%, transparent), linear-gradient(to right, var(--tq-color-bg) 0, transparent 15%, transparent 85%, var(--tq-color-bg) 100%)
 
+.left, .right
+	display flex
+	gap 9px
+	-webkit-app-region: drag;
+	app-region no-drag
 
 .icon
 	height calc(var(--titlebar-area-height) - .8rem)

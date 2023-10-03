@@ -34,7 +34,7 @@ watch(filteredActions, () => {
 })
 
 Bndr.keyboard()
-	.key('command+p', {preventDefault: true, capture: true, passive: true})
+	.key('command+p', {preventDefault: true, capture: true})
 	.on(() => {
 		const open = $popover.value?.togglePopover()
 		if (open) {
