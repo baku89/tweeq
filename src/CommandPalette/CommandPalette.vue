@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import {useEventListener} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
 import {type Action, useActions} from '../useActions'
+import {useAppStorage} from '../useAppStorage'
 import {unsignedMod} from '../util'
 
 const {actions} = useActions()
@@ -11,7 +13,37 @@ const {actions} = useActions()
 const $popover = ref<HTMLElement | null>(null)
 const searchWord = ref('')
 
+const appStorage = useAppStorage()
+
+const performedActions = appStorage<string[]>(
+	'commandPalette.performedActions',
+	[]
+)
+
+const open = ref(false)
+
+useEventListener($popover, 'toggle', e => {
+	open.value = (e as ToggleEvent).newState === 'open'
+})
+
+watch(
+	open,
+	open => {
+		searchWord.value = ''
+		if (open) {
+			$popover.value?.querySelector('input')?.focus()
+		}
+	},
+	{immediate: true}
+)
+
 const filteredActions = computed(() => {
+	if (searchWord.value === '' && open.value) {
+		return performedActions.value
+			.map(id => actions[id])
+			.filter(action => action !== undefined)
+	}
+
 	return search(searchWord.value, Object.values(actions), {
 		keySelector: action => action.label,
 	})
@@ -21,13 +53,7 @@ const selectedAction = ref<null | Action>(null)
 
 watch(filteredActions, () => {
 	if (filteredActions.value.length > 0) {
-		const notFoundInFiltered = !filteredActions.value.includes(
-			selectedAction.value as any
-		)
-
-		if (notFoundInFiltered) {
-			selectedAction.value = filteredActions.value[0]
-		}
+		selectedAction.value = filteredActions.value[0]
 	} else {
 		selectedAction.value = null
 	}
@@ -35,13 +61,7 @@ watch(filteredActions, () => {
 
 Bndr.keyboard()
 	.key('command+p', {preventDefault: true, capture: true})
-	.on(() => {
-		const open = $popover.value?.togglePopover()
-		if (open) {
-			searchWord.value = ''
-			$popover.value?.querySelector('input')?.focus()
-		}
-	})
+	.on(() => $popover.value?.togglePopover())
 
 function onKeydown(e: KeyboardEvent) {
 	if (e.key === 'p' && e.metaKey) {
@@ -65,7 +85,10 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 function perform(action: Action) {
-	searchWord.value = ''
+	performedActions.value = [
+		...new Set([action.id, ...performedActions.value]),
+	].slice(0, 10)
+
 	$popover.value?.hidePopover()
 	action.perform()
 }
@@ -83,7 +106,8 @@ function perform(action: Action) {
 				@keydown="onKeydown"
 			/>
 		</div>
-		<ul class="actions">
+		<div v-if="searchWord === ''" class="recent-actions">Recent Actions</div>
+		<ul>
 			<li
 				v-for="action in filteredActions"
 				:key="action.id"
@@ -135,6 +159,11 @@ function perform(action: Action) {
 		font-size 1.2rem
 		color var(--tq-color-inverse-on-surface)
 		opacity .3
+
+.recent-actions
+	padding 0 6px 9px
+	font-weight bold
+	opacity .8
 
 .action
 	display flex
