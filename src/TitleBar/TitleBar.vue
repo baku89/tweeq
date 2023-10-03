@@ -9,6 +9,7 @@ defineProps<Props>()
 
 defineSlots<{
 	left(): any
+	center(): any
 	right(): any
 }>()
 </script>
@@ -21,6 +22,12 @@ defineSlots<{
 			<slot name="left" />
 		</div>
 		<div class="spacer" />
+		<template v-if="$slots.center">
+			<div class="center">
+				<slot name="center" />
+			</div>
+			<div class="spacer" />
+		</template>
 		<div class="right">
 			<slot name="right" />
 		</div>
@@ -50,7 +57,7 @@ defineSlots<{
 	@media (display-mode: window-controls-overlay)
 		background linear-gradient(to bottom, var(--tq-color-bg) 20%, transparent), linear-gradient(to right, var(--tq-color-bg) 0, transparent 15%, transparent 85%, var(--tq-color-bg) 100%)
 
-.left, .right
+.left, .center, .right
 	display flex
 	gap 9px
 	-webkit-app-region: drag;
