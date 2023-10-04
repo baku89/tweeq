@@ -1,4 +1,4 @@
-import * as Bndr from 'bndr-js'
+import {Bndr} from 'bndr-js'
 import {title} from 'case'
 import {
 	inject,

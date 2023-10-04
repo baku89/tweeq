@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useEventListener} from '@vueuse/core'
-import * as Bndr from 'bndr-js'
+import {Bndr} from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 

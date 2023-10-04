@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
-import * as Bndr from 'bndr-js'
+import {Bndr} from 'bndr-js'
 import {computed, onMounted, ref, watch} from 'vue'
 
 import {useAppStorage} from '../useAppStorage'

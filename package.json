@@ -14,6 +14,7 @@
 	"main": "./dist/index.umd.js",
 	"module": "./dist/index.es.js",
 	"dependencies": {
+		"bndr-js": "^0.12.0",
 		"linearly": "^0.12.1"
 	},
 	"devDependencies": {
