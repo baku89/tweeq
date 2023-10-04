@@ -4,6 +4,7 @@ import {
 	useEventListener,
 	useFocus,
 	useKeyModifier,
+	whenever,
 } from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
 import {scalar, Vec2} from 'linearly'
@@ -18,7 +19,7 @@ interface Props {
 	min?: number
 	max?: number
 	step?: number
-	bar?: boolean
+	bar?: boolean | 'circle'
 	clampMin?: boolean
 	clampMax?: boolean
 	invalid?: boolean
@@ -47,15 +48,15 @@ const emit = defineEmits<{
 }>()
 
 const root = ref<HTMLElement | null>(null)
-const input = ref<HTMLInputElement | null>(null)
+const $input = ref<HTMLInputElement | null>(null)
 const {left, top, width, height, right} = useElementBounding(root)
 
-const focusing = useFocus(input).focused
+const focusing = useFocus($input).focused
 
 const local = ref(props.modelValue)
 const display = ref('')
 
-const hasRange = computed(() => {
+const barVisible = computed(() => {
 	return (
 		props.bar &&
 		props.min !== Number.MIN_SAFE_INTEGER &&
@@ -99,16 +100,16 @@ let resetTweakModeTimer: NodeJS.Timeout
 const tweakMode = ref<null | 'value' | 'speed'>(null)
 
 const {dragging: tweaking, pointerLocked} = useDrag(root, {
-	lockPointer: computed(() => !(hasRange.value && props.bar)),
-	disabled: computed(() => props.disabled || useFocus(input).focused.value),
+	lockPointer: computed(() => !(barVisible.value && props.bar)),
+	disabled: computed(() => props.disabled || useFocus($input).focused.value),
 	onClick() {
-		input.value?.focus()
+		$input.value?.focus()
 	},
 	onDragStart(state, event) {
 		const isTipDragged = (event.target as Element).classList.contains('tip')
 		const insideRange =
 			props.min <= props.modelValue && props.modelValue <= props.max
-		if (hasRange.value && insideRange && !isTipDragged) {
+		if (barVisible.value && insideRange && !isTipDragged) {
 			// Absolute mode
 			local.value = scalar.fit(
 				state.xy[0],
@@ -153,7 +154,9 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 
 		if (tweakMode.value === 'value') {
 			const baseSpeed =
-				hasRange.value && props.bar ? (props.max - props.min) / width.value : 1
+				barVisible.value && props.bar
+					? (props.max - props.min) / width.value
+					: 1
 
 			local.value += dx * baseSpeed * speed.value
 
@@ -166,7 +169,7 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			emit('update:modelValue', newValue)
 		} else {
 			const minSpeed = 10 ** -props.precision
-			const maxSpeed = hasRange.value && props.bar ? 1 : 1000
+			const maxSpeed = barVisible.value && props.bar ? 1 : 1000
 
 			speedMultiplierGesture.value = scalar.clamp(
 				speedMultiplierGesture.value * 0.98 ** dy,
@@ -181,6 +184,9 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 		}
 	},
 })
+
+//------------------------------------------------------------------------------
+// Scroll to tweak
 
 useWheel(
 	({delta: [, y], event}: {delta: Vec2; event: WheelEvent}) => {
@@ -197,10 +203,6 @@ useWheel(
 	},
 	{domTarget: root, eventOptions: {passive: false}}
 )
-
-function onFocus(e: Event) {
-	nextTick(() => input.value?.select())
-}
 
 function onInput(e: Event) {
 	const el = e.target as HTMLInputElement
@@ -240,7 +242,9 @@ function onIncrementByKey(delta: number) {
 	emit('update:modelValue', newValue)
 }
 
+//------------------------------------------------------------------------------
 // For iPad. Swiping with second finger to change the drag speed
+
 useEventListener('touchstart', (e: TouchEvent) => {
 	if (!tweaking.value) return
 
@@ -287,7 +291,9 @@ useEventListener('touchstart', (e: TouchEvent) => {
 	}
 })
 
+//------------------------------------------------------------------------------
 // Watchers
+
 watch(
 	() => [props.modelValue, focusing.value, tweaking.value] as const,
 	([value, focusing, tweaking]) => {
@@ -315,6 +321,25 @@ watch(
 	{immediate: true}
 )
 
+// Emit events
+watch(
+	() => [focusing.value, tweaking.value] as const,
+	([focusing, tweaking], [prevFocusing, prevTweaking]) => {
+		const curt = focusing || tweaking
+		const prev = prevFocusing || prevTweaking
+
+		if (curt && !prev) {
+			emit('focus')
+		} else if (!curt && prev) {
+			emit('blur')
+		}
+	}
+)
+
+// Click to select all
+whenever(focusing, () => nextTick(() => $input.value?.select()))
+
+//------------------------------------------------------------------------------
 // Styles
 const scaleOffset = ref(0.0)
 
@@ -350,21 +375,6 @@ const cursorStyle = computed(() => {
 		),
 	}
 })
-
-// Focus/Defocus emitter
-watch(
-	() => [focusing.value, tweaking.value] as const,
-	([focusing, tweaking], [prevFocusing, prevTweaking]) => {
-		const curt = focusing || tweaking
-		const prev = prevFocusing || prevTweaking
-
-		if (curt && !prev) {
-			emit('focus')
-		} else if (!curt && prev) {
-			emit('blur')
-		}
-	}
-)
 </script>
 
 <template>
@@ -378,7 +388,7 @@ watch(
 		:disabled="!!disabled"
 	>
 		<div
-			v-if="hasRange"
+			v-if="barVisible"
 			class="bar"
 			:style="{width: scalar.invlerp(min, max, modelValue) * 100 + '%'}"
 		>
@@ -386,8 +396,7 @@ watch(
 		</div>
 
 		<input
-			ref="input"
-			class="input"
+			ref="$input"
 			type="text"
 			min="0"
 			inputmode="numeric"
