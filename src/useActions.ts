@@ -28,6 +28,7 @@ const Emitters = new Map<string, Bndr.Emitter>()
 const ActionsKey: InjectionKey<Record<string, Action>> = Symbol('tqActions')
 
 const keyboard = Bndr.keyboard()
+const gamepad = Bndr.gamepad()
 
 export function provideActions() {
 	const allActions = reactive<Record<string, Action>>({})
@@ -47,19 +48,26 @@ export function provideActions() {
 			allActions[action.id] = action
 
 			if (action.input) {
+				const performAction = () => {
+					runBeforeActionPerformHooks(action)
+					action.perform()
+				}
+
 				const inputs = Array.isArray(action.input)
 					? action.input
 					: [action.input]
 
 				for (const input of inputs) {
-					const emitter = keyboard.keydown(input, {
-						capture: true,
-						preventDefault: true,
-					})
-					emitter.on(() => {
-						runBeforeActionPerformHooks(action)
-						action.perform()
-					})
+					if (input.startsWith('gamepad:')) {
+						// Gamepad
+						const button = input.split(':')[1]
+						gamepad.button(button).down().on(performAction)
+					} else {
+						// keyboard
+						keyboard
+							.keydown(input, {capture: true, preventDefault: true})
+							.on(performAction)
+					}
 				}
 			}
 		}
@@ -76,10 +84,6 @@ export function provideActions() {
 		const action = allActions[id]
 		if (!action) {
 			throw new Error(`Action ${id} is not registered`)
-		}
-
-		for (const hook of onBeforeActionPerformHooks) {
-			hook(action)
 		}
 
 		runBeforeActionPerformHooks(action)

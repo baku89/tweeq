@@ -6,7 +6,13 @@ import {computed, Ref, ref, watch} from 'vue'
 import InputString from './InputString'
 import Popover from './Popover.vue'
 import SvgIcon from './SvgIcon.vue'
-import {InputTheme, Labelizer, useLabelizer} from './types'
+import {
+	InputAlign,
+	InputFont,
+	InputTheme,
+	Labelizer,
+	useLabelizer,
+} from './types'
 import {unsignedMod} from './util'
 
 interface Props {
@@ -15,6 +21,8 @@ interface Props {
 	labels?: string[]
 	labelizer?: Labelizer<T>
 	theme?: InputTheme
+	font?: InputFont
+	align?: InputAlign
 }
 
 const props = withDefaults(defineProps<Props>(), {})
@@ -22,7 +30,7 @@ const props = withDefaults(defineProps<Props>(), {})
 const labelizer = useLabelizer(props)
 
 const emit = defineEmits<{
-	'update:modelValue': [T]
+	'update:modelValue': [value: T]
 }>()
 
 defineOptions({
@@ -95,10 +103,18 @@ function onPressArrow(isUp: boolean) {
 </script>
 
 <template>
-	<div ref="$root" class="InputDropdown" :class="{open}" v-bind="$attrs">
+	<div
+		ref="$root"
+		class="InputDropdown"
+		:class="{open}"
+		v-bind="$attrs"
+		:align="align"
+	>
 		<InputString
 			v-model="display"
 			:theme="theme"
+			:font="font"
+			:align="align"
 			:forceUpdateOnFocusing="true"
 			class="input"
 			@focus="open = true"
@@ -115,6 +131,8 @@ function onPressArrow(isUp: boolean) {
 			<ul
 				class="select"
 				:style="{width: inputWidth + 'px'}"
+				:font="font"
+				:align="align"
 				@pointerleave="open && onUnselect()"
 			>
 				<li
@@ -158,6 +176,9 @@ $right-arrow-width = 1em
 	background var(--tq-color-input)
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
+
+	use-input-align()
+	use-input-font()
 
 .option
 	padding 0 12px

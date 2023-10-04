@@ -17,7 +17,7 @@ import InputString from './InputString'
 import Markdown from './Markdown'
 import MonacoEditor, {ErrorInfo} from './MonacoEditor'
 import PaneSplit from './PaneSplit'
-import {Parameter, ParameterGrid} from './ParameterGrid'
+import {Parameter, ParameterGrid, ParameterHeading} from './ParameterGrid'
 import RoundButton from './RoundButton'
 import {Tab, Tabs} from './Tabs'
 import TitleBar from './TitleBar'
@@ -46,6 +46,7 @@ export default {
 	PaneSplit,
 	ParameterGrid,
 	Parameter,
+	ParameterHeading,
 	RoundButton,
 	Tab,
 	Tabs,

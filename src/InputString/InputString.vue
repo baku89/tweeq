@@ -3,7 +3,7 @@ import {useFocus} from '@vueuse/core'
 import {identity} from 'lodash'
 import {ref, watch} from 'vue'
 
-import {InputFont, InputTheme, Validator} from '../types'
+import {InputAlign, InputFont, InputTheme, Validator} from '../types'
 
 interface Props {
 	modelValue: string
@@ -11,6 +11,7 @@ interface Props {
 	disabled?: boolean
 	theme?: InputTheme
 	font?: InputFont
+	align?: InputAlign
 	validator?: Validator<string>
 	forceUpdateOnFocusing?: boolean
 }
@@ -68,7 +69,13 @@ function onBlur(e: Event) {
 </script>
 
 <template>
-	<div class="InputString" :class="[theme, font]">
+	<div
+		class="InputString"
+		:class="[theme]"
+		:font="font"
+		:align="align"
+		:disabled="!!disabled"
+	>
 		<input
 			ref="$input"
 			class="input"
@@ -88,10 +95,4 @@ function onBlur(e: Event) {
 
 .InputString
 	input-base()
-
-	&.numeric
-		font-family var(--tq-font-numeric)
-
-	&.monospace
-		font-family var(--tq-font-code)
 </style>

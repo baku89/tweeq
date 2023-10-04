@@ -40,10 +40,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-	'update:modelValue': [number]
-	focus: [Event]
+	'update:modelValue': [value: number]
+	focus: []
 	input: [Event]
-	blur: [Event]
+	blur: []
 }>()
 
 const root = ref<HTMLElement | null>(null)
@@ -200,7 +200,6 @@ useWheel(
 
 function onFocus(e: Event) {
 	nextTick(() => input.value?.select())
-	emit('focus', e)
 }
 
 function onInput(e: Event) {
@@ -351,6 +350,21 @@ const cursorStyle = computed(() => {
 		),
 	}
 })
+
+// Focus/Defocus emitter
+watch(
+	() => [focusing.value, tweaking.value] as const,
+	([focusing, tweaking], [prevFocusing, prevTweaking]) => {
+		const curt = focusing || tweaking
+		const prev = prevFocusing || prevTweaking
+
+		if (curt && !prev) {
+			emit('focus')
+		} else if (!curt && prev) {
+			emit('blur')
+		}
+	}
+)
 </script>
 
 <template>
@@ -358,9 +372,10 @@ const cursorStyle = computed(() => {
 		ref="root"
 		class="InputNumber"
 		:class="{tweaking}"
-		:data-horizontal-position="horizontalPosition"
-		:data-vertical-position="verticalPosition"
+		:horizontal-position="horizontalPosition"
+		:vertical-position="verticalPosition"
 		v-bind="$attrs"
+		:disabled="!!disabled"
 	>
 		<div
 			v-if="hasRange"
@@ -382,7 +397,6 @@ const cursorStyle = computed(() => {
 			:disabled="disabled"
 			@focus="onFocus"
 			@input="onInput"
-			@blur="emit('blur', $event)"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
 		/>

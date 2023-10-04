@@ -18,6 +18,23 @@ hover-transition(prop = all)
 
 	transition unquote(join(',', values))
 
+use-input-font()
+	&[font=numeric]
+		font-numeric()
+
+	&[font=monospace]
+		font-family var(--tq-font-monospace)
+
+use-input-align()
+	&[align=left]
+		text-align center
+
+	&[align=center]
+		text-align center
+
+	&[align=right]
+		text-align right
+
 input-base()
 	position relative
 	width 100%
@@ -29,7 +46,7 @@ input-base()
 	hover-transition(background, box-shadow)
 	overflow hidden
 
-	&:hover
+	&:not([disabled=true]):hover
 		background var(--tq-color-input-hover)
 
 	&:focus-within, &.tweaking
@@ -63,24 +80,32 @@ input-base()
 		&:focus-within, &.tweaking
 			box-shadow 0 0 0 1px var(--tq-color-primary)
 
-	&[data-horizontal-position=middle], &[data-vertical-position=middle]
+	&[disabled=true]
+		background transparent
+		box-shadow inset 0 0 0 1px var(--tq-color-surface-border)
+		color var(--tq-color-gray-on-background)
+
+	&[horizontal-position=middle], &[vertical-position=middle]
 		border-radius 0
 
-	&[data-horizontal-position=left]
+	&[horizontal-position=left]
 		border-top-right-radius 0
 		border-bottom-right-radius 0
 
-	&[data-horizontal-position=right]
+	&[horizontal-position=right]
 		border-top-left-radius 0
 		border-bottom-left-radius 0
 
-	&[data-vertical-position=top]
+	&[vertical-position=top]
 		border-bottom-right-radius 0
 		border-bottom-left-radius 0
 
-	&[data-vertical-position=bottom]
+	&[vertical-position=bottom]
 		border-top-left-radius 0
 		border-top-right-radius 0
+
+	use-input-font()
+	use-input-align()
 
 tooltip()
 	padding 4px 11px

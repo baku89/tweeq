@@ -9,6 +9,8 @@ export type InputTheme = 'minimal' | 'underline'
 
 export type InputFont = 'numeric' | 'monospace'
 
+export type InputAlign = 'left' | 'center' | 'right'
+
 export type InputHorizontalPosition = 'left' | 'middle' | 'right'
 export type InputVerticalPosition = 'top' | 'middle' | 'bottom'
 

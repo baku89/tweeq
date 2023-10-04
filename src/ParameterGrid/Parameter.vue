@@ -1,13 +1,19 @@
 <script setup lang="ts">
+import {Icon} from '@iconify/vue'
+
 interface Props {
-	label: string
+	label?: string
+	icon?: string
 }
 
 defineProps<Props>()
 </script>
 <template>
 	<li class="Parameter">
-		<label class="label">{{ label }}</label>
+		<label class="label">
+			<Icon v-if="icon" class="icon" :icon="icon" />
+			<span v-if="label" class="text">{{ label }}</span>
+		</label>
 		<div class="input">
 			<slot />
 		</div>
@@ -23,6 +29,13 @@ defineProps<Props>()
 	grid-template-columns subgrid
 
 .label
-	line-height var(--tq-input-height)
+	display flex
+	gap 4px
+	height var(--tq-input-height)
 	color var(--tq-color-gray-on-background)
+
+.text
+	display inline-block
+	line-height var(--tq-input-height)
+	vertical-align middle
 </style>
