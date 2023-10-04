@@ -26,6 +26,15 @@
 	font-size inherit
 	cursor inherit
 
+::-webkit-scrollbar
+	width 10px
+	height 10px
+	background transparent
+
+::-webkit-scrollbar-thumb
+	border-radius 9999px
+	background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
+
 button, input
 	padding 0
 	border 0
@@ -39,8 +48,8 @@ body
 	overflow hidden
 	margin 0
 	height 100vh
-	background var(--tq-color-bg)
-	color var(--tq-color-text)
+	background var(--tq-color-background)
+	color var(--tq-color-on-background)
 	user-select none
 
 .tq-font-numeric

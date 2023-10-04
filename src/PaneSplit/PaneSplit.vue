@@ -85,7 +85,7 @@ onMounted(() => {
 
 .divider
 	position relative
-	background var(--tq-color-pane-border)
+	background var(--tq-color-surface-border)
 	hover-transition(background)
 
 	.horizontal > &

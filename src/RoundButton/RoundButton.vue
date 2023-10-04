@@ -35,7 +35,7 @@ defineProps<Props>()
 	width auto
 	padding 0 12px 0 6px
 	background var(--tq-color-primary-container)
-	color var(--md-sys-color-on-primary-container)
+	color var(--tq-color-on-primary-container)
 	hover-transition(background, color)
 	line-height 32px
 

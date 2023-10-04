@@ -2,7 +2,6 @@
 import {onMounted, provide, reactive, withDefaults} from 'vue'
 
 import {useAppStorage} from '../useAppStorage'
-
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
 import {Tab, TabsState} from './types'
 
@@ -169,14 +168,14 @@ onMounted(() => {
 	hover-transition(border-bottom-color)
 
 	&.active
-		border-bottom-color var(--tq-color-text)
+		border-bottom-color var(--tq-color-on-background)
 
 		&:hover
 			border-bottom-color var(--tq-color-primary)
 
 .tablist-link
 	text-decoration none
-	color var(--tq-color-text)
+	color var(--tq-color-on-background)
 	opacity .4
 	hover-transition(opacity)
 

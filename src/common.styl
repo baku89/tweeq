@@ -3,8 +3,8 @@ font-numeric()
 	font-variant-numeric tabular-nums
 
 pane()
-	border 1px solid var(--tq-color-pane-border)
-	background var(--tq-color-pane)
+	border 1px solid var(--tq-color-surface-border)
+	background var(--tq-color-surface)
 	backdrop-filter blur(4px)
 
 hover-transition(prop = all)
@@ -58,7 +58,7 @@ input-base()
 		background transparent
 
 		&:hover
-			box-shadow 0 0 0 1px var(--tq-color-pane-border)
+			box-shadow 0 0 0 1px var(--tq-color-surface-border)
 
 		&:focus-within, &.tweaking
 			box-shadow 0 0 0 1px var(--tq-color-primary)
@@ -123,8 +123,8 @@ input-overlay()
 
 popup-style()
 	padding var(--tq-popup-padding)
-	border 1px solid var(--tq-color-pane-border)
+	border 1px solid var(--tq-color-surface-border)
 	border-radius var(--tq-popup-border-radius)
-	background var(--tq-color-pane)
+	background var(--tq-color-surface)
 	box-shadow 0 0 20px -15px var(--tq-color-shadow)
 	backdrop-filter blur(4px)

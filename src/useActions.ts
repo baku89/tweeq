@@ -11,11 +11,16 @@ import {
 
 export interface Action {
 	id: string
-	label?: string
+	label: string
 	shortLabel?: string
+	menu?: string
 	icon?: string
 	input?: string | string[]
 	perform(): any
+}
+
+export interface MinimalAction extends Omit<Action, 'label'> {
+	label?: string
 }
 
 const Emitters = new Map<string, Bndr.Emitter>()
@@ -29,8 +34,8 @@ export function provideActions() {
 
 	provide(ActionsKey, allActions)
 
-	function registerActions(actions: Action[]) {
-		for (const action of actions) {
+	function registerActions(actions: MinimalAction[]) {
+		for (const action of actions as Action[]) {
 			if (!action.label) {
 				action.label = title(action.id)
 			}

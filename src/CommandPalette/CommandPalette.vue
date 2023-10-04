@@ -136,6 +136,7 @@ function perform(action: Action) {
 	border-radius 8px
 	color var(--tq-color-inverse-on-surface)
 	background var(--tq-color-inverse-surface)
+	backdrop-filter blur(4px)
 	padding 0 9px
 	box-shadow 0 0 30px -15px var(--tq-color-shadow)
 

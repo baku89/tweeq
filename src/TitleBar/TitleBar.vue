@@ -16,18 +16,14 @@ defineSlots<{
 
 <template>
 	<div class="TitleBar">
-		<ColorIcon class="icon" :src="icon" />
-		<span class="app-name">{{ name }}</span>
 		<div class="left">
+			<ColorIcon class="icon" :src="icon" />
+			<span class="app-name">{{ name }}</span>
 			<slot name="left" />
 		</div>
-		<div class="spacer" />
-		<template v-if="$slots.center">
-			<div class="center">
-				<slot name="center" />
-			</div>
-			<div class="spacer" />
-		</template>
+		<div class="center">
+			<slot name="center" />
+		</div>
 		<div class="right">
 			<slot name="right" />
 		</div>
@@ -36,7 +32,8 @@ defineSlots<{
 
 <style lang="stylus" scoped>
 .TitleBar
-	display flex
+	display grid
+	grid-template-columns 1fr min-content 1fr
 	left env(titlebar-area-x, 0)
 	top env(titlebar-area-y, 0)
 	width env(titlebar-area-width, 100%)
@@ -44,7 +41,7 @@ defineSlots<{
 	z-index 100
 	user-select none
 	position fixed
-	background linear-gradient(to bottom, var(--tq-color-bg), transparent)
+	background linear-gradient(to bottom, var(--tq-color-background), transparent)
 	backdrop-filter blur(2px)
 	gap 9px
 	padding 6px
@@ -55,20 +52,23 @@ defineSlots<{
 	--tq-input-height calc(var(--titlebar-area-height) - 12px)
 
 	@media (display-mode: window-controls-overlay)
-		background linear-gradient(to bottom, var(--tq-color-bg) 20%, transparent), linear-gradient(to right, var(--tq-color-bg) 0, transparent 15%, transparent 85%, var(--tq-color-bg) 100%)
+		background linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
+
 
 .left, .center, .right
 	display flex
 	gap 9px
-	-webkit-app-region: drag;
-	app-region no-drag
+
+	& > :deep(*)
+		-webkit-app-region no-drag
+		app-region no-drag
+
+.right
+	flex-direction row-reverse
 
 .icon
 	height calc(var(--titlebar-area-height) - .8rem)
 
 .app-name
 	font-weight bold
-
-.spacer
-	flex-grow 1
 </style>

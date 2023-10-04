@@ -118,7 +118,7 @@ onMounted(() => {
 	outline 1px solid rgba(255, 255, 255, 0.5)
 	border 1px solid var(--tq-color-primary)
 	border-radius 50%
-	background var(--tq-color-bg)
+	background var(--tq-color-background)
 
 	&:before
 		content ''

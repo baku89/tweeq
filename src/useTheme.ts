@@ -26,10 +26,11 @@ export interface Theme {
 	colorOnPrimary: string
 	colorPrimaryContainer: string
 	colorOnPrimaryContainer: string
-	colorBg: string
-	colorText: string
-	colorPane: string
-	colorPaneBorder: string
+	colorBackground: string
+	colorOnBackground: string
+	colorGrayOnBackground: string
+	colorSurface: string
+	colorSurfaceBorder: string
 	colorInverseSurface: string
 	colorInverseOnSurface: string
 	colorInversePrimary: string
@@ -89,28 +90,36 @@ export function provideTheme(
 
 			const dark = colorMode === 'dark'
 
+			const palettes = materialTheme.palettes
 			const colors = dark
 				? materialTheme.schemes.dark
 				: materialTheme.schemes.light
 
 			theme.value = {
 				colorMode,
-				colorPrimary: toColor(colors.primary),
-				colorPrimaryContainer: toColor(colors.primaryContainer),
+				colorPrimary: toColor(
+					dark ? palettes.primary.tone(40) : colors.primary
+				),
+				colorOnPrimary: toColor(
+					dark ? palettes.primary.tone(90) : colors.onPrimary
+				),
+				colorPrimaryContainer: toColor(
+					dark ? palettes.primary.tone(20) : colors.primaryContainer
+				),
 				colorOnPrimaryContainer: toColor(colors.onPrimaryContainer),
-				colorOnPrimary: toColor(colors.onPrimary),
-				colorText: toColor(colors.onBackground),
-				colorBg: dark ? '#1a1a1a' : '#ffffff',
-				colorPane: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
-				colorPaneBorder: toColor(colors.onBackground, 0.12),
-				colorInverseSurface: toColor(colors.inverseSurface),
+				colorBackground: dark ? '#1a1a1a' : '#ffffff',
+				colorOnBackground: toColor(colors.onBackground),
+				colorGrayOnBackground: toColor(
+					dark ? palettes.neutral.tone(60) : palettes.neutral.tone(40)
+				),
+				colorSurface: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
+				colorSurfaceBorder: toColor(colors.onBackground, 0.12),
+				colorInverseSurface: toColor(colors.inverseSurface, 0.9),
 				colorInverseOnSurface: toColor(colors.inverseOnSurface),
 				colorInversePrimary: toColor(colors.inversePrimary),
 				colorShadow: toColor(colors.shadow),
-				colorInput: toColor(materialTheme.palettes.neutral.tone(97)),
-				colorInputHover: toColor(
-					materialTheme.palettes.neutralVariant.tone(95)
-				),
+				colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
+				colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),
 				colorTintedInput: toColor(colors.primaryContainer),
 				colorTintedInputActive: toColor(colors.inversePrimary),
 				colorOnInput: toColor(colors.onBackground),

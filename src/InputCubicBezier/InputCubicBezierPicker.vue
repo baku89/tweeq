@@ -93,7 +93,7 @@ const draggingPoint = ref<number | null>(null)
 		stroke var(--md-sys-color-outline)
 
 	circle
-		fill var(--tq-color-bg)
+		fill var(--tq-color-background)
 		hover-transition(fill, stroke)
 
 		&:hover

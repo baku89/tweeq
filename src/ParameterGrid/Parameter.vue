@@ -24,5 +24,5 @@ defineProps<Props>()
 
 .label
 	line-height var(--tq-input-height)
-	color var(--md-sys-color-secondary)
+	color var(--tq-color-gray-on-background)
 </style>
