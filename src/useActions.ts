@@ -25,7 +25,12 @@ export interface MinimalAction extends Omit<Action, 'label'> {
 
 const Emitters = new Map<string, Bndr.Emitter>()
 
-const ActionsKey: InjectionKey<Record<string, Action>> = Symbol('tqActions')
+interface ActionProvider {
+	registerActions(actions: MinimalAction[]): void
+	actions: Record<string, Action>
+}
+
+const ActionsKey: InjectionKey<ActionProvider> = Symbol('tqActions')
 
 const keyboard = Bndr.keyboard()
 const gamepad = Bndr.gamepad()
@@ -33,7 +38,7 @@ const gamepad = Bndr.gamepad()
 export function provideActions() {
 	const allActions = reactive<Record<string, Action>>({})
 
-	provide(ActionsKey, allActions)
+	provide(ActionsKey, {registerActions, actions: allActions})
 
 	function registerActions(actions: MinimalAction[]) {
 		for (const action of actions as Action[]) {
@@ -110,11 +115,11 @@ export function provideActions() {
 }
 
 export function useActions() {
-	const actions = inject(ActionsKey)
+	const provider = inject(ActionsKey)
 
-	if (!actions) {
+	if (!provider) {
 		throw new Error('actions is not provided')
 	}
 
-	return {actions}
+	return provider
 }
