@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import {Icon} from '@iconify/vue'
+
 interface Props {
 	icon?: string
 	label: string
@@ -9,7 +11,7 @@ defineProps<Props>()
 
 <template>
 	<button class="InputButton">
-		<span v-if="icon" class="icon material-symbols-outlined"> {{ icon }} </span>
+		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span class="label">{{ label }}</span>
 	</button>
 </template>
@@ -18,23 +20,35 @@ defineProps<Props>()
 @import './common.styl'
 
 .InputButton
-	padding 0 1em
 	height var(--tq-input-height)
+	min-width var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-primary-container)
 	color var(--tq-color-on-primary-container)
-	hover-transition(background, color)
 	display flex
 	align-items center
+	justify-content center
+	hover-transition(background, color)
 	gap 4px
 
 	&:focus-visible
-		background var(--tq-color-tinted-input-active)
+		box-shadow 0 0 0 1px var(--tq-color-primary)
 
 	&:hover
 		color var(--tq-color-on-primary)
 		background var(--tq-color-primary)
 
-.label
-	height 16px
+	&:has(.label)
+		padding 0 1em
+
+	&:has(.icon):has(.label)
+		padding-left .5em
+
+	.icon
+		display block
+		width calc(var(--tq-input-height) - 4px)
+		height calc(var(--tq-input-height) - 4px)
+
+	.label
+		line-height var(--tq-input-height)
 </style>

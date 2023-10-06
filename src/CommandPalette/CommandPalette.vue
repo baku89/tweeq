@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {Icon} from '@iconify/vue'
 import {useEventListener} from '@vueuse/core'
 import {Bndr} from 'bndr-js'
 import {search} from 'fast-fuzzy'
@@ -96,8 +97,8 @@ function perform(action: Action) {
 
 <template>
 	<div ref="$popover" class="CommandPalette" popover>
-		<div class="search-container">
-			<span class="material-symbols-outlined">search</span>
+		<div class="searchContainer">
+			<Icon class="searchIcon" icon="material-symbols:search-rounded" />
 			<input
 				v-model="searchWord"
 				class="search"
@@ -106,7 +107,7 @@ function perform(action: Action) {
 				@keydown="onKeydown"
 			/>
 		</div>
-		<div v-if="searchWord === ''" class="recent-actions">Recent Actions</div>
+		<div v-if="searchWord === ''" class="recentActions">Recent Actions</div>
 		<ul>
 			<li
 				v-for="action in filteredActions"
@@ -116,9 +117,7 @@ function perform(action: Action) {
 				@pointerenter="selectedAction = action"
 				@click="perform(action)"
 			>
-				<span class="action-icon material-symbols-outlined">{{
-					action.icon
-				}}</span>
+				<Icon v-if="action.icon" class="action-icon" :icon="action.icon" />
 				{{ action.label }}
 			</li>
 		</ul>
@@ -140,13 +139,13 @@ function perform(action: Action) {
 	padding 0 9px
 	box-shadow 0 0 30px -15px var(--tq-color-shadow)
 
-.search-container
+.searchContainer
 	display flex
 	align-items center
 	gap 6px
 	padding-left 3px
 
-.material-symbols-outlined
+.searchIcon
 	display block
 
 .search
@@ -161,7 +160,7 @@ function perform(action: Action) {
 		color var(--tq-color-inverse-on-surface)
 		opacity .3
 
-.recent-actions
+.recentActions
 	padding 0 6px 9px
 	font-weight bold
 	opacity .8
@@ -183,6 +182,5 @@ function perform(action: Action) {
 
 .action-icon
 	width 20px
-	font-size 20px
 </style>
 ../useAction

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import {Icon} from '@iconify/vue'
 import {computedWithControl} from '@vueuse/core'
 import chroma from 'chroma-js'
 
@@ -130,7 +131,7 @@ async function pickColor() {
 			@update:modelValue="emit('update:modelValue', $event)"
 		/>
 		<button v-if="isEyeDropperSupported" class="eyeDropper" @click="pickColor">
-			<span class="material-symbols-outlined"> colorize </span>
+			<Icon icon="material-symbols:colorize" />
 		</button>
 	</div>
 </template>

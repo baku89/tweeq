@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
 import {Bndr} from 'bndr-js'
 import {computed, onMounted, ref, watch} from 'vue'
@@ -208,9 +209,7 @@ onMounted(() => {
 		<div ref="$right" class="resize right" />
 		<div ref="$left" class="resize left" />
 		<div ref="$bottom" class="resize bottom" />
-		<span class="minimized-title material-symbols-outlined">
-			{{ icon }}
-		</span>
+		<Icon v-if="icon" class="minimized-title" :icon="icon" />
 		<div class="content">
 			<slot />
 		</div>

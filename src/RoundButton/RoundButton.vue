@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {Icon} from '@iconify/vue'
 interface Props {
 	label: string
 	longestLabel?: string
@@ -10,7 +11,7 @@ defineProps<Props>()
 
 <template>
 	<button class="RoundButton">
-		<span v-if="icon" class="material-symbols-outlined">{{ icon }}</span>
+		<Icon v-if="icon" :icon="icon" />
 		<span :class="{'has-longest-label': longestLabel}">
 			<span class="label"> {{ label }} </span>
 			<span v-if="longestLabel" class="longest-label">
