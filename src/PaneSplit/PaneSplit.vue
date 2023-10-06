@@ -23,7 +23,7 @@ const viewportSize = computed(() => {
 		: window.innerHeight
 })
 
-const firstSize = appStorage(`${props.name}.width`, props.size)
+const width = appStorage(`${props.name}.width`, props.size)
 
 const $divider = ref<HTMLElement | null>(null)
 
@@ -31,24 +31,25 @@ const styles = computed(() => {
 	const cssProp = props.direction === 'horizontal' ? 'width' : 'height'
 
 	return {
-		[cssProp]: `${firstSize.value}%`,
+		[cssProp]: `${width.value}%`,
 	}
 })
 
 onMounted(() => {
 	if (!$divider.value) return
 
+	let draggingSize = 0
+
 	Bndr.pointer($divider.value)
-		.drag({
-			pointerCapture: true,
-			preventDefault: true,
-		})
-		.on(({delta}) => {
+		.drag({pointerCapture: true})
+		.on(({justStarted, delta}) => {
+			if (justStarted) draggingSize = width.value
+
 			const d = props.direction === 'horizontal' ? delta[0] : delta[1]
 
-			const size = firstSize.value + (d / viewportSize.value) * 100
+			draggingSize += (d / viewportSize.value) * 100
 
-			firstSize.value = clamp(size, 10, 90)
+			width.value = clamp(draggingSize, 10, 90)
 		})
 })
 </script>
