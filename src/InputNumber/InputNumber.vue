@@ -25,7 +25,8 @@ interface Props {
 	invalid?: boolean
 	disabled?: boolean
 	precision?: number
-	unit?: string
+	prefix?: string
+	suffix?: string
 	horizontalPosition?: InputHorizontalPosition
 	verticalPosition?: InputVerticalPosition
 }
@@ -37,7 +38,8 @@ const props = withDefaults(defineProps<Props>(), {
 	clampMin: true,
 	clampMax: true,
 	precision: 4,
-	unit: '',
+	prefix: '',
+	suffix: '',
 })
 
 const emit = defineEmits<{
@@ -312,11 +314,13 @@ watch(
 			tweakPrecision.value,
 		] as const,
 	([modelValue, tweaking, focusing, tweakPrecision]) => {
-		if (!focusing) {
-			display.value = toFixed(modelValue, props.precision) + props.unit
-		} else if (tweaking) {
-			display.value = modelValue.toFixed(tweakPrecision) + props.unit
-		}
+		if (focusing) return
+
+		const displayNumber = tweaking
+			? modelValue.toFixed(tweakPrecision)
+			: toFixed(modelValue, props.precision)
+
+		display.value = props.prefix + displayNumber + props.suffix
 	},
 	{immediate: true}
 )

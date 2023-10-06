@@ -114,7 +114,7 @@ function colorCodeValidator(value: string) {
 				:max="100"
 				:precision="0"
 				:bar="false"
-				unit="%"
+				suffix="%"
 				horizontalPosition="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
@@ -127,7 +127,7 @@ function colorCodeValidator(value: string) {
 				:max="360"
 				:precision="0"
 				:bar="false"
-				unit="°"
+				suffix="°"
 				horizontalPosition="left"
 				@update:modelValue="onUpdateChannel('h', $event)"
 			/>
@@ -138,7 +138,7 @@ function colorCodeValidator(value: string) {
 				:max="100"
 				:precision="0"
 				:bar="false"
-				unit="%"
+				suffix="%"
 				horizontalPosition="middle"
 				@update:modelValue="onUpdateChannel('s', $event)"
 			/>
@@ -149,7 +149,7 @@ function colorCodeValidator(value: string) {
 				:max="100"
 				:precision="0"
 				:bar="false"
-				unit="%"
+				suffix="%"
 				horizontalPosition="middle"
 				@update:modelValue="onUpdateChannel('v', $event)"
 			/>
@@ -161,7 +161,7 @@ function colorCodeValidator(value: string) {
 				:max="100"
 				:precision="0"
 				:bar="false"
-				unit="%"
+				suffix="%"
 				horizontalPosition="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>

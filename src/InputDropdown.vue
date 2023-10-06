@@ -1,31 +1,31 @@
 <script lang="ts" setup generic="T">
+import {Icon} from '@iconify/vue'
 import {useElementSize} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {computed, Ref, ref, watch} from 'vue'
 
 import InputString from './InputString'
 import Popover from './Popover.vue'
-import SvgIcon from './SvgIcon.vue'
 import {
 	InputAlign,
 	InputFont,
 	InputTheme,
-	Labelizer,
+	LabelizerProps,
 	useLabelizer,
 } from './types'
 import {unsignedMod} from './util'
 
-interface Props {
+interface Props extends LabelizerProps<T> {
 	modelValue: T
-	options: T[]
-	labels?: string[]
-	labelizer?: Labelizer<T>
 	theme?: InputTheme
 	font?: InputFont
 	align?: InputAlign
 }
 
-const props = withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {
+	prefix: '',
+	suffix: '',
+})
 
 const labelizer = useLabelizer(props)
 
@@ -124,9 +124,7 @@ function onPressArrow(isUp: boolean) {
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
 		/>
-		<SvgIcon mode="block" class="chevron">
-			<path d="M11 13 L16 18 21 13" />
-		</SvgIcon>
+		<Icon class="chevron" icon="mdi:unfold-more-horizontal" />
 		<Popover v-model:open="open" :reference="$root" placement="bottom">
 			<ul
 				class="select"
@@ -196,11 +194,14 @@ $right-arrow-width = 1em
 	position absolute
 	top 0
 	z-index 10
-	right -0.4em
+	right 2px
+	width calc(.8 * var(--tq-input-height))
 	height 100%
-	transform-origin 50% 50%
 	pointer-events none
-	fill none
-	stroke var(--md-sys-color-outline-variant)
-	hover-transition(transform)
+	color var(--tq-color-gray-on-background)
+	opacity .4
+	hover-transition(opacity)
+
+	.InputDropdown:hover &
+		opacity 1
 </style>

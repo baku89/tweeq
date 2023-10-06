@@ -2,18 +2,15 @@
 import _ from 'lodash'
 import {computed, ref} from 'vue'
 
-import {Labelizer, useLabelizer} from './types'
+import {LabelizerProps, useLabelizer} from './types'
 
 interface CompleteOption {
 	value: T
 	label: string
 }
 
-interface Props {
+interface Props extends LabelizerProps<T> {
 	modelValue: T
-	options: T[]
-	labels?: string[]
-	labelizer?: Labelizer<T>
 }
 
 const props = withDefaults(defineProps<Props>(), {})
