@@ -3,6 +3,7 @@ export {useTweeq} from './useTweeq'
 import ColorIcon from './ColorIcon'
 import CommandPalette from './CommandPalette'
 import FloatingPane from './FloatingPane'
+import IconIndicator from './IconIndicator.vue'
 import InputButton from './InputButton.vue'
 import InputCheckbox from './InputCheckbox'
 import {InputColor, InputColorPicker} from './InputColor'
@@ -30,6 +31,7 @@ export default {
 	ColorIcon,
 	CommandPalette,
 	FloatingPane,
+	IconIndicator,
 	InputButton,
 	InputColor,
 	InputColorPicker,

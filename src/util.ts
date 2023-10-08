@@ -27,3 +27,7 @@ export function isDecendantElementOf(child: Element, parent: Element) {
 
 	return false
 }
+
+export function toPercent(value: number): string {
+	return `${value * 100}%`
+}

@@ -37,7 +37,7 @@ export interface Theme {
 	colorShadow: string
 	colorInput: string
 	colorInputHover: string
-	colorInputPrimaryHover: string
+	colorPrimaryHover: string
 	colorOnInput: string
 	colorTintedInput: string
 	colorTintedInputActive: string
@@ -121,7 +121,7 @@ export function provideTheme(
 				colorShadow: toColor(colors.shadow),
 				colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
 				colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),
-				colorInputPrimaryHover: toColor(palettes.primary.tone(dark ? 55 : 45)),
+				colorPrimaryHover: toColor(palettes.primary.tone(dark ? 55 : 45)),
 				colorTintedInput: toColor(colors.primaryContainer),
 				colorTintedInputActive: toColor(colors.inversePrimary),
 				colorOnInput: toColor(colors.onBackground),

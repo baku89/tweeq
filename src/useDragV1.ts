@@ -64,7 +64,7 @@ export default function useDraggable(
 
 			const {left, top, right, bottom} = el.getBoundingClientRect()
 
-			drag.origin = [(left + right) / 2, (top + bottom) / 2]
+			drag.origin = vec2.avg([left, top], [right, bottom])
 
 			drag.top = top
 			drag.right = right

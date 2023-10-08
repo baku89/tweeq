@@ -50,7 +50,7 @@ defineEmits<{
 		color var(--tq-color-on-primary)
 
 		&:hover
-			background var(--tq-color-input-primary-hover)
+			background var(--tq-color-primary-hover)
 
 	&:has(.label)
 		padding 0 1em

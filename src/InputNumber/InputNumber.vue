@@ -8,11 +8,11 @@ import {
 } from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
 import {scalar, Vec2} from 'linearly'
-import {computed, nextTick, ref, watch} from 'vue'
+import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
 import {InputHorizontalPosition, InputVerticalPosition} from '../types'
 import {useDrag} from '../useDrag'
-import {getNumberPresition, toFixed, unsignedMod} from '../util'
+import {getNumberPresition, toFixed, toPercent, unsignedMod} from '../util'
 
 interface Props {
 	modelValue: number
@@ -20,6 +20,7 @@ interface Props {
 	max?: number
 	step?: number
 	bar?: boolean | 'circle'
+	barOrigin?: number | null
 	clampMin?: boolean
 	clampMax?: boolean
 	invalid?: boolean
@@ -35,6 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
 	bar: true,
+	barOrigin: 0,
 	clampMin: true,
 	clampMax: true,
 	precision: 4,
@@ -379,6 +381,33 @@ const cursorStyle = computed(() => {
 		),
 	}
 })
+
+const tipStyle = computed<StyleValue>(() => {
+	if (!barVisible.value) return {visibility: 'hidden'}
+
+	const tValue = scalar.invlerp(props.min, props.max, props.modelValue)
+
+	return {
+		left: toPercent(tValue),
+	}
+})
+
+const barStyle = computed<StyleValue>(() => {
+	if (!barVisible.value || props.barOrigin === null) {
+		return {visibility: 'hidden'}
+	}
+
+	const tOrigin = scalar.invlerp(props.min, props.max, props.barOrigin)
+	const tValue = scalar.invlerp(props.min, props.max, props.modelValue)
+
+	const left = Math.min(tOrigin, tValue)
+	const right = 1 - Math.max(tOrigin, tValue)
+
+	return {
+		left: toPercent(left),
+		right: toPercent(right),
+	}
+})
 </script>
 
 <template>
@@ -391,13 +420,8 @@ const cursorStyle = computed(() => {
 		v-bind="$attrs"
 		:disabled="!!disabled"
 	>
-		<div
-			v-if="barVisible"
-			class="bar"
-			:style="{width: scalar.invlerp(min, max, modelValue) * 100 + '%'}"
-		>
-			<div class="tip"></div>
-		</div>
+		<div class="bar" :style="barStyle" />
+		<div class="tip" :style="tipStyle" />
 
 		<input
 			ref="$input"
@@ -453,7 +477,6 @@ const cursorStyle = computed(() => {
 
 .bar
 	top 0
-	left 0
 	position absolute
 	height 100%
 	hover-transition(background)
@@ -463,7 +486,6 @@ const cursorStyle = computed(() => {
 	position absolute
 	height 100%
 	width 2px
-	right -1px
 	background var(--tq-color-tinted-input-active)
 	hover-transition(opacity)
 
@@ -476,7 +498,7 @@ const cursorStyle = computed(() => {
 		right @left
 
 	.tweaking &, &:hover
-		background var(--tq-color-primary)
+		background var(--tq-color-primary-hover)
 
 .InputNumber:hover, .InputNumber:focus-within
 	.bar
