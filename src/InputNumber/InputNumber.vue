@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import {Icon} from '@iconify/vue'
 import {
 	useElementBounding,
 	useEventListener,
@@ -28,6 +29,8 @@ interface Props {
 	precision?: number
 	prefix?: string
 	suffix?: string
+	leftIcon?: string
+	rightIcon?: string
 	horizontalPosition?: InputHorizontalPosition
 	verticalPosition?: InputVerticalPosition
 }
@@ -443,6 +446,9 @@ const barStyle = computed<StyleValue>(() => {
 			:class="{floating: !pointerLocked}"
 			:style="cursorStyle"
 		/>
+
+		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
+		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
 	</div>
 	<teleport to="body">
 		<svg v-if="tweaking || true" class="InputNumber__overlay">
@@ -461,7 +467,7 @@ const barStyle = computed<StyleValue>(() => {
 	</teleport>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 .InputNumber
@@ -499,6 +505,22 @@ const barStyle = computed<StyleValue>(() => {
 
 	.tweaking &, &:hover
 		background var(--tq-color-primary-hover)
+
+.icon
+	width calc(var(--tq-input-height) - 4px)
+	height calc(var(--tq-input-height) - 4px)
+	color var(--tq-color-gray-on-background)
+	opacity .7
+	position absolute
+	z-index 100
+	top 2px
+	pointer-events none
+
+	&.left
+		left 3px
+
+	&.right
+		right 3px
 
 .InputNumber:hover, .InputNumber:focus-within
 	.bar

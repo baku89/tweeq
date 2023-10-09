@@ -1,7 +1,8 @@
 <script lang="ts" setup generic="T">
 import {Icon} from '@iconify/vue'
-import {useElementSize} from '@vueuse/core'
+import {useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
+import {Vec2} from 'linearly'
 import {computed, Ref, ref, watch} from 'vue'
 
 import InputString from './InputString'
@@ -13,10 +14,12 @@ import {
 	LabelizerProps,
 	useLabelizer,
 } from './types'
+import {useTheme} from './useTheme'
 import {unsignedMod} from './util'
 
 interface Props extends LabelizerProps<T> {
 	modelValue: T
+	icons?: string[]
 	theme?: InputTheme
 	font?: InputFont
 	align?: InputAlign
@@ -29,8 +32,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const labelizer = useLabelizer(props)
 
+const uiTheme = useTheme()
+
 const emit = defineEmits<{
 	'update:modelValue': [value: T]
+	focus: [e: Event]
+	blur: [e: Event]
 }>()
 
 defineOptions({
@@ -40,9 +47,8 @@ defineOptions({
 const open = ref(false)
 const $root = ref<null | HTMLElement>(null)
 
-const {width: inputWidth} = useElementSize($root)
+const rootBound = useElementBounding($root)
 
-const startValue = ref(props.modelValue) as Ref<T>
 const display = ref(labelizer.value(props.modelValue))
 const displayEdited = ref(false)
 
@@ -55,10 +61,12 @@ watch(
 	}
 )
 
-watch(open, (open, oldOpen) => {
-	if (open && !oldOpen) {
-		startValue.value = props.modelValue
-	}
+const startValue = ref(props.modelValue) as Ref<T>
+let timeAtOpen: number | null = null
+
+whenever(open, () => {
+	startValue.value = props.modelValue
+	timeAtOpen = new Date().getTime()
 })
 
 const filteredOptions = computed(() => {
@@ -71,19 +79,35 @@ const filteredOptions = computed(() => {
 	return ret
 })
 
+const popoverPlacement = computed<Vec2 | 'bottom'>(() => {
+	// 2px === border width + focus outline
+
+	if (displayEdited.value) {
+		return [rootBound.left.value - 2, rootBound.bottom.value]
+	} else {
+		let index = props.options.indexOf(startValue.value)
+
+		if (index === -1) index = 0
+
+		const inputHeight = parseInt(uiTheme.value.inputHeight)
+
+		return [
+			rootBound.left.value - 2,
+			rootBound.top.value + -index * inputHeight - 2,
+		]
+	}
+})
+
 watch(filteredOptions, filteredOptions => {
 	if (!filteredOptions.includes(props.modelValue)) {
 		emit('update:modelValue', filteredOptions[0])
 	}
 })
 
-function onInput() {
-	displayEdited.value = true
-	open.value = true
-}
-
 function onSelect(option: T, e: PointerEvent) {
-	if (e.type === 'pointerdown' && e.isPrimary) {
+	const elapsedFromOpen = new Date().getTime() - (timeAtOpen ?? 0)
+
+	if (e.type === 'pointerup' && e.isPrimary && elapsedFromOpen > 500) {
 		open.value = false
 	}
 	emit('update:modelValue', option)
@@ -99,6 +123,25 @@ function onPressArrow(isUp: boolean) {
 	const newIndex = unsignedMod(index + (isUp ? -1 : 1), length)
 	const option = filteredOptions.value[newIndex]
 	emit('update:modelValue', option)
+}
+
+function onInputPointerdown() {
+	open.value = true
+}
+
+function onInputStringFocus(e: Event) {
+	open.value = true
+	emit('focus', e)
+}
+
+function onInput() {
+	displayEdited.value = true
+	open.value = true
+}
+
+function onInputStringBlur(e: Event) {
+	open.value = false
+	emit('blur', e)
 }
 </script>
 
@@ -117,18 +160,24 @@ function onPressArrow(isUp: boolean) {
 			:align="align"
 			:forceUpdateOnFocusing="true"
 			class="input"
-			@focus="open = true"
-			@blur="open = false"
+			@pointerdown="onInputPointerdown"
+			@focus="onInputStringFocus"
+			@blur="onInputStringBlur"
 			@input="onInput"
 			@keydown.enter.prevent="open = !open"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
 		/>
 		<Icon class="chevron" icon="mdi:unfold-more-horizontal" />
-		<Popover v-model:open="open" :reference="$root" placement="bottom">
+		<Popover
+			v-model:open="open"
+			:reference="$root"
+			:placement="popoverPlacement"
+			:closeTrigger="null"
+		>
 			<ul
 				class="select"
-				:style="{width: inputWidth + 'px'}"
+				:style="{width: rootBound.width.value + 2 + 'px'}"
 				:font="font"
 				:align="align"
 				@pointerleave="open && onUnselect()"
@@ -141,10 +190,15 @@ function onPressArrow(isUp: boolean) {
 						active: item === modelValue,
 						startValue: item === startValue,
 					}"
-					@pointerdown="onSelect(item, $event)"
+					@pointerup="onSelect(item, $event)"
 					@pointerenter="onSelect(item, $event)"
 				>
 					<slot name="option" :item="item">
+						<Icon
+							v-if="icons && icons[index]"
+							class="option-icon"
+							:icon="icons[index]"
+						/>
 						{{ labelizer(item) }}
 					</slot>
 				</li>
@@ -168,27 +222,8 @@ $right-arrow-width = 1em
 	&.open .input
 		background var(--tq-color-primary-container)
 
-.select
-	margin 1px
-	padding 0
-	background var(--tq-color-input)
-	border-radius var(--tq-input-border-radius)
-	overflow hidden
-
-	use-input-align()
-	use-input-font()
-
-.option
-	padding 0 12px
-	height var(--tq-input-height)
-	line-height var(--tq-input-height)
-
-	&.startValue
-		background var(--tq-color-primary-container)
-
-	&.active
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+.input
+	cursor default
 
 .chevron
 	position absolute
@@ -202,6 +237,41 @@ $right-arrow-width = 1em
 	opacity .4
 	hover-transition(opacity)
 
-	.InputDropdown:hover &
+	.InputDropdown:hover &,
+	.InputDropdown:focus-within &
 		opacity 1
+
+.select
+	margin 1px
+	padding 0
+	background 'color-mix(in srgb, var(--tq-color-input) 50%, transparent)' % ''
+	backdrop-filter blur(5px)
+	border 1px solid var(--tq-color-surface-border)
+	border-radius var(--tq-input-border-radius)
+	overflow hidden
+
+	use-input-align()
+	use-input-font()
+
+.option
+	padding 0 12px
+	height var(--tq-input-height)
+	line-height var(--tq-input-height)
+	display flex
+	gap 4px
+	align-items center
+	align-content center
+	justify-content center
+	border-radius var(--tq-input-border-radius)
+
+	&.startValue
+		background var(--tq-color-primary-container)
+
+	&.active
+		background var(--tq-color-primary)
+		color var(--tq-color-on-primary)
+
+.option-icon
+	width calc(var(--tq-input-height) - 4px)
+	height calc(var(--tq-input-height) - 4px)
 </style>

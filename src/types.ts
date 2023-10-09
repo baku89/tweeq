@@ -25,7 +25,13 @@ export interface LabelizerProps<T> {
 export function useLabelizer<T>(props: LabelizerProps<T>) {
 	return computed(() => {
 		if (props.labelizer) return props.labelizer
-		if (!props.labels) return (v: T) => capital(String(v))
+
+		const prefix = props.prefix || ''
+		const suffix = props.suffix || ''
+
+		if (!props.labels) {
+			return (v: T) => prefix + capital(String(v)) + suffix
+		}
 
 		const labels = props.labels
 
@@ -34,9 +40,6 @@ export function useLabelizer<T>(props: LabelizerProps<T>) {
 				'the length of labels must be the same as the length of options'
 			)
 		}
-
-		const prefix = props.prefix || ''
-		const suffix = props.suffix || ''
 
 		return (v: T) => {
 			const index = props.options.indexOf(v)

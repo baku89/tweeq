@@ -22,21 +22,24 @@ import {
 import {scalar, Vec2} from 'linearly'
 import {computed, ref, watch} from 'vue'
 
-import {isDecendantElementOf} from './util'
-
 type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
 type PlacementAlign = 'start' | 'end'
-type Placement = PlacementDirection | `${PlacementDirection}-${PlacementAlign}`
+type Placement =
+	| Vec2
+	| PlacementDirection
+	| `${PlacementDirection}-${PlacementAlign}`
 
 interface Props {
 	reference: HTMLElement | null
 	open: boolean
 	placement?: Placement
+	closeTrigger?: 'onClickOutside' | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,
 	placement: 'bottom-start',
+	closeTrigger: 'onClickOutside',
 })
 
 const emit = defineEmits<{
@@ -69,8 +72,9 @@ const offset = computed<Vec2>(() => {
 
 	if (!$popover.value) return [0, 0]
 
-	let placement = props.placement
+	if (typeof props.placement === 'object') return props.placement
 
+	let placement = props.placement
 	let x = 0
 	let y = 0
 
@@ -90,21 +94,21 @@ const offset = computed<Vec2>(() => {
 	// Flip detection
 	if (placement.startsWith('left')) {
 		if (rLeft < pHeight && ww - rRight > pWidth) {
-			placement = placement.replace('left', 'right') as Placement
+			placement = placement.replace('left', 'right') as Exclude<Placement, Vec2>
 		}
 	} else if (placement.startsWith('right')) {
 		if (ww - rRight < pHeight && rLeft > pWidth) {
-			placement = placement.replace('right', 'left') as Placement
+			placement = placement.replace('right', 'left') as Exclude<Placement, Vec2>
 		}
 	}
 
 	if (placement.startsWith('top')) {
 		if (rTop < pHeight && wh - rBottom > pHeight) {
-			placement = placement.replace('top', 'bottom') as Placement
+			placement = placement.replace('top', 'bottom') as Exclude<Placement, Vec2>
 		}
 	} else if (placement.startsWith('bottom')) {
 		if (wh - rBottom < pHeight && rTop > pHeight) {
-			placement = placement.replace('bottom', 'top') as Placement
+			placement = placement.replace('bottom', 'top') as Exclude<Placement, Vec2>
 		}
 	}
 
@@ -139,12 +143,24 @@ const offset = computed<Vec2>(() => {
 	return [x, y]
 })
 
-onClickOutside($popover, e => {
-	if (isDecendantElementOf(e.target as Element, $reference.value as Element)) {
-		return
+let disposeOnClickOutside: (() => void) | undefined
+
+watch(
+	() => props.closeTrigger,
+	closeTrigger => {
+		disposeOnClickOutside && disposeOnClickOutside()
+
+		if (closeTrigger === 'onClickOutside') {
+			disposeOnClickOutside = onClickOutside(
+				$popover,
+				() => emit('update:open', false),
+				{
+					ignore: [$reference],
+				}
+			)
+		}
 	}
-	emit('update:open', false)
-})
+)
 
 useEventListener('keydown', e => {
 	if (e.key === 'Escape' && props.open) {
