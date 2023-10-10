@@ -25,7 +25,7 @@ import TitleBar from './TitleBar'
 
 export {type ErrorInfo}
 
-export {useActions as useTweeqActions} from './useActions'
+export {useActionsStore} from './useActions'
 
 export default {
 	ColorIcon,

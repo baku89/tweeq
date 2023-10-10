@@ -1,13 +1,7 @@
 import {Bndr} from 'bndr-js'
 import {title} from 'case'
-import {
-	inject,
-	InjectionKey,
-	onBeforeUnmount,
-	onUnmounted,
-	provide,
-	reactive,
-} from 'vue'
+import {defineStore} from 'pinia'
+import {onBeforeUnmount, onUnmounted, reactive} from 'vue'
 
 export interface Action {
 	id: string
@@ -15,7 +9,7 @@ export interface Action {
 	shortLabel?: string
 	menu?: string
 	icon?: string
-	input?: string | string[]
+	input?: string | Bndr | (string | Bndr)[]
 	perform(): any
 }
 
@@ -23,24 +17,15 @@ export interface MinimalAction extends Omit<Action, 'label'> {
 	label?: string
 }
 
-const Emitters = new Map<string, Bndr.Emitter>()
-
-interface ActionProvider {
-	registerActions(actions: MinimalAction[]): void
-	actions: Record<string, Action>
-}
-
-const ActionsKey: InjectionKey<ActionProvider> = Symbol('tqActions')
+const Emitters = new Map<string, Bndr.Emitter[]>()
 
 const keyboard = Bndr.keyboard()
 const gamepad = Bndr.gamepad()
 
-export function provideActions() {
+export const useActionsStore = defineStore('actions', () => {
 	const allActions = reactive<Record<string, Action>>({})
 
-	provide(ActionsKey, {registerActions, actions: allActions})
-
-	function registerActions(actions: MinimalAction[]) {
+	function register(actions: MinimalAction[]) {
 		for (const action of actions as Action[]) {
 			if (!action.label) {
 				action.label = title(action.id)
@@ -54,7 +39,7 @@ export function provideActions() {
 
 			if (action.input) {
 				const performAction = () => {
-					runBeforeActionPerformHooks(action)
+					runBeforePerformHooks(action)
 					action.perform()
 				}
 
@@ -63,16 +48,25 @@ export function provideActions() {
 					: [action.input]
 
 				for (const input of inputs) {
-					if (input.startsWith('gamepad:')) {
-						// Gamepad
-						const button = input.split(':')[1]
-						gamepad.button(button).down().on(performAction)
+					let emitter: Bndr.Emitter
+
+					if (typeof input === 'string') {
+						if (input.startsWith('gamepad:')) {
+							// Gamepad
+							const button = input.split(':')[1]
+							emitter = gamepad.button(button).down()
+						} else {
+							// keyboard
+							emitter = keyboard.keydown(input, {
+								capture: true,
+								preventDefault: true,
+							})
+						}
 					} else {
-						// keyboard
-						keyboard
-							.keydown(input, {capture: true, preventDefault: true})
-							.on(performAction)
+						emitter = input
 					}
+					emitter.on(performAction)
+					Emitters.set(action.id, emitter)
 				}
 			}
 		}
@@ -80,46 +74,36 @@ export function provideActions() {
 		onBeforeUnmount(() => {
 			for (const action of actions) {
 				delete allActions[action.id]
-				Emitters.get(action.id)?.dispose()
+				Emitters.get(action.id)?.forEach(e => e.dispose())
 			}
 		})
 	}
 
-	function performAction(id: string) {
+	function perform(id: string) {
 		const action = allActions[id]
 		if (!action) {
 			throw new Error(`Action ${id} is not registered`)
 		}
 
-		runBeforeActionPerformHooks(action)
+		runBeforePerformHooks(action)
 		action.perform()
 	}
 
-	function runBeforeActionPerformHooks(action: Action) {
-		for (const hook of onBeforeActionPerformHooks) {
+	function runBeforePerformHooks(action: Action) {
+		for (const hook of onBeforePerformHooks) {
 			hook(action)
 		}
 	}
 
-	const onBeforeActionPerformHooks = new Set<(action: Action) => void>()
+	const onBeforePerformHooks = new Set<(action: Action) => void>()
 
-	function onBeforeActionPerform(hook: (action: Action) => void) {
-		onBeforeActionPerformHooks.add(hook)
+	function onBeforePerform(hook: (action: Action) => void) {
+		onBeforePerformHooks.add(hook)
 
 		onUnmounted(() => {
-			onBeforeActionPerformHooks.delete(hook)
+			onBeforePerformHooks.delete(hook)
 		})
 	}
 
-	return {registerActions, performAction, onBeforeActionPerform}
-}
-
-export function useActions() {
-	const provider = inject(ActionsKey)
-
-	if (!provider) {
-		throw new Error('actions is not provided')
-	}
-
-	return provider
-}
+	return {register, perform, onBeforePerform, allActions}
+})

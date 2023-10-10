@@ -1,5 +1,4 @@
 import {useInputColor} from './InputColor/useInputColor'
-import {provideActions} from './useActions'
 import {provideAppStorage} from './useAppStorage'
 import {ColorMode, provideTheme} from './useTheme'
 
@@ -20,9 +19,7 @@ export function useTweeq(appId: string, options: TweeqOptions = {}) {
 
 	const theme = provideTheme(accentColor, colorMode)
 
-	const actions = provideActions()
-
 	useInputColor()
 
-	return {appStorage, theme, ...actions}
+	return {appStorage, theme}
 }

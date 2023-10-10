@@ -5,11 +5,11 @@ import {Bndr} from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
-import {type Action, useActions} from '../useActions'
+import {type Action, useActionsStore} from '../useActions'
 import {useAppStorage} from '../useAppStorage'
 import {unsignedMod} from '../util'
 
-const {actions} = useActions()
+const actions = useActionsStore()
 
 const $popover = ref<HTMLElement | null>(null)
 const searchWord = ref('')
@@ -41,11 +41,11 @@ watch(
 const filteredActions = computed(() => {
 	if (searchWord.value === '' && open.value) {
 		return performedActions.value
-			.map(id => actions[id])
+			.map(id => actions.allActions[id])
 			.filter(action => action !== undefined)
 	}
 
-	return search(searchWord.value, Object.values(actions), {
+	return search(searchWord.value, Object.values(actions.allActions), {
 		keySelector: action => action.label,
 	})
 })
@@ -107,7 +107,12 @@ function perform(action: Action) {
 				@keydown="onKeydown"
 			/>
 		</div>
-		<div v-if="searchWord === ''" class="recentActions">Recent Actions</div>
+		<div
+			v-if="searchWord === '' && filteredActions.length > 0"
+			class="recentActions"
+		>
+			Recent Actions
+		</div>
 		<ul>
 			<li
 				v-for="action in filteredActions"
