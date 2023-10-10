@@ -47,6 +47,7 @@
 		"markdown-it-toc-done-right": "^4.2.0",
 		"monaco-editor": "^0.43.0",
 		"monaco-themes": "^0.4.4",
+		"pinia": "^2.1.6",
 		"prettier": "^3.0.3",
 		"prettier-plugin-md-nocjsp": "^1.5.1",
 		"regl": "^2.1.0",

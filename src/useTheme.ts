@@ -19,6 +19,8 @@ import {
 
 export type ColorMode = 'light' | 'dark' | 'auto'
 
+export type CSSNumber = number
+
 export interface Theme {
 	// Colors
 	colorMode: 'light' | 'dark'
@@ -53,15 +55,15 @@ export interface Theme {
 	fontNumeric: string
 
 	// UI Metrics
-	paneBorderRadius: string
+	paneBorderRadius: CSSNumber
 
-	popupWidth: string
-	popupPadding: string
-	popupBorderRadius: string
+	popupWidth: CSSNumber
+	popupPadding: CSSNumber
+	popupBorderRadius: CSSNumber
 
-	inputBorderRadius: string
-	inputHeight: string
-	inputGap: string
+	inputBorderRadius: CSSNumber
+	inputHeight: CSSNumber
+	inputGap: CSSNumber
 	hoverTransitionDuration: string
 }
 
@@ -135,22 +137,25 @@ export function provideTheme(
 				fontUi: 'Inter, system-ui, sans-serif',
 				fontNumeric: 'Inter, system-ui, sans-serif',
 
-				paneBorderRadius: '20px',
+				paneBorderRadius: 20,
 
-				popupWidth: '300px',
-				popupPadding: '9px',
-				popupBorderRadius: '6px',
+				popupWidth: 300,
+				popupPadding: 9,
+				popupBorderRadius: 6,
 
-				inputBorderRadius: '8px',
-				inputHeight: '24px',
-				inputGap: '9px',
+				inputBorderRadius: 8,
+				inputHeight: 24,
+				inputGap: 9,
 				hoverTransitionDuration: '0.15s',
 			}
 
 			// Promote all as CSS variabbles
 			for (const [key, value] of Object.entries(theme.value)) {
 				const varName = '--tq-' + kebab(key)
-				document.body.style.setProperty(varName, value)
+
+				const cssValue = typeof value === 'number' ? `${value}px` : value
+
+				document.body.style.setProperty(varName, cssValue)
 			}
 
 			// Apply the theme to the body by updating custom properties for material tokens
