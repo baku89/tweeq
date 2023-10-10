@@ -47,6 +47,8 @@ export const useActionsStore = defineStore('actions', () => {
 					? action.input
 					: [action.input]
 
+				const emitters: Bndr.Emitter[] = []
+
 				for (const input of inputs) {
 					let emitter: Bndr.Emitter
 
@@ -66,8 +68,10 @@ export const useActionsStore = defineStore('actions', () => {
 						emitter = input
 					}
 					emitter.on(performAction)
-					Emitters.set(action.id, emitter)
+					emitters.push(emitter)
 				}
+
+				Emitters.set(action.id, emitters)
 			}
 		}
 

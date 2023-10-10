@@ -64,6 +64,9 @@ export interface Theme {
 	inputBorderRadius: CSSNumber
 	inputHeight: CSSNumber
 	inputGap: CSSNumber
+
+	panePadding: CSSNumber
+
 	hoverTransitionDuration: string
 }
 
@@ -146,6 +149,9 @@ export function provideTheme(
 				inputBorderRadius: 8,
 				inputHeight: 24,
 				inputGap: 9,
+
+				panePadding: 12,
+
 				hoverTransitionDuration: '0.15s',
 			}
 

@@ -122,7 +122,7 @@ function perform(action: Action) {
 				@pointerenter="selectedAction = action"
 				@click="perform(action)"
 			>
-				<Icon v-if="action.icon" class="action-icon" :icon="action.icon" />
+				<Icon class="action-icon" :icon="action.icon ?? ''" />
 				{{ action.label }}
 			</li>
 		</ul>
