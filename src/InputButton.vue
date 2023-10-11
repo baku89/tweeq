@@ -1,16 +1,24 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-interface Props {
+import {InputProps} from './types'
+
+interface Props extends InputProps {
 	icon?: string
 	label?: string
+	tooltip?: string
 }
 
 defineProps<Props>()
 </script>
 
 <template>
-	<button class="InputButton">
+	<button
+		class="InputButton"
+		:horizontal-position="horizontalPosition"
+		:vertical-position="verticalPosition"
+		:disabled="!!disabled"
+	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span v-if="label" class="label">{{ label }}</span>
 	</button>
@@ -30,6 +38,8 @@ defineProps<Props>()
 	justify-content center
 	hover-transition(background, color)
 	gap 4px
+
+	use-input-position()
 
 	&:focus-visible
 		box-shadow 0 0 0 1px var(--tq-color-primary)

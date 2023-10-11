@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-interface Props {
+import {InputProps} from './types'
+
+interface Props extends InputProps {
 	modelValue: boolean
 	icon: string
 	label?: string
@@ -18,6 +20,9 @@ defineEmits<{
 	<button
 		class="InputIconToggle"
 		:class="{checked: modelValue}"
+		:horizontal-position="horizontalPosition"
+		:vertical-position="verticalPosition"
+		:disabled="!!disabled"
 		@click="$emit('update:modelValue', !modelValue)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
@@ -38,6 +43,8 @@ defineEmits<{
 	justify-content center
 	hover-transition(background, color)
 	gap 4px
+
+	use-input-position()
 
 	&:focus-visible
 		box-shadow 0 0 0 1px var(--tq-color-primary)

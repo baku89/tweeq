@@ -14,6 +14,13 @@ export type InputAlign = 'left' | 'center' | 'right'
 export type InputHorizontalPosition = 'left' | 'middle' | 'right'
 export type InputVerticalPosition = 'top' | 'middle' | 'bottom'
 
+export interface InputProps {
+	invalid?: boolean
+	disabled?: boolean
+	horizontalPosition?: InputHorizontalPosition
+	verticalPosition?: InputVerticalPosition
+}
+
 export interface LabelizerProps<T> {
 	options: T[]
 	labels?: string[]

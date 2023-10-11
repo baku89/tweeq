@@ -11,11 +11,11 @@ import {useWheel} from '@vueuse/gesture'
 import {scalar, Vec2} from 'linearly'
 import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
-import {InputHorizontalPosition, InputVerticalPosition} from '../types'
+import {InputProps} from '../types'
 import {useDrag} from '../useDrag'
 import {getNumberPresition, toFixed, toPercent, unsignedMod} from '../util'
 
-interface Props {
+interface Props extends InputProps {
 	modelValue: number
 	min?: number
 	max?: number
@@ -24,15 +24,11 @@ interface Props {
 	barOrigin?: number | null
 	clampMin?: boolean
 	clampMax?: boolean
-	invalid?: boolean
-	disabled?: boolean
 	precision?: number
 	prefix?: string
 	suffix?: string
 	leftIcon?: string
 	rightIcon?: string
-	horizontalPosition?: InputHorizontalPosition
-	verticalPosition?: InputVerticalPosition
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -420,8 +416,8 @@ const barStyle = computed<StyleValue>(() => {
 		:class="{tweaking}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
-		v-bind="$attrs"
 		:disabled="!!disabled"
+		v-bind="$attrs"
 	>
 		<div class="bar" :style="barStyle" />
 		<div class="tip" :style="tipStyle" />

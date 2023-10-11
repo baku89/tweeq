@@ -35,6 +35,26 @@ use-input-align()
 	&[align=right]
 		text-align right
 
+use-input-position()
+	&[horizontal-position=middle], &[vertical-position=middle]
+		border-radius 0
+
+	&[horizontal-position=left]
+		border-top-right-radius 0
+		border-bottom-right-radius 0
+
+	&[horizontal-position=right]
+		border-top-left-radius 0
+		border-bottom-left-radius 0
+
+	&[vertical-position=top]
+		border-bottom-right-radius 0
+		border-bottom-left-radius 0
+
+	&[vertical-position=bottom]
+		border-top-left-radius 0
+		border-top-right-radius 0
+
 input-base()
 	position relative
 	width 100%
@@ -86,27 +106,9 @@ input-base()
 		box-shadow inset 0 0 0 1px var(--tq-color-surface-border)
 		color var(--tq-color-gray-on-background)
 
-	&[horizontal-position=middle], &[vertical-position=middle]
-		border-radius 0
-
-	&[horizontal-position=left]
-		border-top-right-radius 0
-		border-bottom-right-radius 0
-
-	&[horizontal-position=right]
-		border-top-left-radius 0
-		border-bottom-left-radius 0
-
-	&[vertical-position=top]
-		border-bottom-right-radius 0
-		border-bottom-left-radius 0
-
-	&[vertical-position=bottom]
-		border-top-left-radius 0
-		border-top-right-radius 0
-
 	use-input-font()
 	use-input-align()
+	use-input-position()
 
 tooltip()
 	padding 4px 11px
