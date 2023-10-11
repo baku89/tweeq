@@ -3,12 +3,16 @@ import {useFocus} from '@vueuse/core'
 import {identity} from 'lodash'
 import {ref, watch} from 'vue'
 
-import {InputAlign, InputFont, InputTheme, Validator} from '../types'
+import {
+	InputAlign,
+	InputFont,
+	InputProps,
+	InputTheme,
+	Validator,
+} from '../types'
 
-interface Props {
+interface Props extends InputProps {
 	modelValue: string
-	invalid?: boolean
-	disabled?: boolean
 	theme?: InputTheme
 	font?: InputFont
 	align?: InputAlign
@@ -74,6 +78,8 @@ function onBlur(e: Event) {
 		:class="[theme]"
 		:font="font"
 		:align="align"
+		:horizontal-position="horizontalPosition"
+		:vertical-position="verticalPosition"
 		:disabled="!!disabled"
 	>
 		<input

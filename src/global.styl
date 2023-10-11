@@ -53,6 +53,18 @@ body
 	color var(--tq-color-on-background)
 	user-select none
 
+em
+	font-weight bold
+
+hr
+	margin 0.5em 0
+	border 0
+	border-top 1px solid currentColor
+	opacity 0.2
+
+	& + br
+		display none
+
 .tq-font-numeric
 	font-numeric()
 
@@ -71,3 +83,13 @@ body
 	margin 2px 0
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
+
+.v-popper--theme-tooltip
+	.v-popper__inner
+		background var(--tq-color-inverse-surface) !important
+		color var(--tq-color-inverse-on-surface) !important
+		line-height 1.4
+		backdrop-filter blur(4px)
+
+	.v-popper__arrow-outer
+		border-color var(--tq-color-inverse-surface) !important

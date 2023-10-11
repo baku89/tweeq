@@ -71,4 +71,6 @@ defineSlots<{
 
 .app-name
 	font-weight bold
+	font-size calc(var(--titlebar-area-height) * .4)
+	margin-right 4px
 </style>

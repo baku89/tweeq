@@ -2,9 +2,8 @@
 import {Icon} from '@iconify/vue'
 
 interface Props {
-	modelValue: boolean
+	active?: boolean
 	icon: string
-	label?: string
 }
 
 defineProps<Props>()
@@ -13,8 +12,8 @@ defineProps<Props>()
 <template>
 	<div
 		class="IconIndicator"
-		:class="{on: modelValue}"
-		@click="$emit('update:modelValue', !modelValue)"
+		:class="{active: active, inactive: active === false}"
+		@click="$emit('update:modelValue', !active)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 	</div>
@@ -24,21 +23,20 @@ defineProps<Props>()
 @import './common.styl'
 
 .IconIndicator
-	color var(--tq-color-gray-on-background)
 	height var(--tq-input-height)
 	width var(--tq-input-height)
 	display flex
 	align-items center
 	justify-content center
-	hover-transition(color, filter)
-		filter: drop-shadow(0 0 calc(var(--tq-input-height) * 0) transparent)
+	hover-transition(color)
+	border-radius 9999px
+	color var(--tq-color-on-background)
 
-	&.on
-		color var(--tq-color-on-primary)
-		filter: drop-shadow(0 0 calc(var(--tq-input-height) * .1) var(--tq-color-primary))
+	&.inactive
+		color var(--tq-color-gray-on-background)
+	&.active
+		color var(--tq-color-primary)
 
 	.icon
 		display block
-		width calc(var(--tq-input-height) - 4px)
-		height calc(var(--tq-input-height) - 4px)
 </style>
