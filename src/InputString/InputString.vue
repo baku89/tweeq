@@ -100,5 +100,5 @@ function onBlur(e: Event) {
 @import '../common.styl'
 
 .InputString
-	input-base()
+	input-style()
 </style>

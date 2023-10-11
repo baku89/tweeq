@@ -78,6 +78,10 @@ onMounted(() => {
 	&.vertical
 		flex-direction column
 
+.first, .second
+	position relative
+	overflow hidden
+
 .first
 	flex-grow 0
 	flex-shrink 0

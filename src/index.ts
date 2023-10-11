@@ -21,12 +21,16 @@ import PaneSplit from './PaneSplit'
 import {Parameter, ParameterGrid, ParameterHeading} from './ParameterGrid'
 import RoundButton from './RoundButton'
 import {Tab, Tabs} from './Tabs'
+import Timeline from './Timeline'
 import TitleBar from './TitleBar'
 
 export {type ErrorInfo}
 
 export {useActionsStore, type Action} from './stores/actions'
 export {useAppConfigStore} from './stores/appConfig'
+export * from './useBndr'
+
+export * from './util'
 
 export default {
 	ColorIcon,
@@ -55,5 +59,6 @@ export default {
 	RoundButton,
 	Tab,
 	Tabs,
+	Timeline,
 	TitleBar,
 }

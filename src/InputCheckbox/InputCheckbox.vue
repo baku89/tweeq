@@ -52,7 +52,7 @@ function onInput(e: InputEvent) {
 
 .checkbox
 	position relative
-	input-base()
+	input-style()
 	width var(--tq-input-height)
 
 	&:focus-within

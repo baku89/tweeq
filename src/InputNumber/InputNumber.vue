@@ -467,7 +467,7 @@ const barStyle = computed<StyleValue>(() => {
 @import '../common.styl'
 
 .InputNumber
-	input-base()
+	input-style()
 
 	input
 		text-align center

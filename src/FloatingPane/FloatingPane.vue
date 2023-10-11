@@ -221,7 +221,7 @@ onMounted(() => {
 @import '../common.styl'
 
 .FloatingPane
-	pane()
+	pane-style()
 	--resize-width 1rem
 	--border 5px
 
