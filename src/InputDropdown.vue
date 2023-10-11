@@ -125,8 +125,10 @@ function onPressArrow(isUp: boolean) {
 	emit('update:modelValue', option)
 }
 
-function onInputPointerdown() {
-	open.value = true
+function onInputPointerdown(e: PointerEvent) {
+	if (e.isPrimary) {
+		open.value = true
+	}
 }
 
 function onInputStringFocus(e: Event) {

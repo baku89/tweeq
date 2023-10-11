@@ -31,11 +31,13 @@ defineProps<Props>()
 .label
 	display flex
 	gap 4px
-	height var(--tq-input-height)
 	color var(--tq-color-gray-on-background)
 
 .text
 	display inline-block
 	line-height var(--tq-input-height)
 	vertical-align middle
+
+.label, .input
+	height var(--tq-input-height)
 </style>
