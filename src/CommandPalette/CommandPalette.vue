@@ -5,8 +5,8 @@ import {Bndr} from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
-import {type Action, useActionsStore} from '../useActions'
-import {useAppStorage} from '../useAppStorage'
+import {type Action, useActionsStore} from '../stores/actions'
+import {useAppConfigStore} from '../stores/appConfig'
 import {unsignedMod} from '../util'
 
 const actions = useActionsStore()
@@ -14,9 +14,9 @@ const actions = useActionsStore()
 const $popover = ref<HTMLElement | null>(null)
 const searchWord = ref('')
 
-const appStorage = useAppStorage()
+const appConfig = useAppConfigStore()
 
-const performedActions = appStorage<string[]>(
+const performedActions = appConfig.ref<string[]>(
 	'commandPalette.performedActions',
 	[]
 )
@@ -188,4 +188,4 @@ function perform(action: Action) {
 .action-icon
 	width 20px
 </style>
-../useAction
+../useAction ../stores/useAppStorage ../stores/useActions

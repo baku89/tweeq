@@ -25,7 +25,8 @@ import TitleBar from './TitleBar'
 
 export {type ErrorInfo}
 
-export {useActionsStore} from './useActions'
+export {useActionsStore, type Action} from './stores/actions'
+export {useAppConfigStore} from './stores/appConfig'
 
 export default {
 	ColorIcon,

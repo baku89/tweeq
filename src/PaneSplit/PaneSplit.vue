@@ -3,7 +3,7 @@ import {Bndr} from 'bndr-js'
 import {clamp} from 'lodash'
 import {computed, onMounted, ref} from 'vue'
 
-import {useAppStorage} from '../useAppStorage'
+import {useAppConfigStore} from '../stores/appConfig'
 
 interface Props {
 	name: string
@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 	size: 50,
 })
 
-const appStorage = useAppStorage()
+const appConfig = useAppConfigStore()
 
 const viewportSize = computed(() => {
 	return props.direction === 'horizontal'
@@ -23,7 +23,7 @@ const viewportSize = computed(() => {
 		: window.innerHeight
 })
 
-const width = appStorage(`${props.name}.width`, props.size)
+const width = appConfig.ref(`${props.name}.width`, props.size)
 
 const $divider = ref<HTMLElement | null>(null)
 
@@ -126,3 +126,4 @@ onMounted(() => {
 	&:hover:before
 		opacity 1
 </style>
+../stores/useAppStorage

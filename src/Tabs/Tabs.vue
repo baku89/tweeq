@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, provide, reactive, withDefaults} from 'vue'
 
-import {useAppStorage} from '../useAppStorage'
+import {useAppConfigStore} from '../stores/appConfig'
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
 import {Tab, TabsState} from './types'
 
@@ -53,8 +53,8 @@ provide(DeleteTabKey, id => {
 	state.tabs.splice(tabIndex, 1)
 })
 
-const appStorage = useAppStorage()
-const activeId = appStorage<null | string>(`${props.name}.active`, null)
+const appConfig = useAppConfigStore()
+const activeId = appConfig.ref<null | string>(`${props.name}.active`, null)
 
 const selectTab = (id: string, event?: Event): void => {
 	const selectedTab = findTab(id)
@@ -189,4 +189,4 @@ onMounted(() => {
 .panels-wrapper
 	position relative
 </style>
-@/tweeq/useAppStorage
+../stores/useAppStorage

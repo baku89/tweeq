@@ -4,7 +4,7 @@ import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
 import {Bndr} from 'bndr-js'
 import {computed, onMounted, ref, watch} from 'vue'
 
-import {useAppStorage} from '../useAppStorage'
+import {useAppConfigStore} from '../stores/appConfig'
 
 type PaneDimension = number | 'minimized'
 
@@ -24,6 +24,7 @@ interface Props {
 	icon: string
 	position?: Position
 }
+
 const props = withDefaults(defineProps<Props>(), {
 	position: () => {
 		return {
@@ -37,9 +38,9 @@ const props = withDefaults(defineProps<Props>(), {
 const minimizeThreshold = 90
 const resizeWidth = 12
 
-const appStorage = useAppStorage()
+const appConfig = useAppConfigStore()
 
-const position = appStorage<Position>(`${props.name}.position`, props.position)
+const position = appConfig.ref(`${props.name}.position`, props.position)
 
 const windowSize = useWindowSize()
 
@@ -378,3 +379,4 @@ onMounted(() => {
 	height 100%
 	hover-transition(opacity)
 </style>
+../stores/useAppStorage
