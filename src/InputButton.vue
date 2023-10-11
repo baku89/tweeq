@@ -3,7 +3,7 @@ import {Icon} from '@iconify/vue'
 
 interface Props {
 	icon?: string
-	label: string
+	label?: string
 }
 
 defineProps<Props>()
@@ -12,7 +12,7 @@ defineProps<Props>()
 <template>
 	<button class="InputButton">
 		<Icon v-if="icon" class="icon" :icon="icon" />
-		<span class="label">{{ label }}</span>
+		<span v-if="label" class="label">{{ label }}</span>
 	</button>
 </template>
 
@@ -46,8 +46,6 @@ defineProps<Props>()
 
 	.icon
 		display block
-		width calc(var(--tq-input-height) - 4px)
-		height calc(var(--tq-input-height) - 4px)
 
 	.label
 		line-height var(--tq-input-height)
