@@ -80,16 +80,15 @@ hr
 		hover-transition(all)
 
 .iconify
-	margin 2px 0
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
 
 .v-popper--theme-tooltip
 	.v-popper__inner
-		background var(--tq-color-inverse-surface) !important
+		background 'color-mix(in srgb, var(--tq-color-inverse-surface) 70%, transparent)' % '' !important
 		color var(--tq-color-inverse-on-surface) !important
 		line-height 1.4
-		backdrop-filter blur(4px)
+		backdrop-filter blur(12px)
 
 	.v-popper__arrow-outer
 		border-color var(--tq-color-inverse-surface) !important

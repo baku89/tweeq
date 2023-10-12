@@ -316,8 +316,8 @@ const overlayLineFrom = computed(() => {
 		input-overlay()
 
 	&__overlay-label
+		tooltip-style()
 		z-index 1001
-		tooltip()
 		position fixed
 		font-numeric()
 		cursor none

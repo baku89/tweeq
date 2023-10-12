@@ -43,6 +43,10 @@ const props = withDefaults(defineProps<Props>(), {
 	suffix: '',
 })
 
+defineOptions({
+	inheritAttrs: false,
+})
+
 const emit = defineEmits<{
 	'update:modelValue': [value: number]
 	focus: []

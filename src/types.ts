@@ -22,8 +22,8 @@ export interface InputProps {
 }
 
 export interface LabelizerProps<T> {
-	options: T[]
-	labels?: string[]
+	readonly options: T[]
+	readonly labels?: string[]
 	labelizer?: Labelizer<T>
 	prefix?: string
 	suffix?: string

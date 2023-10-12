@@ -7,6 +7,14 @@ pane-style()
 	background var(--tq-color-surface)
 	backdrop-filter blur(4px)
 
+popup-style()
+	padding var(--tq-popup-padding)
+	border 1px solid var(--tq-color-surface-border)
+	border-radius var(--tq-popup-border-radius)
+	background var(--tq-color-surface)
+	box-shadow 0 0 20px -15px var(--tq-color-shadow)
+	backdrop-filter blur(4px)
+
 hover-transition(prop = all)
 	values = ()
 
@@ -110,7 +118,7 @@ input-style()
 	use-input-align()
 	use-input-position()
 
-tooltip()
+tooltip-style()
 	padding 4px 11px
 	border-radius 9999px
 	background var(--tq-color-inverse-surface)
@@ -148,11 +156,3 @@ input-overlay()
 		font-size 1em
 		font-numeric()
 		fill var(--tq-color-primary)
-
-popup-style()
-	padding var(--tq-popup-padding)
-	border 1px solid var(--tq-color-surface-border)
-	border-radius var(--tq-popup-border-radius)
-	background var(--tq-color-surface)
-	box-shadow 0 0 20px -15px var(--tq-color-shadow)
-	backdrop-filter blur(4px)
