@@ -28,6 +28,7 @@ export {type ErrorInfo}
 
 export {useActionsStore, type Action} from './stores/actions'
 export {useAppConfigStore} from './stores/appConfig'
+export {useTheme} from './useTheme'
 export * from './useBndr'
 
 export * from './util'
