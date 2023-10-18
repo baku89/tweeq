@@ -24,8 +24,8 @@ const performedActions = appConfig.ref<string[]>(
 
 const open = ref(false)
 
-useEventListener($popover, 'toggle', e => {
-	open.value = (e as ToggleEvent).newState === 'open'
+useEventListener($popover, 'toggle', (e: ToggleEvent) => {
+	open.value = e.newState === 'open'
 })
 
 watch(

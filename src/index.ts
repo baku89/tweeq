@@ -6,6 +6,7 @@ import IconIndicator from './IconIndicator.vue'
 import InputButton from './InputButton.vue'
 import InputCheckbox from './InputCheckbox'
 import {InputColor, InputColorPicker} from './InputColor'
+import InputComplex from './InputComplex'
 import {InputCubicBezier, InputCubicBezierPicker} from './InputCubicBezier'
 import InputDropdown from './InputDropdown.vue'
 import InputIconToggle from './InputIconToggle.vue'
@@ -18,6 +19,7 @@ import Markdown from './Markdown'
 import MonacoEditor, {ErrorInfo} from './MonacoEditor'
 import PaneFloating from './PaneFloating'
 import PaneModal from './PaneModal'
+import PaneModalComplex from './PaneModalComplex'
 import PaneSplit from './PaneSplit'
 import {Parameter, ParameterGrid, ParameterHeading} from './ParameterGrid'
 import RoundButton from './RoundButton'
@@ -31,7 +33,6 @@ export {useActionsStore, type Action} from './stores/actions'
 export {useAppConfigStore} from './stores/appConfig'
 export {useThemeStore} from './stores/theme'
 export * from './useBndr'
-
 export * from './util'
 
 export default {
@@ -41,6 +42,7 @@ export default {
 	InputButton,
 	InputColor,
 	InputColorPicker,
+	InputComplex,
 	InputCheckbox,
 	InputCubicBezier,
 	InputCubicBezierPicker,
@@ -55,6 +57,7 @@ export default {
 	MonacoEditor,
 	PaneFloating,
 	PaneModal,
+	PaneModalComplex,
 	PaneSplit,
 	ParameterGrid,
 	Parameter,

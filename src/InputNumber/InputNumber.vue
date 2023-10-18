@@ -11,25 +11,9 @@ import {useWheel} from '@vueuse/gesture'
 import {scalar, Vec2} from 'linearly'
 import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
-import {InputProps} from '../types'
 import {useDrag} from '../useDrag'
 import {getNumberPresition, toFixed, toPercent, unsignedMod} from '../util'
-
-interface Props extends InputProps {
-	modelValue: number
-	min?: number
-	max?: number
-	step?: number
-	bar?: boolean | 'circle'
-	barOrigin?: number | null
-	clampMin?: boolean
-	clampMax?: boolean
-	precision?: number
-	prefix?: string
-	suffix?: string
-	leftIcon?: string
-	rightIcon?: string
-}
+import {type Props} from './types'
 
 const props = withDefaults(defineProps<Props>(), {
 	min: Number.MIN_SAFE_INTEGER,

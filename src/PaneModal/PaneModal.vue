@@ -1,11 +1,22 @@
 <script setup lang="ts">
+import {useEventListener} from '@vueuse/core'
 import {ref} from 'vue'
 
 defineSlots<{
 	default: void
 }>()
 
+const emit = defineEmits<{
+	close: []
+}>()
+
 const $root = ref<HTMLElement | null>(null)
+
+useEventListener($root, 'toggle', (e: ToggleEvent) => {
+	if (e.newState !== 'open') {
+		emit('close')
+	}
+})
 
 defineExpose({
 	toggleShow: (force?: boolean) => {

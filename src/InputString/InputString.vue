@@ -3,22 +3,7 @@ import {useFocus} from '@vueuse/core'
 import {identity} from 'lodash'
 import {ref, watch} from 'vue'
 
-import {
-	InputAlign,
-	InputFont,
-	InputProps,
-	InputTheme,
-	Validator,
-} from '../types'
-
-interface Props extends InputProps {
-	modelValue: string
-	theme?: InputTheme
-	font?: InputFont
-	align?: InputAlign
-	validator?: Validator<string>
-	forceUpdateOnFocusing?: boolean
-}
+import {Props} from './types'
 
 const props = withDefaults(defineProps<Props>(), {
 	validator: identity,
