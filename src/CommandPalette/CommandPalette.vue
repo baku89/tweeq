@@ -5,6 +5,7 @@ import {Bndr} from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
+import {useBndr} from '..'
 import {type Action, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {unsignedMod} from '../util'
@@ -60,9 +61,11 @@ watch(filteredActions, () => {
 	}
 })
 
-Bndr.keyboard()
-	.key('command+p', {preventDefault: true, capture: true})
-	.on(() => $popover.value?.togglePopover())
+useBndr($popover, $popover => {
+	Bndr.keyboard()
+		.key('command+p', {preventDefault: true, capture: true})
+		.on(() => $popover.togglePopover())
+})
 
 function onKeydown(e: KeyboardEvent) {
 	if (e.key === 'p' && e.metaKey) {
