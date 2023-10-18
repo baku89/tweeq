@@ -205,7 +205,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="$root" class="FloatingPane" :class="classes" :style="style">
+	<div ref="$root" class="PaneFloating" :class="classes" :style="style">
 		<div ref="$top" class="resize top" />
 		<div ref="$right" class="resize right" />
 		<div ref="$left" class="resize left" />
@@ -220,7 +220,7 @@ onMounted(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.FloatingPane
+.PaneFloating
 	pane-style()
 	--resize-width 1rem
 	--border 5px
