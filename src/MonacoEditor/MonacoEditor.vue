@@ -6,7 +6,7 @@ import Tomorrow from 'monaco-themes/themes/Tomorrow.json'
 import TomorrowNight from 'monaco-themes/themes/Tomorrow-Night.json'
 import {onMounted, ref, watch, watchEffect} from 'vue'
 
-import {useTheme} from '../useTheme'
+import {useThemeStore} from '../stores/theme'
 
 export interface ErrorInfo {
 	message: string
@@ -78,10 +78,10 @@ onMounted(() => {
 	monaco.editor.defineTheme('light', Tomorrow as any)
 	monaco.editor.defineTheme('dark', TomorrowNight as any)
 
-	const theme = useTheme()
+	const theme = useThemeStore()
 
 	watchEffect(() => {
-		monaco.editor.setTheme(theme.value.colorMode)
+		monaco.editor.setTheme(theme.colorMode)
 	})
 
 	// resize editor to match its parent element size
@@ -217,3 +217,4 @@ onMounted(() => {
 :deep(.monaco-editor)
 	--vscode-editor-background transparent
 </style>
+../stores/useTheme

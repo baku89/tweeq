@@ -7,6 +7,7 @@ import {computed, Ref, ref, watch} from 'vue'
 
 import InputString from './InputString'
 import Popover from './Popover.vue'
+import {useThemeStore} from './stores/theme'
 import {
 	InputAlign,
 	InputFont,
@@ -14,7 +15,6 @@ import {
 	LabelizerProps,
 	useLabelizer,
 } from './types'
-import {useTheme} from './useTheme'
 import {unsignedMod} from './util'
 
 interface Props extends LabelizerProps<T> {
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const labelizer = useLabelizer(props)
 
-const uiTheme = useTheme()
+const uiTheme = useThemeStore()
 
 const emit = defineEmits<{
 	'update:modelValue': [value: T]
@@ -89,11 +89,9 @@ const popoverPlacement = computed<Vec2 | 'bottom'>(() => {
 
 		if (index === -1) index = 0
 
-		const inputHeight = parseInt(uiTheme.value.inputHeight)
-
 		return [
 			rootBound.left.value - 2,
-			rootBound.top.value + -index * inputHeight - 2,
+			rootBound.top.value + -index * uiTheme.inputHeight - 2,
 		]
 	}
 })
@@ -277,3 +275,4 @@ $right-arrow-width = 1em
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
 </style>
+./stores/useTheme

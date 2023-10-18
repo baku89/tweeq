@@ -1,6 +1,6 @@
 import {useInputColor} from './InputColor/useInputColor'
 import {useAppConfigStore} from './stores/appConfig'
-import {ColorMode, provideTheme} from './useTheme'
+import {ColorMode, useThemeStore} from './stores/theme'
 
 interface TweeqOptions {
 	colorMode?: ColorMode
@@ -10,15 +10,15 @@ interface TweeqOptions {
 export function useTweeq(appId: string, options: TweeqOptions = {}) {
 	const appConfig = useAppConfigStore()
 	appConfig.appId = appId
+	const theme = useThemeStore()
 
-	const accentColor = appConfig.ref(
-		'accentColor',
-		options.accentColor || '#0000ff'
-	)
+	if (options.accentColor) {
+		theme.accentColor = options.accentColor
+	}
 
-	const colorMode = appConfig.ref('colorMode', options.colorMode || 'auto')
-
-	const theme = provideTheme(accentColor, colorMode)
+	if (options.colorMode) {
+		theme.colorMode = options.colorMode
+	}
 
 	useInputColor()
 
