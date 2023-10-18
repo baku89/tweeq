@@ -55,7 +55,7 @@ defineExpose({
 
 <template>
 	<PaneModal ref="$modal" @close="onAbort">
-		<div v-if="desc" class="PaneModalParameters">
+		<div v-if="desc" class="PaneModalComplex">
 			<InputComplex
 				:title="desc.options?.title"
 				:scheme="desc.scheme"
@@ -66,3 +66,9 @@ defineExpose({
 		</div>
 	</PaneModal>
 </template>
+
+<style lang="stylus" scoped>
+.PaneModalComplex
+	display grid
+	gap 12px
+</style>
