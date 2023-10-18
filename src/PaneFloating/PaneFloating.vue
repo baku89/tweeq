@@ -35,6 +35,10 @@ const props = withDefaults(defineProps<Props>(), {
 	},
 })
 
+const emit = defineEmits<{
+	'update:position': [Position]
+}>()
+
 const minimizeThreshold = 90
 const resizeWidth = 12
 
@@ -202,6 +206,8 @@ onMounted(() => {
 		}
 	}
 })
+
+watch(position, position => emit('update:position', position))
 </script>
 
 <template>
