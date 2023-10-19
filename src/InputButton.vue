@@ -16,7 +16,7 @@ defineProps<Props>()
 <template>
 	<button
 		class="InputButton"
-		:class="{blink}"
+		:class="{blink: !!blink}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="!!disabled"
