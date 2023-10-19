@@ -47,16 +47,24 @@ use-input-position()
 		border-radius 0
 
 	&[horizontal-position=left]
+		border-right 1px solid var(--tq-color-background)
 		border-top-right-radius 0
 		border-bottom-right-radius 0
+
+	&[horizontal-position=middle]
+		border-right 1px solid var(--tq-color-background)
 
 	&[horizontal-position=right]
 		border-top-left-radius 0
 		border-bottom-left-radius 0
 
 	&[vertical-position=top]
+		border-bottom 1px solid var(--tq-color-background)
 		border-bottom-right-radius 0
 		border-bottom-left-radius 0
+
+	&[vertical-position=middle]
+		border-bottom 1px solid var(--tq-color-background)
 
 	&[vertical-position=bottom]
 		border-top-left-radius 0
