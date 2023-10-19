@@ -38,6 +38,11 @@ defineProps<Props>()
 	line-height var(--tq-input-height)
 	vertical-align middle
 
-.label, .input
+.label
 	height var(--tq-input-height)
+
+.input
+	display grid
+	gap 6px
+	align-items center
 </style>
