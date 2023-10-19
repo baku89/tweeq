@@ -15,6 +15,7 @@ import InputRadio from './InputRadio.vue'
 import InputRotery from './InputRotery'
 import InputSeed from './InputSeed'
 import InputString from './InputString'
+import InputVec from './InputVec'
 import Markdown from './Markdown'
 import MonacoEditor, {ErrorInfo} from './MonacoEditor'
 import PaneFloating from './PaneFloating'
@@ -53,6 +54,7 @@ export default {
 	InputRotery,
 	InputSeed,
 	InputString,
+	InputVec,
 	Markdown,
 	MonacoEditor,
 	PaneFloating,
