@@ -7,6 +7,7 @@ interface Props extends InputProps {
 	icon?: string
 	label?: string
 	tooltip?: string
+	blink?: boolean
 }
 
 defineProps<Props>()
@@ -15,6 +16,7 @@ defineProps<Props>()
 <template>
 	<button
 		class="InputButton"
+		:class="{blink}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="!!disabled"
@@ -59,4 +61,15 @@ defineProps<Props>()
 
 	.label
 		line-height var(--tq-input-height)
+
+	&.blink
+		animation blink 1s infinite
+
+	@keyframes blink
+		0%
+			background var(--tq-color-primary-container)
+		50%
+			background var(--tq-color-primary)
+		100%
+			background var(--tq-color-primary-container)
 </style>
