@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
-import {Bndr} from 'bndr-js'
+import {Bndr, DragData} from 'bndr-js'
 import {computed, onMounted, ref, watch} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
@@ -103,7 +103,7 @@ onMounted(() => {
 
 	let widthAtDragStart = 0
 
-	function onDragHoriz(e: Bndr.DragData, isLeft: boolean) {
+	function onDragHoriz(e: DragData, isLeft: boolean) {
 		const p = position.value
 
 		if (e.justStarted) {
@@ -163,7 +163,7 @@ onMounted(() => {
 		.drag({pointerCapture: true, preventDefault: true})
 		.on(e => onDragVert(e, false))
 
-	function onDragVert(e: Bndr.DragData, isTop: boolean) {
+	function onDragVert(e: DragData, isTop: boolean) {
 		const p = position.value
 
 		if (e.justStarted) {
