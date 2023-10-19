@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {checkIntersection} from 'line-intersect'
-import {Vec2, vec2} from 'linearly'
+import {vec2} from 'linearly'
 import _ from 'lodash'
 import {computed, Ref, ref} from 'vue'
 
@@ -28,7 +28,7 @@ function signedAngleBetween(target: number, source: number) {
 	return unsignedMod(ret + Math.PI, Math.PI * 2) - Math.PI
 }
 
-function addDirectionVector(from: Vec2, rads: number, radius: number): Vec2 {
+function addDirectionVector(from: vec2, rads: number, radius: number): vec2 {
 	return [from[0] + Math.cos(rads) * radius, from[1] + Math.sin(rads) * radius]
 }
 
@@ -152,7 +152,7 @@ const overlayArcPath = computed(() => {
 	return arc + circles
 })
 
-function clampPos(p: Vec2): Vec2 {
+function clampPos(p: vec2): vec2 {
 	const [ox, oy] = origin.value
 	const [x, y] = p
 	const margin = 40
@@ -186,7 +186,7 @@ function clampPos(p: Vec2): Vec2 {
 
 const overlayLineTo = computed(() => {
 	const dist = vec2.distance(origin.value, pos.value)
-	const dir: Vec2 = [Math.cos(props.modelValue), Math.sin(props.modelValue)]
+	const dir: vec2 = [Math.cos(props.modelValue), Math.sin(props.modelValue)]
 
 	const p = vec2.scaleAndAdd(origin.value, dir, dist)
 

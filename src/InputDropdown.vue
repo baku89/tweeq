@@ -2,7 +2,7 @@
 import {Icon} from '@iconify/vue'
 import {useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
-import {Vec2} from 'linearly'
+import {type vec2} from 'linearly'
 import {computed, Ref, ref, watch} from 'vue'
 
 import InputString from './InputString'
@@ -79,7 +79,7 @@ const filteredOptions = computed(() => {
 	return ret
 })
 
-const popoverPlacement = computed<Vec2 | 'bottom'>(() => {
+const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 	// 2px === border width + focus outline
 
 	if (displayEdited.value) {

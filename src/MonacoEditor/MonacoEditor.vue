@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useResizeObserver} from '@vueuse/core'
-import {Vec2} from 'linearly'
+import {vec2} from 'linearly'
 import * as monaco from 'monaco-editor'
 import Tomorrow from 'monaco-themes/themes/Tomorrow.json'
 import TomorrowNight from 'monaco-themes/themes/Tomorrow-Night.json'
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {})
 const emit = defineEmits<{
 	'update:modelValue': [value: string]
 	'update:cursorIndex': [value: number]
-	'update:cursorPosition': [value: Vec2]
+	'update:cursorPosition': [value: vec2]
 }>()
 
 const $root = ref<HTMLElement | null>(null)

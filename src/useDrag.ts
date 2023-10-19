@@ -1,12 +1,12 @@
 import {unrefElement} from '@vueuse/core'
-import {Vec2, vec2} from 'linearly'
+import {vec2} from 'linearly'
 import {reactive, Ref, ref, toRefs, watch} from 'vue'
 
 interface DragState {
-	xy: Vec2
-	previous: Vec2
-	initial: Vec2
-	delta: Vec2
+	xy: vec2
+	previous: vec2
+	initial: vec2
+	delta: vec2
 	dragging: boolean
 	pointerLocked: boolean
 }
@@ -92,7 +92,7 @@ export function useDrag(
 			if (!event.isPrimary) return
 
 			if (event.movementX !== undefined && event.movementY !== undefined) {
-				const movement: Vec2 = [event.movementX, event.movementY]
+				const movement: vec2 = [event.movementX, event.movementY]
 				state.xy = vec2.add(state.xy, movement)
 			} else {
 				state.xy = [event.clientX, event.clientY]

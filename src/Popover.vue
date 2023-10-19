@@ -19,13 +19,13 @@ import {
 	useEventListener,
 	useWindowSize,
 } from '@vueuse/core'
-import {scalar, Vec2} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {computed, ref, watch} from 'vue'
 
 type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
 type PlacementAlign = 'start' | 'end'
 type Placement =
-	| Vec2
+	| vec2
 	| PlacementDirection
 	| `${PlacementDirection}-${PlacementAlign}`
 
@@ -67,7 +67,7 @@ watch(
 const popoverSize = useElementSize($popover)
 const windowSize = useWindowSize()
 
-const offset = computed<Vec2>(() => {
+const offset = computed<vec2>(() => {
 	if (!$reference.value) throw new Error('Cannot align the popover')
 
 	if (!$popover.value) return [0, 0]
@@ -94,21 +94,21 @@ const offset = computed<Vec2>(() => {
 	// Flip detection
 	if (placement.startsWith('left')) {
 		if (rLeft < pHeight && ww - rRight > pWidth) {
-			placement = placement.replace('left', 'right') as Exclude<Placement, Vec2>
+			placement = placement.replace('left', 'right') as Exclude<Placement, vec2>
 		}
 	} else if (placement.startsWith('right')) {
 		if (ww - rRight < pHeight && rLeft > pWidth) {
-			placement = placement.replace('right', 'left') as Exclude<Placement, Vec2>
+			placement = placement.replace('right', 'left') as Exclude<Placement, vec2>
 		}
 	}
 
 	if (placement.startsWith('top')) {
 		if (rTop < pHeight && wh - rBottom > pHeight) {
-			placement = placement.replace('top', 'bottom') as Exclude<Placement, Vec2>
+			placement = placement.replace('top', 'bottom') as Exclude<Placement, vec2>
 		}
 	} else if (placement.startsWith('bottom')) {
 		if (wh - rBottom < pHeight && rTop > pHeight) {
-			placement = placement.replace('bottom', 'top') as Exclude<Placement, Vec2>
+			placement = placement.replace('bottom', 'top') as Exclude<Placement, vec2>
 		}
 	}
 

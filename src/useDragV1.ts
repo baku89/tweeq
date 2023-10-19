@@ -1,17 +1,17 @@
 import {unrefElement} from '@vueuse/core'
-import {Vec2, vec2} from 'linearly'
+import {vec2} from 'linearly'
 import {reactive, Ref, ref, toRefs, watch} from 'vue'
 
 interface DragData {
-	pos: Vec2
-	prevPos: Vec2
-	startPos: Vec2
-	delta: Vec2
+	pos: vec2
+	prevPos: vec2
+	startPos: vec2
+	delta: vec2
 	top: number
 	right: number
 	bottom: number
 	left: number
-	origin: Vec2
+	origin: vec2
 	isMousedown: boolean
 	isDragging: boolean
 }

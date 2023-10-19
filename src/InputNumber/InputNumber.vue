@@ -8,7 +8,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {useWheel} from '@vueuse/gesture'
-import {scalar, Vec2} from 'linearly'
+import {scalar, type vec2} from 'linearly'
 import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
 import {useDrag} from '../useDrag'
@@ -180,7 +180,7 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 // Scroll to tweak
 
 useWheel(
-	({delta: [, y], event}: {delta: Vec2; event: WheelEvent}) => {
+	({delta: [, y], event}: {delta: vec2; event: WheelEvent}) => {
 		event.preventDefault()
 
 		let newValue = props.modelValue + y * speedMultiplierKey.value
