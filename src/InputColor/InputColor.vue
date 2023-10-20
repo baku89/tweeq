@@ -20,6 +20,10 @@ const emit = defineEmits<{
 	'update:modelValue': [string]
 }>()
 
+defineSlots<{
+	default: void
+}>()
+
 const $button = ref<HTMLElement | null>(null)
 const open = ref(false)
 
@@ -144,15 +148,13 @@ const sliderHueUniforms = computed(() => {
 </script>
 
 <template>
-	<button
-		ref="$button"
-		class="InputColor"
-		:class="{open, tweaking}"
-		v-bind="$attrs"
-		@click="open = true"
-	>
-		<div class="preview" :style="{background: modelValue}" />
-	</button>
+	<div v-bind="$attrs" ref="$button" class="InputColor" @click="open = true">
+		<slot>
+			<button class="default-button" :class="{open, tweaking}">
+				<div class="preview" :style="{background: modelValue}" />
+			</button>
+		</slot>
+	</div>
 	<Popover v-model:open="open" :reference="$button" placement="bottom-start">
 		<div class="floating">
 			<InputColorPicker
@@ -210,21 +212,23 @@ const sliderHueUniforms = computed(() => {
 @import './common.styl'
 .InputColor
 	position relative
+	display flex
+
+.default-button
+	overflow hidden
+	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
-	hover-transition(background)
 	background-checkerboard()
 	hover-transition(box-shadow)
-	overflow hidden
 
 	&:hover, &.tweaking
-		box-shadow 0 0 0 1px var(--tq-color-primary)
-
+			box-shadow 0 0 0 1px var(--tq-color-primary)
 .preview
 	display block
 	position absolute
 	inset 0
+	border-radius var(--tq-input-border-radius)
 
 .floating
 	width var(--tq-popup-width)
@@ -267,8 +271,6 @@ const sliderHueUniforms = computed(() => {
 	height 100%
 
 .tweak-preview
-
-
 	z-index 200
 	position fixed
 	border-radius var(--tq-input-border-radius)
@@ -278,10 +280,10 @@ const sliderHueUniforms = computed(() => {
 	margin calc(var(--tq-input-height) / -2) 0 0 calc(var(--tq-input-height) / -2)
 	pointer-events none
 	opacity 0
-	transition transform var(--tq-hover-transition-duration) ease, border-radius var(--tq-hover-transition-duration) ease, opacity 0s ease var(--tq-hover-transition-duration)
+	transition transform .05s ease, border-radius .05s ease, opacity 0s ease .05s
 
 	&.tweaking
-		transition transform var(--tq-hover-transition-duration) ease, border-radius var(--tq-hover-transition-duration) ease
+		transition transform .05s ease, border-radius .05s ease
 		opacity 1
 		transform scale(3)
 		border-radius calc(var(--tq-input-height) / 2)
