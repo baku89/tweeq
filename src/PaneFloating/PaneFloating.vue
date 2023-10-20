@@ -217,8 +217,10 @@ watch(position, position => emit('update:position', position))
 		<div ref="$left" class="resize left" />
 		<div ref="$bottom" class="resize bottom" />
 		<Icon v-if="icon" class="minimized-title" :icon="icon" />
-		<div class="content">
-			<slot />
+		<div class="content-wrapper">
+			<div class="content">
+				<slot />
+			</div>
 		</div>
 	</div>
 </template>
@@ -237,7 +239,6 @@ watch(position, position => emit('update:position', position))
 	--br-bottom-left var(--tq-pane-border-radius)
 
 	position fixed
-	padding var(--tq-pane-padding)
 	border-width 1px
 	border-radius var(--br-top-left) var(--br-top-right) var(--br-bottom-right) var(--br-bottom-left)
 	display grid
@@ -313,6 +314,7 @@ watch(position, position => emit('update:position', position))
 
 .resize
 	position absolute
+	z-index 10
 	hover-transition()
 
 	&:before
@@ -380,9 +382,15 @@ watch(position, position => emit('update:position', position))
 	color var(--tq-color-on-primary-container)
 	hover-transition(opacity)
 
-.content
+.content-wrapper
 	position relative
 	height 100%
+	overflow-y scroll
+
+.content
+	padding var(--tq-pane-padding) calc(var(--tq-pane-padding) - var(--tq-scrollbar-width)) var(--tq-pane-padding) var(--tq-pane-padding)
+	position relative
+	height fit-content
 	hover-transition(opacity)
 </style>
 ../stores/useAppStorage

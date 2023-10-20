@@ -9,10 +9,12 @@ interface Props {
 	name: string
 	direction: 'horizontal' | 'vertical'
 	size?: number
+	scroll?: [boolean, boolean]
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	size: 50,
+	scroll: () => [true, true],
 })
 
 const appConfig = useAppConfigStore()
@@ -57,11 +59,15 @@ onMounted(() => {
 <template>
 	<div class="PaneSplit" :class="direction">
 		<div class="first" :style="styles">
-			<slot name="first" />
+			<div class="first-wrapper" :class="{scroll: scroll[0]}">
+				<slot name="first" />
+			</div>
 		</div>
 		<div ref="$divider" class="divider" />
-		<div class="second">
-			<slot name="second" />
+		<div class="second-wrapper" :class="{scroll: scroll[1]}">
+			<div class="second">
+				<slot name="second" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -79,8 +85,8 @@ onMounted(() => {
 		flex-direction column
 
 .first, .second
-	position relative
-	overflow hidden
+	width 100%
+	height 100%
 
 .first
 	flex-grow 0
@@ -88,10 +94,19 @@ onMounted(() => {
 .second
 	flex-grow 1
 
+.first-wrapper, .second-wrapper
+	width 100%
+	height 100%
+	overflow hidden
+
+	&.scroll
+		overflow-y scroll
+
 .divider
 	position relative
 	background var(--tq-color-surface-border)
 	hover-transition(background)
+	z-index 10
 
 	.horizontal > &
 		cursor col-resize

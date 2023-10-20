@@ -59,6 +59,7 @@ export interface Theme {
 	inputGap: CSSNumber
 
 	panePadding: CSSNumber
+	scrollbarWidth: CSSNumber
 
 	hoverTransitionDuration: string
 }
@@ -143,6 +144,7 @@ export const useThemeStore = defineStore('theme', () => {
 			inputGap: 9,
 
 			panePadding: 12,
+			scrollbarWidth: 6,
 
 			hoverTransitionDuration: '0.15s',
 		}
