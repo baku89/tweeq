@@ -7,13 +7,20 @@ interface Props {
 }
 
 defineProps<Props>()
+
+defineSlots<{
+	default: void
+	label: void
+}>()
 </script>
 <template>
 	<li class="Parameter">
-		<label class="label">
-			<Icon v-if="icon" class="icon" :icon="icon" />
-			<span v-if="label" class="text">{{ label }}</span>
-		</label>
+		<div class="label">
+			<slot name="label">
+				<Icon v-if="icon" :icon="icon" />
+				<template v-if="label">{{ label }}</template>
+			</slot>
+		</div>
 		<div class="input">
 			<slot />
 		</div>
@@ -29,14 +36,11 @@ defineProps<Props>()
 	grid-template-columns subgrid
 
 .label
+	line-height var(--tq-input-height)
+	align-items center
 	display flex
 	gap 4px
 	color var(--tq-color-gray-on-background)
-
-.text
-	display inline-block
-	line-height var(--tq-input-height)
-	vertical-align middle
 
 .label
 	height var(--tq-input-height)
