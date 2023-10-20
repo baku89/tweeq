@@ -1,11 +1,17 @@
 <script setup lang="ts">
 defineSlots<{
 	default: void
+	right: void
 }>()
 </script>
 <template>
 	<li class="ParameterHeading">
-		<slot />
+		<div class="heading">
+			<slot />
+		</div>
+		<div class="right">
+			<slot name="right" />
+		</div>
 	</li>
 </template>
 
@@ -13,10 +19,13 @@ defineSlots<{
 @import '../common.styl'
 
 .ParameterHeading
+	display flex
 	height var(--tq-input-height)
 	line-height var(--tq-input-height)
+	grid-column 1 / 3
+
+.heading
 	font-size 14px
 	font-weight bold
-
-	grid-column 1 / 3
+	flex-grow 1
 </style>
