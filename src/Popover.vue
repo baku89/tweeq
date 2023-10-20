@@ -1,16 +1,3 @@
-<template>
-	<teleport to="body">
-		<div
-			v-if="open"
-			ref="$popover"
-			class="Popover"
-			:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
-		>
-			<slot />
-		</div>
-	</teleport>
-</template>
-
 <script lang="ts" setup>
 import {
 	onClickOutside,
@@ -159,7 +146,8 @@ watch(
 				}
 			)
 		}
-	}
+	},
+	{immediate: true}
 )
 
 useEventListener('keydown', e => {
@@ -168,6 +156,19 @@ useEventListener('keydown', e => {
 	}
 })
 </script>
+
+<template>
+	<teleport to="body">
+		<div
+			v-if="open"
+			ref="$popover"
+			class="Popover"
+			:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
+		>
+			<slot />
+		</div>
+	</teleport>
+</template>
 
 <style lang="stylus" scoped>
 .Popover
