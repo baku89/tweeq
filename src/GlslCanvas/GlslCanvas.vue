@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import {throttle} from 'lodash'
 import {ref, watch} from 'vue'
 
 import {useReglContextStore} from './reglContextStore'
@@ -20,25 +19,16 @@ const props = withDefaults(defineProps<Props>(), {
 	uniforms: () => ({}),
 })
 
-const reglContext = useReglContextStore()
+const draw = useReglContextStore().createDraw()
 
 const $img = ref<null | HTMLImageElement>(null)
-
-const throttleDraw = throttle(
-	(frag: string, uniforms: any, img: HTMLImageElement) => {
-		if (!$img.value) return
-
-		reglContext.draw(frag, uniforms, img)
-	},
-	1000 / 60
-)
 
 watch(
 	() => [props.fragmentString, props.uniforms, $img.value] as const,
 	([frag, uniforms, $img]) => {
 		if (!$img) return
 
-		throttleDraw(frag, uniforms, $img)
+		draw(frag, uniforms, $img)
 	},
 	{immediate: true, flush: 'post'}
 )

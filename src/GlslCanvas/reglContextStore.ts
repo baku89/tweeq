@@ -1,8 +1,6 @@
-import {mapValues} from 'lodash'
 import {defineStore} from 'pinia'
 import Queue from 'promise-queue'
 import Regl, {DrawConfig} from 'regl'
-import sleep from 'sleep-promise'
 
 const drawQueue = new Queue(1, Infinity)
 
@@ -41,33 +39,41 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 		},
 	})
 
-	function draw(frag: string, uniforms: Uniforms, img: HTMLImageElement) {
-		drawQueue.add(async () => {
-			canvas.width = img.clientWidth
-			canvas.height = img.clientHeight
+	function createDraw() {
+		let id: number | null = null
 
-			const prop = regl.prop as any
+		return function (frag: string, uniforms: Uniforms, img: HTMLImageElement) {
+			const currentId = Math.random()
+			id = currentId
 
-			regl({
-				...REGL_QUAD_DEFAULT,
-				frag,
-				viewport: {
-					x: 0,
-					y: 0,
-					width: img.clientWidth,
-					height: img.clientHeight,
-				},
-				uniforms: mapValues(uniforms, (_, key) => prop(key)),
-			})(uniforms)
+			drawQueue.add(async () => {
+				if (id !== currentId) return
 
-			await sleep(1)
+				canvas.width = img.clientWidth
+				canvas.height = img.clientHeight
 
-			// Get the data of canvas and set it to the image's src
-			img.src = canvas.toDataURL()
-		})
+				regl({
+					...REGL_QUAD_DEFAULT,
+					frag,
+					viewport: {
+						x: 0,
+						y: 0,
+						width: img.clientWidth,
+						height: img.clientHeight,
+					},
+					uniforms,
+				})(uniforms)
+
+				// NOTE: This is a hack to wait for the canvas to update
+				// await sleep(0)
+
+				// Get the data of canvas and set it to the image's src
+				img.src = canvas.toDataURL()
+			})
+		}
 	}
 
 	return {
-		draw,
+		createDraw,
 	}
 })
