@@ -62,7 +62,7 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 						height: img.clientHeight,
 					},
 					uniforms,
-				})(uniforms)
+				})()
 
 				// NOTE: This is a hack to wait for the canvas to update
 				// await sleep(0)
