@@ -2,9 +2,8 @@
 import {scalar, vec2} from 'linearly'
 import {computed, ref} from 'vue'
 
+import GlslCanvas from '../GlslCanvas'
 import useDrag from '../useDragV1'
-
-import GlslCanvas from '../GlslCanvas.vue'
 import {unsignedMod} from '../util'
 import FragmentString from './pad.frag'
 import {Channels, ColorChannel, colorChannelToIndex} from './types'

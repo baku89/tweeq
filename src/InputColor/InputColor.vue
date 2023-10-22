@@ -5,7 +5,7 @@ import {vec2} from 'linearly'
 import {clamp} from 'lodash'
 import {computed, ref} from 'vue'
 
-import GlslCanvas from '../GlslCanvas.vue'
+import GlslCanvas from '../GlslCanvas'
 import Popover from '../Popover.vue'
 import useDraggable from '../useDragV1'
 import {unsignedMod} from '../util'
