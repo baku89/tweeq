@@ -163,3 +163,6 @@ input-overlay()
 		font-size 1em
 		font-numeric()
 		fill var(--tq-color-primary)
+
+set-alpha(name, opacity)
+	'color-mix(in srgb, var(%s) %d%, transparent)' % (name opacity * 100)
