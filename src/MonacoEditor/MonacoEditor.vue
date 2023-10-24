@@ -198,19 +198,19 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="MonacoEditor-wrapper">
-		<div ref="$root" class="MonacoEditor">
+	<div class="MonacoEditor">
+		<div ref="$root" class="root">
 			<div ref="$editor" class="editor"></div>
 		</div>
 	</div>
 </template>
 
 <style lang="stylus" scoped>
-.MonacoEditor-wrapper
+.MonacoEditor
 	position relative
 	min-height 0
 
-.MonacoEditor
+.root
 	width 100%
 	height 100%
 
