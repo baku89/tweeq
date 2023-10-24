@@ -26,7 +26,7 @@ defineEmits<{
 	position relative
 	background blue
 	min-height calc(var(--tq-input-height) * 10)
-	min-width 40em
+	min-width 45em
 
 
 .monaco-editor
