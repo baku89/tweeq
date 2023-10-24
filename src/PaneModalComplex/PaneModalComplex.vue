@@ -23,7 +23,7 @@ function updateModelValue(value: any) {
 
 let endEdit: (value: any | null) => void
 
-function show<T>(
+function prompt<T>(
 	defaultValue: T,
 	scheme: Scheme<T>,
 	options?: ShowOptions
@@ -49,7 +49,7 @@ function onConfirm() {
 }
 
 defineExpose({
-	show,
+	prompt,
 })
 </script>
 
