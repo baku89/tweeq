@@ -5,6 +5,7 @@ import CommandPalette from './CommandPalette'
 import IconIndicator from './IconIndicator.vue'
 import InputButton from './InputButton.vue'
 import InputCheckbox from './InputCheckbox'
+import InputCode from './InputCode'
 import {InputColor, InputColorPicker} from './InputColor'
 import InputComplex from './InputComplex'
 import {InputCubicBezier, InputCubicBezierPicker} from './InputCubicBezier'
@@ -41,6 +42,7 @@ export default {
 	CommandPalette,
 	IconIndicator,
 	InputButton,
+	InputCode,
 	InputColor,
 	InputColorPicker,
 	InputComplex,

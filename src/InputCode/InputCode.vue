@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import MonacoEditor from '../MonacoEditor'
+import {Props} from './types'
+
+defineProps<Props>()
+
+defineEmits<{
+	'update:modelValue': [string]
+}>()
+</script>
+
+<template>
+	<div class="InputCode">
+		<MonacoEditor
+			class="monaco-editor"
+			:modelValue="modelValue"
+			:lang="lang"
+			@update:modelValue="$emit('update:modelValue', $event)"
+		/>
+	</div>
+</template>
+
+<style lang="stylus" scoped>
+
+.InputCode
+	position relative
+	background blue
+	min-height calc(var(--tq-input-height) * 10)
+	min-width 40em
+
+
+.monaco-editor
+	position absolute
+	inset 0
+</style>
