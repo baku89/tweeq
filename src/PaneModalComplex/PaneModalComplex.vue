@@ -69,6 +69,7 @@ defineExpose({
 
 <style lang="stylus" scoped>
 .PaneModalComplex
+	overflow hidden
 	display grid
 	gap 12px
 </style>

@@ -2,6 +2,7 @@
 import {capital} from 'case'
 import {computed} from 'vue'
 
+import InputCode from '../InputCode'
 import InputNumber from '../InputNumber'
 import InputString from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
@@ -44,6 +45,12 @@ function getModelValue(name: keyof T) {
 			/>
 			<InputString
 				v-else-if="param.type === 'string'"
+				:modelValue="getModelValue(name)"
+				v-bind="param"
+				@update:modelValue="updateModelValue(name, $event)"
+			/>
+			<InputCode
+				v-else-if="param.type === 'code'"
 				:modelValue="getModelValue(name)"
 				v-bind="param"
 				@update:modelValue="updateModelValue(name, $event)"
