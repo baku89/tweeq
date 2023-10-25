@@ -211,10 +211,12 @@ const sliderHueUniforms = computed(() => {
 <style lang="stylus" scoped>
 @import './common.styl'
 .InputColor
+	width fit-content
 	position relative
 	display flex
 
 .default-button
+	position relative
 	overflow hidden
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
