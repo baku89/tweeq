@@ -19,6 +19,7 @@ import InputString from './InputString'
 import InputVec from './InputVec'
 import Markdown from './Markdown'
 import MonacoEditor, {ErrorInfo} from './MonacoEditor'
+import PaneExpandable from './PaneExpandable'
 import PaneFloating from './PaneFloating'
 import PaneModal from './PaneModal'
 import PaneModalComplex from './PaneModalComplex'
@@ -59,6 +60,7 @@ export default {
 	InputVec,
 	Markdown,
 	MonacoEditor,
+	PaneExpandable,
 	PaneFloating,
 	PaneModal,
 	PaneModalComplex,

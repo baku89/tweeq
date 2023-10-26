@@ -75,10 +75,10 @@ useBndr($root, $root => {
 	pointer.scroll().on(([x, y]) => {
 		scroll.value += x
 
-		if (y !== 0) {
-			const s = 1.003
-			emit('zoomHorizontal', s ** y)
-		}
+		// if (y !== 0) {
+		// 	const s = 1.003
+		// 	emit('zoomHorizontal', s ** y)
+		// }
 	})
 })
 
