@@ -60,11 +60,14 @@ function collapse() {
 	box-shadow 0 0 20px -15px transparent
 	background transparent
 	border-color transparent
+	backdrop-filter blur(0px)
+	pointer-events none
 
 	.icon
 		position absolute
 		top var(--tq-popup-padding)
 		right var(--tq-popup-padding)
+		pointer-events auto
 
 	.content
 		transition all .2s ease
@@ -80,6 +83,7 @@ function collapse() {
 
 	&.open
 		popup-style()
+		pointer-events auto
 		.content
 			transform none
 			opacity 1

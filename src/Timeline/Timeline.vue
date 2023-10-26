@@ -69,16 +69,19 @@ const scrollMax = computed(() => {
 
 useBndr($root, $root => {
 	const pointer = Bndr.pointer($root)
+	const pointerScroll = pointer.scroll()
 
 	// const center = pointer.position({coordinate: 'offset'}).map(([x]) => x)
 
-	pointer.scroll().on(([x, y]) => {
-		scroll.value += x
+	const altPressed = Bndr.keyboard().pressed('alt')
 
-		// if (y !== 0) {
-		// 	const s = 1.003
-		// 	emit('zoomHorizontal', s ** y)
-		// }
+	pointerScroll.on(([x]) => {
+		scroll.value += x
+	})
+
+	pointerScroll.while(altPressed, false).on(([, y]) => {
+		const s = 1.003
+		emit('zoomHorizontal', s ** y)
 	})
 })
 
