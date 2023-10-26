@@ -80,8 +80,8 @@ function onChange(index: number) {
 	&:hover
 		background var(--tq-color-input-hover)
 
-	&:focus-within, &:active
-		box-shadow 0 0 0 1px var(--tq-color-primary)
+	// &:focus-within
+	// 	box-shadow 0 0 0 1px var(--tq-color-primary)
 
 .list
 	flex-grow 1

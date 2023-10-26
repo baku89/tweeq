@@ -24,7 +24,12 @@ import PaneFloating from './PaneFloating'
 import PaneModal from './PaneModal'
 import PaneModalComplex from './PaneModalComplex'
 import PaneSplit from './PaneSplit'
-import {Parameter, ParameterGrid, ParameterHeading} from './ParameterGrid'
+import {
+	Parameter,
+	ParameterGrid,
+	ParameterGroup,
+	ParameterHeading,
+} from './ParameterGrid'
 import RoundButton from './RoundButton'
 import {Tab, Tabs} from './Tabs'
 import Timeline from './Timeline'
@@ -67,6 +72,7 @@ export default {
 	PaneSplit,
 	ParameterGrid,
 	Parameter,
+	ParameterGroup,
 	ParameterHeading,
 	RoundButton,
 	Tab,
