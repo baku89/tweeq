@@ -15,12 +15,15 @@ interface Props extends LabelizerProps<T> {
 
 const props = withDefaults(defineProps<Props>(), {})
 
-const labelizer = useLabelizer(props)
-
 const emit = defineEmits<{
 	'update:modelValue': [T]
 }>()
 
+defineSlots<{
+	option: {label: string; value: T; isActive: boolean}
+}>()
+
+const labelizer = useLabelizer(props)
 const id = ref(_.uniqueId('InputRadio_'))
 
 const completeOptions = computed<CompleteOption[]>(() => {
@@ -77,9 +80,6 @@ function onChange(index: number) {
 	gap 1px
 	hover-transition(background, box-shadow)
 
-	&:hover
-		background var(--tq-color-input-hover)
-
 	// &:focus-within
 	// 	box-shadow 0 0 0 1px var(--tq-color-primary)
 
@@ -91,18 +91,24 @@ input
 	opacity 0
 
 label
-	display block
+	display flex
 	line-height var(--tq-input-height)
+	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
 	text-align center
+	justify-content center
+	align-items center
 	hover-transition(background, color)
 
 	&:hover
-		background var(--tq-color-tinted-input-active)
+		background var(--tq-color-input-hover)
 
 	&.active
 		background var(--tq-color-primary)
 		color var(--tq-color-on-primary)
 		transition none
+
+		&:hover
+			background var(--tq-color-primary-hover)
 </style>

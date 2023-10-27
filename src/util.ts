@@ -1,5 +1,8 @@
 export function toFixed(value: number, precision: number) {
-	return value
+	// TODO: Fix this
+	if (value === undefined) console.error('Error')
+
+	return (value ?? 0)
 		.toFixed(precision)
 		.replace(/\.(.*?)[0]+$/, '.$1')
 		.replace(/\.$/, '')
