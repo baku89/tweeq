@@ -25,7 +25,7 @@ defineEmits<{
 .InputCode
 	position relative
 	background blue
-	min-height calc(var(--tq-input-height) * 10)
+	min-height calc(var(--tq-input-height) * 20)
 	min-width 45em
 
 
