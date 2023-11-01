@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import {pausableWatch, useElementSize} from '@vueuse/core'
+import {useElementSize} from '@vueuse/core'
 import {Bndr} from 'bndr-js'
 import {scalar} from 'linearly'
 import {clamp} from 'lodash'
-import {computed, ref, watch} from 'vue'
+import {computed, ref, watch, watchEffect} from 'vue'
 
 import {useBndr} from '../useBndr'
 import {toPercent} from '../util'
 
 interface Props {
 	visibleRegion?: {left: number; width: number}
+	visibleArea?: {left: number; width: number}
 }
 
 const props = defineProps<Props>()
@@ -24,12 +25,12 @@ watch(
 	region => {
 		if (region !== undefined) {
 			if (region.left < scroll.value) {
-				scroll.value = region.left
+				setScroll(region.left)
 			} else if (
 				region.left + region.width >
 				scroll.value + containerWidth.value
 			) {
-				scroll.value = region.left + region.width - containerWidth.value
+				setScroll(region.left + region.width - containerWidth.value)
 			}
 		}
 	},
@@ -38,6 +39,7 @@ watch(
 
 const emit = defineEmits<{
 	zoomHorizontal: [factor: number]
+	'update:visibleArea': [area: {left: number; width: number}]
 }>()
 
 const $root = ref<null | HTMLElement>(null)
@@ -51,20 +53,17 @@ const $knob = ref<null | HTMLElement>(null)
 const $scrollbar = ref<null | HTMLElement>(null)
 const {width: scrollbarWidth} = useElementSize($scrollbar)
 
-const scroll = ref(0)
-
-const scrollWatcher = pausableWatch(
-	[containerWidth, contentWidth, scroll],
-	() => {
-		scrollWatcher.pause()
-		scroll.value = clamp(scroll.value, 0, scrollMax.value)
-		scrollWatcher.resume()
-	},
-	{flush: 'pre'}
-)
-
 const scrollMax = computed(() => {
 	return contentWidth.value - containerWidth.value
+})
+
+const scroll = ref(0)
+function setScroll(value: number) {
+	scroll.value = clamp(value, 0, scrollMax.value)
+}
+
+watchEffect(() => {
+	setScroll(scroll.value)
 })
 
 useBndr($root, $root => {
@@ -76,7 +75,7 @@ useBndr($root, $root => {
 	const altPressed = Bndr.keyboard().pressed('alt')
 
 	pointerScroll.on(([x]) => {
-		scroll.value += x
+		setScroll(scroll.value + x)
 	})
 
 	pointerScroll.while(altPressed, false).on(([, y]) => {
@@ -92,7 +91,7 @@ useBndr($knob, $bar => {
 		const dx = d.delta[0] / scrollbarWidth.value
 		const w = containerWidth.value / contentWidth.value
 
-		scroll.value += (dx / (1 - w)) * scrollMax.value
+		setScroll(scroll.value + (dx / (1 - w)) * scrollMax.value)
 	})
 })
 
@@ -110,6 +109,12 @@ const barStyles = computed(() => {
 		width: toPercent(Math.min(width, 1)),
 		left: toPercent(left),
 	}
+})
+
+watchEffect(() => {
+	const left = scroll.value
+	const width = containerWidth.value
+	emit('update:visibleArea', {left, width})
 })
 </script>
 
