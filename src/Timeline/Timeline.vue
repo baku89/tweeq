@@ -3,14 +3,13 @@ import {useElementSize} from '@vueuse/core'
 import {Bndr} from 'bndr-js'
 import {scalar} from 'linearly'
 import {clamp} from 'lodash'
-import {computed, ref, watch, watchEffect} from 'vue'
+import {computed, ref, watch} from 'vue'
 
 import {useBndr} from '../useBndr'
 import {toPercent} from '../util'
 
 interface Props {
-	visibleRegion?: {left: number; width: number}
-	visibleArea?: {left: number; width: number}
+	scroll: number
 }
 
 const props = defineProps<Props>()
@@ -20,26 +19,9 @@ defineSlots<{
 	scrollbarRight: void
 }>()
 
-watch(
-	() => props.visibleRegion,
-	region => {
-		if (region !== undefined) {
-			if (region.left < scroll.value) {
-				setScroll(region.left)
-			} else if (
-				region.left + region.width >
-				scroll.value + containerWidth.value
-			) {
-				setScroll(region.left + region.width - containerWidth.value)
-			}
-		}
-	},
-	{flush: 'pre'}
-)
-
 const emit = defineEmits<{
-	zoomHorizontal: [factor: number]
-	'update:visibleArea': [area: {left: number; width: number}]
+	'update:scroll': [number]
+	zoom: [{origin: number; zoomDelta: number}]
 }>()
 
 const $root = ref<null | HTMLElement>(null)
@@ -57,30 +39,35 @@ const scrollMax = computed(() => {
 	return contentWidth.value - containerWidth.value
 })
 
-const scroll = ref(0)
-function setScroll(value: number) {
-	scroll.value = clamp(value, 0, scrollMax.value)
-}
-
-watchEffect(() => {
-	setScroll(scroll.value)
+const scroll = computed(() => {
+	return clamp(props.scroll, 0, scrollMax.value)
 })
+
+function scrollTo(value: number) {
+	const left = clamp(value, 0, scrollMax.value)
+	emit('update:scroll', left)
+}
+function scrollBy(value: number) {
+	scrollTo(props.scroll + value)
+}
 
 useBndr($root, $root => {
 	const pointer = Bndr.pointer($root)
 	const pointerScroll = pointer.scroll()
 
-	// const center = pointer.position({coordinate: 'offset'}).map(([x]) => x)
+	const center = pointer.position({coordinate: 'offset'}).map(([x]) => x)
 
 	const altPressed = Bndr.keyboard().pressed('alt')
 
-	pointerScroll.on(([x]) => {
-		setScroll(scroll.value + x)
-	})
-
-	pointerScroll.while(altPressed, false).on(([, y]) => {
-		const s = 1.003
-		emit('zoomHorizontal', s ** y)
+	pointerScroll.on(([x, y]) => {
+		if (altPressed.value) {
+			let origin = props.scroll + (center.value ?? 0)
+			const zoomDelta = 1.003 ** y
+			origin = clamp(origin, 0, scrollMax.value * zoomDelta)
+			emit('zoom', {origin, zoomDelta})
+		} else {
+			scrollBy(x)
+		}
 	})
 })
 
@@ -91,7 +78,7 @@ useBndr($knob, $bar => {
 		const dx = d.delta[0] / scrollbarWidth.value
 		const w = containerWidth.value / contentWidth.value
 
-		setScroll(scroll.value + (dx / (1 - w)) * scrollMax.value)
+		scrollBy((dx / (1 - w)) * scrollMax.value)
 	})
 })
 
@@ -103,7 +90,7 @@ const contentStyles = computed(() => {
 
 const barStyles = computed(() => {
 	const width = containerWidth.value / contentWidth.value
-	const left = scalar.fit(scroll.value, 0, scrollMax.value, 0, 1 - width)
+	const left = scalar.fit(props.scroll, 0, scrollMax.value, 0, 1 - width)
 
 	return {
 		width: toPercent(Math.min(width, 1)),
@@ -111,10 +98,25 @@ const barStyles = computed(() => {
 	}
 })
 
-watchEffect(() => {
-	const left = scroll.value
-	const width = containerWidth.value
-	emit('update:visibleArea', {left, width})
+watch(
+	() => containerWidth.value,
+	() => {
+		if (props.scroll > scrollMax.value) {
+			scrollTo(scrollMax.value)
+		}
+	}
+)
+
+function showRegion({left, width}: {left: number; width: number}) {
+	if (left < props.scroll) {
+		scrollTo(left)
+	} else if (left + width > props.scroll + containerWidth.value) {
+		scrollTo(left + width - containerWidth.value)
+	}
+}
+
+defineExpose({
+	showRegion,
 })
 </script>
 
@@ -163,7 +165,6 @@ watchEffect(() => {
 	display grid
 	grid-template-columns 1fr min-content
 	gap 9px
-
 
 .scrollbar
 	position relative
