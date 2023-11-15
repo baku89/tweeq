@@ -117,6 +117,7 @@ function showRegion({left, width}: {left: number; width: number}) {
 
 defineExpose({
 	showRegion,
+	containerWidth,
 })
 </script>
 
