@@ -44,8 +44,8 @@ onMounted(() => {
 
 	Bndr.pointer($divider.value)
 		.drag({pointerCapture: true})
-		.on(({justStarted, delta}) => {
-			if (justStarted) draggingSize = width.value
+		.on(({type, delta}) => {
+			if (type === 'down') draggingSize = width.value
 
 			const d = props.direction === 'horizontal' ? delta[0] : delta[1]
 

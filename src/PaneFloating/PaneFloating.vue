@@ -106,7 +106,7 @@ onMounted(() => {
 	function onDragHoriz(e: DragData, isLeft: boolean) {
 		const p = position.value
 
-		if (e.justStarted) {
+		if (e.type === 'down') {
 			widthAtDragStart = bound.width.value
 		}
 
@@ -166,7 +166,7 @@ onMounted(() => {
 	function onDragVert(e: DragData, isTop: boolean) {
 		const p = position.value
 
-		if (e.justStarted) {
+		if (e.type === 'down') {
 			heightAtDragStart = bound.height.value
 		}
 
