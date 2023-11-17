@@ -1,15 +1,20 @@
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import {fileURLToPath} from 'url'
 import {defineConfig} from 'vite'
+import eslint from 'vite-plugin-eslint'
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
 	return {
-		plugins: [vue()],
+		plugins: [vue(), eslint()],
 		resolve: {
-			alias: {
-				'@': path.resolve(__dirname, './src'),
-			},
+			alias: [
+				{
+					find: 'tweeq',
+					replacement: fileURLToPath(new URL('./src', import.meta.url)),
+				},
+			],
 		},
 		publicDir: mode === 'development' ? undefined : false,
 		build: {

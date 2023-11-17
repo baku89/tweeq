@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import InputNumber from '../src/InputNumber'
+import Tq from 'tweeq'
 </script>
 
 <template>
-	<InputNumber :modelValue="200" />
+	<Tq.InputNumber :modelValue="200" />
 </template>

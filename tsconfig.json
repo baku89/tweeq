@@ -18,7 +18,11 @@
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"noFallthroughCasesInSwitch": true
+		"noFallthroughCasesInSwitch": true,
+
+		"paths": {
+			"tweeq": ["./src/index.ts"]
+		}
 	},
-	"include": ["src"]
+	"include": ["src", "demo"]
 }
