@@ -70,8 +70,6 @@ export const useActionsStore = defineStore('actions', () => {
 
 			const action: Action = {...option, label, input}
 
-			console.log(action)
-
 			input?.on(() => {
 				runBeforePerformHooks(action)
 				option.perform()
