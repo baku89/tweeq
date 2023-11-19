@@ -37,7 +37,7 @@ import TitleBar from './TitleBar'
 
 export {type ErrorInfo}
 
-export {useActionsStore, type Action} from './stores/actions'
+export * from './stores/actions'
 export {useAppConfigStore} from './stores/appConfig'
 export {useThemeStore} from './stores/theme'
 export * from './useBndr'

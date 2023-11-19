@@ -6,7 +6,7 @@ import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
 import {useBndr} from '..'
-import {type Action, useActionsStore} from '../stores/actions'
+import {type ActionOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {unsignedMod} from '../util'
 
@@ -51,7 +51,7 @@ const filteredActions = computed(() => {
 	})
 })
 
-const selectedAction = ref<null | Action>(null)
+const selectedAction = ref<null | ActionOptions>(null)
 
 watch(filteredActions, () => {
 	if (filteredActions.value.length > 0) {
@@ -88,7 +88,7 @@ function onKeydown(e: KeyboardEvent) {
 	}
 }
 
-function perform(action: Action) {
+function perform(action: ActionOptions) {
 	performedActions.value = [
 		...new Set([action.id, ...performedActions.value]),
 	].slice(0, 10)
@@ -126,7 +126,17 @@ function perform(action: Action) {
 				@click="perform(action)"
 			>
 				<Icon class="action-icon" :icon="action.icon ?? ''" />
-				{{ action.label }}
+				<span class="action-label">{{ action.label }}</span>
+				<div v-if="action.input?.icon" class="action-input-icon">
+					<template v-for="(icon, index) in action.input.icon">
+						<span v-if="typeof icon === 'string'" :key="index">{{ icon }}</span>
+						<Icon
+							v-if="icon.type === 'iconify'"
+							:key="index"
+							:icon="icon.icon"
+						/>
+					</template>
+				</div>
 			</li>
 		</ul>
 	</div>
@@ -190,5 +200,16 @@ function perform(action: Action) {
 
 .action-icon
 	width 20px
+
+.action-label
+	flex-grow 1
+
+.action-input-icon
+	opacity .5
+	font-size 1.1em
+	display flex
+	align-items center
+
+	.iconify
+		width 1em
 </style>
-../useAction ../stores/useAppStorage ../stores/useActions

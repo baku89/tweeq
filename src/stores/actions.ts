@@ -1,23 +1,25 @@
-import {Bndr} from 'bndr-js'
+import {Bndr, Emitter} from 'bndr-js'
 import {title} from 'case'
 import {defineStore} from 'pinia'
 import {onBeforeUnmount, onUnmounted, reactive} from 'vue'
 
-export interface Action {
+interface ActionBase {
 	id: string
-	label: string
 	shortLabel?: string
 	menu?: string
 	icon?: string
-	input?: string | Bndr | (string | Bndr)[]
 	perform(): any
 }
 
-export interface MinimalAction extends Omit<Action, 'label'> {
-	label?: string
+export interface Action extends ActionBase {
+	label: string
+	input?: Bndr
 }
 
-const Emitters = new Map<string, Bndr.Emitter[]>()
+export interface ActionOptions extends ActionBase {
+	label?: string
+	input?: string | Bndr | (string | Bndr)[]
+}
 
 const keyboard = Bndr.keyboard()
 const gamepad = Bndr.gamepad()
@@ -25,61 +27,66 @@ const gamepad = Bndr.gamepad()
 export const useActionsStore = defineStore('actions', () => {
 	const allActions = reactive<Record<string, Action>>({})
 
-	function register(actions: MinimalAction[]) {
-		for (const action of actions as Action[]) {
-			if (!action.label) {
-				action.label = title(action.id)
+	function register(options: ActionOptions[]) {
+		const emitters = new Set<Emitter>()
+
+		for (const option of options) {
+			if (option.id in options) {
+				throw new Error(`Action ${option.id} is already registered`)
 			}
 
-			if (action.id in actions) {
-				throw new Error(`Action ${action.id} is already registered`)
-			}
+			const label = option.label ? option.label : title(option.id)
 
-			allActions[action.id] = action
+			let input: Bndr | undefined
 
-			if (action.input) {
-				const performAction = () => {
-					runBeforePerformHooks(action)
-					action.perform()
-				}
+			if (option.input) {
+				const inputs = Array.isArray(option.input)
+					? option.input
+					: [option.input]
 
-				const inputs = Array.isArray(action.input)
-					? action.input
-					: [action.input]
-
-				const emitters: Bndr.Emitter[] = []
-
-				for (const input of inputs) {
-					let emitter: Bndr.Emitter
-
+				const emitters = inputs.map(input => {
 					if (typeof input === 'string') {
 						if (input.startsWith('gamepad:')) {
 							// Gamepad
 							const button = input.split(':')[1]
-							emitter = gamepad.button(button).down()
+							return gamepad.button(button).down()
 						} else {
 							// keyboard
-							emitter = keyboard.keydown(input, {
+							return keyboard.keydown(input, {
 								capture: true,
 								preventDefault: true,
 							})
 						}
-					} else {
-						emitter = input
 					}
-					emitter.on(performAction)
-					emitters.push(emitter)
-				}
+					return input
+				})
 
-				Emitters.set(action.id, emitters)
+				if (emitters.length === 1) {
+					input = emitters[0]
+				} else if (emitters.length > 1) {
+					input = Bndr.combine(...emitters)
+				}
 			}
+
+			const action: Action = {...option, label, input}
+
+			console.log(action)
+
+			input?.on(() => {
+				runBeforePerformHooks(action)
+				option.perform()
+			})
+
+			allActions[option.id] = action
+			emitters.add(input)
 		}
 
 		onBeforeUnmount(() => {
-			for (const action of actions) {
+			for (const action of options) {
 				delete allActions[action.id]
-				Emitters.get(action.id)?.forEach(e => e.dispose())
 			}
+			emitters.forEach(emitter => emitter.dispose())
+			emitters.clear()
 		})
 	}
 
