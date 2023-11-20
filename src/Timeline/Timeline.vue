@@ -40,9 +40,16 @@ const scrollMax = computed(() => {
 	return contentWidth.value - containerWidth.value
 })
 
-const scroll = computed(() => {
-	return clamp(props.scroll, 0, scrollMax.value)
-})
+watch(
+	() => [props.scroll, scrollMax.value] as const,
+	([scroll, scrollMax]) => {
+		const clamped = clamp(scroll, 0, scrollMax)
+		if (clamped !== props.scroll) {
+			emit('update:scroll', clamped)
+		}
+	},
+	{flush: 'sync'}
+)
 
 function scrollTo(value: number) {
 	const left = clamp(value, 0, scrollMax.value)
@@ -85,7 +92,7 @@ useBndr($knob, $bar => {
 
 const contentStyles = computed(() => {
 	return {
-		transform: `translateX(${-scroll.value}px)`,
+		transform: `translateX(${-props.scroll}px)`,
 	}
 })
 
