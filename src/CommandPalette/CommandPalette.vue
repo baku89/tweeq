@@ -7,7 +7,7 @@ import {computed, ref, watch} from 'vue'
 
 import {useBndr} from '..'
 import BindIcon from '../BindIcon'
-import {type ActionOptions, useActionsStore} from '../stores/actions'
+import {type ActionItemOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {unsignedMod} from '../util'
 
@@ -52,7 +52,7 @@ const filteredActions = computed(() => {
 	})
 })
 
-const selectedAction = ref<null | ActionOptions>(null)
+const selectedAction = ref<null | ActionItemOptions>(null)
 
 watch(filteredActions, () => {
 	if (filteredActions.value.length > 0) {
@@ -89,7 +89,7 @@ function onKeydown(e: KeyboardEvent) {
 	}
 }
 
-function perform(action: ActionOptions) {
+function perform(action: ActionItemOptions) {
 	performedActions.value = [
 		...new Set([action.id, ...performedActions.value]),
 	].slice(0, 10)

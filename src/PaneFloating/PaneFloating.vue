@@ -393,4 +393,3 @@ watch(position, position => emit('update:position', position))
 	height fit-content
 	hover-transition(opacity)
 </style>
-../stores/useAppStorage

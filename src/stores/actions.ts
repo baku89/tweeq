@@ -1,9 +1,9 @@
 import {Bndr, Emitter} from 'bndr-js'
 import {title} from 'case'
 import {defineStore} from 'pinia'
-import {onBeforeUnmount, onUnmounted, reactive} from 'vue'
+import {onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
 
-interface ActionBase {
+interface ActionItemBase {
 	id: string
 	shortLabel?: string
 	menu?: string
@@ -11,70 +11,76 @@ interface ActionBase {
 	perform(): any
 }
 
-export interface Action extends ActionBase {
+export interface ActionItem extends ActionItemBase {
 	label: string
 	bind?: Bndr
 }
 
-export interface ActionOptions extends ActionBase {
+export type Action = ActionItem | ActionGroup
+
+export interface ActionGroup {
+	icon?: string
+	id: string
+	label: string
+	children: Action[]
+}
+
+type BindDescriptor = string | Bndr | (string | Bndr)[]
+
+type ActionOptions = ActionItemOptions | ActionGroupOptions
+
+export interface ActionItemOptions extends ActionItemBase {
 	label?: string
-	bind?: string | Bndr | (string | Bndr)[]
+	bind?: BindDescriptor
+}
+
+interface ActionGroupOptions {
+	icon?: string
+	id: string
+	label?: string
+	children: ActionOptions[]
 }
 
 const keyboard = Bndr.keyboard()
 const gamepad = Bndr.gamepad()
 
+function bindDescriptorToEmitter(descriptor: BindDescriptor): Emitter {
+	const binds = Array.isArray(descriptor) ? descriptor : [descriptor]
+
+	const emitters = binds.map(b => {
+		if (typeof b === 'string') {
+			if (b.startsWith('gamepad:')) {
+				// Gamepad
+				const button = b.split(':')[1]
+				return gamepad.button(button).down()
+			} else {
+				// keyboard
+				return keyboard.keydown(b, {
+					capture: true,
+					preventDefault: true,
+				})
+			}
+		}
+		return b
+	})
+
+	if (emitters.length === 1) {
+		return emitters[0]
+	} else if (emitters.length > 1) {
+		return Bndr.combine(...emitters)
+	}
+}
+
 export const useActionsStore = defineStore('actions', () => {
-	const allActions = reactive<Record<string, Action>>({})
+	const allActions = reactive<Record<string, ActionItem>>({})
+
+	const menu = ref<Action[]>([])
 
 	function register(options: ActionOptions[]) {
 		const emitters = new Set<Emitter>()
 
 		for (const option of options) {
-			if (option.id in options) {
-				throw new Error(`Action ${option.id} is already registered`)
-			}
-
-			const label = option.label ? option.label : title(option.id)
-
-			let bind: Bndr | undefined
-
-			if (option.bind) {
-				const binds = Array.isArray(option.bind) ? option.bind : [option.bind]
-
-				const emitters = binds.map(b => {
-					if (typeof b === 'string') {
-						if (b.startsWith('gamepad:')) {
-							// Gamepad
-							const button = b.split(':')[1]
-							return gamepad.button(button).down()
-						} else {
-							// keyboard
-							return keyboard.keydown(b, {
-								capture: true,
-								preventDefault: true,
-							})
-						}
-					}
-					return b
-				})
-
-				if (emitters.length === 1) {
-					bind = emitters[0]
-				} else if (emitters.length > 1) {
-					bind = Bndr.combine(...emitters)
-				}
-			}
-
-			const action: Action = {...option, label, bind: bind}
-
-			bind?.on(() => {
-				runBeforePerformHooks(action)
-				option.perform()
-			})
-
-			allActions[option.id] = action
-			emitters.add(bind)
+			registerAction(option, menu.value)
 		}
 
 		onBeforeUnmount(() => {
@@ -84,6 +90,61 @@ export const useActionsStore = defineStore('actions', () => {
 			emitters.forEach(emitter => emitter.dispose())
 			emitters.clear()
 		})
+
+		function registerAction(option: ActionOptions, parent: Action[]) {
+			if ('perform' in option) {
+				registerItem(option, parent)
+			} else {
+				registerGroup(option, parent)
+			}
+		}
+
+		function registerGroup(option: ActionGroupOptions, parent: Action[]) {
+			const label = option.label ? option.label : title(option.id)
+
+			let group: ActionGroup
+
+			const existingAction = parent.find(a => a.id === option.id)
+
+			if (existingAction) {
+				if ('perform' in existingAction) {
+					throw new Error(`Existing item with id=${option.id} is not a group`)
+				}
+				group = existingAction
+
+				if (!group.icon && option.icon) {
+					group.icon = option.icon
+				}
+			} else {
+				group = {...option, label, children: []}
+				parent.push(group)
+			}
+
+			option.children.forEach(child => registerAction(child, group.children))
+		}
+
+		function registerItem(option: ActionItemOptions, parent: Action[]) {
+			if (option.id in allActions) {
+				throw new Error(`Action ${option.id} is already registered`)
+			}
+
+			const label = option.label ? option.label : title(option.id)
+			const bind = option.bind
+				? bindDescriptorToEmitter(option.bind)
+				: undefined
+
+			const action: ActionItem = {...option, label, bind}
+
+			bind?.on(() => {
+				runBeforePerformHooks(action)
+				option.perform()
+			})
+
+			allActions[option.id] = action
+			emitters.add(bind)
+
+			parent.push(action)
+		}
 	}
 
 	function perform(id: string) {
@@ -96,16 +157,16 @@ export const useActionsStore = defineStore('actions', () => {
 		action.perform()
 	}
 
-	function runBeforePerformHooks(action: Action) {
+	function runBeforePerformHooks(action: ActionItem) {
 		for (const hook of onBeforePerformHooks) {
 			hook(action)
 		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const onBeforePerformHooks = new Set<(action: Action) => void>()
+	const onBeforePerformHooks = new Set<(action: ActionItem) => void>()
 
-	function onBeforePerform(hook: (action: Action) => void) {
+	function onBeforePerform(hook: (action: ActionItem) => void) {
 		onBeforePerformHooks.add(hook)
 
 		onUnmounted(() => {
@@ -113,5 +174,5 @@ export const useActionsStore = defineStore('actions', () => {
 		})
 	}
 
-	return {register, perform, onBeforePerform, allActions}
+	return {register, perform, onBeforePerform, allActions, menu}
 })

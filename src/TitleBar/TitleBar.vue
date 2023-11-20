@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import {computed} from '@vue/reactivity'
 import {Menu as VMenu} from 'floating-vue'
-import {values} from 'lodash'
 import {ref} from 'vue'
 
 import ColorIcon from '../ColorIcon'
-import Menu, {MenuItem} from '../Menu'
-import {useActionsStore} from '../stores/actions'
+import Menu, {MenuCommand, MenuGroup} from '../Menu'
+import {Action, useActionsStore} from '../stores/actions'
 interface Props {
 	name: string
 	/**
@@ -26,13 +25,22 @@ const actions = useActionsStore()
 
 const isMenuShown = ref(false)
 
-const menus = computed<MenuItem[]>(() => {
-	return values(actions.allActions).map(action => {
+function convertToMenuItem(action: Action): MenuCommand | MenuGroup {
+	if ('perform' in action) {
 		return {
 			...action,
 			bindIcon: action.bind?.icon,
 		}
-	})
+	} else {
+		return {
+			...action,
+			children: action.children.map(convertToMenuItem),
+		}
+	}
+}
+
+const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
+	return actions.menu.map(convertToMenuItem)
 })
 </script>
 
@@ -41,10 +49,10 @@ const menus = computed<MenuItem[]>(() => {
 		<div class="left">
 			<VMenu
 				placement="bottom-start"
-				:triggers="['hover', 'click']"
-				:arrowOverflow="false"
-				:skidding="0"
+				:showTriggers="['hover', 'click']"
+				:hideTriggers="['click']"
 				:delay="0"
+				:distance="4"
 				@update:shown="isMenuShown = $event"
 			>
 				<ColorIcon class="app-icon" :src="icon" :class="{shown: isMenuShown}" />
