@@ -127,16 +127,11 @@ function perform(action: ActionOptions) {
 			>
 				<Icon class="action-icon" :icon="action.icon ?? ''" />
 				<span class="action-label">{{ action.label }}</span>
-				<div v-if="action.input?.icon" class="action-input-icon">
-					<template v-for="(icon, index) in action.input.icon">
-						<span v-if="typeof icon === 'string'" :key="index">{{ icon }}</span>
-						<Icon
-							v-if="icon.type === 'iconify'"
-							:key="index"
-							:icon="icon.icon"
-						/>
-					</template>
-				</div>
+				<BindIcon
+					v-if="action.input?.icon"
+					:icon="action.input.icon"
+					class="action-bind-icon"
+				/>
 			</li>
 		</ul>
 	</div>
@@ -204,12 +199,7 @@ function perform(action: ActionOptions) {
 .action-label
 	flex-grow 1
 
-.action-input-icon
+.action-bind-icon
 	opacity .5
 	font-size 1.1em
-	display flex
-	align-items center
-
-	.iconify
-		width 1em
 </style>
