@@ -62,7 +62,7 @@ defineProps<Props>()
 				:showTriggers="['hover', 'click']"
 				:hideTriggers="['click']"
 				:delay="0"
-				:distance="4"
+				:distance="6"
 				:instantMove="true"
 			>
 				<li class="menu">
