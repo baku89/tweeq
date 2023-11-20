@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import ColorIcon from '../ColorIcon'
+import {computed} from '@vue/reactivity'
+import {Menu as VMenu} from 'floating-vue'
+import {values} from 'lodash'
+import {ref} from 'vue'
 
+import ColorIcon from '../ColorIcon'
+import Menu, {MenuItem} from '../Menu'
+import {useActionsStore} from '../stores/actions'
 interface Props {
 	name: string
+	/**
+	 * URL to the icon image.
+	 */
 	icon: string
 }
 defineProps<Props>()
@@ -12,12 +21,37 @@ defineSlots<{
 	center(): any
 	right(): any
 }>()
+
+const actions = useActionsStore()
+
+const isMenuShown = ref(false)
+
+const menus = computed<MenuItem[]>(() => {
+	return values(actions.allActions).map(action => {
+		return {
+			...action,
+			bindIcon: action.bind?.icon,
+		}
+	})
+})
 </script>
 
 <template>
 	<div class="TitleBar">
 		<div class="left">
-			<ColorIcon class="icon" :src="icon" />
+			<VMenu
+				placement="bottom-start"
+				:triggers="['hover', 'click']"
+				:arrowOverflow="false"
+				:skidding="0"
+				:delay="0"
+				@update:shown="isMenuShown = $event"
+			>
+				<ColorIcon class="app-icon" :src="icon" :class="{shown: isMenuShown}" />
+				<template #popper>
+					<Menu :items="menus" />
+				</template>
+			</VMenu>
 			<span class="app-name">{{ name }}</span>
 			<slot name="left" />
 		</div>
@@ -54,6 +88,8 @@ defineSlots<{
 	@media (display-mode: window-controls-overlay)
 		background linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
 
+.app-icon.shown
+	color var(--tq-color-primary)
 
 .left, .center, .right
 	display flex
@@ -66,7 +102,7 @@ defineSlots<{
 .right
 	flex-direction row-reverse
 
-.icon
+.app-icon
 	height calc(var(--titlebar-area-height) - .8rem)
 
 .app-name

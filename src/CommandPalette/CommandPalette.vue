@@ -6,6 +6,7 @@ import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
 import {useBndr} from '..'
+import BindIcon from '../BindIcon'
 import {type ActionOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {unsignedMod} from '../util'

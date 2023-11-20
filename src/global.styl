@@ -83,12 +83,28 @@ hr
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
 
+// Overrides Floating-Vue themes
+
+// Tooltip
 .v-popper--theme-tooltip
 	.v-popper__inner
-		background 'color-mix(in srgb, var(--tq-color-inverse-surface) 70%, transparent)' % '' !important
+		background set-alpha(--tq-color-inverse-surface, .7) !important
 		color var(--tq-color-inverse-on-surface) !important
 		line-height 1.4
 		backdrop-filter blur(12px)
 
 	.v-popper__arrow-outer
-		border-color var(--tq-color-inverse-surface) !important
+		border-color set-alpha(--tq-color-inverse-surface, .7) !important
+
+// Menu
+.v-popper--theme-menu
+	.v-popper__arrow-container
+		display none
+
+	.v-popper__inner
+		border-radius var(--tq-input-border-radius) !important
+		border 1px solid var(--tq-color-surface-border) !important
+		background set-alpha(--tq-color-surface, .8) !important
+		overflow hidden
+		color var(--tq-color-input-on) !important
+		backdrop-filter blur(5px)

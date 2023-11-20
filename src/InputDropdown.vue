@@ -244,7 +244,7 @@ $right-arrow-width = 1em
 .select
 	margin 1px
 	padding 0
-	background 'color-mix(in srgb, var(--tq-color-input) 50%, transparent)' % ''
+	background set-alpha(--tq-color-input, .5)
 	backdrop-filter blur(5px)
 	border 1px solid var(--tq-color-surface-border)
 	border-radius var(--tq-input-border-radius)

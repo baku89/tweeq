@@ -13,12 +13,12 @@ interface ActionBase {
 
 export interface Action extends ActionBase {
 	label: string
-	input?: Bndr
+	bind?: Bndr
 }
 
 export interface ActionOptions extends ActionBase {
 	label?: string
-	input?: string | Bndr | (string | Bndr)[]
+	bind?: string | Bndr | (string | Bndr)[]
 }
 
 const keyboard = Bndr.keyboard()
@@ -37,46 +37,44 @@ export const useActionsStore = defineStore('actions', () => {
 
 			const label = option.label ? option.label : title(option.id)
 
-			let input: Bndr | undefined
+			let bind: Bndr | undefined
 
-			if (option.input) {
-				const inputs = Array.isArray(option.input)
-					? option.input
-					: [option.input]
+			if (option.bind) {
+				const binds = Array.isArray(option.bind) ? option.bind : [option.bind]
 
-				const emitters = inputs.map(input => {
-					if (typeof input === 'string') {
-						if (input.startsWith('gamepad:')) {
+				const emitters = binds.map(b => {
+					if (typeof b === 'string') {
+						if (b.startsWith('gamepad:')) {
 							// Gamepad
-							const button = input.split(':')[1]
+							const button = b.split(':')[1]
 							return gamepad.button(button).down()
 						} else {
 							// keyboard
-							return keyboard.keydown(input, {
+							return keyboard.keydown(b, {
 								capture: true,
 								preventDefault: true,
 							})
 						}
 					}
-					return input
+					return b
 				})
 
 				if (emitters.length === 1) {
-					input = emitters[0]
+					bind = emitters[0]
 				} else if (emitters.length > 1) {
-					input = Bndr.combine(...emitters)
+					bind = Bndr.combine(...emitters)
 				}
 			}
 
-			const action: Action = {...option, label, input}
+			const action: Action = {...option, label, bind: bind}
 
-			input?.on(() => {
+			bind?.on(() => {
 				runBeforePerformHooks(action)
 				option.perform()
 			})
 
 			allActions[option.id] = action
-			emitters.add(input)
+			emitters.add(bind)
 		}
 
 		onBeforeUnmount(() => {
@@ -104,6 +102,7 @@ export const useActionsStore = defineStore('actions', () => {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const onBeforePerformHooks = new Set<(action: Action) => void>()
 
 	function onBeforePerform(hook: (action: Action) => void) {
