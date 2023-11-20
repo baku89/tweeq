@@ -16,6 +16,7 @@ const props = defineProps<Props>()
 
 defineSlots<{
 	default: void
+	fixed: void
 	scrollbarRight: void
 }>()
 
@@ -127,6 +128,9 @@ defineExpose({
 			<div ref="$content" class="content" :style="contentStyles">
 				<slot />
 			</div>
+			<div class="fixed-wrapper">
+				<slot name="fixed" />
+			</div>
 		</div>
 		<div class="scrollbar-wrapper">
 			<div ref="$scrollbar" class="scrollbar">
@@ -182,6 +186,14 @@ defineExpose({
 
 	&:hover
 		opacity 1
+
+.fixed-wrapper
+	position absolute
+	inset 0
+	pointer-events none
+
+	& > :deep(*)
+		pointer-events auto
 
 .scrollbar-right
 	height 100%
