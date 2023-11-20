@@ -35,5 +35,11 @@ watch(
 </script>
 
 <template>
-	<img ref="$img" />
+	<img ref="$img" class="TqGlslCanvas" />
 </template>
+
+<style lang="stylus" scoped>
+
+.TqGlslCanvas
+	pointer-events none
+</style>
