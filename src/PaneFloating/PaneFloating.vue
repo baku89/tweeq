@@ -390,6 +390,6 @@ watch(position, position => emit('update:position', position))
 .content
 	padding var(--tq-pane-padding) calc(var(--tq-pane-padding) - var(--tq-scrollbar-width)) var(--tq-pane-padding) var(--tq-pane-padding)
 	position relative
-	height fit-content
+	height 100%
 	hover-transition(opacity)
 </style>
