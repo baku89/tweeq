@@ -1,6 +1,7 @@
 import {
 	applyTheme,
 	argbFromHex,
+	customColor,
 	hexFromArgb,
 	themeFromSourceColor,
 } from '@material/material-color-utilities'
@@ -41,6 +42,9 @@ export interface Theme {
 	colorErrorContainer: string
 	colorOnErrorContainer: string
 
+	// Semantic Colors
+	colorAffirmative: string
+
 	// Font
 	fontCode: string
 	fontHeading: string
@@ -70,13 +74,13 @@ export const useThemeStore = defineStore('theme', () => {
 	const browserColorMode = useColorMode()
 
 	const accentColor = ref('#0000ff') //appConfig.ref('theme.accentColor', '#0000ff')
-	const colorMode = appConfig.ref<ColorMode>('theme.colorMode', 'auto')
+	const savedColorMode = appConfig.ref<ColorMode>('theme.colorMode', 'auto')
 
-	const computedColorMode = computed<'light' | 'dark'>(() => {
-		if (colorMode.value === 'auto') {
+	const colorMode = computed<'light' | 'dark'>(() => {
+		if (savedColorMode.value === 'auto') {
 			return browserColorMode.value === 'dark' ? 'dark' : 'light'
 		} else {
-			return colorMode.value
+			return savedColorMode.value
 		}
 	})
 
@@ -85,7 +89,7 @@ export const useThemeStore = defineStore('theme', () => {
 	})
 
 	watch(materialTheme, () => {
-		const dark = computedColorMode.value === 'dark'
+		const dark = colorMode.value === 'dark'
 
 		// Apply the theme to the body by updating custom properties for material tokens
 		applyTheme(materialTheme.value, {target: document.body, dark})
@@ -94,10 +98,18 @@ export const useThemeStore = defineStore('theme', () => {
 	const theme = computed<Theme>(() => {
 		// Get the theme from a hex color
 
-		const dark = computedColorMode.value === 'dark'
+		const dark = colorMode.value === 'dark'
 
 		const palettes = materialTheme.value.palettes
 		const colors = materialTheme.value.schemes[dark ? 'dark' : 'light']
+
+		const accent = argbFromHex(accentColor.value)
+
+		const affirmative = customColor(accent, {
+			value: 0x4752ff,
+			name: 'affirmative',
+			blend: true,
+		})
 
 		return {
 			colorPrimary: toColor(dark ? palettes.primary.tone(40) : colors.primary),
@@ -110,7 +122,7 @@ export const useThemeStore = defineStore('theme', () => {
 			colorOnPrimaryContainer: toColor(colors.onPrimaryContainer),
 			colorBackground: dark ? '#1a1a1a' : '#ffffff',
 			colorOnBackground: toColor(colors.onBackground),
-			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 40)),
+			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 70)),
 			colorSurface: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
 			colorSurfaceBorder: toColor(colors.onBackground, 0.12),
 			colorInverseSurface: toColor(colors.inverseSurface, 0.9),
@@ -127,6 +139,11 @@ export const useThemeStore = defineStore('theme', () => {
 			colorOnError: toColor(colors.onError),
 			colorErrorContainer: toColor(colors.errorContainer),
 			colorOnErrorContainer: toColor(colors.onErrorContainer),
+
+			// Semantic Colors
+			colorAffirmative: toColor(
+				dark ? affirmative.dark.color : affirmative.light.color
+			),
 
 			fontCode: "'Fira Code', monospace",
 			fontHeading: 'Inter, sans-serif',
@@ -167,7 +184,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 	return {
 		accentColor,
-		colorMode,
+		colorMode: savedColorMode,
 		...toRefs(toReactive(theme)),
 	}
 })
