@@ -7,8 +7,7 @@ import {
 	useKeyModifier,
 	whenever,
 } from '@vueuse/core'
-import {useWheel} from '@vueuse/gesture'
-import {scalar, type vec2} from 'linearly'
+import {scalar} from 'linearly'
 import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
 import {useDrag} from '../useDrag'
@@ -177,23 +176,7 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 })
 
 //------------------------------------------------------------------------------
-// Scroll to tweak
-
-useWheel(
-	({delta: [, y], event}: {delta: vec2; event: WheelEvent}) => {
-		event.preventDefault()
-
-		let newValue = props.modelValue + y * speedMultiplierKey.value
-
-		if (props.step) {
-			newValue = scalar.quantize(newValue, props.step)
-		}
-		newValue = scalar.clamp(newValue, validMin.value, validMax.value)
-
-		emit('update:modelValue', newValue)
-	},
-	{domTarget: root, eventOptions: {passive: false}}
-)
+// Input Events
 
 function onInput(e: Event) {
 	const el = e.target as HTMLInputElement
