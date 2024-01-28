@@ -802,10 +802,10 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bndr-js@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.14.0.tgz#89778f5f9fd0ee41c4ad4e67ee07df01b69cf9b2"
-  integrity sha512-BjLuIEtfoellcUXY4c0eUfJtp3wRYjX9Jggpo6NJtsuxbgf/3z26gvMyyBaD0ELoTxSRS4/5/pL4R73C3LFsBw==
+bndr-js@^0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.14.2.tgz#43c5d9c6e86ee387593f64f9a30fc0eedf317674"
+  integrity sha512-wfDW9c/6SVQ+PWB/4o3JAIfdxttk9epnWincKtvBrb/SkRttRa6NGaRj4aiy5J2gQ7aVOyxx2rzb2c9QdZaJBw==
   dependencies:
     case "^1.6.3"
     hotkeys-js "^3.10.2"
@@ -2173,6 +2173,10 @@ sleep-promise@^9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/sleep-promise/-/sleep-promise-9.1.0.tgz#101ebe65700bcd184709da95d960967b02b79d03"
   integrity sha512-UHYzVpz9Xn8b+jikYSD6bqvf754xL2uBUzDFwiU6NcdZeifPr6UfgU43xpkPu67VMS88+TI2PSI7Eohgqf2fKA==
+
+"smartknob@https://github.com/baku89/smartknob":
+  version "0.0.0"
+  resolved "https://github.com/baku89/smartknob#4eb988399c3fda6ffd3006772856093dfe9adb86"
 
 source-map-js@^1.0.2:
   version "1.0.2"
