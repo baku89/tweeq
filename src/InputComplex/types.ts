@@ -10,8 +10,8 @@ type ParameterDescCode = {type: 'code'} & Omit<CodeProps, 'modelValue'>
 type ParameterDescForType<T> = T extends number
 	? ParameterDescNumber
 	: T extends string
-	? ParameterDescString | ParameterDescCode
-	: never
+		? ParameterDescString | ParameterDescCode
+		: never
 
 export type ParameterDesc = ParameterBase &
 	(ParameterDescNumber | ParameterDescString | ParameterDescCode)

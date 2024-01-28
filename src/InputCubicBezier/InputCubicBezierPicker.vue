@@ -5,7 +5,6 @@ import {vec2} from 'linearly'
 import {computed, ref} from 'vue-demi'
 
 import useDrag from '../useDragV1'
-
 import {CubicBezierValue} from './util'
 
 interface Props {
