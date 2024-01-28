@@ -2,6 +2,7 @@
 	"name": "tweeq",
 	"version": "0.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build && vue-tsc --emitDeclarationOnly",
@@ -33,6 +34,7 @@
 		"chroma-js": "^2.4.2",
 		"eslint": "^8.50.0",
 		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier-vue": "^5.0.0",
 		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"eslint-plugin-vue": "^9.17.0",
@@ -58,6 +60,7 @@
 		"typescript": "^5.2.2",
 		"vite": "^4.4.9",
 		"vite-plugin-eslint": "^1.8.1",
+		"vite-plugin-glsl": "1.1.2",
 		"vue": "^3.3.4",
 		"vue-tsc": "^1.8.15"
 	}

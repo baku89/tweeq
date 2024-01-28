@@ -16,12 +16,7 @@
 		"ecmaVersion": 2022,
 		"sourceType": "module"
 	},
-	"plugins": [
-		"@typescript-eslint",
-		"simple-import-sort",
-		"unused-imports",
-		"jest"
-	],
+	"plugins": ["@typescript-eslint", "simple-import-sort", "unused-imports"],
 	"rules": {
 		"arrow-body-style": "off",
 		"prefer-arrow-callback": "off",

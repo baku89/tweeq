@@ -3,11 +3,12 @@ import path from 'path'
 import {fileURLToPath} from 'url'
 import {defineConfig} from 'vite'
 import eslint from 'vite-plugin-eslint'
+import glsl from 'vite-plugin-glsl'
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
 	return {
-		plugins: [vue(), eslint()],
+		plugins: [glsl(), vue(), eslint({fix: true})],
 		resolve: {
 			alias: [
 				{
@@ -33,6 +34,11 @@ export default defineConfig(({mode}) => {
 					},
 				},
 			},
+		},
+
+		define: {
+			// This is needed to make the PromiseQueue class available in the browser.
+			'process.env.PROMISE_QUEUE_COVERAGE': false,
 		},
 	}
 })
