@@ -170,7 +170,7 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 
 		if (isMouse) {
 			clearTimeout(resetTweakModeTimer)
-			resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 50)
+			resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 100)
 		}
 	},
 })
