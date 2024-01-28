@@ -1,6 +1,6 @@
-import {unrefElement} from '@vueuse/core'
+import {MaybeRef, unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, Ref, ref, toRefs, watch} from 'vue'
+import {reactive, Ref, ref, toRefs, unref, watch} from 'vue'
 
 interface DragState {
 	xy: vec2
@@ -14,9 +14,28 @@ interface DragState {
 type PointerType = 'mouse' | 'pen' | 'touch'
 
 interface UseDragOptions {
-	disabled?: Ref<boolean>
-	lockPointer?: boolean | Ref<boolean>
+	/**
+	 * Whether dragging is disabled
+	 * @default false
+	 */
+	disabled?: MaybeRef<boolean>
+
+	/**
+	 * Whether to lock the pointer when dragging
+	 * @default false
+	 */
+	lockPointer?: MaybeRef<boolean>
+
+	/**
+	 * Which pointer types can start dragging
+	 * @default ['mouse', 'pen', 'touch']
+	 */
 	pointerType?: PointerType[]
+
+	/**
+	 * The continuous press time until it is regarded as dragging
+	 * @default 0.5
+	 */
 	dragDelaySeconds?: number
 
 	onClick?: () => void
@@ -71,7 +90,7 @@ export function useDrag(
 		}
 
 		function onPointerDown(event: PointerEvent) {
-			if (disabled?.value) return
+			if (unref(disabled)) return
 			if (event.button === 2) return // Ignore right click
 			if (!event.isPrimary) return
 			if (!pointerType.includes(event.pointerType as PointerType)) return
@@ -88,7 +107,7 @@ export function useDrag(
 		}
 
 		function onPointerMove(event: PointerEvent) {
-			if (disabled?.value) return
+			if (unref(disabled)) return
 			if (!event.isPrimary) return
 
 			if (event.movementX !== undefined && event.movementY !== undefined) {
@@ -118,7 +137,7 @@ export function useDrag(
 		}
 
 		function onPointerUp(event: PointerEvent) {
-			if (disabled?.value) return
+			if (unref(disabled)) return
 			if (!event.isPrimary) return
 
 			if (lockPointerRef.value && 'exitPointerLock' in document) {
