@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {Icon} from '@iconify/vue'
-import {Emitter} from 'bndr-js'
+import {IconSequence} from 'bndr-js'
 
 interface Props {
-	icon: typeof Emitter.icon
+	icon: IconSequence
 }
 
 defineProps<Props>()
@@ -12,8 +12,12 @@ defineProps<Props>()
 <template>
 	<div class="BindIcon">
 		<template v-for="(ic, index) in icon">
-			<span v-if="typeof ic === 'string'" :key="index">{{ ic }}</span>
-			<Icon v-if="ic.type === 'iconify'" :key="index" :icon="ic.icon" />
+			<span v-if="typeof ic === 'string'" :key="index + 'text'">{{ ic }}</span>
+			<Icon
+				v-else-if="ic.type === 'iconify'"
+				:key="index + '_iconify'"
+				:icon="ic.icon"
+			/>
 		</template>
 	</div>
 </template>

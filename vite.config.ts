@@ -2,13 +2,19 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import {fileURLToPath} from 'url'
 import {defineConfig} from 'vite'
+import dts from 'vite-plugin-dts'
 import eslint from 'vite-plugin-eslint'
 import glsl from 'vite-plugin-glsl'
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
 	return {
-		plugins: [glsl(), vue(), eslint({fix: true})],
+		plugins: [
+			glsl(),
+			vue(),
+			eslint({fix: true}),
+			dts({tsconfigPath: './tsconfig.build.json'}),
+		],
 		resolve: {
 			alias: [
 				{
@@ -22,17 +28,12 @@ export default defineConfig(({mode}) => {
 			target: 'esnext',
 			lib: {
 				entry: path.resolve(__dirname, 'src/index.ts'),
-				name: 'Glisp UI',
+				name: 'Tweeq',
 				fileName: format => `index.${format}.js`,
 			},
 			outDir: 'lib',
 			rollupOptions: {
-				external: ['vue'],
-				output: {
-					globals: {
-						vue: 'Vue',
-					},
-				},
+				external: ['vue', '@traptitech/markdown-it-katex', 'monaco-editor'],
 			},
 		},
 

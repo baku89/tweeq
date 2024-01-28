@@ -40,7 +40,7 @@ function convertToMenuItem(action: Action): MenuCommand | MenuGroup {
 }
 
 const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
-	return actions.menu.map(convertToMenuItem)
+	return (actions.menu as Action[]).map(convertToMenuItem)
 })
 </script>
 

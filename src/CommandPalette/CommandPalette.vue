@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {Icon} from '@iconify/vue'
 import {useEventListener} from '@vueuse/core'
-import {Bndr} from 'bndr-js'
+import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, watch} from 'vue'
 
@@ -18,8 +18,8 @@ const searchWord = ref('')
 
 const appConfig = useAppConfigStore()
 
-const performedActions = appConfig.ref<string[]>(
-	'commandPalette.performedActions',
+const performedActionsHistory = appConfig.ref<string[]>(
+	'commandPalette.performedActionsHistory',
 	[]
 )
 
@@ -42,7 +42,7 @@ watch(
 
 const filteredActions = computed(() => {
 	if (searchWord.value === '' && open.value) {
-		return performedActions.value
+		return performedActionsHistory.value
 			.map(id => actions.allActions[id])
 			.filter(action => action !== undefined)
 	}
@@ -85,13 +85,13 @@ function onKeydown(e: KeyboardEvent) {
 	}
 
 	if (e.key === 'Enter' && selectedAction.value) {
-		perform(selectedAction.value)
+		perform(selectedAction.value as ActionItemOptions)
 	}
 }
 
 function perform(action: ActionItemOptions) {
-	performedActions.value = [
-		...new Set([action.id, ...performedActions.value]),
+	performedActionsHistory.value = [
+		...new Set([action.id, ...performedActionsHistory.value]),
 	].slice(0, 10)
 
 	$popover.value?.hidePopover()
@@ -129,8 +129,8 @@ function perform(action: ActionItemOptions) {
 				<Icon class="action-icon" :icon="action.icon ?? ''" />
 				<span class="action-label">{{ action.label }}</span>
 				<BindIcon
-					v-if="action.input?.icon"
-					:icon="action.input.icon"
+					v-if="action.bind?.icon"
+					:icon="action.bind.icon"
 					class="action-bind-icon"
 				/>
 			</li>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {Icon} from '@iconify/vue'
-import {Emitter} from 'bndr-js'
+import type {IconSequence} from 'bndr-js'
 import {Menu as VMenu} from 'floating-vue'
 import {ref} from 'vue'
 
@@ -11,7 +11,7 @@ export interface MenuCommand {
 	label: string
 	shortLabel?: string
 	perform: () => void
-	bindIcon?: typeof Emitter.icon
+	bindIcon?: IconSequence
 }
 
 export interface MenuGroup {

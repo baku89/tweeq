@@ -1,4 +1,4 @@
-import {Bndr, Emitter} from 'bndr-js'
+import * as Bndr from 'bndr-js'
 import {title} from 'case'
 import {defineStore} from 'pinia'
 import {onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
@@ -13,7 +13,7 @@ interface ActionItemBase {
 
 export interface ActionItem extends ActionItemBase {
 	label: string
-	bind?: Bndr
+	bind?: Bndr.Emitter
 }
 
 export type Action = ActionItem | ActionGroup
@@ -25,7 +25,7 @@ export interface ActionGroup {
 	children: Action[]
 }
 
-type BindDescriptor = string | Bndr | (string | Bndr)[]
+type BindDescriptor = string | Bndr.Emitter | (string | Bndr.Emitter)[]
 
 type ActionOptions = ActionItemOptions | ActionGroupOptions
 
@@ -44,7 +44,9 @@ interface ActionGroupOptions {
 const keyboard = Bndr.keyboard()
 const gamepad = Bndr.gamepad()
 
-function bindDescriptorToEmitter(descriptor: BindDescriptor): Emitter {
+function bindDescriptorToEmitter(
+	descriptor: BindDescriptor
+): Bndr.Emitter | undefined {
 	const binds = Array.isArray(descriptor) ? descriptor : [descriptor]
 
 	const emitters = binds.map(b => {
@@ -52,7 +54,7 @@ function bindDescriptorToEmitter(descriptor: BindDescriptor): Emitter {
 			if (b.startsWith('gamepad:')) {
 				// Gamepad
 				const button = b.split(':')[1]
-				return gamepad.button(button).down()
+				return gamepad.button(button as Bndr.ButtonName).down()
 			} else {
 				// keyboard
 				return keyboard.keydown(b, {
@@ -77,10 +79,10 @@ export const useActionsStore = defineStore('actions', () => {
 	const menu = ref<Action[]>([])
 
 	function register(options: ActionOptions[]) {
-		const emitters = new Set<Emitter>()
+		const emitters = new Set<Bndr.Emitter>()
 
 		for (const option of options) {
-			registerAction(option, menu.value)
+			registerAction(option, menu.value as Action[])
 		}
 
 		onBeforeUnmount(() => {
@@ -141,7 +143,9 @@ export const useActionsStore = defineStore('actions', () => {
 			})
 
 			allActions[option.id] = action
-			emitters.add(bind)
+			if (bind) {
+				emitters.add(bind)
+			}
 
 			parent.push(action)
 		}

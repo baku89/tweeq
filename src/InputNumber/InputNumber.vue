@@ -86,7 +86,7 @@ const tweakPrecision = computed(() => {
 
 const pointerSize = ref(0)
 
-let resetTweakModeTimer: NodeJS.Timeout
+let resetTweakModeTimer: ReturnType<typeof setTimeout>
 const tweakMode = ref<null | 'value' | 'speed'>(null)
 
 const {dragging: tweaking, pointerLocked} = useDrag(root, {

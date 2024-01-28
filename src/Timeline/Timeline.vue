@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
-import {Bndr} from 'bndr-js'
+import * as Bndr from 'bndr-js'
 import {scalar} from 'linearly'
 import {clamp} from 'lodash'
 import {computed, ref, watch} from 'vue'

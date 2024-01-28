@@ -1,5 +1,6 @@
 export function toFixed(value: number, precision: number) {
 	// TODO: Fix this
+	// eslint-disable-next-line no-console
 	if (value === undefined) console.error('Error')
 
 	return (value ?? 0)

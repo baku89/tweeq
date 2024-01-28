@@ -1,4 +1,4 @@
-import {Bndr} from 'bndr-js'
+import * as Bndr from 'bndr-js'
 import {onMounted, onUnmounted, Ref} from 'vue'
 
 export function useBndr(

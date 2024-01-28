@@ -4,12 +4,9 @@ import {ref, toRaw} from 'vue'
 import InputButton from '../InputButton.vue'
 import InputComplex, {Scheme} from '../InputComplex'
 import PaneModal from '../PaneModal'
+import {ShowOptions} from './types'
 
 const $modal = ref<typeof PaneModal | null>(null)
-
-interface ShowOptions {
-	readonly title?: string
-}
 
 const desc = ref<{
 	defaultValue: any

@@ -38,7 +38,7 @@ const $popover = ref<null | HTMLElement>(null)
 
 const refBound = useElementBounding($reference)
 
-let refBoundUpdateTimer: NodeJS.Timeout | null = null
+let refBoundUpdateTimer: ReturnType<typeof setTimeout> | null = null
 watch(
 	() => props.open,
 	open => {

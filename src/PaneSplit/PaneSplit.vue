@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Bndr} from 'bndr-js'
+import * as Bndr from 'bndr-js'
 import {clamp} from 'lodash'
 import {computed, onMounted, ref} from 'vue'
 
