@@ -26,7 +26,7 @@
 		"@types/promise-queue": "^2.2.3",
 		"@vueuse/core": "^10.7.2",
 		"@vueuse/gesture": "^2.0.0-beta.1",
-		"bndr-js": "^0.14.0",
+		"bndr-js": "^0.14.2",
 		"case": "^1.6.3",
 		"chroma-js": "^2.4.2",
 		"fast-fuzzy": "^1.12.0",
