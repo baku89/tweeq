@@ -49,6 +49,7 @@
 		"vue": "3.3.4"
 	},
 	"devDependencies": {
+		"@types/w3c-web-serial": "^1.0.6",
 		"@typescript-eslint/eslint-plugin": "^6.7.3",
 		"@vitejs/plugin-vue": "^4.3.4",
 		"@vue/eslint-config-prettier": "^8.0.0",
@@ -59,8 +60,11 @@
 		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"eslint-plugin-vue": "^9.17.0",
+		"eventemitter3": "^5.0.1",
 		"prettier": "^3.0.3",
 		"prettier-plugin-md-nocjsp": "^1.5.1",
+		"smartknobjs-proto": "^1.0.0",
+		"smartknobjs-webserial": "^1.0.0",
 		"stylus": "^0.60.0",
 		"typescript": "^5.2.2",
 		"vite": "^4.4.9",
