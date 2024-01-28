@@ -1,5 +1,12 @@
+import 'tweeq/global.styl'
+
+import {createPinia} from 'pinia'
 import {createApp} from 'vue'
 
 import Demo from './App.vue'
 
-createApp(Demo).mount('#app')
+const pinia = createPinia()
+const app = createApp(Demo)
+app.use(pinia)
+
+app.mount('#app')
