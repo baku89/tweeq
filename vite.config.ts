@@ -1,5 +1,5 @@
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import {resolve} from 'path'
 import {fileURLToPath} from 'url'
 import {defineConfig} from 'vite'
 import dts from 'vite-plugin-dts'
@@ -27,7 +27,7 @@ export default defineConfig(({mode}) => {
 		build: {
 			target: 'esnext',
 			lib: {
-				entry: path.resolve(__dirname, 'src/index.ts'),
+				entry: resolve(__dirname, 'src/index.ts'),
 				name: 'Tweeq',
 				fileName: format => `index.${format}.js`,
 			},
