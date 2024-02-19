@@ -22,6 +22,17 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.0.tgz#da950e622420bf96ca0d0f2909cdddac3acd8719"
   integrity sha512-vvPKKdMemU85V9WE/l5wZEmImpCtLqbnTvqDS2U1fJ96KrxoW7KrXhNsNCblQlg8Ck4b85yxdTyelsMUgFUXiw==
 
+"@baku89/pave@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@baku89/pave/-/pave-0.3.0.tgz#66154eb2575179f22e6c2efbbac757976b004c6c"
+  integrity sha512-O+W7FctIU7o4IR7EpmMvx0vopyCCoIv3Vi6XDUWXgUnWbiW63Rm8CWhrXzTYOhSiuvFiC+TZ7THrDxQxhyGebA==
+  dependencies:
+    "@types/bezier-js" "^4.1.3"
+    bezier-js "^6.1.4"
+    linearly "0.26.0"
+    paper "^0.12.17"
+    paperjs-offset "^1.0.8"
+
 "@esbuild/android-arm64@0.18.20":
   version "0.18.20"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.18.20.tgz#984b4f9c8d0377443cc2dfcef266d02244593622"
@@ -358,6 +369,11 @@
   version "1.0.38"
   resolved "https://registry.yarnpkg.com/@types/argparse/-/argparse-1.0.38.tgz#a81fd8606d481f873a3800c6ebae4f1d768a56a9"
   integrity sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==
+
+"@types/bezier-js@^4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@types/bezier-js/-/bezier-js-4.1.3.tgz#237d4fe7e9aae7edd0c27a71f9f236f4ddc1c562"
+  integrity sha512-FNVVCu5mx/rJCWBxLTcL7oOajmGtWtBTDjq6DSUWUI12GeePivrZZXz+UgE0D6VYsLEjvExRO03z4hVtu3pTEQ==
 
 "@types/chroma-js@^2.4.3":
   version "2.4.3"
@@ -791,6 +807,11 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+
+bezier-js@^6.1.4:
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-6.1.4.tgz#c7828f6c8900562b69d5040afb881bcbdad82001"
+  integrity sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==
 
 big-integer@^1.6.44:
   version "1.6.51"
@@ -1664,6 +1685,16 @@ line-intersect@^3.0.0:
   resolved "https://registry.yarnpkg.com/line-intersect/-/line-intersect-3.0.0.tgz#7e0808c80edda012586e125374af2db4dd62c987"
   integrity sha512-MAkwgBwwpyJhTWZ9EppTTFD6JxzYgh3BZxgI41CA2vSlANu4s5CXyTEJxKU3LRHitcF2vObHvE/s/lHxvKl2Kw==
 
+linearly@0.26.0:
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.26.0.tgz#970f1cd5e787b4c12771690d156c5c0595cb8dc4"
+  integrity sha512-DF+1L5Hp3mQaypuTsqF1qr6fVtC7QrDB8oorh/W+LfGvigUNqcAEeeO/iE7kx+ESKZT60QuUlF8tIzMGYP/a+w==
+
+linearly@0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.27.0.tgz#554807150afb469504f2e15487e027dc3cd79ad1"
+  integrity sha512-epvLdcEjWr0SntRPML5I0Qb7PgFmRNE9n7wq/tLPXLt6jypu3eWZkA1p9RYqK8Of6l2Slyhf57QxkR3HSkopPA==
+
 linearly@^0.20.3:
   version "0.20.3"
   resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.20.3.tgz#b2a938100118422aee7429da88716d7ea826a7b1"
@@ -1921,6 +1952,18 @@ pako@^0.2.5:
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
   integrity sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==
 
+paper@^0.12.17, paper@^0.12.4:
+  version "0.12.17"
+  resolved "https://registry.yarnpkg.com/paper/-/paper-0.12.17.tgz#57215615f3db5a32826ab60d3e08bc7953614052"
+  integrity sha512-oCe+e1C2w8hKIcGoAqUjD0GGxGPv+itrRXlEFUmp3H8tY/NTnHOkYgpJFPGw6OJ8Q1Wa6+RgzlY7Dx/2WWHtkA==
+
+paperjs-offset@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/paperjs-offset/-/paperjs-offset-1.0.8.tgz#3ddb297785a45b99126e3da3bca852e3612b3d68"
+  integrity sha512-rUXMtHH4bTNVrCgDcu+x71qyGoPe+01yZtrPD7bowji4VfWiDWzl4EUdRxiZnG5ooPg7b07mk6jVx33hNSojaA==
+  dependencies:
+    paper "^0.12.4"
+
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.1.tgz#691d2709e78c79fae3a156622452d00762caaaa2"
@@ -2173,10 +2216,6 @@ sleep-promise@^9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/sleep-promise/-/sleep-promise-9.1.0.tgz#101ebe65700bcd184709da95d960967b02b79d03"
   integrity sha512-UHYzVpz9Xn8b+jikYSD6bqvf754xL2uBUzDFwiU6NcdZeifPr6UfgU43xpkPu67VMS88+TI2PSI7Eohgqf2fKA==
-
-"smartknob@https://github.com/baku89/smartknob":
-  version "0.0.0"
-  resolved "https://github.com/baku89/smartknob#4eb988399c3fda6ffd3006772856093dfe9adb86"
 
 source-map-js@^1.0.2:
   version "1.0.2"

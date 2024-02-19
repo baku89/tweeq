@@ -18,6 +18,7 @@
 	"main": "./dist/index.umd.js",
 	"module": "./dist/index.es.js",
 	"dependencies": {
+		"@baku89/pave": "^0.3.0",
 		"@iconify/vue": "^4.1.1",
 		"@material/material-color-utilities": "^0.2.7",
 		"@traptitech/markdown-it-katex": "^3.6.0",
@@ -33,7 +34,7 @@
 		"floating-vue": "^5.2.0",
 		"fp-ts": "^2.16.2",
 		"line-intersect": "^3.0.0",
-		"linearly": "^0.20.3",
+		"linearly": "0.27.0",
 		"lodash": "^4.17.21",
 		"markdown-it": "^14.0.0",
 		"markdown-it-anchor": "^8.6.7",

@@ -7,9 +7,19 @@ useTweeq('com.baku89.tweeq-demo', {
 	accentColor: '#0000ff',
 })
 
-const value = ref(100)
+const value = ref(45)
+
+function onInput(v: number) {
+	value.value = v // scalar.quantize(v, 45)
+}
 </script>
 
 <template>
-	<Tq.InputNumber v-model="value" />
+	<div style="padding: 10rem">
+		<Tq.InputRotery
+			:modelValue="value"
+			:step="0.1"
+			@update:modelValue="onInput"
+		/>
+	</div>
 </template>

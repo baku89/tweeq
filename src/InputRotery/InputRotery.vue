@@ -1,9 +1,11 @@
 <script lang="ts" setup>
+import {Path} from '@baku89/pave'
 import {checkIntersection} from 'line-intersect'
 import {vec2} from 'linearly'
-import _ from 'lodash'
+import {partial, range} from 'lodash'
 import {computed, Ref, ref} from 'vue'
 
+import {useThemeStore} from '../stores/theme'
 import SvgIcon from '../SvgIcon.vue'
 import useDrag from '../useDragV1'
 import {unsignedMod} from '../util'
@@ -15,6 +17,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {updateOnBlur: true})
 
+const theme = useThemeStore()
+
 const emit = defineEmits<{
 	'update:modelValue': [number]
 }>()
@@ -25,28 +29,19 @@ defineOptions({
 
 function signedAngleBetween(target: number, source: number) {
 	const ret = target - source
-	return unsignedMod(ret + Math.PI, Math.PI * 2) - Math.PI
+	return unsignedMod(ret + 180, 360) - 180
 }
-
-function addDirectionVector(from: vec2, rads: number, radius: number): vec2 {
-	return [from[0] + Math.cos(rads) * radius, from[1] + Math.sin(rads) * radius]
-}
-
-const PI = Math.PI
-const PI_2 = Math.PI * 2
 
 const local = ref(props.modelValue)
 const display = computed(() => {
-	const deg = (props.modelValue / PI) * 180
-	return deg.toFixed(1) + '°'
+	return props.modelValue.toFixed(1) + '°'
 })
 
 const el: Ref<null | HTMLElement> = ref(null)
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
-let alreadyEmitted = false
-const tweakOrigin = ref(props.modelValue)
+const valueOnTweak = ref(props.modelValue)
 
 const {
 	isDragging: tweaking,
@@ -55,101 +50,23 @@ const {
 } = useDrag(el, {
 	disableClick: true,
 	// lockPointer: true,
-	onDragStart({pos, origin}) {
-		if (tweakMode.value === 'absolute') {
-			const p = vec2.sub(pos, origin)
-			const angle = Math.atan2(p[1], p[0])
-			const delta = signedAngleBetween(angle, props.modelValue)
-			tweakOrigin.value = local.value = props.modelValue + delta
-			emit('update:modelValue', tweakOrigin.value)
-			alreadyEmitted = true
-		} else {
-			// Relative
-			tweakOrigin.value = local.value = props.modelValue
-		}
+	onDragStart() {
+		valueOnTweak.value = local.value = props.modelValue
 	},
 	onDrag({pos, prevPos, origin}) {
-		if (alreadyEmitted) {
-			alreadyEmitted = false
-			return
-		}
-
 		const p = vec2.sub(pos, origin)
 		const pp = vec2.sub(prevPos, origin)
 
-		const prevAngle = Math.atan2(pp[1], pp[0])
-		const alignedPos = vec2.rotate(p, -prevAngle)
-		const delta = Math.atan2(alignedPos[1], alignedPos[0])
+		const delta = vec2.angle(pp, p)
 		local.value += delta
 
-		emit('update:modelValue', local.value)
+		if (props.modelValue !== local.value) {
+			emit('update:modelValue', local.value)
+		}
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
 	},
-})
-
-const rem = ref(16) //useRem()
-
-const overlayArrowAngle = computed(() => {
-	const p = vec2.sub(pos.value, origin.value)
-	return Math.atan2(p[1], p[0]) + Math.PI / 2
-})
-
-const overlayArcPath = computed(() => {
-	if (!tweaking.value) return ''
-
-	const baseRadius = rem.value * 8
-	const radiusStep = rem.value * 0.6
-
-	const start = tweakOrigin.value
-	const end = props.modelValue
-
-	const tweakingPositive = end - start > 0
-
-	const turns =
-		Math.floor(Math.abs(end - start) / PI_2) * Math.sign(end - start)
-
-	const c = origin.value
-
-	// Create arc
-	const arcRadius = baseRadius + turns * radiusStep
-
-	let offsetInTurn = unsignedMod(signedAngleBetween(end, start), PI_2)
-	offsetInTurn = tweakingPositive ? offsetInTurn : offsetInTurn - PI_2
-
-	const startInTurn = unsignedMod(start, PI_2)
-	const endInTurn = startInTurn + offsetInTurn
-
-	const from = addDirectionVector(c, startInTurn, arcRadius)
-	const to = addDirectionVector(c, endInTurn, arcRadius)
-
-	const angleBetween = Math.abs(startInTurn - endInTurn)
-
-	const largeArcFlag = angleBetween > PI ? 1 : 0
-	const sweepFlag = tweakingPositive ? 1 : 0
-
-	const arc = `
-					M ${from.join(' ')}
-					A ${arcRadius} ${arcRadius}
-						0 ${largeArcFlag} ${sweepFlag}
-						${to.join(' ')} `
-
-	// Create revolutions
-	let circles = ''
-	for (let i = 0, step = Math.sign(turns); i !== turns; i += step) {
-		const radius = baseRadius + i * radiusStep
-		if (radius < 0) {
-			continue
-		}
-		const right = `${c[0] + radius} ${c[1]}`
-		const left = `${c[0] - radius} ${c[1]}`
-		circles += `M ${right}
-										A ${radius} ${radius} 0 1 0 ${left}
-										A ${radius} ${radius} 0 1 0 ${right}`
-	}
-
-	return arc + circles
 })
 
 function clampPos(p: vec2): vec2 {
@@ -163,7 +80,7 @@ function clampPos(p: vec2): vec2 {
 
 	let ret: ReturnType<typeof checkIntersection>
 
-	const check = _.partial(checkIntersection, x, y, ox, oy)
+	const check = partial(checkIntersection, x, y, ox, oy)
 
 	if ((ret = check(left, top, right, top)).type === 'intersecting') {
 		return [ret.point.x, ret.point.y]
@@ -184,27 +101,57 @@ function clampPos(p: vec2): vec2 {
 	return [x, y]
 }
 
-const overlayLineTo = computed(() => {
-	const dist = vec2.distance(origin.value, pos.value)
-	const dir: vec2 = [Math.cos(props.modelValue), Math.sin(props.modelValue)]
-
-	const p = vec2.scaleAndAdd(origin.value, dir, dist)
-
-	return clampPos(p)
-})
-
 const overlayLabelPos = computed(() => {
 	return clampPos(pos.value)
 })
 
-const overlayLineFrom = computed(() => {
+const overlayArrowAngle = computed(() => {
+	const p = vec2.sub(pos.value, origin.value)
+	return vec2.angle(p) + 90
+})
+
+const overlayPath = computed(() => {
 	const o = origin.value
-	const t = overlayLineTo.value
-	const radius = 10
+	if (tweakMode.value === 'absolute') {
+		const dist = vec2.distance(origin.value, pos.value)
+		const p = vec2.add(origin.value, vec2.dir(props.modelValue, dist))
 
-	const dir = vec2.normalize(vec2.sub(t, o))
+		const innerRadius = theme.inputHeight
+		const to = clampPos(p)
+		const dir = vec2.normalize(vec2.sub(to, o))
+		const from = vec2.scaleAndAdd(o, dir, innerRadius)
 
-	return vec2.scaleAndAdd(o, dir, radius)
+		return Path.toSVGString(Path.line(from, to))
+	} else {
+		const baseRadius = theme.inputHeight * 4
+		const radiusStep = theme.inputHeight * 0.25
+
+		const start = valueOnTweak.value
+		const end = props.modelValue
+
+		const turns =
+			Math.floor(Math.abs(end - start) / 360) * Math.sign(end - start)
+
+		// Create revolutions
+		const revolutions = range(0, turns).map(i =>
+			Path.circle(o, baseRadius + i * radiusStep)
+		)
+
+		// Create arc
+		const arcRadius = baseRadius + turns * radiusStep
+
+		let offsetInTurn = unsignedMod(signedAngleBetween(end, start), 360)
+		if (end < start) {
+			offsetInTurn -= 360
+		}
+
+		const startInTurn = unsignedMod(start, 360)
+		const endInTurn = startInTurn + offsetInTurn
+
+		const arc = Path.arc(o, arcRadius, startInTurn, endInTurn)
+
+		return Path.toSVGString(Path.merge([...revolutions, arc]))
+	}
 })
 </script>
 
@@ -221,7 +168,7 @@ const overlayLineFrom = computed(() => {
 			<line
 				class="InputRotery__scale"
 				:style="{
-					transform: `rotate(${props.modelValue}rad)`,
+					transform: `rotate(${props.modelValue}deg)`,
 				}"
 				x1="20"
 				y1="16"
@@ -235,19 +182,7 @@ const overlayLineFrom = computed(() => {
 	<teleport to="body">
 		<template v-if="tweaking">
 			<svg class="InputRotery__overlay">
-				<line
-					v-if="tweakMode === 'absolute'"
-					class="bold"
-					:x1="overlayLineFrom[0]"
-					:y1="overlayLineFrom[1]"
-					:x2="overlayLineTo[0]"
-					:y2="overlayLineTo[1]"
-				/>
-				<path
-					v-if="tweakMode === 'relative'"
-					class="bold"
-					:d="overlayArcPath"
-				/>
+				<path class="bold" :d="overlayPath" />
 			</svg>
 			<div
 				ref="overlayLabel"
@@ -261,7 +196,7 @@ const overlayLineFrom = computed(() => {
 				<span
 					class="arrows"
 					:style="{
-						transform: `rotate(${overlayArrowAngle}rad)`,
+						transform: `rotate(${overlayArrowAngle}deg)`,
 					}"
 				/>
 			</div>
