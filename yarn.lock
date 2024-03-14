@@ -1690,15 +1690,15 @@ linearly@0.26.0:
   resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.26.0.tgz#970f1cd5e787b4c12771690d156c5c0595cb8dc4"
   integrity sha512-DF+1L5Hp3mQaypuTsqF1qr6fVtC7QrDB8oorh/W+LfGvigUNqcAEeeO/iE7kx+ESKZT60QuUlF8tIzMGYP/a+w==
 
-linearly@0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.27.0.tgz#554807150afb469504f2e15487e027dc3cd79ad1"
-  integrity sha512-epvLdcEjWr0SntRPML5I0Qb7PgFmRNE9n7wq/tLPXLt6jypu3eWZkA1p9RYqK8Of6l2Slyhf57QxkR3HSkopPA==
-
 linearly@^0.20.3:
   version "0.20.3"
   resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.20.3.tgz#b2a938100118422aee7429da88716d7ea826a7b1"
   integrity sha512-i8+X2PfDKaq3VgpMSp3iej2rwc91ngZY4ecFQTeLPt6LNf/QyAsNVAwny7j7hBPUaue5Gt7SBCFshxhvWsOlOQ==
+
+linearly@^0.30.0:
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.30.0.tgz#46afde7aa548b81db86899b0d8ef3b41a469d728"
+  integrity sha512-tWDLY73jNiFD+e44eyMc/bEukM/ersDjc/7GqZBYSkFneteL0pT+z8yPj/Y/eL7N1gIwoj86l5TIbzaff9IX+Q==
 
 linkify-it@^5.0.0:
   version "5.0.0"
