@@ -1,6 +1,7 @@
 <template>
 	<svg
 		class="SvgIcon"
+		xmlns="http://www.w3.org/2000/svg"
 		:class="{
 			inline: mode === 'inline',
 			block: mode === 'block',
@@ -38,7 +39,7 @@ export default defineComponent({
 <style lang="stylus">
 .SvgIcon
 	fill none
-	stroke currentcolor
+	stroke currentColor
 	stroke-linecap butt
 	stroke-linejoin miter
 	stroke-width 2
