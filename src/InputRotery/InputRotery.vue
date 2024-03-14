@@ -34,7 +34,10 @@ function signedAngleBetween(target: number, source: number) {
 
 const local = ref(props.modelValue)
 const display = computed(() => {
-	return props.modelValue.toFixed(1) + '°'
+	const revs = Math.trunc(props.modelValue / 360)
+	const rot = props.modelValue - revs * 360
+
+	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
 const el: Ref<null | HTMLElement> = ref(null)
