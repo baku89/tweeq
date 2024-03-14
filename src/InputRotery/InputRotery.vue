@@ -167,7 +167,7 @@ const overlayPath = computed(() => {
 		v-bind="$attrs"
 	>
 		<SvgIcon mode="block" class="InputRotery__rotery">
-			<circle class="InputRotery__circle" cx="16" cy="16" r="16" />
+			<circle class="InputRotery__circle" cx="16" cy="16" r="15" />
 			<line
 				class="InputRotery__scale"
 				:style="{
@@ -216,7 +216,6 @@ const overlayPath = computed(() => {
 	overflow hidden
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
 	hover-transition(transform)
 
 	&__rotery
@@ -252,13 +251,13 @@ const overlayPath = computed(() => {
 
 	&__overlay
 		input-overlay()
+		cursor none
 
 	&__overlay-label
 		tooltip-style()
 		z-index 1001
 		position fixed
 		font-numeric()
-		cursor none
 		transform translate(-50%, -50%)
 
 		.arrows
