@@ -124,7 +124,7 @@ const overlayPath = computed(() => {
 	const c = center.value
 
 	if (tweakMode.value === 'absolute') {
-		const dist = vec2.distance(initial.value, xy.value)
+		const dist = vec2.distance(center.value, xy.value)
 		const p = vec2.add(initial.value, vec2.dir(props.modelValue, dist))
 
 		const innerRadius = theme.inputHeight
