@@ -98,7 +98,11 @@ export function useDrag(
 			// Initialzize pointer position
 			state.xy = state.previous = state.initial = [event.clientX, event.clientY]
 
-			dragDelayTimer = setTimeout(fireDragStart, dragDelaySeconds * 1000)
+			if (dragDelaySeconds <= 0) {
+				fireDragStart(event)
+			} else {
+				dragDelayTimer = setTimeout(fireDragStart, dragDelaySeconds * 1000)
+			}
 
 			el.setPointerCapture(event.pointerId)
 
@@ -111,8 +115,7 @@ export function useDrag(
 			if (!event.isPrimary) return
 
 			if (event.movementX !== undefined && event.movementY !== undefined) {
-				const movement: vec2 = [event.movementX, event.movementY]
-				state.xy = vec2.add(state.xy, movement)
+				state.xy = vec2.add(state.xy, [event.movementX, event.movementY])
 			} else {
 				state.xy = [event.clientX, event.clientY]
 			}
