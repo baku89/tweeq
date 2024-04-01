@@ -3,11 +3,13 @@ import {Path} from '@baku89/pave'
 import {checkIntersection} from 'line-intersect'
 import {vec2} from 'linearly'
 import {partial, range} from 'lodash'
-import {computed, Ref, ref} from 'vue'
+import {computed, ref} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
 import SvgIcon from '../SvgIcon.vue'
-import useDrag from '../useDragV1'
+import {useCursorStyle} from '../use/useCursorStyle'
+import {useElementCenter} from '../use/useElementCenter'
+import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
 
 interface Props {
@@ -21,6 +23,7 @@ const theme = useThemeStore()
 
 const emit = defineEmits<{
 	'update:modelValue': [number]
+	change: [number]
 }>()
 
 defineOptions({
@@ -40,25 +43,26 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const el: Ref<null | HTMLElement> = ref(null)
+const el = ref<null | HTMLElement>(null)
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
 const valueOnTweak = ref(props.modelValue)
 
+const center = useElementCenter(el)
+
 const {
-	isDragging: tweaking,
-	origin,
-	pos,
+	dragging: tweaking,
+	initial,
+	xy,
 } = useDrag(el, {
-	disableClick: true,
-	// lockPointer: true,
+	dragDelaySeconds: 0,
 	onDragStart() {
 		valueOnTweak.value = local.value = props.modelValue
 	},
-	onDrag({pos, prevPos, origin}) {
-		const p = vec2.sub(pos, origin)
-		const pp = vec2.sub(prevPos, origin)
+	onDrag({xy: pos, previous}) {
+		const p = vec2.sub(pos, center.value)
+		const pp = vec2.sub(previous, center.value)
 
 		const delta = vec2.angle(pp, p)
 		local.value += delta
@@ -69,11 +73,14 @@ const {
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
+		emit('change', local.value)
 	},
 })
 
+useCursorStyle(() => (tweaking.value ? 'none' : null))
+
 function clampPos(p: vec2): vec2 {
-	const [ox, oy] = origin.value
+	const [ox, oy] = initial.value
 	const [x, y] = p
 	const margin = 40
 	const left = margin,
@@ -105,24 +112,25 @@ function clampPos(p: vec2): vec2 {
 }
 
 const overlayLabelPos = computed(() => {
-	return clampPos(pos.value)
+	return clampPos(xy.value)
 })
 
 const overlayArrowAngle = computed(() => {
-	const p = vec2.sub(pos.value, origin.value)
+	const p = vec2.sub(xy.value, initial.value)
 	return vec2.angle(p) + 90
 })
 
 const overlayPath = computed(() => {
-	const o = origin.value
+	const c = center.value
+
 	if (tweakMode.value === 'absolute') {
-		const dist = vec2.distance(origin.value, pos.value)
-		const p = vec2.add(origin.value, vec2.dir(props.modelValue, dist))
+		const dist = vec2.distance(initial.value, xy.value)
+		const p = vec2.add(initial.value, vec2.dir(props.modelValue, dist))
 
 		const innerRadius = theme.inputHeight
 		const to = clampPos(p)
-		const dir = vec2.normalize(vec2.sub(to, o))
-		const from = vec2.scaleAndAdd(o, dir, innerRadius)
+		const dir = vec2.normalize(vec2.sub(to, c))
+		const from = vec2.scaleAndAdd(c, dir, innerRadius)
 
 		return Path.toSVGString(Path.line(from, to))
 	} else {
@@ -137,7 +145,7 @@ const overlayPath = computed(() => {
 
 		// Create revolutions
 		const revolutions = range(0, turns).map(i =>
-			Path.circle(o, baseRadius + i * radiusStep)
+			Path.circle(c, baseRadius + i * radiusStep)
 		)
 
 		// Create arc
@@ -151,7 +159,7 @@ const overlayPath = computed(() => {
 		const startInTurn = unsignedMod(start, 360)
 		const endInTurn = startInTurn + offsetInTurn
 
-		const arc = Path.arc(o, arcRadius, startInTurn, endInTurn)
+		const arc = Path.arc(c, arcRadius, startInTurn, endInTurn)
 
 		return Path.toSVGString(Path.merge([...revolutions, arc]))
 	}
@@ -251,7 +259,6 @@ const overlayPath = computed(() => {
 
 	&__overlay
 		input-overlay()
-		cursor none
 
 	&__overlay-label
 		tooltip-style()
@@ -259,6 +266,7 @@ const overlayPath = computed(() => {
 		position fixed
 		font-numeric()
 		transform translate(-50%, -50%)
+		white-space nowrap
 
 		.arrows
 			position absolute
