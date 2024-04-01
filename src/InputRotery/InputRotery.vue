@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import {Path} from '@baku89/pave'
+import {useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
-import {vec2} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {partial, range} from 'lodash'
 import {computed, ref} from 'vue'
 
@@ -35,7 +36,9 @@ function signedAngleBetween(target: number, source: number) {
 	return unsignedMod(ret + 180, 360) - 180
 }
 
+const localRaw = ref(props.modelValue)
 const local = ref(props.modelValue)
+
 const display = computed(() => {
 	const revs = Math.trunc(props.modelValue / 360)
 	const rot = props.modelValue - revs * 360
@@ -51,6 +54,8 @@ const valueOnTweak = ref(props.modelValue)
 
 const center = useElementCenter(el)
 
+const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
+
 const {
 	dragging: tweaking,
 	initial,
@@ -58,14 +63,20 @@ const {
 } = useDrag(el, {
 	dragDelaySeconds: 0,
 	onDragStart() {
-		valueOnTweak.value = local.value = props.modelValue
+		valueOnTweak.value = localRaw.value = props.modelValue
 	},
-	onDrag({xy: pos, previous}) {
-		const p = vec2.sub(pos, center.value)
+	onDrag({xy, previous}) {
+		const p = vec2.sub(xy, center.value)
 		const pp = vec2.sub(previous, center.value)
 
 		const delta = vec2.angle(pp, p)
-		local.value += delta
+		localRaw.value += delta
+
+		if (doQuantize.value) {
+			local.value = scalar.quantize(localRaw.value, 45)
+		} else {
+			local.value = localRaw.value
+		}
 
 		if (props.modelValue !== local.value) {
 			emit('update:modelValue', local.value)
@@ -73,8 +84,21 @@ const {
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
-		emit('change', local.value)
+
+		if (valueOnTweak.value !== local.value) {
+			emit('change', local.value)
+		}
 	},
+})
+
+const doQuantizeKey = useMagicKeys()['shift']
+
+const doQuantize = computed(() => {
+	const radius = vec2.dist(center.value, xy.value)
+	return (
+		doQuantizeKey.value ||
+		(quantizeMeterRadii[0] <= radius && radius <= quantizeMeterRadii[1])
+	)
 })
 
 useCursorStyle(() => (tweaking.value ? 'none' : null))
@@ -120,15 +144,35 @@ const overlayArrowAngle = computed(() => {
 	return vec2.angle(p) + 90
 })
 
+function radialLine(angle: number, innerRadius: number, outerRadius: number) {
+	return Path.line(
+		vec2.dir(angle, innerRadius, center.value),
+		vec2.dir(angle, outerRadius, center.value)
+	)
+}
+
+const metersPath = computed(() => {
+	return Path.toSVGString(
+		Path.merge(range(0, 360, 45).map(a => radialLine(a, ...quantizeMeterRadii)))
+	)
+})
+
+const activeMeterPath = computed(() => {
+	return Path.toSVGString(
+		doQuantize.value && local.value % 45 === 0
+			? radialLine(local.value, ...quantizeMeterRadii)
+			: Path.empty
+	)
+})
+
 const overlayPath = computed(() => {
 	const c = center.value
 
 	if (tweakMode.value === 'absolute') {
 		const dist = vec2.distance(center.value, xy.value)
-		const p = vec2.add(initial.value, vec2.dir(props.modelValue, dist))
+		const to = vec2.dir(props.modelValue, dist, center.value)
 
 		const innerRadius = theme.inputHeight
-		const to = clampPos(p)
 		const dir = vec2.normalize(vec2.sub(to, c))
 		const from = vec2.scaleAndAdd(c, dir, innerRadius)
 
@@ -194,6 +238,15 @@ const overlayPath = computed(() => {
 		<template v-if="tweaking">
 			<svg class="InputRotery__overlay">
 				<path class="bold" :d="overlayPath" />
+				<path
+					class="thin gray"
+					:class="{dashed: !doQuantize, bold: doQuantize}"
+					:d="metersPath"
+					:style="{
+						stroke: doQuantize ? 'var(--tq-color-tinted-input-active)' : '',
+					}"
+				/>
+				<path class="bold" :d="activeMeterPath" />
 			</svg>
 			<div
 				ref="overlayLabel"
