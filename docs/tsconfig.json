@@ -1,0 +1,11 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"paths": {
+			"pave": ["../src/index.ts"]
+		}
+	},
+	"include": ["./**/*.vue", "./**/*.ts"]
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260">
+	<defs>
+		<style>
+			@media (prefers-color-scheme: light) { :root { filter: none; } }
+			@media (prefers-color-scheme: dark) { :root { filter: invert(100%); } }
+			
+			.c {
+			stroke: #000;
+			fill: none;
+			stroke-miterlimit: 10;
+			stroke-width: 17.6px;
+			}
+		</style>
+	</defs>
+	<circle class="c" cx="130" cy="130" r="110" />
+	<path class="c" d="M207.78,207.78c-27.69,27.69-72.58,27.69-100.28,0-27.69-27.69-27.69-72.58,0-100.28" />
+	<path class="c" d="M107.51,107.51c-15.27,15.27-40.02,15.27-55.29,0s-15.27-40.02,0-55.29" />
+	<path class="c" d="M107.51,107.51c15.27-15.27,40.02-15.27,55.29,0s15.27,40.02,0,55.29" />
+</svg>

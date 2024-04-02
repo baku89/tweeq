@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
+		"dev": "vuepress dev docs",
 		"build:vite": "vite build",
 		"build:stylus": "stylus src/global.styl src/common.styl --out lib",
 		"build": "rm -rf lib && npm run build:vite && npm run build:stylus",
@@ -54,6 +54,10 @@
 		"@vitejs/plugin-vue": "^4.3.4",
 		"@vue/eslint-config-prettier": "^8.0.0",
 		"@vue/eslint-config-typescript": "^12.0.0",
+		"@vuepress/bundler-vite": "2.0.0-rc.2",
+		"@vuepress/plugin-palette": "2.0.0-rc.14",
+		"@vuepress/theme-default": "2.0.0-rc.1",
+		"concurrently": "^8.2.2",
 		"eslint": "^8.50.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier-vue": "^5.0.0",
@@ -67,6 +71,7 @@
 		"vite": "^4.4.9",
 		"vite-plugin-dts": "^3.7.2",
 		"vite-plugin-eslint": "^1.8.1",
-		"vite-plugin-glsl": "1.1.2"
+		"vite-plugin-glsl": "1.1.2",
+		"vuepress": "2.0.0-rc.1"
 	}
 }

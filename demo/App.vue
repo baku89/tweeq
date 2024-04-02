@@ -15,7 +15,7 @@ function onInput(v: number) {
 </script>
 
 <template>
-	<div style="padding: 10rem">
+	<div style="padding: 30rem">
 		<Tq.InputRotery
 			:modelValue="value"
 			:step="0.1"
