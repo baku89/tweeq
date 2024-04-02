@@ -15,10 +15,10 @@ import {unsignedMod} from '../util'
 
 interface Props {
 	modelValue: number
-	updateOnBlur?: boolean
+	quantizeStep?: number
 }
 
-const props = withDefaults(defineProps<Props>(), {updateOnBlur: true})
+const props = withDefaults(defineProps<Props>(), {quantizeStep: 45})
 
 const theme = useThemeStore()
 
@@ -73,7 +73,7 @@ const {
 		localRaw.value += delta
 
 		if (doQuantize.value) {
-			local.value = scalar.quantize(localRaw.value, 45)
+			local.value = scalar.quantize(localRaw.value, props.quantizeStep)
 		} else {
 			local.value = localRaw.value
 		}
@@ -151,15 +151,19 @@ function radialLine(angle: number, innerRadius: number, outerRadius: number) {
 	)
 }
 
-const metersPath = computed(() => {
-	return Path.toSVGString(
-		Path.merge(range(0, 360, 45).map(a => radialLine(a, ...quantizeMeterRadii)))
+const metersPath = computed(() =>
+	Path.toSVGString(
+		Path.merge(
+			range(0, 360, props.quantizeStep).map(a =>
+				radialLine(a, ...quantizeMeterRadii)
+			)
+		)
 	)
-})
+)
 
 const activeMeterPath = computed(() => {
 	return Path.toSVGString(
-		doQuantize.value && local.value % 45 === 0
+		doQuantize.value && local.value % props.quantizeStep === 0
 			? radialLine(local.value, ...quantizeMeterRadii)
 			: Path.empty
 	)
