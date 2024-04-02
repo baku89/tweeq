@@ -14,7 +14,9 @@ function update(value: number) {
 
 <template>
 	<div class="Example">
-		<slot :modelValue="modelValue" :update="update" />
+		<div class="input">
+			<slot :modelValue="modelValue" :update="update" />
+		</div>
 	</div>
 </template>
 
@@ -22,6 +24,11 @@ function update(value: number) {
 @import '../../src/setup.styl'
 
 .Example
-	setup()
+	position relative
 	padding 2rem 0
+	setup()
+
+	.input
+		max-width 100%
+		width 15rem
 </style>
