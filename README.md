@@ -1,4 +1,11 @@
-# Tweeq
+<div align="center">
+
+<img src="https://github.com/baku89/tweeq/blob/main/docs/.vuepress/public/logo.svg" width="200" />
+<h1>Tweeq</h1>
+
+<a href="https://baku89.github.io/pave/">Documentation</a> ⌇ <a href="https://github.com/sponsors/baku89">Become a Sponsor</a>
+
+</div>
 
 Tweeq is a collection of [Vue.js](https://vuejs.org) components for design tools. The components range from fundamental UIs such as numeric sliders, color pickers, to advanced and niche controls like a cubic-bezier editor. It also supports various micro-interactions suitable for professional use.
 
