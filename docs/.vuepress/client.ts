@@ -11,6 +11,7 @@ export default defineClientConfig({
 
 		app.component('InputNumber', Tq.InputNumber)
 		app.component('InputRotery', Tq.InputRotery)
+		app.component('InputComplex', Tq.InputComplex)
 		app.component('Example', Example)
 	},
 })

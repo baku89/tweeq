@@ -175,8 +175,10 @@ div[class*='language-']::before {
 main {
 	margin-bottom: 2rem !important;
 
+	// Content styling
+
 	// List
-	li {
+	li:not(.Example li) {
 		list-style: none;
 		margin-bottom: 0.5em;
 
