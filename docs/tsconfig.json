@@ -3,9 +3,11 @@
 	"compilerOptions": {
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
+		"baseUrl": "./",
 		"paths": {
-			"pave": ["../src/index.ts"]
+			"tweeq": ["../src/index.ts"]
 		}
 	},
-	"include": ["./**/*.vue", "./**/*.ts"]
+	"include": [".vuepress/**/*"],
+	"exclude": []
 }
