@@ -8,7 +8,7 @@ import {
 import {toReactive, useColorMode} from '@vueuse/core'
 import {kebab} from 'case'
 import {defineStore} from 'pinia'
-import {computed, ref, toRefs, watch} from 'vue'
+import {computed, toRefs, watch} from 'vue'
 
 import {useAppConfigStore} from '..'
 
@@ -73,7 +73,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 	const browserColorMode = useColorMode()
 
-	const accentColor = ref('#0000ff') //appConfig.ref('theme.accentColor', '#0000ff')
+	const accentColor = appConfig.ref('theme.accentColor', '#0000ff')
 	const savedColorMode = appConfig.ref<ColorMode>('theme.colorMode', 'auto')
 
 	const colorMode = computed<'light' | 'dark'>(() => {
@@ -173,7 +173,6 @@ export const useThemeStore = defineStore('theme', () => {
 		theme,
 		() => {
 			// Promote all as CSS variabbles
-			const i = 0
 			for (const [key, value] of Object.entries(theme.value)) {
 				const varName = '--tq-' + kebab(key)
 
