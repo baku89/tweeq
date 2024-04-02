@@ -1,5 +1,4 @@
 import {defineUserConfig} from 'vuepress'
-import {path} from '@vuepress/utils'
 import {defaultTheme} from '@vuepress/theme-default'
 import {viteBundler} from '@vuepress/bundler-vite'
 import glsl from 'vite-plugin-glsl'
