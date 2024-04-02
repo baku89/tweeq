@@ -7,11 +7,18 @@ import {
 	useKeyModifier,
 	whenever,
 } from '@vueuse/core'
-import {scalar} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {computed, nextTick, ref, StyleValue, watch} from 'vue'
 
 import {useDrag} from '../useDrag'
-import {getNumberPresition, toFixed, toPercent, unsignedMod} from '../util'
+import {
+	getNumberPresition,
+	precisionOf,
+	toFixed,
+	toPercent,
+	unsignedMod,
+} from '../util'
+import InputNumberScales from './InputNumberScales.vue'
 import {type Props} from './types'
 
 const props = withDefaults(defineProps<Props>(), {
@@ -37,9 +44,9 @@ const emit = defineEmits<{
 	blur: []
 }>()
 
-const root = ref<HTMLElement | null>(null)
+const $root = ref<HTMLElement | null>(null)
 const $input = ref<HTMLInputElement | null>(null)
-const {left, top, width, height, right} = useElementBounding(root)
+const {left, top, width, height, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused
 
@@ -78,20 +85,75 @@ const speed = computed(() => {
 	return key * gestureQuantized
 })
 
+// Precision
 const displayPrecision = ref(0)
-const tweakPrecision = computed(() => {
-	const prec = Math.max(0, Math.ceil(-Math.log10(speed.value)))
-	return Math.max(prec, displayPrecision.value)
+
+const sliderPrecision = computed(() => {
+	if (
+		props.min !== Number.MIN_SAFE_INTEGER &&
+		props.max !== Number.MAX_SAFE_INTEGER &&
+		width.value > 0
+	) {
+		const stepPerPx = Math.abs(props.max - props.min) / width.value
+		return precisionOf(stepPerPx)
+	} else {
+		return 0
+	}
+})
+
+const tweakPrecision = computed(() => precisionOf(speed.value))
+
+const precision = computed(() => {
+	if (props.step !== undefined) {
+		return precisionOf(props.step)
+	} else {
+		return Math.max(
+			displayPrecision.value,
+			sliderPrecision.value,
+			tweakPrecision.value
+		)
+	}
 })
 
 const pointerSize = ref(0)
 
 let resetTweakModeTimer: ReturnType<typeof setTimeout>
-const tweakMode = ref<null | 'value' | 'speed'>(null)
 
-const {dragging: tweaking, pointerLocked} = useDrag(root, {
+/** When the value is vec2, it means the origin point to determine the drag mode */
+const tweakMode = ref<vec2 | 'value' | 'speed'>(vec2.zero)
+
+const pxPerStep = computed(() => {
+	if (
+		props.max === undefined ||
+		props.min === undefined ||
+		props.step === undefined ||
+		width.value === 0
+	) {
+		return 0
+	}
+
+	const gap = (props.step / (props.max - props.min)) * width.value
+
+	return gap
+})
+
+const minSpeed = computed(() => {
+	if (pxPerStep.value > 1) {
+		return 1
+	} else {
+		const prec =
+			props.step !== undefined ? precisionOf(props.step) : props.precision
+		return 10 ** -prec
+	}
+})
+
+const maxSpeed = computed(() => {
+	return barVisible.value && props.bar ? 1 : 1000
+})
+
+const {dragging: tweaking} = useDrag($root, {
 	lockPointer: computed(() => !(barVisible.value && props.bar)),
-	disabled: computed(() => props.disabled || useFocus($input).focused.value),
+	disabled: computed(() => props.disabled || focusing.value),
 	onClick() {
 		$input.value?.focus()
 	},
@@ -110,7 +172,7 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 			)
 		}
 
-		tweakMode.value = null
+		tweakMode.value = state.xy
 		speedMultiplierGesture.value = 1
 		displayPrecision.value = getNumberPresition(display.value)
 	},
@@ -128,51 +190,74 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 				Math.abs(state.xy[1] - (top.value + height.value / 2))
 			)
 
-		if (!state.pointerLocked && !isMouse) {
-			scaleOffset.value = state.xy[0] - (left.value + width.value / 2)
-		} else {
-			scaleOffset.value = 0
-		}
+		if (typeof tweakMode.value !== 'string') {
+			const doDetectMode = isMouse && minSpeed.value !== maxSpeed.value
 
-		if (!tweakMode.value) {
-			if (isMouse) {
-				tweakMode.value = Math.abs(dx) >= Math.abs(dy) ? 'value' : 'speed'
+			if (doDetectMode) {
+				const [ox, oy] = vec2.sub(tweakMode.value, state.xy)
+
+				if (Math.abs(ox) >= 2) {
+					tweakMode.value = 'value'
+				} else if (Math.abs(oy) >= 4) {
+					tweakMode.value = 'speed'
+				}
 			} else {
 				tweakMode.value = 'value'
 			}
 		}
 
 		if (tweakMode.value === 'value') {
-			const baseSpeed =
-				barVisible.value && props.bar
-					? (props.max - props.min) / width.value
-					: 1
+			const baseSpeed = barVisible.value
+				? (props.max - props.min) / width.value
+				: 1
 
 			local.value += dx * baseSpeed * speed.value
-
-			let newValue = local.value
-			if (props.step) {
-				newValue = scalar.quantize(newValue, props.step)
-			}
-			newValue = scalar.clamp(newValue, validMin.value, validMax.value)
-
-			emit('update:modelValue', newValue)
-		} else {
-			const minSpeed = 10 ** -props.precision
-			const maxSpeed = barVisible.value && props.bar ? 1 : 1000
-
+		} else if (tweakMode.value === 'speed') {
 			speedMultiplierGesture.value = scalar.clamp(
 				speedMultiplierGesture.value * 0.98 ** dy,
-				minSpeed,
-				maxSpeed
+				minSpeed.value,
+				maxSpeed.value
 			)
 		}
 
 		if (isMouse) {
 			clearTimeout(resetTweakModeTimer)
-			resetTweakModeTimer = setTimeout(() => (tweakMode.value = null), 100)
+			resetTweakModeTimer = setTimeout(() => {
+				tweakMode.value = state.xy
+			}, 200)
 		}
 	},
+	onDragEnd() {
+		displayPrecision.value = 0
+	},
+})
+
+//------------------------------------------------------------------------------
+// Emit update:modelValue when the local value is changed
+
+const validatedLocal = computed(() => {
+	let value = local.value
+	if (props.step) {
+		value = scalar.quantize(value, props.step)
+	}
+	value = scalar.clamp(value, validMin.value, validMax.value)
+
+	return value
+})
+
+const isInvalid = computed(() => {
+	if (props.invalid) return true
+
+	if (tweaking.value) return false
+
+	// TODO: This is not accurate
+	return Math.abs(validatedLocal.value - local.value) > 10e-8
+})
+
+watch(validatedLocal, local => {
+	if (local !== props.modelValue) {
+		emit('update:modelValue', local)
+	}
 })
 
 //------------------------------------------------------------------------------
@@ -181,29 +266,45 @@ const {dragging: tweaking, pointerLocked} = useDrag(root, {
 function onInput(e: Event) {
 	const el = e.target as HTMLInputElement
 
+	const newValue = parseFloat(el.value)
+	if (!isNaN(newValue)) {
+		local.value = newValue
+	}
+
 	display.value = el.value
 
-	let newValue = parseFloat(el.value)
-	if (isNaN(newValue)) return
-
-	local.value = newValue
-
-	if (props.step) {
-		newValue = scalar.quantize(newValue, props.step ?? 1)
-	}
-	newValue = scalar.clamp(newValue, validMin.value, validMax.value)
-
 	emit('input', e)
-	emit('update:modelValue', newValue)
 }
 
-function onIncrementByKey(delta: number) {
-	const prec = Math.max(
-		getNumberPresition(display.value),
-		-Math.log10(speedMultiplierKey.value)
-	)
+//------------------------------------------------------------------------------
+// Hotkeys
 
-	local.value += delta * speedMultiplierKey.value
+function onIncrementByKey(delta: number) {
+	if (props.step !== undefined) {
+		// If step is defined
+		local.value += props.step * delta * Math.max(1, speedMultiplierKey.value)
+		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
+		display.value = toFixed(local.value, precisionOf(props.step))
+	} else {
+		let multiplier = speedMultiplierKey.value
+
+		if (validMax.value - validMin.value <= 1) {
+			multiplier *= 0.1
+		}
+
+		const prec = Math.max(
+			getNumberPresition(display.value),
+			precisionOf(multiplier)
+		)
+
+		local.value += delta * multiplier
+		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
+		display.value = toFixed(local.value, prec)
+	}
+}
+
+function onPressEnter(e: Event) {
+	const el = e.target as HTMLInputElement
 
 	let newValue = local.value
 	if (props.step) {
@@ -211,9 +312,10 @@ function onIncrementByKey(delta: number) {
 	}
 	newValue = scalar.clamp(newValue, validMin.value, validMax.value)
 
-	display.value = toFixed(local.value, prec)
-
 	emit('update:modelValue', newValue)
+
+	el.blur()
+	nextTick(() => el.focus())
 }
 
 //------------------------------------------------------------------------------
@@ -283,13 +385,13 @@ watch(
 			props.modelValue,
 			tweaking.value,
 			focusing.value,
-			tweakPrecision.value,
+			precision.value,
 		] as const,
-	([modelValue, tweaking, focusing, tweakPrecision]) => {
+	([modelValue, tweaking, focusing, precision]) => {
 		if (focusing) return
 
 		const displayNumber = tweaking
-			? modelValue.toFixed(tweakPrecision)
+			? modelValue.toFixed(precision)
 			: toFixed(modelValue, props.precision)
 
 		display.value = props.prefix + displayNumber + props.suffix
@@ -317,40 +419,30 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 
 //------------------------------------------------------------------------------
 // Styles
-const scaleOffset = ref(0.0)
 
 const scaleAttrs = (offset: number) => {
 	const precision = unsignedMod(
 		-Math.log10(speedMultiplierGesture.value) + offset,
 		3
 	)
-	const halfWidth = (width.value + height.value * 20) / 2
+	const halfWidth = width.value / 2
 
 	const opacity = scalar.smoothstep(1, 2, precision)
+
+	const dashoffset = barVisible.value
+		? scalar.invlerp(validMin.value, validMax.value, local.value) * width.value
+		: halfWidth
 
 	return {
 		x1: -halfWidth,
 		x2: halfWidth,
 		style: {
-			strokeDashoffset: -halfWidth,
+			strokeDashoffset: -dashoffset,
 			strokeDasharray: `0 ${Math.pow(10, precision)}`,
 			opacity,
 		},
 	}
 }
-
-const cursorStyle = computed(() => {
-	return {
-		transform: `translateX(${scaleOffset.value}px)`,
-		width: `${pointerSize.value}px`,
-		marginLeft: `${pointerSize.value / -2}px`,
-		opacity: scalar.smoothstep(
-			width.value * 0.5,
-			width.value * 0.6,
-			Math.abs(scaleOffset.value)
-		),
-	}
-})
 
 const tipStyle = computed<StyleValue>(() => {
 	if (!barVisible.value) return {visibility: 'hidden'}
@@ -382,48 +474,39 @@ const barStyle = computed<StyleValue>(() => {
 
 <template>
 	<div
-		ref="root"
+		ref="$root"
 		class="InputNumber"
 		:class="{tweaking}"
+		:data-tweaking-mode="tweakMode"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="!!disabled"
 		v-bind="$attrs"
 	>
 		<div class="bar" :style="barStyle" />
+		<InputNumberScales :min="min" :max="max" :step="step" />
 		<div class="tip" :style="tipStyle" />
 
 		<input
 			ref="$input"
+			class="input"
 			type="text"
-			min="0"
 			inputmode="numeric"
 			pattern="d*"
 			:value="display"
-			:invalid="invalid"
+			:invalid="isInvalid"
 			:disabled="disabled"
-			@focus="onFocus"
 			@input="onInput"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
+			@keydown.enter.prevent="onPressEnter"
 		/>
-		<div
-			v-if="tweaking"
-			class="cursor"
-			:class="{floating: !pointerLocked}"
-			:style="cursorStyle"
-		/>
-
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
 	</div>
 	<teleport to="body">
-		<svg v-if="tweaking || true" class="InputNumber__overlay">
-			<g
-				:transform="`translate(${left + width / 2 + scaleOffset}, ${
-					top + height / 2
-				})`"
-			>
+		<svg v-if="tweaking" class="tq-overlay InputNumber__overlay">
+			<g :transform="`translate(${left + width / 2}, ${top + height / 2})`">
 				<g v-if="tweakMode === 'speed'">
 					<line class="scale" v-bind="scaleAttrs(0)"></line>
 					<line class="scale" v-bind="scaleAttrs(1)"></line>
@@ -440,25 +523,29 @@ const barStyle = computed<StyleValue>(() => {
 .InputNumber
 	input-style()
 
-	input
-		text-align center
-		position relative
-		font-numeric()
-		pointer-events none
-		padding-left 0
-		padding-right 0
+.input
+	text-align center
+	position relative
+	font-numeric()
+	pointer-events none
+	padding-left 0
+	padding-right 0
+
+	&:focus
+		pointer-events auto
+
+.bar, .tip
+	position absolute
+	height 100%
 
 .bar
-	top 0
-	position absolute
-	height 100%
-	hover-transition(background)
+	pointer-events none
 	background var(--tq-color-primary-container)
+	hover-transition(background)
 
 .tip
-	position absolute
-	height 100%
 	width 2px
+	margin-left -1px
 	background var(--tq-color-tinted-input-active)
 	hover-transition(opacity)
 
@@ -471,7 +558,7 @@ const barStyle = computed<StyleValue>(() => {
 		right @left
 
 	.tweaking &, &:hover
-		background var(--tq-color-primary-hover)
+		background var(--tq-color-primary)
 
 .icon
 	width calc(var(--tq-input-height) - 4px)

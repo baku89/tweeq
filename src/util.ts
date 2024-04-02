@@ -1,3 +1,10 @@
+export function precisionOf(step: number) {
+	return Math.max(0, Math.ceil(-Math.log10(step)))
+}
+
+/**
+ * Converts a number to a string with a fixed number of decimal places, while removing trailing zeros
+ */
 export function toFixed(value: number, precision: number) {
 	// TODO: Fix this
 	// eslint-disable-next-line no-console
