@@ -2,6 +2,7 @@ import {defineUserConfig} from 'vuepress'
 import {path} from '@vuepress/utils'
 import {defaultTheme} from '@vuepress/theme-default'
 import {viteBundler} from '@vuepress/bundler-vite'
+import glsl from 'vite-plugin-glsl'
 
 export default defineUserConfig({
 	title: 'Tweeq',
@@ -60,7 +61,15 @@ export default defineUserConfig({
 				'A collection of Vue.js components for designers and artists',
 		},
 	},
-	bundler: viteBundler(),
+	bundler: viteBundler({
+		viteOptions: {
+			plugins: [glsl()],
+			define: {
+				// This is needed to make the PromiseQueue class available in the browser.
+				'process.env.PROMISE_QUEUE_COVERAGE': false,
+			},
+		},
+	}),
 	markdown: {
 		//@ts-ignore
 		linkify: true,
