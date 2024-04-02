@@ -1,0 +1,44 @@
+
+setup()
+	background var(--tq-color-background)
+	color var(--tq-color-on-background)
+	user-select none
+	font-family 'Inter'
+	font-size var(--tq-rem)
+
+	::selection
+		background var(--tq-color-primary)
+		color var(--tq-color-on-primary)
+
+	*, *:before, *:after
+		box-sizing border-box
+		outline none
+		font-weight inherit
+		font-style normal
+		font-size inherit
+		cursor inherit
+
+	::-webkit-scrollbar
+		width var(--tq-scrollbar-width)
+		height var(--tq-scrollbar-width)
+		background transparent
+
+	::-webkit-scrollbar-thumb
+		border-radius 9999px
+		background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
+
+	button, input
+		padding 0
+		border 0
+		background transparent
+		color inherit
+		text-align inherit
+		font-size inherit
+		font-family inherit
+		user-select none
+
+.tq-overlay
+	color var(--tq-color-on-background)
+	user-select none
+	font-family 'Inter'
+	font-size var(--tq-rem)

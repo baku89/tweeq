@@ -165,12 +165,12 @@ function perform(action: ActionItemOptions) {
 .search
 	display block
 	flex-grow 1
-	font-size 1.2rem
+	font-size calc(1.2 * var(--tq-rem))
 	height 48px
 	line-height 36px
 
 	&::placeholder
-		font-size 1.2rem
+		font-size calc(1.2 * var(--tq-rem))
 		color var(--tq-color-inverse-on-surface)
 		opacity .3
 

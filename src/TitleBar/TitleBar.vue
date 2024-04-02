@@ -111,7 +111,7 @@ const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
 	flex-direction row-reverse
 
 .app-icon
-	height calc(var(--titlebar-area-height) - .8rem)
+	height calc(var(--titlebar-area-height) - 0.8 * var(--tq-rem))
 
 .app-name
 	font-weight bold

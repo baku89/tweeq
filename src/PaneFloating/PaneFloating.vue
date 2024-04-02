@@ -230,7 +230,7 @@ watch(position, position => emit('update:position', position))
 
 .PaneFloating
 	pane-style()
-	--resize-width 1rem
+	--resize-width var(--tq-rem)
 	--border 5px
 
 	--br-top-left var(--tq-pane-border-radius)
@@ -283,10 +283,10 @@ watch(position, position => emit('update:position', position))
 			opacity 0
 
 	&.w-minimized
-		width 4rem
+		width var(--tq-rem)
 
 	&.h-minimized
-		height 4rem
+		height var(--tq-rem)
 
 	&.anchor-top
 		bottom unset

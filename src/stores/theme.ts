@@ -150,6 +150,8 @@ export const useThemeStore = defineStore('theme', () => {
 			fontUi: 'Inter, system-ui, sans-serif',
 			fontNumeric: 'Inter, system-ui, sans-serif',
 
+			rem: 12,
+
 			paneBorderRadius: 20,
 
 			popupWidth: 300,
@@ -171,12 +173,16 @@ export const useThemeStore = defineStore('theme', () => {
 		theme,
 		() => {
 			// Promote all as CSS variabbles
+			const i = 0
 			for (const [key, value] of Object.entries(theme.value)) {
 				const varName = '--tq-' + kebab(key)
 
 				const cssValue = typeof value === 'number' ? `${value}px` : value
 
-				document.body.style.setProperty(varName, cssValue)
+				document.documentElement.style.setProperty(varName, cssValue)
+				// if (++i === 2) {
+				// 	break
+				// }
 			}
 		},
 		{immediate: true}

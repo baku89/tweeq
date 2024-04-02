@@ -235,7 +235,7 @@ const overlayPath = computed(() => {
 		</SvgIcon>
 	</button>
 	<teleport to="body">
-		<template v-if="tweaking">
+		<div v-if="tweaking" class="tq-overlay">
 			<svg class="InputRotery__overlay">
 				<path class="bold" :d="overlayPath" />
 				<path
@@ -264,7 +264,7 @@ const overlayPath = computed(() => {
 					}"
 				/>
 			</div>
-		</template>
+		</div>
 	</teleport>
 </template>
 

@@ -1,11 +1,8 @@
 @import './reset.styl'
+@import './setup.styl'
 @import './common.styl'
 
 // Tweeq-specific styles
-::selection
-	background var(--tq-color-primary)
-	color var(--tq-color-on-primary)
-
 :root
 	font-size 12px
 	font-family 'Inter'
@@ -15,43 +12,12 @@
 	-webkit-text-size-adjust 100%
 	--titlebar-area-height env(titlebar-area-height, 38px)
 	--app-margin-top calc(env(titlebar-area-y, 0px) + var(--titlebar-area-height))
-	// UI Metrics
-	--tq-pane-border-radius 1.4rem
-
-*, *:before, *:after
-	box-sizing border-box
-	outline none
-	font-weight inherit
-	font-style normal
-	font-size inherit
-	cursor inherit
-
-::-webkit-scrollbar
-	width var(--tq-scrollbar-width)
-	height var(--tq-scrollbar-width)
-	background transparent
-
-::-webkit-scrollbar-thumb
-	border-radius 9999px
-	background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
-
-button, input
-	padding 0
-	border 0
-	background transparent
-	color inherit
-	text-align inherit
-	font-size inherit
-	font-family inherit
-	user-select none
 
 body
+	setup()
 	overflow hidden
 	margin 0
 	height 100vh
-	background var(--tq-color-background)
-	color var(--tq-color-on-background)
-	user-select none
 
 em
 	font-weight bold
@@ -88,30 +54,29 @@ hr
 // Tooltip
 .v-popper--theme-tooltip
 	.v-popper__inner
-		background set-alpha(--tq-color-inverse-surface, .7) !important
+		background set-alpha(--tq-color-inverse-surface, 0.7) !important
 		color var(--tq-color-inverse-on-surface) !important
 		line-height 1.4
 		backdrop-filter blur(12px)
 
 	.v-popper__arrow-outer
-		border-color set-alpha(--tq-color-inverse-surface, .7) !important
+		border-color set-alpha(--tq-color-inverse-surface, 0.7) !important
 
 // Menu
 .v-popper--theme-menu
-
 	.v-popper__arrow-container
 		display none
 
 	.v-popper__inner
 		border-radius 12px !important
 		border 1px solid var(--tq-color-surface-border) !important
-		background set-alpha(--tq-color-surface, .9) !important
+		background set-alpha(--tq-color-surface, 0.9) !important
 		overflow hidden
 		color var(--tq-color-input-on) !important
 		backdrop-filter blur(5px)
 
 	&.v-popper__popper--hidden
-		transition-duration .15s
+		transition-duration 0.15s
 
 	&.v-popper__popper--shown
-		transition-duration .15s
+		transition-duration 0.15s

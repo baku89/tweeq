@@ -42,13 +42,13 @@ defineExpose({
 	padding var(--tq-pane-padding)
 	transition opacity var(--tq-hover-transition-duration), transform var(--tq-hover-transition-duration), display var(--tq-hover-transition-duration)
 	transition-behavior allow-discrete
-	transform translateY(-0.5rem)
+	transform translateY(calc(var(--tq-rem) / -2))
 	opacity 0
 
 	&:popover-open
 		@starting-style
 			&
-				transform translateY(-0.5rem)
+				transform translateY(calc(var(--tq-rem) / -2))
 				opacity 0
 
 			&::backdrop

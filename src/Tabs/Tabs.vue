@@ -145,23 +145,23 @@ onMounted(() => {
 
 .Tabs
 	display grid
-	gap .5rem
+	gap calc(0.5 * var(--tq-rem))
 	grid-template-columns 1fr
 	grid-template-rows min-content 1fr
 
 .tablist-wrapper
 	display flex
-	gap 1rem
+	gap var(--tq-rem)
 
 .tablist
 	display flex
-	gap .2rem
+	gap calc(0.2 * var(--tq-rem))
 	list-style-type none
 	user-select none
 
 .tablist-item
-	line-height 2rem
-	padding 2px .4rem 0
+	line-height calc(2 * var(--tq-rem))
+	padding 2px calc(0.4 * var(--tq-rem)) 0
 	font-size 14px
 	font-weight bold
 	border-bottom 3px solid transparent
