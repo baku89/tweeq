@@ -5,8 +5,7 @@ export interface Props extends InputProps {
 	min?: number
 	max?: number
 	step?: number
-	bar?: boolean | 'circle'
-	barOrigin?: number | null
+	bar?: number | boolean
 	clampMin?: boolean
 	clampMax?: boolean
 	precision?: number

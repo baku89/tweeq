@@ -24,8 +24,7 @@ import {type Props} from './types'
 const props = withDefaults(defineProps<Props>(), {
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
-	bar: true,
-	barOrigin: 0,
+	bar: 0,
 	clampMin: true,
 	clampMax: true,
 	precision: 4,
@@ -55,7 +54,7 @@ const display = ref('')
 
 const barVisible = computed(() => {
 	return (
-		props.bar &&
+		props.bar !== false &&
 		props.min !== Number.MIN_SAFE_INTEGER &&
 		props.max !== Number.MAX_SAFE_INTEGER
 	)
@@ -148,11 +147,11 @@ const minSpeed = computed(() => {
 })
 
 const maxSpeed = computed(() => {
-	return barVisible.value && props.bar ? 1 : 1000
+	return barVisible.value ? 1 : 1000
 })
 
 const {dragging: tweaking} = useDrag($root, {
-	lockPointer: computed(() => !(barVisible.value && props.bar)),
+	lockPointer: computed(() => !barVisible.value),
 	disabled: computed(() => props.disabled || focusing.value),
 	onClick() {
 		$input.value?.focus()
@@ -161,8 +160,9 @@ const {dragging: tweaking} = useDrag($root, {
 		const isTipDragged = (event.target as Element).classList.contains('tip')
 		const insideRange =
 			props.min <= props.modelValue && props.modelValue <= props.max
+
 		if (barVisible.value && insideRange && !isTipDragged) {
-			// Absolute mode
+			// Absolute Mode
 			local.value = scalar.fit(
 				state.xy[0],
 				left.value,
@@ -212,6 +212,10 @@ const {dragging: tweaking} = useDrag($root, {
 				: 1
 
 			local.value += dx * baseSpeed * speed.value
+
+			if (!barVisible.value) {
+				local.value = scalar.clamp(local.value, validMin.value, validMax.value)
+			}
 		} else if (tweakMode.value === 'speed') {
 			speedMultiplierGesture.value = scalar.clamp(
 				speedMultiplierGesture.value * 0.98 ** dy,
@@ -455,11 +459,12 @@ const tipStyle = computed<StyleValue>(() => {
 })
 
 const barStyle = computed<StyleValue>(() => {
-	if (!barVisible.value || props.barOrigin === null) {
+	if (!barVisible.value || props.bar === false) {
 		return {visibility: 'hidden'}
 	}
 
-	const tOrigin = scalar.invlerp(props.min, props.max, props.barOrigin)
+	const origin = typeof props.bar === 'number' ? props.bar : 0
+	const tOrigin = scalar.invlerp(props.min, props.max, origin)
 	const tValue = scalar.invlerp(props.min, props.max, props.modelValue)
 
 	const left = Math.min(tOrigin, tValue)
@@ -503,18 +508,13 @@ const barStyle = computed<StyleValue>(() => {
 		/>
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
-	</div>
-	<teleport to="body">
-		<svg v-if="tweaking" class="tq-overlay InputNumber__overlay">
-			<g :transform="`translate(${left + width / 2}, ${top + height / 2})`">
-				<g v-if="tweakMode === 'speed'">
-					<line class="scale" v-bind="scaleAttrs(0)"></line>
-					<line class="scale" v-bind="scaleAttrs(1)"></line>
-					<line class="scale" v-bind="scaleAttrs(2)"></line>
-				</g>
-			</g>
+
+		<svg v-if="tweakMode === 'speed'" class="overlay">
+			<line class="scale" v-bind="scaleAttrs(0)"></line>
+			<line class="scale" v-bind="scaleAttrs(1)"></line>
+			<line class="scale" v-bind="scaleAttrs(2)"></line>
 		</svg>
-	</teleport>
+	</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -576,20 +576,12 @@ const barStyle = computed<StyleValue>(() => {
 	&.right
 		right 3px
 
-.InputNumber:hover, .InputNumber:focus-within
-	.bar
-		background var(--tq-color-tinted-input-active)
-</style>
-
-<style lang="stylus">
-.InputNumber__overlay
-	position fixed
+.overlay
+	position absolute
 	overflow visible
 	pointer-events none
-	width 100%
-	height: 100%
-	inset 0
-	z-index 200
+	top 50%
+	left 50%
 
 	.scale
 		fill none
@@ -599,4 +591,8 @@ const barStyle = computed<StyleValue>(() => {
 
 	.pointer
 		fill var(--tq-color-primary)
+
+.InputNumber:hover, .InputNumber:focus-within
+	.bar
+		background var(--tq-color-tinted-input-active)
 </style>
