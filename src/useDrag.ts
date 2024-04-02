@@ -1,6 +1,6 @@
 import {MaybeRef, unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, Ref, ref, toRefs, unref, watch} from 'vue'
+import {reactive, Ref, toRefs, unref, watch} from 'vue'
 
 interface DragState {
 	xy: vec2
@@ -57,9 +57,6 @@ export function useDrag(
 		onDragEnd,
 	}: UseDragOptions = {}
 ) {
-	const lockPointerRef =
-		typeof lockPointer === 'boolean' ? ref(lockPointer) : lockPointer
-
 	const state = reactive<Omit<DragState, 'event'>>({
 		// All coordinates are relative to the viewport
 		xy: vec2.zero,
@@ -77,7 +74,7 @@ export function useDrag(
 		el.addEventListener('pointerdown', onPointerDown)
 
 		function fireDragStart(event: PointerEvent) {
-			if (lockPointerRef.value && 'requestPointerLock' in el) {
+			if (unref(lockPointer) && 'requestPointerLock' in el) {
 				el.requestPointerLock()
 				state.pointerLocked = true
 			} else {
@@ -143,7 +140,7 @@ export function useDrag(
 			if (unref(disabled)) return
 			if (!event.isPrimary) return
 
-			if (lockPointerRef.value && 'exitPointerLock' in document) {
+			if (unref(lockPointer) && 'exitPointerLock' in document) {
 				document.exitPointerLock()
 			}
 			state.pointerLocked = false
