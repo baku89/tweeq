@@ -1,7 +1,5 @@
 src
-public
 node_modules
-demo
+docs
 .vscode
-index.html
 vite.config.ts
