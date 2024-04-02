@@ -2,6 +2,7 @@
 import {capital} from 'case'
 import {computed} from 'vue'
 
+import InputCheckbox from '../InputCheckbox'
 import InputCode from '../InputCode'
 import InputNumber from '../InputNumber'
 import InputString from '../InputString'
@@ -43,14 +44,22 @@ function getModelValue(name: keyof T) {
 				v-bind="param"
 				@update:modelValue="updateModelValue(name, $event)"
 			/>
-			<InputString
-				v-else-if="param.type === 'string'"
-				:modelValue="getModelValue(name)"
-				v-bind="param"
-				@update:modelValue="updateModelValue(name, $event)"
-			/>
-			<InputCode
-				v-else-if="param.type === 'code'"
+			<template v-else-if="param.type === 'string'">
+				<InputCode
+					v-if="param.ui === 'code'"
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+				<InputString
+					v-else
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+			</template>
+			<InputCheckbox
+				v-else-if="param.type === 'boolean'"
 				:modelValue="getModelValue(name)"
 				v-bind="param"
 				@update:modelValue="updateModelValue(name, $event)"

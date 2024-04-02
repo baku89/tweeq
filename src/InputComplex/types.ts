@@ -1,20 +1,33 @@
-type ParameterBase = {label?: string; icon?: string}
 import {Props as CodeProps} from '../InputCode'
 import {Props as NumberProps} from '../InputNumber'
-import {Props as StringProps} from '../InputString'
 
-type ParameterDescNumber = {type: 'number'} & Omit<NumberProps, 'modelValue'>
-type ParameterDescString = {type: 'string'} & Omit<StringProps, 'modelValue'>
-type ParameterDescCode = {type: 'code'} & Omit<CodeProps, 'modelValue'>
+type ParameterBase = {label?: string; icon?: string}
+
+type OmitValue<T> = Omit<T, 'modelValue'>
+
+type ParameterDescNumber = {type: 'number'} & OmitValue<NumberProps>
+type ParameterDescString = {
+	type: 'string'
+	ui?: undefined
+} & OmitValue<'modelValue'>
+type ParameterDescCode = {type: 'string'; ui: 'code'} & OmitValue<CodeProps>
+type ParameterDescBoolean = {type: 'boolean'}
 
 type ParameterDescForType<T> = T extends number
 	? ParameterDescNumber
 	: T extends string
-		? ParameterDescString | ParameterDescCode
-		: never
+	? ParameterDescString | ParameterDescCode
+	: T extends boolean
+	? ParameterDescBoolean
+	: never
 
 export type ParameterDesc = ParameterBase &
-	(ParameterDescNumber | ParameterDescString | ParameterDescCode)
+	(
+		| ParameterDescNumber
+		| ParameterDescString
+		| ParameterDescBoolean
+		| ParameterDescCode
+	)
 
 export type Scheme<T> = {
 	[K in keyof T]: ParameterDescForType<T[K]> & ParameterBase
