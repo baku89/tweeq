@@ -16,10 +16,10 @@ type ParameterDescBoolean = {type: 'boolean'}
 type ParameterDescForType<T> = T extends number
 	? ParameterDescNumber
 	: T extends string
-	? ParameterDescString | ParameterDescCode
-	: T extends boolean
-	? ParameterDescBoolean
-	: never
+		? ParameterDescString | ParameterDescCode
+		: T extends boolean
+			? ParameterDescBoolean
+			: never
 
 export type ParameterDesc = ParameterBase &
 	(

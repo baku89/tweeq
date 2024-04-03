@@ -6,11 +6,9 @@
 	"scripts": {
 		"dev": "vuepress dev docs",
 		"build:vite": "vite build",
-		"build:stylus": "stylus src/global.styl src/common.styl --out lib",
+		"build:stylus": "stylus src/global.styl src/common.styl src/setup.styl --out lib",
 		"build:doc": "vuepress build docs",
-		"build": "rm -rf lib && npm run build:vite && npm run build:stylus",
-		"prepare": "npm run build",
-		"preview": "vite preview"
+		"build": "rm -rf lib && npm run build:vite && npm run build:stylus"
 	},
 	"files": [
 		"lib"
@@ -65,7 +63,7 @@
 		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"eslint-plugin-vue": "^9.17.0",
-		"prettier": "^3.0.3",
+		"prettier": "^3.2.5",
 		"stylus": "^0.60.0",
 		"typescript": "5.4.3",
 		"vite": "^4.4.9",
