@@ -2,7 +2,7 @@
 import {ref} from 'vue'
 import {cloneDeep} from 'lodash'
 
-import {Scheme} from '../../src/InputComplex'
+import {Scheme} from '../../src'
 
 interface Props {
 	initialValue?: number

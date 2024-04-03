@@ -33,7 +33,7 @@ export type Scheme<T> = {
 	[K in keyof T]: ParameterDescForType<T[K]> & ParameterBase
 }
 
-export interface Props<T> {
+export interface InputComplexProps<T> {
 	modelValue: T
 	scheme: Scheme<T>
 	title?: string

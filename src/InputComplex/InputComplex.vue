@@ -7,9 +7,9 @@ import InputCode from '../InputCode'
 import InputNumber from '../InputNumber'
 import InputString from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
-import {ParameterDesc, Props} from './types'
+import {InputComplexProps, ParameterDesc} from './types'
 
-const props = defineProps<Props<T>>()
+const props = defineProps<InputComplexProps<T>>()
 
 const emit = defineEmits<{
 	'update:modelValue': [T]

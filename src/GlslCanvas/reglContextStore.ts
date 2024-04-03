@@ -64,9 +64,6 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 					uniforms,
 				})()
 
-				// NOTE: This is a hack to wait for the canvas to update
-				// await sleep(0)
-
 				// Get the data of canvas and set it to the image's src
 				img.src = canvas.toDataURL()
 			})

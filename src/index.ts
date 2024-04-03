@@ -35,6 +35,8 @@ import {Tab, Tabs} from './Tabs'
 import Timeline from './Timeline'
 import TitleBar from './TitleBar'
 
+export * from './InputComplex'
+
 export {type ErrorInfo}
 
 export * from './stores/actions'

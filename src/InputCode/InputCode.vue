@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import MonacoEditor from '../MonacoEditor'
-import {Props} from './types'
+import {InputCodeProps} from './types'
 
-defineProps<Props>()
+defineProps<InputCodeProps>()
 
 defineEmits<{
 	'update:modelValue': [string]

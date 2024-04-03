@@ -1,4 +1,4 @@
-export interface Props {
+export interface InputCodeProps {
 	modelValue: string
 	lang: string
 }
