@@ -147,8 +147,9 @@ function perform(action: ActionItemOptions) {
 	top 20vh
 	margin 0 auto
 	border-radius 8px
-	color var(--tq-color-inverse-on-surface)
-	background var(--tq-color-inverse-surface)
+	color var(--tq-color-on-surface)
+	background var(--tq-color-surface)
+	border 1px solid var(--tq-color-surface-border)
 	backdrop-filter blur(4px)
 	padding 0 9px
 	box-shadow 0 0 30px -15px var(--tq-color-shadow)
@@ -171,7 +172,7 @@ function perform(action: ActionItemOptions) {
 
 	&::placeholder
 		font-size calc(1.2 * var(--tq-rem))
-		color var(--tq-color-inverse-on-surface)
+		color var(--tq-color-on-surface)
 		opacity .3
 
 .recentActions
@@ -191,8 +192,8 @@ function perform(action: ActionItemOptions) {
 		margin-bottom 9px
 
 	&.selected
-		background var(--tq-color-inverse-primary)
-		color var(--tq-color-inverse-surface)
+		background var(--tq-color-primary)
+		color var(--tq-color-on-primary)
 
 .action-icon
 	width 20px

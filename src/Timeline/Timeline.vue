@@ -171,7 +171,9 @@ defineExpose({
 	position relative
 	width min-content
 	height 100%
+	z-index 10
 	overflow hidden
+	pointer-events none
 
 .scrollbar-wrapper
 	display grid

@@ -27,9 +27,6 @@ export interface Theme {
 	colorGrayOnBackground: string
 	colorSurface: string
 	colorSurfaceBorder: string
-	colorInverseSurface: string
-	colorInverseOnSurface: string
-	colorInversePrimary: string
 	colorShadow: string
 	colorInput: string
 	colorInputHover: string
@@ -125,9 +122,6 @@ export const useThemeStore = defineStore('theme', () => {
 			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 70)),
 			colorSurface: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
 			colorSurfaceBorder: toColor(colors.onBackground, 0.12),
-			colorInverseSurface: toColor(colors.inverseSurface, 0.9),
-			colorInverseOnSurface: toColor(colors.inverseOnSurface),
-			colorInversePrimary: toColor(colors.inversePrimary),
 			colorShadow: toColor(colors.shadow),
 			colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
 			colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),

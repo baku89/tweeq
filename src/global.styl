@@ -13,6 +13,10 @@
 	--titlebar-area-height env(titlebar-area-height, 38px)
 	--app-margin-top calc(env(titlebar-area-y, 0px) + var(--titlebar-area-height))
 
+a:link, &:visited
+	color var(--tq-color-primary)
+	cursor pointer
+
 body
 	reset()
 	setup()
@@ -55,13 +59,19 @@ hr
 // Tooltip
 .v-popper--theme-tooltip
 	.v-popper__inner
-		background set-alpha(--tq-color-inverse-surface, 0.7) !important
-		color var(--tq-color-inverse-on-surface) !important
+		background var(--tq-color-surface) !important
+		color var(--tq-color-on-surface) !important
 		line-height 1.4
 		backdrop-filter blur(12px)
+		border 1px solid var(--tq-color-surface-border)
+		margin -1px
 
 	.v-popper__arrow-outer
-		border-color set-alpha(--tq-color-inverse-surface, 0.7) !important
+		border-color var(--tq-color-surface) !important
+		filter drop-shadow(var(--tq-color-surface-border) 0 -1px 0)
+
+.v-popper__popper[data-popper-placement=top] .v-popper__arrow-outer
+	filter drop-shadow(var(--tq-color-surface-border) 0 1px 0)
 
 // Menu
 .v-popper--theme-menu

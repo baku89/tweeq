@@ -328,7 +328,6 @@ const overlayPath = computed(() => {
 		.arrows
 			position absolute
 			inset 0
-			color var(--tq-color-inverse-surface)
 
 
 			&:before, &:after
