@@ -85,12 +85,16 @@ export const useThemeStore = defineStore('theme', () => {
 		return themeFromSourceColor(argbFromHex(accentColor.value))
 	})
 
-	watch(materialTheme, () => {
-		const dark = colorMode.value === 'dark'
+	watch(
+		materialTheme,
+		() => {
+			const dark = colorMode.value === 'dark'
 
-		// Apply the theme to the body by updating custom properties for material tokens
-		applyTheme(materialTheme.value, {target: document.body, dark})
-	})
+			// Apply the theme to the body by updating custom properties for material tokens
+			applyTheme(materialTheme.value, {target: document.documentElement, dark})
+		},
+		{immediate: true}
+	)
 
 	const theme = computed<Theme>(() => {
 		// Get the theme from a hex color
