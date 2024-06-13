@@ -3,7 +3,7 @@ font-numeric()
 	font-variant-numeric tabular-nums
 
 pane-style()
-	border 1px solid var(--tq-color-surface-border)
+	border 1px solid var(--tq-color-border)
 	background var(--tq-color-surface)
 	backdrop-filter blur(4px)
 
@@ -110,14 +110,14 @@ input-style()
 		background transparent
 
 		&:hover
-			box-shadow 0 0 0 1px var(--tq-color-surface-border)
+			box-shadow 0 0 0 1px var(--tq-color-border)
 
 		&:focus-within, &.tweaking
 			box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&[disabled=true]
 		background transparent
-		box-shadow inset 0 0 0 1px var(--tq-color-surface-border)
+		box-shadow inset 0 0 0 1px var(--tq-color-border)
 		color var(--tq-color-gray-on-background)
 
 	use-input-font()
@@ -144,7 +144,7 @@ input-overlay()
 		stroke-linecap butt
 
 		&.gray
-			stroke var(--tq-color-surface-border)
+			stroke var(--tq-color-border)
 
 	.thin
 		stroke-width 1

@@ -33,7 +33,7 @@ export interface Theme {
 	colorOnBackground: string
 	colorGrayOnBackground: string
 	colorSurface: string
-	colorSurfaceBorder: string
+	colorBorder: string
 	colorShadow: string
 
 	/**
@@ -139,7 +139,7 @@ export const useThemeStore = defineStore('theme', () => {
 			colorOnBackground: toColor(colors.onBackground),
 			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 70)),
 			colorSurface: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
-			colorSurfaceBorder: toColor(colors.onBackground, 0.12),
+			colorBorder: toColor(colors.onBackground, 0.12),
 			colorShadow: toColor(colors.shadow),
 			colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
 			colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),

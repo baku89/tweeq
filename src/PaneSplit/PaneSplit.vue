@@ -104,7 +104,7 @@ onMounted(() => {
 
 .divider
 	position relative
-	background var(--tq-color-surface-border)
+	background var(--tq-color-border)
 	hover-transition(background)
 	z-index 10
 

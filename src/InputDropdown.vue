@@ -246,7 +246,7 @@ $right-arrow-width = 1em
 	padding 0
 	background set-alpha(--tq-color-input, .5)
 	backdrop-filter blur(5px)
-	border 1px solid var(--tq-color-surface-border)
+	border 1px solid var(--tq-color-border)
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
 
