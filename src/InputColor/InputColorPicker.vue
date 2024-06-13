@@ -9,14 +9,14 @@ import InputColorChannelValues from './InputColorChannelValues.vue'
 import InputColorPresets from './InputColorPresets.vue'
 import {
 	Channels,
-	DefualtColorUI,
+	DefualtColorPickers,
 	hsv2rgb,
 	InputColorProps,
 	rgb2hsv,
 } from './types'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
-	ui: () => DefualtColorUI,
+	pickers: () => DefualtColorPickers,
 })
 
 const emit = defineEmits<{
@@ -102,7 +102,7 @@ async function pickColor() {
 
 <template>
 	<div class="InputColorPicker">
-		<template v-for="(u, i) in ui">
+		<template v-for="(u, i) in pickers">
 			<InputColorChannelPad
 				v-if="u[0] === 'pad'"
 				:key="i"

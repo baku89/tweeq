@@ -71,8 +71,8 @@ export const useThemeStore = defineStore('theme', () => {
 
 			// Surface
 			colorSurface: `color-mix(in srgb, transparent, ${themeColorsRadix.grayScale[0]} 80%)`,
-			colorBorder: themeColorsRadix.grayScaleAlpha[5],
-			colorShadow: dark ? '#000000' : themeColorsRadix.grayScale[11],
+			colorBorder: themeColorsRadix.grayScaleAlpha[3],
+			colorShadow: dark ? '#000000aa' : themeColorsRadix.grayScale[11],
 
 			// Input
 			// Background of the input

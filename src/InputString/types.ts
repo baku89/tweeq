@@ -6,7 +6,7 @@ import {
 	Validator,
 } from '../types'
 
-export interface Props extends InputProps {
+export interface InputStringProps extends InputProps {
 	modelValue: string
 	theme?: InputTheme
 	font?: InputFont

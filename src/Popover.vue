@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import {
-	onClickOutside,
 	useElementBounding,
 	useElementSize,
 	useEventListener,
@@ -20,17 +19,18 @@ interface Props {
 	reference: HTMLElement | null
 	open: boolean
 	placement?: Placement
-	closeTrigger?: 'onClickOutside' | null
+	lightDismiss?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,
 	placement: 'bottom-start',
-	closeTrigger: 'onClickOutside',
+	lightDismiss: true,
 })
 
 const emit = defineEmits<{
 	'update:open': [boolean]
+	close: []
 }>()
 
 const $reference = computed(() => props.reference)
@@ -130,49 +130,45 @@ const offset = computed<vec2>(() => {
 	return [x, y]
 })
 
-let disposeOnClickOutside: (() => void) | undefined
-
-watch(
-	() => props.closeTrigger,
-	closeTrigger => {
-		disposeOnClickOutside && disposeOnClickOutside()
-
-		if (closeTrigger === 'onClickOutside') {
-			disposeOnClickOutside = onClickOutside(
-				$popover,
-				() => emit('update:open', false),
-				{
-					ignore: [$reference],
-				}
-			)
-		}
-	},
-	{immediate: true}
-)
-
 useEventListener('keydown', e => {
 	if (e.key === 'Escape' && props.open) {
+		emit('close')
 		emit('update:open', false)
 	}
 })
+
+useEventListener($popover, 'toggle', e => {
+	const {newState} = e as ToggleEvent
+	if (newState === 'close') {
+		emit('close')
+	}
+	emit('update:open', newState === 'open')
+})
+
+watch(
+	() => [props.open, $popover.value] as const,
+	([open, $popover]) => {
+		if (!$popover) return
+
+		$popover.togglePopover(open)
+	}
+)
 </script>
 
 <template>
-	<teleport to="body">
-		<div
-			v-if="open"
-			ref="$popover"
-			class="Popover"
-			:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
-		>
-			<slot />
-		</div>
-	</teleport>
+	<div
+		v-if="open"
+		ref="$popover"
+		class="Popover"
+		:style="{left: offset[0] + 'px', top: offset[1] + 'px'}"
+		:popover="lightDismiss ? 'auto' : 'manual'"
+	>
+		<slot />
+	</div>
 </template>
 
 <style lang="stylus" scoped>
 .Popover
+	background transparent
 	overflow visible
-	position fixed
-	z-index 1100
 </style>

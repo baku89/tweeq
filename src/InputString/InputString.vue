@@ -3,9 +3,9 @@ import {useFocus} from '@vueuse/core'
 import {identity} from 'lodash'
 import {ref, watch} from 'vue'
 
-import {Props} from './types'
+import {InputStringProps} from './types'
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<InputStringProps>(), {
 	validator: identity,
 })
 

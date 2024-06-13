@@ -1,6 +1,7 @@
 import {Props as CodeProps} from '../InputCode'
+import {InputColorProps} from '../InputColor'
 import {Props as NumberProps} from '../InputNumber'
-import {Props as StringProps} from '../InputString'
+import {InputStringProps as StringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 
@@ -15,12 +16,13 @@ type ParameterDescString = Desc<
 	StringProps
 >
 type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, CodeProps>
+type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
 type ParameterDescBoolean = {type: 'boolean'}
 
 type ParameterDescForType<T> = T extends number
 	? ParameterDescNumber
 	: T extends string
-		? ParameterDescString | ParameterDescCode
+		? ParameterDescString | ParameterDescCode | ParameterDescColor
 		: T extends boolean
 			? ParameterDescBoolean
 			: never

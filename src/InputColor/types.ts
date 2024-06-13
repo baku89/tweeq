@@ -1,3 +1,5 @@
+import {InputProps} from '../types'
+
 export type Color = string
 export type ColorChannel = 'r' | 'g' | 'b' | 'a' | 'h' | 's' | 'v'
 export type ColorPicker =
@@ -38,24 +40,22 @@ export type Channels = {
 	v: number
 }
 
-export type ColorUIComponent =
+export type ColorPickerComponent =
 	| [type: 'slider', axis: ColorChannel]
 	| [type: 'pad', axes: [ColorChannel, ColorChannel]]
 	| [type: 'values']
 	| [type: 'presets']
 
-export type ColorUI = ColorUIComponent[]
-
-export const DefualtColorUI: ColorUI = [
+export const DefualtColorPickers: ColorPickerComponent[] = [
 	['pad', ['s', 'v']],
 	['slider', 'h'],
 	['slider', 'a'],
 	['values'],
 ]
 
-export interface InputColorProps {
+export interface InputColorProps extends InputProps {
 	modelValue: string
-	ui?: ColorUIComponent[]
+	pickers?: ColorPickerComponent[]
 	presets?: string[]
 }
 

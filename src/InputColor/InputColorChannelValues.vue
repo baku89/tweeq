@@ -44,10 +44,6 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 }
 
 const colorCode = computed(() => {
-	if (props.modelValue.startsWith('#')) {
-		return props.modelValue.slice(1).toUpperCase()
-	}
-
 	return props.modelValue
 })
 

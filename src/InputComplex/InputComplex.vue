@@ -4,6 +4,7 @@ import {computed} from 'vue'
 
 import InputCheckbox from '../InputCheckbox'
 import InputCode from '../InputCode'
+import {InputColor} from '../InputColor'
 import InputNumber from '../InputNumber'
 import InputString from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
@@ -47,6 +48,12 @@ function getModelValue<K extends keyof T>(name: K) {
 			<template v-else-if="param.type === 'string'">
 				<InputCode
 					v-if="param.ui === 'code'"
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+				<InputColor
+					v-if="param.ui === 'color'"
 					:modelValue="getModelValue(name)"
 					v-bind="param"
 					@update:modelValue="updateModelValue(name, $event)"

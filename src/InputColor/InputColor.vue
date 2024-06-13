@@ -150,8 +150,12 @@ const sliderHueUniforms = computed(() => {
 <template>
 	<div v-bind="$attrs" ref="$button" class="InputColor" @click="open = true">
 		<slot>
-			<button class="default-button" :class="{open, tweaking}">
-				<div class="preview" :style="{background: modelValue}" />
+			<button
+				class="default-button"
+				:class="{open, tweaking}"
+				:style="{color: modelValue}"
+			>
+				<div class="preview" />
 			</button>
 		</slot>
 	</div>
@@ -159,7 +163,7 @@ const sliderHueUniforms = computed(() => {
 		<div class="floating">
 			<InputColorPicker
 				:modelValue="modelValue"
-				:ui="ui"
+				:pickers="pickers"
 				:presets="presets"
 				@update:modelValue="emit('update:modelValue', $event)"
 			/>
@@ -221,16 +225,17 @@ const sliderHueUniforms = computed(() => {
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	background-checkerboard()
 	hover-transition(box-shadow)
+	background-checkerboard()
 
 	&:hover, &.tweaking
 			box-shadow 0 0 0 1px var(--tq-color-accent)
+
 .preview
+	background-color currentColor
 	display block
 	position absolute
 	inset 0
-	border-radius var(--tq-input-border-radius)
 
 .floating
 	width var(--tq-popup-width)

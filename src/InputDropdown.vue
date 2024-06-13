@@ -64,12 +64,6 @@ watch(
 )
 
 const startValue = ref(props.modelValue) as Ref<T>
-let timeAtOpen: number | null = null
-
-whenever(open, () => {
-	startValue.value = props.modelValue
-	timeAtOpen = new Date().getTime()
-})
 
 const filteredOptions = computed(() => {
 	if (display.value === '' || !displayEdited.value) return props.options
@@ -104,17 +98,21 @@ watch(filteredOptions, filteredOptions => {
 	}
 })
 
+let timeAtOpen: number | null = null
+
+whenever(open, () => {
+	startValue.value = props.modelValue
+	timeAtOpen = new Date().getTime()
+})
+
 function onSelect(option: T, e: PointerEvent) {
 	const elapsedFromOpen = new Date().getTime() - (timeAtOpen ?? 0)
 
+	// Drag and release to close the dropdown
 	if (e.type === 'pointerup' && e.isPrimary && elapsedFromOpen > 500) {
 		open.value = false
 	}
 	emit('update:modelValue', option)
-}
-
-function onUnselect() {
-	emit('update:modelValue', startValue.value)
 }
 
 function onPressArrow(isUp: boolean) {
@@ -154,18 +152,17 @@ function onInputStringBlur(e: Event) {
 		:class="{open}"
 		v-bind="$attrs"
 		:align="align"
-		:horizontal-position="horizontalPosition"
-		:vertical-position="verticalPosition"
 		:disabled="disabled"
 	>
 		<InputString
 			v-model="display"
+			class="input"
 			:theme="theme"
 			:font="font"
 			:align="align"
 			:forceUpdateOnFocusing="true"
-			class="input"
-			horizontalPosition="middle"
+			:horizontal-position="horizontalPosition"
+			:vertical-position="verticalPosition"
 			@pointerdown="onInputPointerdown"
 			@focus="onInputStringFocus"
 			@blur="onInputStringBlur"
@@ -179,14 +176,13 @@ function onInputStringBlur(e: Event) {
 			v-model:open="open"
 			:reference="$root"
 			:placement="popoverPlacement"
-			:closeTrigger="null"
+			:lightDismiss="false"
 		>
 			<ul
 				class="select"
 				:style="{width: rootBound.width.value + 2 + 'px'}"
 				:font="font"
 				:align="align"
-				@pointerleave="open && onUnselect()"
 			>
 				<li
 					v-for="(item, index) in filteredOptions"
@@ -249,8 +245,8 @@ $right-arrow-width = 1em
 .select
 	margin 1px
 	padding 0
-	background set-alpha(--tq-color-input, .5)
-	backdrop-filter blur(5px)
+	background set-alpha(--tq-color-input, .8)
+	backdrop-filter blur(6px)
 	border 1px solid var(--tq-color-border)
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
@@ -267,10 +263,11 @@ $right-arrow-width = 1em
 	align-items center
 	align-content center
 	justify-content center
+	color var(--tq-color-on-background)
 	border-radius var(--tq-input-border-radius)
 
 	&.startValue
-		background var(--tq-color-accent-hover)
+		background var(--tq-color-input-vivid-accent)
 
 	&.active
 		background var(--tq-color-accent)
@@ -280,4 +277,3 @@ $right-arrow-width = 1em
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
 </style>
-./stores/useTheme

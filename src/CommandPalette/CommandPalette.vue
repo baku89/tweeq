@@ -152,7 +152,7 @@ function perform(action: ActionItemOptions) {
 	border 1px solid var(--tq-color-border)
 	backdrop-filter blur(4px)
 	padding 0 9px
-	box-shadow 0 0 30px -15px var(--tq-color-shadow)
+	box-shadow 0 0 30px 0 var(--tq-color-shadow)
 
 .searchContainer
 	display flex
