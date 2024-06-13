@@ -4,10 +4,12 @@ export {type ErrorInfo} from './MonacoEditor'
 export * from './InputComplex'
 
 export type {
-	ActionItem,
 	Action,
 	ActionGroup,
+	ActionGroupOptions,
+	ActionItem,
 	ActionItemOptions,
+	ActionOptions,
 } from './stores/actions'
 
 export * from './useBndr'

@@ -27,14 +27,14 @@ export interface ActionGroup {
 
 type BindDescriptor = string | Bndr.Emitter | (string | Bndr.Emitter)[]
 
-type ActionOptions = ActionItemOptions | ActionGroupOptions
+export type ActionOptions = ActionItemOptions | ActionGroupOptions
 
 export interface ActionItemOptions extends ActionItemBase {
 	label?: string
 	bind?: BindDescriptor
 }
 
-interface ActionGroupOptions {
+export interface ActionGroupOptions {
 	icon?: string
 	id: string
 	label?: string
