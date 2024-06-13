@@ -10,7 +10,7 @@ export const InputColorSpaceKey: InjectionKey<Ref<ColorSpace>> =
 	Symbol('InputColorSpaceKey')
 
 export function useInputColor() {
-	provide(InputColorPresetsKey, ['skyblue', 'tomato'])
+	provide(InputColorPresetsKey, ['skyblue', 'tomato', 'gold', 'limegreen'])
 
 	const colorSpace = ref<ColorSpace>('hsv')
 

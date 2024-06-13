@@ -16,7 +16,7 @@ export const useThemeStore = defineStore('theme', () => {
 	const config = useAppConfigStore().group('theme')
 
 	const accentColor = config.ref('accentColor', '#0000ff')
-	const colorMode = config.ref<ColorMode>('colorMode', 'dark')
+	const colorMode = config.ref<ColorMode>('colorMode', 'light')
 
 	function setDefault(options: {colorMode?: ColorMode; accentColor?: string}) {
 		if (options.colorMode) {
