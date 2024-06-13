@@ -164,13 +164,13 @@ export const useThemeStore = defineStore('theme', () => {
 
 			rem: 12,
 
-			paneBorderRadius: 20,
+			paneBorderRadius: 12,
 
 			popupWidth: 300,
 			popupPadding: 9,
 			popupBorderRadius: 6,
 
-			inputBorderRadius: 8,
+			inputBorderRadius: 4,
 			inputHeight: 24,
 			inputGap: 9,
 
