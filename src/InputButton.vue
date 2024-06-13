@@ -8,6 +8,7 @@ interface Props extends InputProps {
 	label?: string
 	tooltip?: string
 	blink?: boolean
+	gray?: boolean
 }
 
 defineProps<Props>()
@@ -16,10 +17,10 @@ defineProps<Props>()
 <template>
 	<button
 		class="InputButton"
-		:class="{blink: !!blink}"
+		:class="{blink, gray}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
-		:disabled="!!disabled"
+		:disabled="disabled"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span v-if="label" class="label">{{ label }}</span>
@@ -59,14 +60,20 @@ defineProps<Props>()
 	.label
 		line-height var(--tq-input-height)
 
+	&.gray
+		background var(--tq-color-input)
+		color var(--tq-color-on-input)
+
+		&:hover
+			background var(--tq-color-accent-hover)
+
 	&.blink
-		animation blink 1s infinite
+		animation blink .5s infinite
+		animation-direction alternate
 
 	@keyframes blink
 		0%
-			background var(--tq-color-accent-hover)
-		50%
-			background var(--tq-color-accent)
+			background var(--tq-color-input-vivid-accent)
 		100%
 			background var(--tq-color-accent-hover)
 </style>

@@ -11,19 +11,21 @@ import {useThemeStore} from './stores/theme'
 import {
 	InputAlign,
 	InputFont,
+	InputProps,
 	InputTheme,
 	LabelizerProps,
 	useLabelizer,
 } from './types'
 import {unsignedMod} from './util'
 
-interface Props extends LabelizerProps<T> {
-	modelValue: T
-	icons?: string[]
-	theme?: InputTheme
-	font?: InputFont
-	align?: InputAlign
-}
+type Props = LabelizerProps<T> &
+	InputProps & {
+		modelValue: T
+		icons?: string[]
+		theme?: InputTheme
+		font?: InputFont
+		align?: InputAlign
+	}
 
 const props = withDefaults(defineProps<Props>(), {
 	prefix: '',
@@ -152,6 +154,9 @@ function onInputStringBlur(e: Event) {
 		:class="{open}"
 		v-bind="$attrs"
 		:align="align"
+		:horizontal-position="horizontalPosition"
+		:vertical-position="verticalPosition"
+		:disabled="disabled"
 	>
 		<InputString
 			v-model="display"
@@ -160,6 +165,7 @@ function onInputStringBlur(e: Event) {
 			:align="align"
 			:forceUpdateOnFocusing="true"
 			class="input"
+			horizontalPosition="middle"
 			@pointerdown="onInputPointerdown"
 			@focus="onInputStringFocus"
 			@blur="onInputStringBlur"
@@ -217,7 +223,6 @@ $right-arrow-width = 1em
 	display inline-block
 	width 100%
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
 
 	&.open .input
 		background var(--tq-color-accent-hover)
