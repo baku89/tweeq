@@ -5,7 +5,13 @@ font-numeric()
 pane-style()
 	border 1px solid var(--tq-color-border)
 	background var(--tq-color-surface)
-	backdrop-filter blur(4px)
+	backdrop-filter blur(6px)
+
+tooltip-style()
+	padding 4px 11px
+	border-radius 9999px
+	background var(--tq-color-surface)
+	color var(--tq-color-on-surface)
 
 popup-style()
 	pane-style()
@@ -13,6 +19,17 @@ popup-style()
 	border-radius var(--tq-popup-border-radius)
 	box-shadow 0 0 20px -15px var(--tq-color-shadow)
 	color var(--tq-color-on-background)
+
+button-focus-style()
+	position relative
+
+	&:focus-visible
+		&:before
+			content ''
+			position absolute
+			inset -3px
+			border 1px solid var(--tq-color-accent)
+			border-radius calc(var(--tq-input-border-radius) + 2px)
 
 hover-transition(prop = all)
 	values = ()
@@ -76,7 +93,7 @@ input-style()
 	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
-	color var(--tq-color-on-input)
+	color var(--tq-color-on-background)
 	font-size var(--tq-rem)
 	hover-transition(background, box-shadow)
 	overflow hidden
@@ -89,9 +106,8 @@ input-style()
 		box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&:has(input[invalid=true])
-		--tq-color-on-input var(--tq-color-error)
+		--tq-color-on-background var(--tq-color-error)
 		--tq-color-accent var(--tq-color-error)
-		--tq-color-accent-container var(--tq-color-error-container)
 
 	input
 		padding 4px 12px
@@ -100,11 +116,8 @@ input-style()
 		user-select none
 
 		&::selection
-			color var(--tq-color-on-input)
-
-		&:focus::selection
-			background var(--tq-color-accent)
-			color var(--tq-color-on-accent)
+			background var(--tq-color-selection)
+			color var(--tq-color-on-selection)
 
 	&.minimal
 		background transparent
@@ -123,12 +136,6 @@ input-style()
 	use-input-font()
 	use-input-align()
 	use-input-position()
-
-tooltip-style()
-	padding 4px 11px
-	border-radius 9999px
-	background var(--tq-color-surface)
-	color var(--tq-color-on-surface)
 
 input-overlay()
 	position fixed

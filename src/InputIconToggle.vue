@@ -35,7 +35,7 @@ defineEmits<{
 .InputIconToggle
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
-	color var(--tq-color-on-input)
+	color var(--tq-color-on-background)
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
 	display flex
@@ -45,9 +45,7 @@ defineEmits<{
 	gap 4px
 
 	use-input-position()
-
-	&:focus-visible
-		box-shadow 0 0 0 1px var(--tq-color-accent)
+	button-focus-style()
 
 	&:hover
 		background var(--tq-color-input-hover)

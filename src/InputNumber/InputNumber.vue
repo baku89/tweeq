@@ -540,13 +540,13 @@ const barStyle = computed<StyleValue>(() => {
 
 .bar
 	pointer-events none
-	background var(--tq-color-accent-container)
+	background var(--tq-color-input-tinted-accent)
 	hover-transition(background)
 
 .tip
 	width 2px
 	margin-left -1px
-	background var(--tq-color-tinted-input-active)
+	background var(--tq-color-input-vivid-accent)
 	hover-transition(opacity)
 
 	&:before
@@ -593,6 +593,11 @@ const barStyle = computed<StyleValue>(() => {
 		fill var(--tq-color-accent)
 
 .InputNumber:hover, .InputNumber:focus-within
+	color var(--tq-color-on-accent)
+
 	.bar
-		background var(--tq-color-tinted-input-active)
+		background var(--tq-color-input-tinted-accent-hover)
+
+	.tip
+		background var(--tq-color-accent)
 </style>

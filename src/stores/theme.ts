@@ -1,124 +1,47 @@
 import {
-	applyTheme,
 	argbFromHex,
 	customColor,
 	hexFromArgb,
 	themeFromSourceColor,
 } from '@material/material-color-utilities'
-import {toReactive, useColorMode} from '@vueuse/core'
+import {toReactive} from '@vueuse/core'
 import {kebab} from 'case'
 import {defineStore} from 'pinia'
 import {computed, toRefs, watch} from 'vue'
 
-import {useAppConfigStore} from '..'
-
-export type ColorMode = 'light' | 'dark' | 'auto'
-
-export type CSSNumber = number
-
-export interface Theme {
-	// Colors
-
-	/**
-	 * アクセント色
-	 */
-	colorAccent: string
-	/**
-	 * アクセント色のテキスト色
-	 */
-	colorOnAccent: string
-	colorAccentContainer: string
-	colorOnAccentContainer: string
-	colorBackground: string
-	colorOnBackground: string
-	colorGrayOnBackground: string
-	colorSurface: string
-	colorBorder: string
-	colorShadow: string
-
-	/**
-	 * 入力欄の背景色
-	 */
-	colorInput: string
-	/**
-	 * 入力欄のホバー時の背景色
-	 */
-	colorInputHover: string
-	colorAccentHover: string
-	colorOnInput: string
-	colorTintedInput: string
-	colorTintedInputActive: string
-	colorError: string
-	colorOnError: string
-	colorErrorContainer: string
-	colorOnErrorContainer: string
-
-	// Semantic Colors
-	colorAffirmative: string
-
-	// Font
-	fontCode: string
-	fontHeading: string
-	fontUi: string
-	fontNumeric: string
-
-	// UI Metrics
-	paneBorderRadius: CSSNumber
-
-	popupWidth: CSSNumber
-	popupPadding: CSSNumber
-	popupBorderRadius: CSSNumber
-
-	inputBorderRadius: CSSNumber
-	inputHeight: CSSNumber
-	inputGap: CSSNumber
-
-	panePadding: CSSNumber
-	scrollbarWidth: CSSNumber
-
-	hoverTransitionDuration: string
-}
+import {ColorMode, generateThemeColorsRadix, Theme} from '../theme'
+import {useAppConfigStore} from './appConfig'
 
 export const useThemeStore = defineStore('theme', () => {
 	const appConfig = useAppConfigStore()
 
-	const browserColorMode = useColorMode()
-
-	const accentColor = appConfig.ref('theme.accentColor', '#0000ff')
-	const savedColorMode = appConfig.ref<ColorMode>('theme.colorMode', 'auto')
-
-	const colorMode = computed<'light' | 'dark'>(() => {
-		if (savedColorMode.value === 'auto') {
-			return browserColorMode.value === 'dark' ? 'dark' : 'light'
-		} else {
-			return savedColorMode.value
-		}
-	})
+	const accentColor = appConfig.ref('theme.accentColor', '#D03E54')
+	const colorMode = appConfig.ref<ColorMode>('theme.colorMode', 'light')
 
 	const materialTheme = computed(() => {
 		return themeFromSourceColor(argbFromHex(accentColor.value))
 	})
 
-	watch(
-		materialTheme,
-		() => {
-			const dark = colorMode.value === 'dark'
-
-			// Apply the theme to the body by updating custom properties for material tokens
-			applyTheme(materialTheme.value, {target: document.documentElement, dark})
-		},
-		{immediate: true}
-	)
-
 	const theme = computed<Theme>(() => {
 		// Get the theme from a hex color
+		const themeColorsRadix = generateThemeColorsRadix({
+			appearance: colorMode.value,
+			background: colorMode.value === 'light' ? '#ffffff' : '#111111',
+			accent: accentColor.value,
+			gray: '#8B8D98',
+		})
 
 		const dark = colorMode.value === 'dark'
 
-		const palettes = materialTheme.value.palettes
 		const colors = materialTheme.value.schemes[dark ? 'dark' : 'light']
 
 		const accent = argbFromHex(accentColor.value)
+
+		const error = customColor(accent, {
+			value: 0xff0000,
+			name: 'error',
+			blend: true,
+		})
 
 		const affirmative = customColor(accent, {
 			value: 0x4752ff,
@@ -127,34 +50,47 @@ export const useThemeStore = defineStore('theme', () => {
 		})
 
 		return {
-			colorAccent: toColor(dark ? palettes.primary.tone(40) : colors.primary),
-			colorOnAccent: toColor(
-				dark ? palettes.primary.tone(90) : colors.onPrimary
-			),
-			colorAccentContainer: toColor(
-				dark ? palettes.primary.tone(20) : colors.primaryContainer
-			),
-			colorOnAccentContainer: toColor(colors.onPrimaryContainer),
-			colorBackground: dark ? '#1a1a1a' : '#ffffff',
-			colorOnBackground: toColor(colors.onBackground),
-			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 70)),
-			colorSurface: toColor(dark ? 0x1a1a1a : 0xffffff, 0.95),
-			colorBorder: toColor(colors.onBackground, 0.12),
-			colorShadow: toColor(colors.shadow),
-			colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
-			colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),
-			colorAccentHover: toColor(palettes.primary.tone(dark ? 55 : 45)),
-			colorTintedInput: toColor(colors.primaryContainer),
-			colorTintedInputActive: toColor(colors.inversePrimary),
-			colorOnInput: toColor(colors.onBackground),
-			colorError: toColor(colors.error),
-			colorOnError: toColor(colors.onError),
-			colorErrorContainer: toColor(colors.errorContainer),
-			colorOnErrorContainer: toColor(colors.onErrorContainer),
+			// Accent
+			colorAccent: themeColorsRadix.accentScale[8],
+			colorOnAccent: themeColorsRadix.accentContrast,
+			colorAccentHover: themeColorsRadix.accentScale[9],
 
-			// Semantic Colors
+			// Background
+			colorBackground: themeColorsRadix.background,
+			colorOnBackground: themeColorsRadix.grayScale[11],
+			colorGrayOnBackground: themeColorsRadix.grayScale[10],
+
+			// Surface
+			colorSurface: `color-mix(in srgb, transparent, ${themeColorsRadix.grayScale[0]} 80%)`,
+			colorBorder: themeColorsRadix.grayScaleAlpha[5],
+			colorShadow: dark ? '#000000' : themeColorsRadix.grayScale[11],
+
+			// Input
+			// Background of the input
+			colorInput: themeColorsRadix.grayScale[2],
+			// Hover color of the input
+			colorInputHover: themeColorsRadix.grayScale[4],
+			// The color of the bar
+			colorInputTintedAccent: themeColorsRadix.accentScale[2],
+			// The hover color of the bar
+			colorInputTintedAccentHover: themeColorsRadix.accentScale[7],
+			// The tip color of the bar (becomes accent color when hovered)
+			colorInputVividAccent: themeColorsRadix.accentScale[6],
+			// The scale color of the input
+			colorInputScale: themeColorsRadix.grayScaleAlpha[2],
+
+			// Selection
+			colorSelection: themeColorsRadix.accentScale[10],
+			colorOnSelection: themeColorsRadix.background,
+
+			// Secondary Colors
+			colorSecondary: toColor(colors.secondary),
+
+			// Semantic Colors: Can be used as same as accent color
+			colorError: toColor(dark ? error.light.color : error.dark.color),
+			colorRec: toColor(dark ? error.light.color : error.dark.color),
 			colorAffirmative: toColor(
-				dark ? affirmative.dark.color : affirmative.light.color
+				dark ? affirmative.light.color : affirmative.dark.color
 			),
 
 			fontCode: "'Fira Code', monospace",
@@ -201,7 +137,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 	return {
 		accentColor,
-		colorMode: savedColorMode,
+		colorMode: colorMode,
 		...toRefs(toReactive(theme)),
 	}
 })

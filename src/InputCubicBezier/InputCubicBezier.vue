@@ -60,7 +60,7 @@ const easingPath = computed(() => {
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
 	hover-transition(background)
-	background var(--tq-color-accent-container)
+	background var(--tq-color-accent-hover)
 
 	&:hover, &.open
 		background var(--tq-color-tinted-input-active)

@@ -274,7 +274,7 @@ watch(position, position => emit('update:position', position))
 		border-bottom-color transparent !important
 
 	&.w-minimized, &.h-minimized
-		background var(--tq-color-accent-container)
+		background var(--tq-color-accent-hover)
 		hover-transition(width, height, background)
 
 		.minimized-title

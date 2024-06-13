@@ -42,13 +42,10 @@ defineProps<Props>()
 	gap 4px
 
 	use-input-position()
-
-	&:focus-visible
-		box-shadow 0 0 0 1px var(--tq-color-accent)
+	button-focus-style()
 
 	&:hover
-		color var(--tq-color-on-accent)
-		background var(--tq-color-accent)
+		background var(--tq-color-accent-hover)
 
 	&:has(.label)
 		padding 0 1em
@@ -67,9 +64,9 @@ defineProps<Props>()
 
 	@keyframes blink
 		0%
-			background var(--tq-color-accent-container)
+			background var(--tq-color-accent-hover)
 		50%
 			background var(--tq-color-accent)
 		100%
-			background var(--tq-color-accent-container)
+			background var(--tq-color-accent-hover)
 </style>

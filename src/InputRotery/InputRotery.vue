@@ -292,7 +292,7 @@ const overlayPath = computed(() => {
 		transform scale(3)
 
 	&__circle
-		fill var(--tq-color-accent-container)
+		fill var(--tq-color-accent-hover)
 		stroke none
 		hover-transition(fill)
 
@@ -312,7 +312,7 @@ const overlayPath = computed(() => {
 
 		~/__circle:hover + &,
 		~/.tweaking[data-mode=relative] &
-			stroke var(--tq-color-accent-container)
+			stroke var(--tq-color-accent-hover)
 
 	&__overlay
 		input-overlay()

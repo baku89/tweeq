@@ -34,7 +34,7 @@ const style = computed(() => {
 
 	return {
 		backgroundImage:
-			'linear-gradient(to right, var(--tq-color-border) 1px, transparent 1px)',
+			'linear-gradient(to right, var(--tq-color-input-scale) 1px, transparent 1px)',
 		backgroundSize: `${scaleGap.value}px 100%`,
 	}
 })

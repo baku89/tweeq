@@ -105,7 +105,7 @@ export default defineComponent({
 		transition transform 0.3s cubic-bezier(0.19, 1.6, 0.42, 1)
 
 	&:focus
-		background var(--tq-color-accent-container)
+		background var(--tq-color-accent-hover)
 
 	&:hover
 		background var(--tq-color-accent)

@@ -35,7 +35,7 @@ defineProps<Props>()
 	gap .4em
 	width auto
 	padding 0 12px 0 6px
-	background var(--tq-color-accent-container)
+	background var(--tq-color-accent-hover)
 	color var(--tq-color-on-accent-container)
 	hover-transition(background, color)
 	line-height 32px

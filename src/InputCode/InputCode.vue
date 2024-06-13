@@ -21,15 +21,17 @@ defineEmits<{
 </template>
 
 <style lang="stylus" scoped>
+@import '../common.styl'
 
 .InputCode
 	position relative
-	background blue
+	border-radius var(--tq-input-border-radius
+	overflow hidden
 	min-height calc(var(--tq-input-height) * 20)
 	min-width 45em
-
+	background var(--tq-color-input)
 
 .monaco-editor
 	position absolute
-	inset 0
+	inset calc(var(--tq-input-height) * .25)
 </style>

@@ -209,6 +209,7 @@ onMounted(() => {
 .MonacoEditor
 	position relative
 	min-height 0
+	background transparent
 
 .root
 	width 100%
@@ -217,4 +218,3 @@ onMounted(() => {
 :deep(.monaco-editor)
 	--vscode-editor-background transparent
 </style>
-../stores/useTheme

@@ -220,7 +220,7 @@ $right-arrow-width = 1em
 	border-radius var(--tq-input-border-radius)
 
 	&.open .input
-		background var(--tq-color-accent-container)
+		background var(--tq-color-accent-hover)
 
 .input
 	cursor default
@@ -265,7 +265,7 @@ $right-arrow-width = 1em
 	border-radius var(--tq-input-border-radius)
 
 	&.startValue
-		background var(--tq-color-accent-container)
+		background var(--tq-color-accent-hover)
 
 	&.active
 		background var(--tq-color-accent)

@@ -89,7 +89,7 @@ const draggingPoint = ref<number | null>(null)
 
 	line
 		stroke-width 1
-		stroke var(--md-sys-color-outline)
+		stroke var(--tq-color-accent)
 
 	circle
 		fill var(--tq-color-background)
