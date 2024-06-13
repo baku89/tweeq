@@ -15,11 +15,14 @@ function createGroup(path: MaybeRef<string>) {
 			config.value = JSON.parse(stored)
 		}
 
-		watch(config, value => {
-			if (config.value !== config.value) {
-				localStorage.setItem(key, JSON.stringify(value))
+		watch(
+			() => config.value,
+			value => {
+				if (config.value !== config.default) {
+					localStorage.setItem(key, JSON.stringify(value))
+				}
 			}
-		})
+		)
 
 		watch(
 			() => config.default,
