@@ -26,8 +26,14 @@ yarn add baku89/tweeq pinia
 
 ```ts
 import {createPinia} from 'pinia'
+import {initTweeq} from 'baku89/tweeq'
 
 app.use(pinia)
+
+initTweeq('com.yourid.yourapp', {
+	colorMode: 'dark',
+	accentColor: '#ff0000',
+})
 ```
 
 ### App.vue
@@ -35,7 +41,10 @@ app.use(pinia)
 ```ts
 import {useTweeq} from 'baku89/tweeq'
 
-useTweeq()
+const Tq = useTweeq()
+
+const projectName = Tq.config.ref('projectName', 'Untitled')
+const accentColor = Tq.theme.accentColor
 ```
 
 
