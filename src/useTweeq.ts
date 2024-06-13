@@ -2,6 +2,7 @@ import components from './components'
 import {useInputColor} from './InputColor/useInputColor'
 import {useActionsStore} from './stores/actions'
 import {useAppConfigStore} from './stores/appConfig'
+import {useModalStore} from './stores/modal'
 import {useThemeStore} from './stores/theme'
 import {ColorMode} from './theme'
 
@@ -24,6 +25,7 @@ export function useTweeq() {
 	const theme = useThemeStore()
 	const actions = useActionsStore()
 	const config = useAppConfigStore()
+	const modal = useModalStore()
 
-	return {theme, actions, config, ...components}
+	return {theme, actions, config, modal, ...components}
 }

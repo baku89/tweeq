@@ -1,16 +1,20 @@
 import {Props as CodeProps} from '../InputCode'
 import {Props as NumberProps} from '../InputNumber'
+import {Props as StringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 
-type OmitValue<T> = Omit<T, 'modelValue'>
+type Desc<T extends Record<string, unknown>, P> = T & Omit<P, 'modelValue'>
 
-type ParameterDescNumber = {type: 'number'} & OmitValue<NumberProps>
-type ParameterDescString = {
-	type: 'string'
-	ui?: undefined
-} & OmitValue<'modelValue'>
-type ParameterDescCode = {type: 'string'; ui: 'code'} & OmitValue<CodeProps>
+type ParameterDescNumber = Desc<{type: 'number'}, NumberProps>
+type ParameterDescString = Desc<
+	{
+		type: 'string'
+		ui?: undefined
+	},
+	StringProps
+>
+type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, CodeProps>
 type ParameterDescBoolean = {type: 'boolean'}
 
 type ParameterDescForType<T> = T extends number
@@ -21,19 +25,11 @@ type ParameterDescForType<T> = T extends number
 			? ParameterDescBoolean
 			: never
 
-export type ParameterDesc = ParameterBase &
-	(
-		| ParameterDescNumber
-		| ParameterDescString
-		| ParameterDescBoolean
-		| ParameterDescCode
-	)
-
-export type Scheme<T> = {
+export type Scheme<T extends Record<string, unknown>> = {
 	[K in keyof T]: ParameterDescForType<T[K]> & ParameterBase
 }
 
-export interface InputComplexProps<T> {
+export interface InputComplexProps<T extends Record<string, unknown>> {
 	modelValue: T
 	scheme: Scheme<T>
 	title?: string

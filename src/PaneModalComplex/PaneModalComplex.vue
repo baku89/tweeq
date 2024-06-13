@@ -4,7 +4,10 @@ import {ref, toRaw} from 'vue'
 import InputButton from '../InputButton.vue'
 import InputComplex, {Scheme} from '../InputComplex'
 import PaneModal from '../PaneModal'
+import {useModalStore} from '../stores/modal'
 import {ShowOptions} from './types'
+
+const modal = useModalStore()
 
 const $modal = ref<typeof PaneModal | null>(null)
 
@@ -20,11 +23,11 @@ function updateModelValue(value: any) {
 
 let endEdit: (value: any | null) => void
 
-function prompt<T>(
+modal.prompt = <T extends Record<string, unknown>>(
 	defaultValue: T,
 	scheme: Scheme<T>,
 	options?: ShowOptions
-): Promise<T | null> {
+): Promise<T | null> => {
 	desc.value = {scheme, defaultValue, options}
 	$modal.value!.toggleShow(true)
 

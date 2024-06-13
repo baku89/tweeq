@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T extends Record<string, unknown>">
 import {capital} from 'case'
 import {computed} from 'vue'
 
@@ -7,7 +7,7 @@ import InputCode from '../InputCode'
 import InputNumber from '../InputNumber'
 import InputString from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
-import {InputComplexProps, ParameterDesc} from './types'
+import {InputComplexProps, Scheme} from './types'
 
 const props = defineProps<InputComplexProps<T>>()
 
@@ -15,8 +15,8 @@ const emit = defineEmits<{
 	'update:modelValue': [T]
 }>()
 
-const entries = computed<[keyof T, ParameterDesc][]>(() => {
-	return Object.entries(props.scheme) as any
+const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
+	return Object.entries(props.scheme)
 })
 
 function updateModelValue(name: keyof T, value: any) {
@@ -24,8 +24,8 @@ function updateModelValue(name: keyof T, value: any) {
 	emit('update:modelValue', modelValue)
 }
 
-function getModelValue(name: keyof T) {
-	return props.modelValue[name]
+function getModelValue<K extends keyof T>(name: K) {
+	return props.modelValue[name] as any
 }
 </script>
 
