@@ -13,6 +13,7 @@ export default defineUserConfig({
 			'link',
 			{rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true},
 		],
+		['link', {rel: 'stylesheet', href: 'https://use.typekit.net/xhr6teg.css'}],
 		[
 			'link',
 			{
@@ -21,19 +22,11 @@ export default defineUserConfig({
 				crossorigin: 'anonymous',
 			},
 		],
-		['link', {rel: 'icon', href: '/logo.svg'}],
 		[
 			'link',
 			{
 				rel: 'stylesheet',
 				href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
-				crossorigin: 'anonymous',
-			},
-		],
-		[
-			'script',
-			{
-				src: 'https://cdn.jsdelivr.net/npm/ccapture.js-npmfixed@1.1.0/build/CCapture.all.min.js',
 				crossorigin: 'anonymous',
 			},
 		],
@@ -49,7 +42,7 @@ export default defineUserConfig({
 				link: '/components',
 			},
 		],
-		logo: '/logo.svg',
+		logo: './logo.svg',
 		repo: 'baku89/tweeq',
 	}),
 	locales: {
