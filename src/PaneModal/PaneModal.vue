@@ -26,7 +26,7 @@ defineExpose({
 </script>
 
 <template>
-	<div ref="$root" class="PaneModal" popover>
+	<div ref="$root" class="PaneModal" popover="auto">
 		<slot />
 	</div>
 </template>
