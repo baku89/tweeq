@@ -546,6 +546,10 @@ const barStyle = computed<StyleValue>(() => {
 	background var(--tq-color-input-tinted-accent)
 	hover-transition(background)
 
+	.InputNumber:hover &
+		background var(--tq-color-input-tinted-accent-hover)
+
+
 .tip
 	width 2px
 	margin-left -1px

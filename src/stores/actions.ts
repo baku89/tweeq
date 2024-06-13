@@ -127,7 +127,8 @@ export const useActionsStore = defineStore('actions', () => {
 
 		function registerItem(option: ActionItemOptions, parent: Action[]) {
 			if (option.id in allActions) {
-				throw new Error(`Action ${option.id} is already registered`)
+				// eslint-disable-next-line no-console
+				console.error(`Action ${option.id} is already registered`)
 			}
 
 			const label = option.label ? option.label : title(option.id)

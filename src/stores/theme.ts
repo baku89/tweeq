@@ -13,10 +13,19 @@ import {ColorMode, generateThemeColorsRadix, Theme} from '../theme'
 import {useAppConfigStore} from './appConfig'
 
 export const useThemeStore = defineStore('theme', () => {
-	const appConfig = useAppConfigStore()
+	const config = useAppConfigStore().group('theme')
 
-	const accentColor = appConfig.ref('theme.accentColor', '#D03E54')
-	const colorMode = appConfig.ref<ColorMode>('theme.colorMode', 'light')
+	const accentColor = config.ref('accentColor', '#0000ff')
+	const colorMode = config.ref<ColorMode>('colorMode', 'dark')
+
+	function setDefault(options: {colorMode?: ColorMode; accentColor?: string}) {
+		if (options.colorMode) {
+			colorMode.default = options.colorMode
+		}
+		if (options.accentColor) {
+			accentColor.default = options.accentColor
+		}
+	}
 
 	const materialTheme = computed(() => {
 		return themeFromSourceColor(argbFromHex(accentColor.value))
@@ -117,19 +126,16 @@ export const useThemeStore = defineStore('theme', () => {
 		}
 	})
 
+	// Promote all as CSS variabbles
 	watch(
 		theme,
 		() => {
-			// Promote all as CSS variabbles
 			for (const [key, value] of Object.entries(theme.value)) {
 				const varName = '--tq-' + kebab(key)
 
 				const cssValue = typeof value === 'number' ? `${value}px` : value
 
 				document.documentElement.style.setProperty(varName, cssValue)
-				// if (++i === 2) {
-				// 	break
-				// }
 			}
 		},
 		{immediate: true}
@@ -137,7 +143,8 @@ export const useThemeStore = defineStore('theme', () => {
 
 	return {
 		accentColor,
-		colorMode: colorMode,
+		colorMode,
+		setDefault,
 		...toRefs(toReactive(theme)),
 	}
 })
