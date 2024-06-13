@@ -225,7 +225,7 @@ const overlayPath = computed(() => {
 		<SvgIcon mode="block" class="InputRotery__rotery">
 			<circle class="InputRotery__circle" cx="16" cy="16" r="15" />
 			<line
-				class="InputRotery__scale"
+				class="InputRotery__tip"
 				:style="{
 					transform: `rotate(${props.modelValue}deg)`,
 				}"
@@ -244,11 +244,8 @@ const overlayPath = computed(() => {
 				<path class="bold" :d="overlayPath" />
 				<path
 					class="thin gray"
-					:class="{dashed: !doQuantize, bold: doQuantize}"
+					:class="{dashed: !doQuantize, bold: doQuantize, quantize: doQuantize}"
 					:d="metersPath"
-					:style="{
-						stroke: doQuantize ? 'var(--tq-color-tinted-input-active)' : '',
-					}"
 				/>
 				<path class="bold" :d="activeMeterPath" />
 			</svg>
@@ -292,30 +289,29 @@ const overlayPath = computed(() => {
 		transform scale(3)
 
 	&__circle
-		fill var(--tq-color-accent-hover)
+		fill var(--tq-color-input-tinted-accent)
 		stroke none
 		hover-transition(fill)
 
-		~/:focus &
-			fill var(--tq-color-tinted-input-active)
-
-		&:hover, ~/.tweaking[data-mode=relative] &
-			fill var(--tq-color-accent)
+		~/:focus-visible &, &:hover, ~/.tweaking[data-mode=relative] &
+			fill var(--tq-color-input-tinted-accent-hover)
 
 
-	&__scale
+	&__tip
 		transform-origin 16px 16px
-		stroke var(--tq-color-accent)
+		stroke var(--tq-color-input-vivid-accent)
 		stroke-width 3
 		stroke-linecap round
 		hover-transition(stroke)
 
-		~/__circle:hover + &,
-		~/.tweaking[data-mode=relative] &
+		~/[data-mode=absolute] &
 			stroke var(--tq-color-accent-hover)
 
 	&__overlay
 		input-overlay()
+
+		.quantize
+			stroke var(--tq-color-input-tinted-accent-hover) !important
 
 	&__overlay-label
 		tooltip-style()
@@ -328,7 +324,7 @@ const overlayPath = computed(() => {
 		.arrows
 			position absolute
 			inset 0
-
+			color var(--tq-color-accent)
 
 			&:before, &:after
 				position absolute

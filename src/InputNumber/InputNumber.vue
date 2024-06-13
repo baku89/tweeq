@@ -103,8 +103,9 @@ const sliderPrecision = computed(() => {
 const tweakPrecision = computed(() => precisionOf(speed.value))
 
 const precision = computed(() => {
-	if (props.step !== undefined) {
-		return precisionOf(props.step)
+	const precisionByStep = precisionOf(props.step ?? 0)
+	if (isFinite(precisionByStep)) {
+		return precisionByStep
 	} else {
 		return Math.max(
 			displayPrecision.value,
@@ -390,15 +391,17 @@ watch(
 			tweaking.value,
 			focusing.value,
 			precision.value,
+			props.prefix,
+			props.suffix,
 		] as const,
-	([modelValue, tweaking, focusing, precision]) => {
+	([modelValue, tweaking, focusing, precision, prefix, suffix]) => {
 		if (focusing) return
 
 		const displayNumber = tweaking
 			? modelValue.toFixed(precision)
 			: toFixed(modelValue, props.precision)
 
-		display.value = props.prefix + displayNumber + props.suffix
+		display.value = prefix + displayNumber + suffix
 	},
 	{immediate: true}
 )
@@ -591,9 +594,6 @@ const barStyle = computed<StyleValue>(() => {
 
 	.pointer
 		fill var(--tq-color-accent)
-
-.InputNumber:hover, .InputNumber:focus-within
-	color var(--tq-color-on-accent)
 
 	.bar
 		background var(--tq-color-input-tinted-accent-hover)

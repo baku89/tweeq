@@ -25,7 +25,7 @@ defineEmits<{
 
 .InputCode
 	position relative
-	border-radius var(--tq-input-border-radius
+	border-radius var(--tq-input-border-radius)
 	overflow hidden
 	min-height calc(var(--tq-input-height) * 20)
 	min-width 45em
