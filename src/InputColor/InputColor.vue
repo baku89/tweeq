@@ -225,7 +225,7 @@ const sliderHueUniforms = computed(() => {
 	hover-transition(box-shadow)
 
 	&:hover, &.tweaking
-			box-shadow 0 0 0 1px var(--tq-color-primary)
+			box-shadow 0 0 0 1px var(--tq-color-accent)
 .preview
 	display block
 	position absolute

@@ -85,7 +85,7 @@ const draggingPoint = ref<number | null>(null)
 
 	path, circle
 		stroke-width 2
-		stroke var(--tq-color-primary)
+		stroke var(--tq-color-accent)
 
 	line
 		stroke-width 1
@@ -96,6 +96,6 @@ const draggingPoint = ref<number | null>(null)
 		hover-transition(fill, stroke)
 
 		&:hover
-			fill var(--tq-color-primary)
-			stroke var(--tq-color-primary)
+			fill var(--tq-color-accent)
+			stroke var(--tq-color-accent)
 </style>

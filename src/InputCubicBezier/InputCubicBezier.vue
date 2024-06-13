@@ -60,7 +60,7 @@ const easingPath = computed(() => {
 	border-radius var(--tq-input-border-radius)
 	overflow hidden
 	hover-transition(background)
-	background var(--tq-color-primary-container)
+	background var(--tq-color-accent-container)
 
 	&:hover, &.open
 		background var(--tq-color-tinted-input-active)
@@ -75,7 +75,7 @@ const easingPath = computed(() => {
 		transform scaleY(-1)
 		transform-origin 50% 50%
 		stroke-width 1.5
-		stroke var(--tq-color-primary)
+		stroke var(--tq-color-accent)
 		stroke-linecap round
 		fill none
 		vector-effect non-scaling-stroke

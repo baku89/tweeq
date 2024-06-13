@@ -71,7 +71,7 @@ function onInput(e: InputEvent) {
 	left 0
 	width 100%
 	height 100%
-	color var(--tq-color-primary)
+	color var(--tq-color-accent)
 	pointer-events none
 	text-align center
 	line-height var(--tq-input-height)

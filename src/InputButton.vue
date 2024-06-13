@@ -33,8 +33,8 @@ defineProps<Props>()
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
-	background var(--tq-color-primary-container)
-	color var(--tq-color-on-primary-container)
+	background var(--tq-color-accent)
+	color var(--tq-color-on-accent)
 	display flex
 	align-items center
 	justify-content center
@@ -44,11 +44,11 @@ defineProps<Props>()
 	use-input-position()
 
 	&:focus-visible
-		box-shadow 0 0 0 1px var(--tq-color-primary)
+		box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&:hover
-		color var(--tq-color-on-primary)
-		background var(--tq-color-primary)
+		color var(--tq-color-on-accent)
+		background var(--tq-color-accent)
 
 	&:has(.label)
 		padding 0 1em
@@ -67,9 +67,9 @@ defineProps<Props>()
 
 	@keyframes blink
 		0%
-			background var(--tq-color-primary-container)
+			background var(--tq-color-accent-container)
 		50%
-			background var(--tq-color-primary)
+			background var(--tq-color-accent)
 		100%
-			background var(--tq-color-primary-container)
+			background var(--tq-color-accent-container)
 </style>

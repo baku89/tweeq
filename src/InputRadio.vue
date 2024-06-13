@@ -81,7 +81,7 @@ function onChange(index: number) {
 	hover-transition(background, box-shadow)
 
 	// &:focus-within
-	// 	box-shadow 0 0 0 1px var(--tq-color-primary)
+	// 	box-shadow 0 0 0 1px var(--tq-color-accent)
 
 .list
 	flex-grow 1
@@ -105,10 +105,10 @@ label
 		background var(--tq-color-input-hover)
 
 	&.active
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 		transition none
 
 		&:hover
-			background var(--tq-color-primary-hover)
+			background var(--tq-color-accent-hover)
 </style>

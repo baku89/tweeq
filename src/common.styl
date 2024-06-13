@@ -86,12 +86,12 @@ input-style()
 
 	&:focus-within, &.tweaking
 		z-index 1
-		box-shadow 0 0 0 1px var(--tq-color-primary)
+		box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&:has(input[invalid=true])
 		--tq-color-on-input var(--tq-color-error)
-		--tq-color-primary var(--tq-color-error)
-		--tq-color-primary-container var(--tq-color-error-container)
+		--tq-color-accent var(--tq-color-error)
+		--tq-color-accent-container var(--tq-color-error-container)
 
 	input
 		padding 4px 12px
@@ -103,8 +103,8 @@ input-style()
 			color var(--tq-color-on-input)
 
 		&:focus::selection
-			background var(--tq-color-primary)
-			color var(--tq-color-on-primary)
+			background var(--tq-color-accent)
+			color var(--tq-color-on-accent)
 
 	&.minimal
 		background transparent
@@ -113,7 +113,7 @@ input-style()
 			box-shadow 0 0 0 1px var(--tq-color-surface-border)
 
 		&:focus-within, &.tweaking
-			box-shadow 0 0 0 1px var(--tq-color-primary)
+			box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&[disabled=true]
 		background transparent
@@ -140,7 +140,7 @@ input-overlay()
 
 	.thin, .bold, .extra-bold
 		fill none
-		stroke var(--tq-color-primary)
+		stroke var(--tq-color-accent)
 		stroke-linecap butt
 
 		&.gray
@@ -162,7 +162,7 @@ input-overlay()
 	.label
 		font-size 1em
 		font-numeric()
-		fill var(--tq-color-primary)
+		fill var(--tq-color-accent)
 
 set-alpha(name, opacity)
 	'color-mix(in srgb, var(%s) %d%, transparent)' % (name opacity * 100)

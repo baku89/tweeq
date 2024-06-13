@@ -97,7 +97,7 @@ const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
 		background linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
 
 .app-icon.shown
-	color var(--tq-color-primary)
+	color var(--tq-color-accent)
 
 .left, .center, .right
 	display flex

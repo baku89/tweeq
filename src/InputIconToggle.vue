@@ -47,17 +47,17 @@ defineEmits<{
 	use-input-position()
 
 	&:focus-visible
-		box-shadow 0 0 0 1px var(--tq-color-primary)
+		box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&:hover
 		background var(--tq-color-input-hover)
 
 	&.checked
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 
 		&:hover
-			background var(--tq-color-primary-hover)
+			background var(--tq-color-accent-hover)
 
 	&:has(.label)
 		padding 0 1em

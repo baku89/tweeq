@@ -18,19 +18,33 @@ export type CSSNumber = number
 
 export interface Theme {
 	// Colors
-	colorPrimary: string
-	colorOnPrimary: string
-	colorPrimaryContainer: string
-	colorOnPrimaryContainer: string
+
+	/**
+	 * アクセント色
+	 */
+	colorAccent: string
+	/**
+	 * アクセント色のテキスト色
+	 */
+	colorOnAccent: string
+	colorAccentContainer: string
+	colorOnAccentContainer: string
 	colorBackground: string
 	colorOnBackground: string
 	colorGrayOnBackground: string
 	colorSurface: string
 	colorSurfaceBorder: string
 	colorShadow: string
+
+	/**
+	 * 入力欄の背景色
+	 */
 	colorInput: string
+	/**
+	 * 入力欄のホバー時の背景色
+	 */
 	colorInputHover: string
-	colorPrimaryHover: string
+	colorAccentHover: string
 	colorOnInput: string
 	colorTintedInput: string
 	colorTintedInputActive: string
@@ -113,14 +127,14 @@ export const useThemeStore = defineStore('theme', () => {
 		})
 
 		return {
-			colorPrimary: toColor(dark ? palettes.primary.tone(40) : colors.primary),
-			colorOnPrimary: toColor(
+			colorAccent: toColor(dark ? palettes.primary.tone(40) : colors.primary),
+			colorOnAccent: toColor(
 				dark ? palettes.primary.tone(90) : colors.onPrimary
 			),
-			colorPrimaryContainer: toColor(
+			colorAccentContainer: toColor(
 				dark ? palettes.primary.tone(20) : colors.primaryContainer
 			),
-			colorOnPrimaryContainer: toColor(colors.onPrimaryContainer),
+			colorOnAccentContainer: toColor(colors.onPrimaryContainer),
 			colorBackground: dark ? '#1a1a1a' : '#ffffff',
 			colorOnBackground: toColor(colors.onBackground),
 			colorGrayOnBackground: toColor(palettes.neutral.tone(dark ? 60 : 70)),
@@ -129,7 +143,7 @@ export const useThemeStore = defineStore('theme', () => {
 			colorShadow: toColor(colors.shadow),
 			colorInput: toColor(palettes.neutral.tone(dark ? 15 : 97)),
 			colorInputHover: toColor(palettes.neutralVariant.tone(dark ? 30 : 95)),
-			colorPrimaryHover: toColor(palettes.primary.tone(dark ? 55 : 45)),
+			colorAccentHover: toColor(palettes.primary.tone(dark ? 55 : 45)),
 			colorTintedInput: toColor(colors.primaryContainer),
 			colorTintedInputActive: toColor(colors.inversePrimary),
 			colorOnInput: toColor(colors.onBackground),

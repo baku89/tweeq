@@ -93,7 +93,7 @@ export default defineComponent({
 	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	background-size 100% 100%
-	color var(--tq-color-primary)
+	color var(--tq-color-accent)
 	text-align center
 	cursor pointer
 
@@ -105,9 +105,9 @@ export default defineComponent({
 		transition transform 0.3s cubic-bezier(0.19, 1.6, 0.42, 1)
 
 	&:focus
-		background var(--tq-color-primary-container)
+		background var(--tq-color-accent-container)
 
 	&:hover
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 </style>

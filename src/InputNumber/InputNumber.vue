@@ -540,7 +540,7 @@ const barStyle = computed<StyleValue>(() => {
 
 .bar
 	pointer-events none
-	background var(--tq-color-primary-container)
+	background var(--tq-color-accent-container)
 	hover-transition(background)
 
 .tip
@@ -558,7 +558,7 @@ const barStyle = computed<StyleValue>(() => {
 		right @left
 
 	.tweaking &, &:hover
-		background var(--tq-color-primary)
+		background var(--tq-color-accent)
 
 .icon
 	width calc(var(--tq-input-height) - 4px)
@@ -587,10 +587,10 @@ const barStyle = computed<StyleValue>(() => {
 		fill none
 		stroke-width 4
 		stroke-linecap round
-		stroke var(--tq-color-primary)
+		stroke var(--tq-color-accent)
 
 	.pointer
-		fill var(--tq-color-primary)
+		fill var(--tq-color-accent)
 
 .InputNumber:hover, .InputNumber:focus-within
 	.bar

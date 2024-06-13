@@ -35,7 +35,7 @@ defineProps<Props>()
 	&.inactive
 		color var(--tq-color-gray-on-background)
 	&.active
-		color var(--tq-color-primary)
+		color var(--tq-color-accent)
 
 	.icon
 		display block

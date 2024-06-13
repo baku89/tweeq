@@ -252,7 +252,7 @@ watch(position, position => emit('update:position', position))
 	left 0
 
 	&:has(.resize:hover)
-		border-color var(--tq-color-primary)
+		border-color var(--tq-color-accent)
 
 	&.anchor-maximized
 		--br-bottom-right 0px
@@ -274,7 +274,7 @@ watch(position, position => emit('update:position', position))
 		border-bottom-color transparent !important
 
 	&.w-minimized, &.h-minimized
-		background var(--tq-color-primary-container)
+		background var(--tq-color-accent-container)
 		hover-transition(width, height, background)
 
 		.minimized-title
@@ -322,7 +322,7 @@ watch(position, position => emit('update:position', position))
 		position absolute
 		width 100%
 		height 100%
-		background var(--tq-color-primary)
+		background var(--tq-color-accent)
 		hover-transition()
 		opacity 0
 
@@ -379,7 +379,7 @@ watch(position, position => emit('update:position', position))
 	transform translate(-50%, -50%)
 	pointer-events none
 	opacity 0
-	color var(--tq-color-on-primary-container)
+	color var(--tq-color-on-accent-container)
 	hover-transition(opacity)
 
 .content-wrapper

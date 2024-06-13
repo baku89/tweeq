@@ -220,7 +220,7 @@ $right-arrow-width = 1em
 	border-radius var(--tq-input-border-radius)
 
 	&.open .input
-		background var(--tq-color-primary-container)
+		background var(--tq-color-accent-container)
 
 .input
 	cursor default
@@ -265,11 +265,11 @@ $right-arrow-width = 1em
 	border-radius var(--tq-input-border-radius)
 
 	&.startValue
-		background var(--tq-color-primary-container)
+		background var(--tq-color-accent-container)
 
 	&.active
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 
 .option-icon
 	width calc(var(--tq-input-height) - 4px)

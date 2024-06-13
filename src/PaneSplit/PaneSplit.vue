@@ -119,7 +119,7 @@ onMounted(() => {
 		height 1px
 
 	&:hover
-		background var(--tq-color-primary)
+		background var(--tq-color-accent)
 
 	&:before
 		content ''
@@ -133,13 +133,13 @@ onMounted(() => {
 		.horizontal > &
 			left -8px
 			right -8px
-			background-image linear-gradient(to left, var(--tq-color-primary),  var(--tq-color-primary))
+			background-image linear-gradient(to left, var(--tq-color-accent),  var(--tq-color-accent))
 			background-size 5px 100%
 
 		.vertical > &
 			top -8px
 			bottom -8px
-			background-image linear-gradient(to bottom, var(--tq-color-primary),  var(--tq-color-primary))
+			background-image linear-gradient(to bottom, var(--tq-color-accent),  var(--tq-color-accent))
 			background-size 100% 5px
 
 	&:hover:before

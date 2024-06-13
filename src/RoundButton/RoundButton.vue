@@ -35,14 +35,14 @@ defineProps<Props>()
 	gap .4em
 	width auto
 	padding 0 12px 0 6px
-	background var(--tq-color-primary-container)
-	color var(--tq-color-on-primary-container)
+	background var(--tq-color-accent-container)
+	color var(--tq-color-on-accent-container)
 	hover-transition(background, color)
 	line-height 32px
 
 	&:hover
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 
 .has-longest-label
 	display inline-block

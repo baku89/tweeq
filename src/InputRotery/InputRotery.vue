@@ -292,7 +292,7 @@ const overlayPath = computed(() => {
 		transform scale(3)
 
 	&__circle
-		fill var(--tq-color-primary-container)
+		fill var(--tq-color-accent-container)
 		stroke none
 		hover-transition(fill)
 
@@ -300,19 +300,19 @@ const overlayPath = computed(() => {
 			fill var(--tq-color-tinted-input-active)
 
 		&:hover, ~/.tweaking[data-mode=relative] &
-			fill var(--tq-color-primary)
+			fill var(--tq-color-accent)
 
 
 	&__scale
 		transform-origin 16px 16px
-		stroke var(--tq-color-primary)
+		stroke var(--tq-color-accent)
 		stroke-width 3
 		stroke-linecap round
 		hover-transition(stroke)
 
 		~/__circle:hover + &,
 		~/.tweaking[data-mode=relative] &
-			stroke var(--tq-color-primary-container)
+			stroke var(--tq-color-accent-container)
 
 	&__overlay
 		input-overlay()

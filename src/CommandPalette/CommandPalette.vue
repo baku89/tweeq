@@ -192,8 +192,8 @@ function perform(action: ActionItemOptions) {
 		margin-bottom 9px
 
 	&.selected
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 
 .action-icon
 	width 20px

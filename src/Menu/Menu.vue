@@ -101,8 +101,8 @@ defineProps<Props>()
 	border-radius var(--tq-input-border-radius)
 
 	&:hover
-		background var(--tq-color-primary)
-		color var(--tq-color-on-primary)
+		background var(--tq-color-accent)
+		color var(--tq-color-on-accent)
 
 .label
 	flex-grow 1
