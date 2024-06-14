@@ -7,7 +7,7 @@ import {
 import {toReactive} from '@vueuse/core'
 import {kebab} from 'case'
 import {defineStore} from 'pinia'
-import {computed, toRefs, watch} from 'vue'
+import {computed, toRefs, watch, watchEffect} from 'vue'
 
 import {ColorMode, generateThemeColorsRadix, Theme} from '../theme'
 import {useAppConfigStore} from './appConfig'
@@ -17,6 +17,19 @@ export const useThemeStore = defineStore('theme', () => {
 
 	const accentColor = config.ref('accentColor', '#0000ff')
 	const colorMode = config.ref<ColorMode>('colorMode', 'light')
+	const grayColor = config.ref('grayColor', '#8B8D98')
+	const backgroundColor = config.ref(
+		'backgroundColor',
+		colorMode.value === 'light' ? '#ffffff' : '#111111'
+	)
+
+	watchEffect(() => {
+		if (colorMode.value === 'light') {
+			backgroundColor.value = '#ffffff'
+		} else {
+			backgroundColor.value = '#111111'
+		}
+	})
 
 	function setDefault(options: {colorMode?: ColorMode; accentColor?: string}) {
 		if (options.colorMode) {
@@ -35,9 +48,9 @@ export const useThemeStore = defineStore('theme', () => {
 		// Get the theme from a hex color
 		const themeColorsRadix = generateThemeColorsRadix({
 			appearance: colorMode.value,
-			background: colorMode.value === 'light' ? '#ffffff' : '#111111',
+			background: backgroundColor.value,
 			accent: accentColor.value,
-			gray: '#8B8D98',
+			gray: grayColor.value,
 		})
 
 		const dark = colorMode.value === 'dark'
@@ -127,6 +140,7 @@ export const useThemeStore = defineStore('theme', () => {
 	})
 
 	// Promote all as CSS variabbles
+	const metaThemeColor = document.querySelector('meta[name=theme-color]')!
 	watch(
 		theme,
 		() => {
@@ -137,6 +151,8 @@ export const useThemeStore = defineStore('theme', () => {
 
 				document.documentElement.style.setProperty(varName, cssValue)
 			}
+
+			metaThemeColor.setAttribute('content', theme.value.colorBackground)
 		},
 		{immediate: true}
 	)
@@ -144,6 +160,8 @@ export const useThemeStore = defineStore('theme', () => {
 	return {
 		accentColor,
 		colorMode,
+		backgroundColor,
+		grayColor,
 		setDefault,
 		...toRefs(toReactive(theme)),
 	}
