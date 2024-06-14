@@ -14,7 +14,9 @@ import PadFragmentString from './pad.frag'
 import SliderFragmentString from './slider.frag'
 import {colorChannelToIndex, hsv2rgb, InputColorProps, rgb2hsv} from './types'
 
-const props = withDefaults(defineProps<InputColorProps>(), {})
+const props = withDefaults(defineProps<InputColorProps>(), {
+	alpha: true,
+})
 
 const emit = defineEmits<{
 	'update:modelValue': [string]
@@ -163,6 +165,7 @@ const sliderHueUniforms = computed(() => {
 		<div class="floating">
 			<InputColorPicker
 				:modelValue="modelValue"
+				:alpha="alpha"
 				:pickers="pickers"
 				:presets="presets"
 				@update:modelValue="emit('update:modelValue', $event)"

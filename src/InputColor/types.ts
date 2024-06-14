@@ -55,6 +55,7 @@ export const DefualtColorPickers: ColorPickerComponent[] = [
 
 export interface InputColorProps extends InputProps {
 	modelValue: string
+	alpha?: boolean
 	pickers?: ColorPickerComponent[]
 	presets?: string[]
 }

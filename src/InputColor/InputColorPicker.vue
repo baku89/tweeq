@@ -16,6 +16,7 @@ import {
 } from './types'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
+	alpha: true,
 	pickers: () => DefualtColorPickers,
 })
 
