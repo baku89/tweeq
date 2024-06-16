@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, toRaw} from 'vue'
+import {ref} from 'vue'
 
 import InputButton from '../InputButton.vue'
 import InputComplex, {Scheme} from '../InputComplex'
@@ -9,43 +9,48 @@ import {ShowOptions} from './types'
 
 const modal = useModalStore()
 
-const $modal = ref<typeof PaneModal | null>(null)
-
 const desc = ref<{
-	defaultValue: any
+	value: any
+	initialValue: any
 	scheme: Scheme<any>
 	options?: ShowOptions
 } | null>(null)
 
-function updateModelValue(value: any) {
-	desc.value!.defaultValue = value
+const open = ref(false)
+
+function onUpdate(value: any) {
+	desc.value!.value = value
 }
 
-let endEdit: (value: any | null) => void
+let endEdit: (value: any) => void
 
 modal.prompt = <T extends Record<string, unknown>>(
-	defaultValue: T,
+	value: T,
 	scheme: Scheme<T>,
 	options?: ShowOptions
-): Promise<T | null> => {
-	desc.value = {scheme, defaultValue, options}
-	$modal.value!.toggleShow(true)
+): Promise<T> => {
+	if (desc.value) {
+		endEdit(desc.value.initialValue)
+	}
 
-	return new Promise(resolve => (endEdit = resolve))
+	desc.value = {scheme, value, initialValue: value, options}
+	open.value = true
+
+	return new Promise(resolve => {
+		endEdit = (value: any) => {
+			open.value = false
+			endEdit = () => {}
+			resolve(value)
+		}
+	})
 }
 
 function onAbort() {
-	desc.value = null
-	endEdit(null)
+	endEdit(desc.value!.initialValue)
 }
 
 function onConfirm() {
-	$modal.value!.toggleShow(false)
-
-	const {defaultValue} = desc.value!
-	desc.value = null
-
-	endEdit(toRaw(defaultValue))
+	endEdit(desc.value!.value)
 }
 
 defineExpose({
@@ -54,13 +59,13 @@ defineExpose({
 </script>
 
 <template>
-	<PaneModal ref="$modal" @close="onAbort">
+	<PaneModal v-model:open="open" @close="onAbort">
 		<div v-if="desc" class="PaneModalComplex">
 			<InputComplex
 				:title="desc.options?.title"
 				:scheme="desc.scheme"
-				:modelValue="desc.defaultValue"
-				@update:modelValue="updateModelValue"
+				:modelValue="desc.value"
+				@update:modelValue="onUpdate"
 			/>
 			<InputButton label="Save" @click="onConfirm" />
 		</div>

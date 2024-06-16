@@ -1,27 +1,46 @@
 <script setup lang="ts">
 import {useEventListener} from '@vueuse/core'
-import {ref} from 'vue'
+import {ref, watchEffect} from 'vue'
 
 defineSlots<{
 	default: void
 }>()
 
+const props = withDefaults(
+	defineProps<{
+		open: boolean
+	}>(),
+	{
+		open: false,
+	}
+)
+
 const emit = defineEmits<{
 	close: []
+	'update:open': [boolean]
 }>()
 
 const $root = ref<HTMLElement | null>(null)
 
 useEventListener($root, 'toggle', (e: ToggleEvent) => {
 	if (e.newState !== 'open') {
-		emit('close')
+		close()
 	}
 })
 
-defineExpose({
-	toggleShow: (force?: boolean) => {
-		$root.value?.togglePopover(force)
-	},
+useEventListener('keydown', e => {
+	if (e.key === 'Escape' && props.open) {
+		close()
+	}
+})
+
+function close() {
+	emit('update:open', false)
+	emit('close')
+}
+
+watchEffect(() => {
+	$root.value?.togglePopover(props.open)
 })
 </script>
 
@@ -36,16 +55,24 @@ defineExpose({
 
 .PaneModal
 	popup-style()
-	position fixed
 	inset 0
 	margin auto
 	padding var(--tq-pane-padding)
-	transition opacity var(--tq-hover-transition-duration), transform var(--tq-hover-transition-duration), display var(--tq-hover-transition-duration)
-	transition-behavior allow-discrete
-	transform translateY(calc(var(--tq-rem) / -2))
+	transition opacity var(--tq-hover-transition-duration), transform var(--tq-hover-transition-duration), overlay var(--tq-hover-transition-duration) allow-discrete, display var(--tq-hover-transition-duration) allow-discrete
 	opacity 0
+	transform translateY(calc(var(--tq-rem) / -2))
+
+	&[popover]::backdrop
+		backdrop-filter blur(0px)
+		transition backdrop-filter var(--tq-hover-transition-duration)
 
 	&:popover-open
+		opacity 1
+		transform translateY(0)
+
+		&::backdrop
+			backdrop-filter blur(4px)
+
 		@starting-style
 			&
 				transform translateY(calc(var(--tq-rem) / -2))
@@ -53,10 +80,4 @@ defineExpose({
 
 			&::backdrop
 				backdrop-filter blur(0px)
-
-		opacity 1
-		transform translateY(0%)
-
-		&::backdrop
-			backdrop-filter blur(4px)
 </style>
