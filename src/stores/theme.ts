@@ -135,7 +135,7 @@ export const useThemeStore = defineStore('theme', () => {
 			panePadding: 12,
 			scrollbarWidth: 6,
 
-			hoverTransitionDuration: '0.15s',
+			transitionDuration: '0.15s',
 		}
 	})
 

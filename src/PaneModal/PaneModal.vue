@@ -58,13 +58,13 @@ watchEffect(() => {
 	inset 0
 	margin auto
 	padding var(--tq-pane-padding)
-	transition opacity var(--tq-hover-transition-duration), transform var(--tq-hover-transition-duration), overlay var(--tq-hover-transition-duration) allow-discrete, display var(--tq-hover-transition-duration) allow-discrete
+	transition opacity var(-tq-transition-duration), transform var(-tq-transition-duration), overlay var(-tq-transition-duration) allow-discrete, display var(-tq-transition-duration) allow-discrete
 	opacity 0
 	transform translateY(calc(var(--tq-rem) / -2))
 
 	&[popover]::backdrop
 		backdrop-filter blur(0px)
-		transition backdrop-filter var(--tq-hover-transition-duration)
+		transition backdrop-filter var(-tq-transition-duration)
 
 	&:popover-open
 		opacity 1

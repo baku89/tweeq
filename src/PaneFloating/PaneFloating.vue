@@ -328,7 +328,7 @@ watch(position, position => emit('update:position', position))
 
 	&:hover:before
 			opacity 1
-			transition opacity var(--tq-hover-transition-duration) ease
+			transition opacity var(-tq-transition-duration) ease
 
 
 .top, .bottom
