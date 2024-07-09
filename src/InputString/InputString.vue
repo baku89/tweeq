@@ -6,7 +6,7 @@ import {ref, watch} from 'vue'
 import {InputStringProps} from './types'
 
 const props = withDefaults(defineProps<InputStringProps>(), {
-	validator: identity,
+	validator: () => identity,
 })
 
 const display = ref(props.modelValue)
