@@ -46,13 +46,13 @@ function onChange(index: number) {
 			class="list"
 		>
 			<input
-				:id="value + ''"
+				:id="id + '_' + value"
 				type="radio"
 				:name="id"
 				:checked="modelValue === value"
 				@change="onChange(index)"
 			/>
-			<label :for="value + ''" :class="{active: modelValue === value}">
+			<label :for="id + '_' + value" :class="{active: modelValue === value}">
 				<slot
 					name="option"
 					:label="label"
