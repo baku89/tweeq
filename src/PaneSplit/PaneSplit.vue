@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {clamp} from 'lodash'
 import {computed, onMounted, ref} from 'vue'
@@ -19,15 +20,18 @@ const props = withDefaults(defineProps<Props>(), {
 
 const appConfig = useAppConfigStore()
 
+const $root = ref<HTMLElement | null>(null)
+const $divider = ref<HTMLElement | null>(null)
+
+const rootSize = useElementSize($root)
+
 const viewportSize = computed(() => {
 	return props.direction === 'horizontal'
-		? window.innerWidth
-		: window.innerHeight
+		? rootSize.width.value
+		: rootSize.height.value
 })
 
 const width = appConfig.ref(`${props.name}.width`, props.size)
-
-const $divider = ref<HTMLElement | null>(null)
 
 const styles = computed(() => {
 	const cssProp = props.direction === 'horizontal' ? 'width' : 'height'
@@ -57,7 +61,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="PaneSplit" :class="direction">
+	<div ref="$root" class="PaneSplit" :class="direction">
 		<div class="first" :style="styles">
 			<div class="first-wrapper" :class="{scroll: scroll[0]}">
 				<slot name="first" />
