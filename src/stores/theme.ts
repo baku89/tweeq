@@ -31,12 +31,23 @@ export const useThemeStore = defineStore('theme', () => {
 		}
 	})
 
-	function setDefault(options: {colorMode?: ColorMode; accentColor?: string}) {
+	function setDefault(options: {
+		colorMode?: ColorMode
+		accentColor?: string
+		backgroundColor?: string
+		grayColor?: string
+	}) {
 		if (options.colorMode) {
 			colorMode.default = options.colorMode
 		}
 		if (options.accentColor) {
 			accentColor.default = options.accentColor
+		}
+		if (options.backgroundColor) {
+			backgroundColor.default = options.backgroundColor
+		}
+		if (options.grayColor) {
+			grayColor.default = options.grayColor
 		}
 	}
 
