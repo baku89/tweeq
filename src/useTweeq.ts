@@ -9,6 +9,8 @@ import {ColorMode} from './theme'
 interface TweeqOptions {
 	colorMode?: ColorMode
 	accentColor?: string
+	backgroundColor?: string
+	grayColor?: string
 }
 
 export function initTweeq(appId: string, options: TweeqOptions = {}) {
