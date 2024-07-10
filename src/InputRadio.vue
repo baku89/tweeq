@@ -1,6 +1,6 @@
 <script lang="ts" setup generic="T">
 import _ from 'lodash'
-import {computed, ref} from 'vue'
+import {computed} from 'vue'
 
 import {LabelizerProps, useLabelizer} from './types'
 
@@ -24,7 +24,7 @@ defineSlots<{
 }>()
 
 const labelizer = useLabelizer(props)
-const id = ref(_.uniqueId('InputRadio_'))
+const id = _.uniqueId('InputRadio_')
 
 const completeOptions = computed<CompleteOption[]>(() => {
 	return props.options.map(op => {
@@ -46,13 +46,13 @@ function onChange(index: number) {
 			class="list"
 		>
 			<input
-				:id="id + '_' + value"
+				:id="id + value"
 				type="radio"
 				:name="id"
 				:checked="modelValue === value"
 				@change="onChange(index)"
 			/>
-			<label :for="id + '_' + value" :class="{active: modelValue === value}">
+			<label :for="id + value" :class="{active: modelValue === value}">
 				<slot
 					name="option"
 					:label="label"
