@@ -12,7 +12,7 @@ export type {
 	ActionOptions,
 } from './stores/actions'
 
-export * from './useBndr'
+export * from './use/useBndr'
 export * from './util'
 
 import components from './components'

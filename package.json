@@ -18,7 +18,7 @@
 	"module": "./lib/index.es.js",
 	"sideEffects": false,
 	"dependencies": {
-		"@baku89/pave": "^0.4.1",
+		"@baku89/pave": "baku89/pave",
 		"@iconify/vue": "^4.1.2",
 		"@material/material-color-utilities": "^0.3.0",
 		"@radix-ui/colors": "^3.0.0",

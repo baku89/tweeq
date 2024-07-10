@@ -5,7 +5,7 @@ import {scalar} from 'linearly'
 import {clamp} from 'lodash'
 import {computed, ref, watch} from 'vue'
 
-import {useBndr} from '../useBndr'
+import {useBndr} from '../use/useBndr'
 import {toPercent} from '../util'
 
 interface Props {

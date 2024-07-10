@@ -22,6 +22,7 @@ import PaneFloating from './PaneFloating'
 import PaneModal from './PaneModal'
 import PaneModalComplex from './PaneModalComplex'
 import PaneSplit from './PaneSplit'
+import PaneZUI from './PaneZUI.vue'
 import {
 	Parameter,
 	ParameterGrid,
@@ -60,6 +61,7 @@ export default {
 	PaneModal,
 	PaneModalComplex,
 	PaneSplit,
+	PaneZUI,
 	ParameterGrid,
 	Parameter,
 	ParameterGroup,

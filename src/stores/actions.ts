@@ -153,14 +153,14 @@ export const useActionsStore = defineStore('actions', () => {
 		}
 	}
 
-	function perform(id: string) {
+	async function perform(id: string): Promise<void> {
 		const action = allActions[id]
 		if (!action) {
 			throw new Error(`Action ${id} is not registered`)
 		}
 
 		runBeforePerformHooks(action)
-		action.perform()
+		await action.perform()
 	}
 
 	function runBeforePerformHooks(action: ActionItem) {
