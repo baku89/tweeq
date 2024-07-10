@@ -3,7 +3,7 @@ import {useMagicKeys} from '@vueuse/core'
 import chroma from 'chroma-js'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash'
-import {computed, ref} from 'vue'
+import {computed, ref, watchEffect} from 'vue'
 
 import GlslCanvas from '../GlslCanvas'
 import Popover from '../Popover.vue'
@@ -96,6 +96,12 @@ const {origin, isDragging: tweaking} = useDraggable($button, {
 
 		emit('update:modelValue', newValue)
 	},
+})
+
+watchEffect(() => {
+	if (tweaking.value) {
+		open.value = false
+	}
 })
 
 const tweakPreviewStyle = computed(() => {
