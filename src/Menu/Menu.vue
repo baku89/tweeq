@@ -2,7 +2,6 @@
 import {Icon} from '@iconify/vue'
 import type {IconSequence} from 'bndr-js'
 import {Menu as VMenu} from 'floating-vue'
-import {ref} from 'vue'
 
 import BindIcon from '../BindIcon'
 
@@ -26,8 +25,6 @@ interface Props {
 	items: MenuItem[]
 }
 
-const $root = ref<HTMLElement | null>(null)
-
 function perform(menu: MenuItem) {
 	if ('perform' in menu) {
 		menu.perform()
@@ -38,7 +35,7 @@ defineProps<Props>()
 </script>
 
 <template>
-	<ul ref="$root" class="Menu">
+	<ul class="Menu">
 		<template v-for="(menu, index) in items">
 			<li
 				v-if="'perform' in menu"
@@ -59,8 +56,6 @@ defineProps<Props>()
 				v-else
 				:key="index + '_group'"
 				placement="right-start"
-				:showTriggers="['hover', 'click']"
-				:hideTriggers="['click']"
 				:delay="0"
 				:distance="6"
 				:instantMove="true"
@@ -103,6 +98,9 @@ defineProps<Props>()
 	&:hover
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
+
+.icon
+	width calc(var(--tq-input-height) - 4px)
 
 .label
 	flex-grow 1

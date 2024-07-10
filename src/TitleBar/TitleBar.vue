@@ -49,8 +49,6 @@ const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
 		<div class="left">
 			<VMenu
 				placement="bottom-start"
-				:showTriggers="['hover', 'click']"
-				:hideTriggers="['click']"
 				:delay="0"
 				:distance="4"
 				@update:shown="isMenuShown = $event"
@@ -87,9 +85,9 @@ const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
 	backdrop-filter blur(2px)
 	gap 9px
 	padding 6px
-	-webkit-app-region: drag;
-	app-region: drag;
-	line-height calc(var(--titlebar-area-height) - 12px)
+	-webkit-app-region: drag
+	app-region: drag
+	line-height var(--tq-input-height)
 
 	--tq-input-height calc(var(--titlebar-area-height) - 12px)
 
