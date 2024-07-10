@@ -1,8 +1,11 @@
+import {whenever} from '@vueuse/core'
+import {uniqueId} from 'lodash'
+import PQueue from 'p-queue'
 import {defineStore} from 'pinia'
-import Queue from 'promise-queue'
 import Regl, {DrawConfig} from 'regl'
+import {Ref} from 'vue'
 
-const drawQueue = new Queue(1, Infinity)
+const drawQueue = new PQueue({concurrency: 1})
 
 type Uniforms = Record<
 	string,
@@ -39,15 +42,23 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 		},
 	})
 
-	function createDraw() {
-		let id: number | null = null
+	function createDraw(img: Ref<HTMLImageElement | null>) {
+		let latestWorkId = uniqueId()
 
-		return function (frag: string, uniforms: Uniforms, img: HTMLImageElement) {
-			const currentId = Math.random()
-			id = currentId
+		function waitTillImgMounted() {
+			return new Promise<HTMLImageElement>(resolve => {
+				whenever(img, resolve, {immediate: true, once: true, flush: 'sync'})
+			})
+		}
+
+		return function (frag: string, uniforms: Uniforms) {
+			const workId = uniqueId()
+			latestWorkId = workId
 
 			drawQueue.add(async () => {
-				if (id !== currentId) return
+				if (latestWorkId !== workId) return
+
+				const img = await waitTillImgMounted()
 
 				canvas.width = img.clientWidth
 				canvas.height = img.clientHeight

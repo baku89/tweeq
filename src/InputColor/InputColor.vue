@@ -187,20 +187,20 @@ const sliderHueUniforms = computed(() => {
 			/>
 			<GlslCanvas
 				class="slider hue"
-				:class="{show: tweakMode == 'hue'}"
+				:class="{show: tweakMode === 'hue'}"
 				:fragmentString="SliderFragmentString"
 				:uniforms="sliderHueUniforms"
 				:style="tweakUIOffset"
 			/>
 			<div
 				class="slider alpha"
-				:class="{show: tweakMode == 'alpha'}"
+				:class="{show: tweakMode === 'alpha'}"
 				:style="sliderAlphaStyle"
 			>
 				<div
 					class="alpha-gradient"
 					:style="{
-						background: `linear-gradient(to right, transparent, ${props.modelValue})`,
+						'--model-value': modelValue,
 					}"
 				/>
 			</div>
@@ -227,6 +227,7 @@ const sliderHueUniforms = computed(() => {
 	overflow hidden
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
+	width 100%
 	height var(--tq-input-height)
 	hover-transition(box-shadow)
 	background-checkerboard()
@@ -251,9 +252,8 @@ const sliderHueUniforms = computed(() => {
 	position fixed
 	border-radius var(--tq-input-border-radius)
 	width 300px
-	opacity 0
 	overflow hidden
-	hover-transition(opacity)
+	opacity 0
 
 	&.show
 		opacity 1
@@ -261,7 +261,6 @@ const sliderHueUniforms = computed(() => {
 .pad
 	position absolute
 	aspect-ratio 1
-	background red
 
 .slider
 	height calc(0.7 * var(--tq-input-height))
@@ -279,6 +278,7 @@ const sliderHueUniforms = computed(() => {
 	left 0
 	width 100%
 	height 100%
+	background linear-gradient(to right, transparent, var(--model-value))
 
 .tweak-preview
 	z-index 200

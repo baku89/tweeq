@@ -19,16 +19,14 @@ const props = withDefaults(defineProps<Props>(), {
 	uniforms: () => ({}),
 })
 
-const draw = useReglContextStore().createDraw()
-
 const $img = ref<null | HTMLImageElement>(null)
 
-watch(
-	() => [props.fragmentString, props.uniforms, $img.value] as const,
-	([frag, uniforms, $img]) => {
-		if (!$img) return
+const draw = useReglContextStore().createDraw($img)
 
-		draw(frag, uniforms, $img)
+watch(
+	() => [props.fragmentString, props.uniforms] as const,
+	([frag, uniforms]) => {
+		draw(frag, uniforms)
 	},
 	{immediate: true, flush: 'post'}
 )
