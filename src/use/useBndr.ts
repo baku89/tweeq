@@ -17,5 +17,5 @@ export function useBndr(
 		})
 	})
 
-	onUnmounted(() => dispose && dispose())
+	onUnmounted(() => dispose?.())
 }

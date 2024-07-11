@@ -13,7 +13,6 @@ export function useZUI(
 		const keyboard = Bndr.keyboard()
 
 		const lmbPressed = pointer.left.pressed({pointerCapture: true})
-		const mmbPressed = pointer.middle.pressed({pointerCapture: true})
 		const position = pointer.position({coordinate: 'offset'})
 		const scroll = pointer.scroll({
 			preventDefault: true,
@@ -24,7 +23,10 @@ export function useZUI(
 		const altPressed = keyboard.pressed('alt')
 
 		// Pan
-		const panByDrag = position.while(mmbPressed).delta(vec2.delta)
+		const panByDrag = pointer.middle
+			.drag({pointerCapture: true})
+			.map(dd => dd.delta)
+
 		const panByScroll = scroll.map(vec2.negate).while(altPressed.not(), false)
 
 		Bndr.combine(panByDrag, panByScroll)
