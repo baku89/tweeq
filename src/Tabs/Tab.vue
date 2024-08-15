@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-	computed,
-	onBeforeMount,
-	onBeforeUnmount,
-	watch,
-	withDefaults,
-} from 'vue'
+import {computed, onBeforeMount, onBeforeUnmount, watch} from 'vue'
 
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
 import {injectStrict} from './utils'
