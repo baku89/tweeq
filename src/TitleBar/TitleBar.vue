@@ -4,7 +4,7 @@ import {Menu as VMenu} from 'floating-vue'
 import {ref} from 'vue'
 
 import ColorIcon from '../ColorIcon'
-import Menu, {MenuCommand, MenuGroup} from '../Menu'
+import Menu, {MenuItem} from '../Menu'
 import {Action, useActionsStore} from '../stores/actions'
 interface Props {
 	name: string
@@ -25,7 +25,7 @@ const actions = useActionsStore()
 
 const isMenuShown = ref(false)
 
-function convertToMenuItem(action: Action): MenuCommand | MenuGroup {
+function convertToMenuItem(action: Action): MenuItem {
 	if ('perform' in action) {
 		return {
 			...action,
@@ -39,9 +39,7 @@ function convertToMenuItem(action: Action): MenuCommand | MenuGroup {
 	}
 }
 
-const menus = computed<(MenuCommand | MenuGroup)[]>(() => {
-	return (actions.menu as Action[]).map(convertToMenuItem)
-})
+const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 </script>
 
 <template>

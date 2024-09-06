@@ -19,7 +19,7 @@ export interface MenuGroup {
 	children: (MenuGroup | MenuCommand)[]
 }
 
-type MenuItem = MenuCommand | MenuGroup
+export type MenuItem = MenuCommand | MenuGroup
 
 interface Props {
 	items: MenuItem[]
