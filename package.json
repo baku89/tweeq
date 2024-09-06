@@ -46,8 +46,7 @@
 		"monaco-themes": "^0.4.4",
 		"p-queue": "^8.0.1",
 		"pinia": "^2.1.7",
-		"regl": "^2.1.0",
-		"vue": "^3.4.31"
+		"regl": "^2.1.0"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^6.7.3",
