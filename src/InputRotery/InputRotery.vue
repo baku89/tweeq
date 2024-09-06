@@ -216,7 +216,7 @@ const overlayPath = computed(() => {
 
 <template>
 	<button
-		ref="el"
+		ref="$el"
 		class="InputRotery"
 		:class="{tweaking}"
 		:data-mode="tweakMode"
