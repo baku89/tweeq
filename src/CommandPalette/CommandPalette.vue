@@ -3,7 +3,7 @@ import {Icon} from '@iconify/vue'
 import {useEventListener} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
-import {computed, ref, watch} from 'vue'
+import {computed, ref, shallowRef, watch} from 'vue'
 
 import BindIcon from '../BindIcon'
 import {type ActionItemOptions, useActionsStore} from '../stores/actions'
@@ -13,7 +13,7 @@ import {unsignedMod} from '../util'
 
 const actions = useActionsStore()
 
-const $popover = ref<HTMLElement | null>(null)
+const $popover = shallowRef<HTMLElement | null>(null)
 const searchWord = ref('')
 
 const appConfig = useAppConfigStore()

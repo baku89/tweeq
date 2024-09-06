@@ -4,7 +4,7 @@ import {vec2} from 'linearly'
 import * as monaco from 'monaco-editor'
 import Tomorrow from 'monaco-themes/themes/Tomorrow.json'
 import TomorrowNight from 'monaco-themes/themes/Tomorrow-Night.json'
-import {onMounted, ref, watch, watchEffect} from 'vue'
+import {onMounted, shallowRef, watch, watchEffect} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
 
@@ -29,8 +29,8 @@ const emit = defineEmits<{
 	'update:cursorPosition': [value: vec2]
 }>()
 
-const $root = ref<HTMLElement | null>(null)
-const $editor = ref<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement | null>(null)
+const $editor = shallowRef<HTMLElement | null>(null)
 
 // initialze Monaco editor
 onMounted(() => {

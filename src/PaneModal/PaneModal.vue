@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useEventListener} from '@vueuse/core'
-import {ref, watchEffect} from 'vue'
+import {shallowRef, watchEffect} from 'vue'
 
 defineSlots<{
 	default: void
@@ -20,7 +20,7 @@ const emit = defineEmits<{
 	'update:open': [boolean]
 }>()
 
-const $root = ref<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement | null>(null)
 
 useEventListener($root, 'toggle', (e: ToggleEvent) => {
 	if (e.newState !== 'open') {
