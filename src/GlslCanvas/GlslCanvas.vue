@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import {shallowRef, watch} from 'vue'
 
 import {useReglContextStore} from './reglContextStore'
 
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 	uniforms: () => ({}),
 })
 
-const $img = ref<null | HTMLImageElement>(null)
+const $img = shallowRef<null | HTMLImageElement>(null)
 
 const draw = useReglContextStore().createDraw($img)
 

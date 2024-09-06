@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {useFocus} from '@vueuse/core'
 import {identity} from 'lodash'
-import {ref, watch} from 'vue'
+import {ref, ref as shallowRef, watch} from 'vue'
 
 import {InputStringProps} from './types'
 
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<InputStringProps>(), {
 })
 
 const display = ref(props.modelValue)
-const $input = ref<null | HTMLInputElement>(null)
+const $input = shallowRef<HTMLElement | null>(null)
 const focusing = useFocus($input).focused
 
 watch(

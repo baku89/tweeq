@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {computed, ref, shallowRef} from 'vue'
 
 import Popover from '../Popover.vue'
 import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
@@ -19,7 +19,7 @@ defineOptions({
 	inheritAttrs: false,
 })
 
-const $button = ref<HTMLElement | null>(null)
+const $button = shallowRef<HTMLElement | null>(null)
 const open = ref(false)
 
 const easingPath = computed(() => {

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {scalar} from 'linearly'
-import {computed, ref} from 'vue'
+import {computed, shallowRef} from 'vue'
 
 import GlslCanvas from '../GlslCanvas'
 import useDrag from '../useDragV1'
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	updateChannels: [Partial<Channels>]
 }>()
 
-const $root = ref<null | HTMLElement>(null)
+const $root = shallowRef<null | HTMLElement>(null)
 
 const {isDragging: sliderTweaking} = useDrag($root, {
 	disableClick: true,

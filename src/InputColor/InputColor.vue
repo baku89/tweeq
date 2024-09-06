@@ -3,7 +3,7 @@ import {useMagicKeys} from '@vueuse/core'
 import chroma from 'chroma-js'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash'
-import {computed, ref, watchEffect} from 'vue'
+import {computed, ref, shallowRef, watchEffect} from 'vue'
 
 import GlslCanvas from '../GlslCanvas'
 import Popover from '../Popover.vue'
@@ -26,7 +26,7 @@ defineSlots<{
 	default: void
 }>()
 
-const $button = ref<HTMLElement | null>(null)
+const $button = shallowRef<HTMLElement | null>(null)
 const open = ref(false)
 
 const {shift, alt} = useMagicKeys()
