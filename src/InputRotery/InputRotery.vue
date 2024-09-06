@@ -4,7 +4,7 @@ import {useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
 import {scalar, vec2} from 'linearly'
 import {partial, range} from 'lodash'
-import {computed, ref} from 'vue'
+import {computed, ref, shallowRef} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
 import SvgIcon from '../SvgIcon.vue'
@@ -46,13 +46,13 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const el = ref<null | HTMLElement>(null)
+const $el = shallowRef<null | HTMLElement>(null)
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
 const valueOnTweak = ref(props.modelValue)
 
-const center = useElementCenter(el)
+const center = useElementCenter($el)
 
 const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
@@ -60,7 +60,7 @@ const {
 	dragging: tweaking,
 	initial,
 	xy,
-} = useDrag(el, {
+} = useDrag($el, {
 	dragDelaySeconds: 0,
 	onDragStart() {
 		valueOnTweak.value = localRaw.value = props.modelValue

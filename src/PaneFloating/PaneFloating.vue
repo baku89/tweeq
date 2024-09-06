@@ -2,7 +2,7 @@
 import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, onMounted, shallowRef, watch} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 
@@ -70,11 +70,11 @@ const style = computed(() => {
 	}
 })
 
-const $root = ref<HTMLElement | null>(null)
-const $top = ref<HTMLElement | null>(null)
-const $right = ref<HTMLElement | null>(null)
-const $left = ref<HTMLElement | null>(null)
-const $bottom = ref<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement | null>(null)
+const $top = shallowRef<HTMLElement | null>(null)
+const $right = shallowRef<HTMLElement | null>(null)
+const $left = shallowRef<HTMLElement | null>(null)
+const $bottom = shallowRef<HTMLElement | null>(null)
 
 const bound = useElementBounding($root)
 

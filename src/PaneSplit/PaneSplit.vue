@@ -2,7 +2,7 @@
 import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {clamp} from 'lodash'
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, shallowRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 
@@ -20,8 +20,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const appConfig = useAppConfigStore()
 
-const $root = ref<HTMLElement | null>(null)
-const $divider = ref<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement | null>(null)
+const $divider = shallowRef<HTMLElement | null>(null)
 
 const rootSize = useElementSize($root)
 

@@ -6,7 +6,7 @@ import {
 	useWindowSize,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, ref, watch} from 'vue'
+import {computed, shallowRef, watch} from 'vue'
 
 type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
 type PlacementAlign = 'start' | 'end'
@@ -34,7 +34,7 @@ const emit = defineEmits<{
 }>()
 
 const $reference = computed(() => props.reference)
-const $popover = ref<null | HTMLElement>(null)
+const $popover = shallowRef<null | HTMLElement>(null)
 
 const refBound = useElementBounding($reference)
 

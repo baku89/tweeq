@@ -8,7 +8,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, nextTick, ref, StyleValue, watch} from 'vue'
+import {computed, nextTick, ref, shallowRef, StyleValue, watch} from 'vue'
 
 import {useDrag} from '../useDrag'
 import {
@@ -43,8 +43,8 @@ const emit = defineEmits<{
 	blur: []
 }>()
 
-const $root = ref<HTMLElement | null>(null)
-const $input = ref<HTMLInputElement | null>(null)
+const $root = shallowRef<HTMLElement | null>(null)
+const $input = shallowRef<HTMLInputElement | null>(null)
 const {left, top, width, height, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused

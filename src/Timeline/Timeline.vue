@@ -3,7 +3,7 @@ import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar} from 'linearly'
 import {clamp} from 'lodash'
-import {computed, ref, watch} from 'vue'
+import {computed, shallowRef, watch} from 'vue'
 
 import {useBndr} from '../use/useBndr'
 import {toPercent} from '../util'
@@ -25,15 +25,15 @@ const emit = defineEmits<{
 	zoom: [{origin: number; zoomDelta: number}]
 }>()
 
-const $root = ref<null | HTMLElement>(null)
+const $root = shallowRef<null | HTMLElement>(null)
 const {width: containerWidth} = useElementSize($root)
 
-const $content = ref<null | HTMLElement>(null)
+const $content = shallowRef<null | HTMLElement>(null)
 const {width: contentWidth} = useElementSize($content)
 
-const $knob = ref<null | HTMLElement>(null)
+const $knob = shallowRef<null | HTMLElement>(null)
 
-const $scrollbar = ref<null | HTMLElement>(null)
+const $scrollbar = shallowRef<null | HTMLElement>(null)
 const {width: scrollbarWidth} = useElementSize($scrollbar)
 
 const scrollMax = computed(() => {
