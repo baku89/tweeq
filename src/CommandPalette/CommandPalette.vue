@@ -64,7 +64,7 @@ watch(filteredActions, () => {
 
 useBndr($popover, $popover => {
 	Bndr.keyboard()
-		.key('command+p', {preventDefault: true, capture: true})
+		.hotkey('command+p', {preventDefault: true, capture: true})
 		.on(() => $popover.togglePopover())
 })
 
@@ -123,7 +123,7 @@ function perform(action: ActionItemOptions) {
 				:key="action.id"
 				class="action"
 				:class="{selected: action === selectedAction}"
-				@pointerenter="selectedAction = action"
+				@pointermove="selectedAction = action"
 				@click="perform(action)"
 			>
 				<Icon class="action-icon" :icon="action.icon ?? ''" />

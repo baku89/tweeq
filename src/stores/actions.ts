@@ -56,10 +56,14 @@ function bindDescriptorToEmitter(
 				const button = b.split(':')[1]
 				return gamepad.button(button as Bndr.ButtonName).down()
 			} else {
+				const repeat = b.endsWith('?repeat')
+				b = b.replace(/\?.+$/, '')
+
 				// keyboard
-				return keyboard.keydown(b, {
+				return keyboard.hotkey(b, {
 					capture: true,
 					preventDefault: true,
+					repeat,
 				})
 			}
 		}
