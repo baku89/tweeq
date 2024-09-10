@@ -65,7 +65,7 @@ useBndr($root, $root => {
 
 	const center = pointer.position({coordinate: 'offset'}).map(([x]) => x)
 
-	const altPressed = Bndr.keyboard().pressed('alt')
+	const altPressed = Bndr.keyboard().pressed('option')
 
 	pointerScroll.on(([x, y]) => {
 		if (altPressed.value) {
