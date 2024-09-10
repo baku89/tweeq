@@ -8,7 +8,7 @@ import {InputColor, InputColorPicker} from './InputColor'
 import InputComplex from './InputComplex'
 import {InputCubicBezier, InputCubicBezierPicker} from './InputCubicBezier'
 import InputDropdown from './InputDropdown.vue'
-import InputIconToggle from './InputIconToggle.vue'
+import InputButtonToggle from './InputButtonToggle.vue'
 import InputNumber from './InputNumber'
 import InputRadio from './InputRadio.vue'
 import InputRotery from './InputRotery'
@@ -47,7 +47,7 @@ export default {
 	InputCubicBezier,
 	InputCubicBezierPicker,
 	InputDropdown,
-	InputIconToggle,
+	InputButtonToggle,
 	InputNumber,
 	InputRadio,
 	InputRotery,

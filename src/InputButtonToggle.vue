@@ -5,7 +5,7 @@ import {InputProps} from './types'
 
 interface Props extends InputProps {
 	modelValue: boolean
-	icon: string
+	icon?: string
 	label?: string
 }
 
@@ -18,7 +18,7 @@ defineEmits<{
 
 <template>
 	<button
-		class="InputIconToggle"
+		class="InputButtonToggle"
 		:class="{checked: modelValue}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
@@ -26,13 +26,14 @@ defineEmits<{
 		@click="$emit('update:modelValue', !modelValue)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
+		<span v-if="label" class="label">{{ label }}</span>
 	</button>
 </template>
 
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputIconToggle
+.InputButtonToggle
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
 	color var(--tq-color-on-background)
@@ -58,7 +59,7 @@ defineEmits<{
 			background var(--tq-color-accent-hover)
 
 	&:has(.label)
-		padding 0 1em
+		padding 0 .7em
 
 	&:has(.icon):has(.label)
 		padding-left .5em
