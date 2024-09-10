@@ -223,6 +223,7 @@ const sliderHueUniforms = computed(() => {
 
 <style lang="stylus" scoped>
 @import './common.styl'
+
 .InputColor
 	width fit-content
 	position relative
@@ -233,7 +234,6 @@ const sliderHueUniforms = computed(() => {
 	overflow hidden
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
-	width 100%
 	height var(--tq-input-height)
 	hover-transition(box-shadow)
 	background-checkerboard()
