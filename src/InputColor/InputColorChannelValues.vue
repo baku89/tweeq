@@ -10,10 +10,10 @@ import {Channels, ColorChannel, ColorSpace} from './types'
 interface Props {
 	modelValue: string
 	channels: Channels
-	hasAlpha?: boolean
+	alpha?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {hasAlpha: true})
+const props = withDefaults(defineProps<Props>(), {alpha: true})
 
 const emit = defineEmits<{
 	'update:modelValue': [string]
@@ -99,11 +99,11 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				horizontalPosition="middle"
+				:horizontalPosition="alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('b', $event)"
 			/>
 			<InputNumber
-				v-if="props.hasAlpha"
+				v-if="props.alpha"
 				class="channel"
 				:modelValue="a"
 				:min="0"
@@ -146,11 +146,11 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontalPosition="middle"
+				:horizontalPosition="alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('v', $event)"
 			/>
 			<InputNumber
-				v-if="props.hasAlpha"
+				v-if="props.alpha"
 				class="channel"
 				:modelValue="a"
 				:min="0"

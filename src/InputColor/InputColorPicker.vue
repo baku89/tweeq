@@ -112,7 +112,7 @@ async function pickColor() {
 				@updateChannels="updateChannels"
 			/>
 			<InputColorChannelSlider
-				v-if="u[0] === 'slider'"
+				v-if="u[0] === 'slider' && !(!alpha && u[1] === 'a')"
 				:key="i"
 				:channels="channels"
 				:axis="u[1]"
@@ -123,6 +123,7 @@ async function pickColor() {
 				:key="i"
 				:modelValue="modelValue"
 				:channels="channels"
+				:alpha="alpha"
 				@update:modelValue="emit('update:modelValue', $event)"
 				@updateChannels="updateChannels"
 			/>

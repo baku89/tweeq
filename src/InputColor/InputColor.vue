@@ -31,7 +31,13 @@ const open = ref(false)
 
 const {shift, alt} = useMagicKeys()
 const tweakMode = computed(() => {
-	return shift.value ? 'hue' : alt.value ? 'alpha' : 'pad'
+	if (shift.value) {
+		return 'hue'
+	} else if (alt.value && props.alpha) {
+		return 'alpha'
+	} else {
+		return 'pad'
+	}
 })
 
 const tweakChannels = ref({h: 0, s: 0, v: 0, a: 0})
@@ -82,6 +88,10 @@ const {origin, isDragging: tweaking} = useDraggable($button, {
 			dv -= dy
 		}
 
+		if (!props.alpha) {
+			tweakChannels.value.a = 1
+		}
+
 		let {h, s, v, a} = tweakChannels.value
 		h = unsignedMod(h + dh, 1)
 		s = clamp(s + ds, 0, 1)
@@ -102,6 +112,13 @@ watchEffect(() => {
 	if (tweaking.value) {
 		open.value = false
 	}
+})
+
+// Overlay
+const $overlay = shallowRef<HTMLElement | null>(null)
+
+watchEffect(() => {
+	$overlay.value?.togglePopover(tweaking.value)
 })
 
 const tweakPreviewStyle = computed(() => {
@@ -178,38 +195,32 @@ const sliderHueUniforms = computed(() => {
 			/>
 		</div>
 	</Popover>
-	<teleport to="body">
+	<div v-if="tweaking" popover="manual" ref="$overlay" class="overlay">
+		<GlslCanvas
+			class="pad"
+			:class="{show: tweakMode === 'pad'}"
+			:fragmentString="PadFragmentString"
+			:uniforms="padUniforms"
+			:style="padStyle"
+		/>
+		<GlslCanvas
+			class="slider hue"
+			:class="{show: tweakMode === 'hue'}"
+			:fragmentString="SliderFragmentString"
+			:uniforms="sliderHueUniforms"
+			:style="tweakUIOffset"
+		/>
 		<div
-			v-if="tweaking"
-			class="InputColor__overlay"
-			:class="{'tweaking-slider': tweakMode !== 'pad'}"
+			class="slider alpha"
+			:class="{show: tweakMode === 'alpha'}"
+			:style="sliderAlphaStyle"
 		>
-			<GlslCanvas
-				class="pad"
-				:class="{show: tweakMode === 'pad'}"
-				:fragmentString="PadFragmentString"
-				:uniforms="padUniforms"
-				:style="padStyle"
-			/>
-			<GlslCanvas
-				class="slider hue"
-				:class="{show: tweakMode === 'hue'}"
-				:fragmentString="SliderFragmentString"
-				:uniforms="sliderHueUniforms"
-				:style="tweakUIOffset"
-			/>
 			<div
-				class="slider alpha"
-				:class="{show: tweakMode === 'alpha'}"
-				:style="sliderAlphaStyle"
-			>
-				<div
-					class="alpha-gradient"
-					:style="{
-						'--model-value': modelValue,
-					}"
-				/>
-			</div>
+				class="alpha-gradient"
+				:style="{
+					'--model-value': modelValue,
+				}"
+			/>
 		</div>
 		<button
 			class="tweak-preview"
@@ -218,7 +229,7 @@ const sliderHueUniforms = computed(() => {
 		>
 			<div class="preview" :style="tweakPreviewStyle" />
 		</button>
-	</teleport>
+	</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -252,6 +263,10 @@ const sliderHueUniforms = computed(() => {
 	position relative
 	popup-style()
 
+.overlay
+	position fixed
+	overflow visible
+	pointer-events none
 
 .pad, .slider
 	z-index 200
