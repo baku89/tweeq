@@ -18,7 +18,9 @@ function createGroup(path: MaybeRef<string>) {
 		watch(
 			() => config.value,
 			value => {
-				if (value !== config.default) {
+				if (value === config.default) {
+					localStorage.removeItem(key)
+				} else {
 					localStorage.setItem(key, JSON.stringify(value))
 				}
 			}
@@ -27,8 +29,11 @@ function createGroup(path: MaybeRef<string>) {
 		watch(
 			() => config.default,
 			defaultValue => {
-				if (localStorage.getItem(key) === null) {
+				const stored = JSON.parse(localStorage.getItem(key) ?? 'null')
+				if (stored === null) {
 					config.value = defaultValue
+				} else if (stored === defaultValue) {
+					localStorage.removeItem(key)
 				}
 			}
 		)
