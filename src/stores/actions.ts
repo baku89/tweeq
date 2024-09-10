@@ -1,7 +1,7 @@
 import * as Bndr from 'bndr-js'
 import {title} from 'case'
 import {defineStore} from 'pinia'
-import {onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
+import {markRaw, onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
 
 interface ActionItemBase {
 	id: string
@@ -114,9 +114,8 @@ export const useActionsStore = defineStore('actions', () => {
 				}
 				group = existingAction
 
-				if (!group.icon && option.icon) {
-					group.icon = option.icon
-				}
+				group.icon ??= option.icon
+				group.label ??= label
 			} else {
 				group = {...option, label, children: []}
 				parent.push(group)
@@ -127,9 +126,8 @@ export const useActionsStore = defineStore('actions', () => {
 
 		function registerItem(option: ActionItemOptions, parent: Action[]) {
 			if (option.id in allActions) {
-				// eslint-disable-next-line no-console
-				console.error(`Action ${option.id} is already registered`)
-				return
+				const existingAction = allActions[option.id]
+				existingAction.bind?.dispose()
 			}
 
 			const label = option.label ? option.label : title(option.id)
@@ -137,7 +135,7 @@ export const useActionsStore = defineStore('actions', () => {
 				? bindDescriptorToEmitter(option.bind)
 				: undefined
 
-			const action: ActionItem = {...option, label, bind}
+			const action: ActionItem = markRaw({...option, label, bind})
 
 			bind?.on(() => {
 				runBeforePerformHooks(action)
@@ -145,11 +143,17 @@ export const useActionsStore = defineStore('actions', () => {
 			})
 
 			allActions[option.id] = action
+
 			if (bind) {
 				emitters.add(bind)
 			}
 
-			parent.push(action)
+			const index = parent.findIndex(a => a.id === option.id)
+			if (index !== -1) {
+				parent[index] = action
+			} else {
+				parent.push(action)
+			}
 		}
 	}
 
