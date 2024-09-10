@@ -53,7 +53,7 @@ function getModelValue<K extends keyof T>(name: K) {
 					@update:modelValue="updateModelValue(name, $event)"
 				/>
 				<InputColor
-					v-if="param.ui === 'color'"
+					v-else-if="param.ui === 'color'"
 					:modelValue="getModelValue(name)"
 					v-bind="param"
 					@update:modelValue="updateModelValue(name, $event)"
