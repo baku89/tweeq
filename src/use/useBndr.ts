@@ -5,7 +5,7 @@ export function useBndr(
 	$element: Ref<null | HTMLElement>,
 	fn: ($element: HTMLElement) => void
 ) {
-	let dispose: ReturnType<typeof Bndr.createScope>
+	let dispose: ReturnType<typeof Bndr.createScope> | undefined
 
 	onMounted(() => {
 		if (!$element.value) throw new Error('No element')
@@ -17,5 +17,8 @@ export function useBndr(
 		})
 	})
 
-	onUnmounted(() => dispose?.())
+	onUnmounted(() => {
+		dispose?.()
+		dispose = undefined
+	})
 }
