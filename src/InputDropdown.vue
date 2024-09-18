@@ -1,13 +1,12 @@
 <script lang="ts" setup generic="T">
 import {Icon} from '@iconify/vue'
-import {useElementBounding, whenever} from '@vueuse/core'
+import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
 import {computed, Ref, ref, shallowRef, watch} from 'vue'
 
 import InputString from './InputString'
 import Popover from './Popover.vue'
-import {useThemeStore} from './stores/theme'
 import {
 	InputAlign,
 	InputFont,
@@ -33,8 +32,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const labelizer = useLabelizer(props)
-
-const uiTheme = useThemeStore()
 
 const emit = defineEmits<{
 	'update:modelValue': [value: T]
@@ -75,6 +72,8 @@ const filteredOptions = computed(() => {
 	return ret
 })
 
+const inputHeight = useCssVar('--tq-input-height', $root)
+
 const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 	// 2px === border width + focus outline
 
@@ -87,7 +86,7 @@ const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 
 		return [
 			rootBound.left.value - 2,
-			rootBound.top.value + -index * uiTheme.inputHeight - 2,
+			rootBound.top.value + -index * parseFloat(inputHeight.value ?? '0') - 2,
 		]
 	}
 })
