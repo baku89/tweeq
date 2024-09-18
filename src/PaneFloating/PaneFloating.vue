@@ -151,7 +151,7 @@ onMounted(() => {
 	const maxHeight = computed(() => {
 		return (
 			windowSize.height.value -
-			parseFloat(useCssVar('--titlebar-area-height').value)
+			parseFloat(useCssVar('--titlebar-area-height').value ?? '0')
 		)
 	})
 
