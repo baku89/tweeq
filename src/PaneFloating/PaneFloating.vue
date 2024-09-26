@@ -217,7 +217,7 @@ watch(position, position => emit('update:position', position))
 		<div ref="$left" class="resize left" />
 		<div ref="$bottom" class="resize bottom" />
 		<Icon v-if="icon" class="minimized-title" :icon="icon" />
-		<div class="content-wrapper">
+		<div class="wrapper">
 			<div class="content">
 				<slot />
 			</div>
@@ -382,7 +382,7 @@ watch(position, position => emit('update:position', position))
 	color var(--tq-color-on-accent-container)
 	hover-transition(opacity)
 
-.content-wrapper
+.wrapper
 	position relative
 	height 100%
 	overflow-y scroll

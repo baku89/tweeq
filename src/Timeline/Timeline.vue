@@ -131,11 +131,11 @@ defineExpose({
 
 <template>
 	<div class="TqTimeline">
-		<div ref="$root" class="content-wrapper">
+		<div ref="$root" class="wrapper">
 			<div ref="$content" class="content" :style="contentStyles">
 				<slot />
 			</div>
-			<div class="fixed-wrapper">
+			<div class="fixed">
 				<slot name="fixed" />
 			</div>
 		</div>
@@ -162,7 +162,7 @@ defineExpose({
 	grid-template-rows 1fr var(--tq-input-height) 3px
 	overflow hidden
 
-.content-wrapper
+.wrapper
 	width 100%
 	position relative
 	overflow hidden
@@ -196,7 +196,7 @@ defineExpose({
 	&:hover
 		opacity 1
 
-.fixed-wrapper
+.fixed
 	position absolute
 	inset 0
 	pointer-events none

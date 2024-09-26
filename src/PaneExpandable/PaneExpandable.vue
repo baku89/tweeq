@@ -36,7 +36,7 @@ function collapse() {
 	>
 		<Icon class="icon" :icon="icon" />
 		<div class="content">
-			<div class="content-wrapper">
+			<div class="wrapper">
 				<slot />
 			</div>
 		</div>
@@ -78,7 +78,8 @@ function collapse() {
 		overflow hidden
 		transform-origin top right
 		transform scale(0.7)
-	.content-wrapper
+
+	.wrapper
 		width 260px
 
 	&.open
