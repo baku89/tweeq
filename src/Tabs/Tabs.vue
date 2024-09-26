@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, provide, reactive, withDefaults} from 'vue'
+import {onMounted, provide, reactive} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
