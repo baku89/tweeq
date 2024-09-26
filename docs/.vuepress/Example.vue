@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-import {ref} from 'vue'
 import {cloneDeep} from 'lodash'
+import {ref} from 'vue'
 
 import {Scheme} from '../../src'
 
