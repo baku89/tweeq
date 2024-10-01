@@ -2,7 +2,7 @@
 import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar} from 'linearly'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 import {computed, shallowRef, watch} from 'vue'
 
 import {useBndr} from '../use/useBndr'

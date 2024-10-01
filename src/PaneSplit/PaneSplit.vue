@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 import {computed, onMounted, shallowRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'

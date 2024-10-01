@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import _ from 'lodash'
+import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
 import SvgIcon from '../SvgIcon.vue'
@@ -15,7 +15,7 @@ const emit = defineEmits<{
 	'update:modelValue': [boolean]
 }>()
 
-const id = ref(_.uniqueId('InputCheckbox_'))
+const id = ref(uniqueId('InputCheckbox_'))
 
 function onInput(e: InputEvent) {
 	const value = (e.target as HTMLInputElement).checked

@@ -1,5 +1,5 @@
 // import {invoke} from '@vueuse/core'
-// import _ from 'lodash'
+// import {uniqueId} from 'lodash-es'
 // import MarkdownIt from 'markdown-it'
 // import {editor} from 'monaco-editor'
 
@@ -16,7 +16,7 @@
 // 		const token = tokens[idx]
 // 		const code = token.content.trim()
 
-// 		const uid = _.uniqueId('Markdown__highlight_')
+// 		const uid = uniqueId('Markdown__highlight_')
 // 		token.attrPush(['id', uid])
 
 // 		invoke(async () => {

@@ -3,7 +3,7 @@ import {Path} from '@baku89/pave'
 import {useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
 import {scalar, vec2} from 'linearly'
-import {partial, range} from 'lodash'
+import {partial, range} from 'lodash-es'
 import {computed, ref, shallowRef} from 'vue'
 
 import {useThemeStore} from '../stores/theme'

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useFocus} from '@vueuse/core'
-import {identity} from 'lodash'
+import {identity} from 'lodash-es'
 import {ref, ref as shallowRef, watch} from 'vue'
 
 import {InputStringProps} from './types'

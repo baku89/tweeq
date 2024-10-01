@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import _ from 'lodash'
+import {clamp, random} from 'lodash-es'
 import {defineComponent, ref} from 'vue'
 
 import SvgIcon from '../SvgIcon.vue'
@@ -70,10 +70,10 @@ export default defineComponent({
 
 		function shuffle() {
 			iconRot.value += 90
-			const v = _.random(props.min, props.max, true)
+			const v = random(props.min, props.max, true)
 
 			const t = (v - props.min) / (props.max - props.min)
-			iconNum.value = _.clamp(Math.floor(t * 6) + 1, 1, 6)
+			iconNum.value = clamp(Math.floor(t * 6) + 1, 1, 6)
 
 			context.emit('update:modelValue', v)
 		}

@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="T">
-import _ from 'lodash'
+import {uniqueId} from 'lodash-es'
 import {computed} from 'vue'
 
 import {LabelizerProps, useLabelizer} from './types'
@@ -24,7 +24,7 @@ defineSlots<{
 }>()
 
 const labelizer = useLabelizer(props)
-const id = _.uniqueId('InputRadio_')
+const id = uniqueId('InputRadio_')
 
 const completeOptions = computed<CompleteOption[]>(() => {
 	return props.options.map(op => {

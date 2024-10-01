@@ -2,7 +2,7 @@
 import {useMagicKeys} from '@vueuse/core'
 import chroma from 'chroma-js'
 import {vec2} from 'linearly'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 import {computed, ref, shallowRef, watchEffect} from 'vue'
 
 import GlslCanvas from '../GlslCanvas'

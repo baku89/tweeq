@@ -1,5 +1,5 @@
 import {whenever} from '@vueuse/core'
-import {uniqueId} from 'lodash'
+import {uniqueId} from 'lodash-es'
 import PQueue from 'p-queue'
 import {defineStore} from 'pinia'
 import Regl, {DrawConfig} from 'regl'
