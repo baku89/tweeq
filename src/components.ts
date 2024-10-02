@@ -2,13 +2,13 @@ import ColorIcon from './ColorIcon'
 import CommandPalette from './CommandPalette'
 import IconIndicator from './IconIndicator.vue'
 import InputButton from './InputButton.vue'
+import InputButtonToggle from './InputButtonToggle.vue'
 import InputCheckbox from './InputCheckbox'
 import InputCode from './InputCode'
 import {InputColor, InputColorPicker} from './InputColor'
 import InputComplex from './InputComplex'
 import {InputCubicBezier, InputCubicBezierPicker} from './InputCubicBezier'
 import InputDropdown from './InputDropdown.vue'
-import InputButtonToggle from './InputButtonToggle.vue'
 import InputNumber from './InputNumber'
 import InputRadio from './InputRadio.vue'
 import InputRotery from './InputRotery'
@@ -30,6 +30,7 @@ import {
 	ParameterHeading,
 } from './ParameterGrid'
 import RoundButton from './RoundButton'
+import Ruler from './Ruler'
 import {Tab, Tabs} from './Tabs'
 import Timeline from './Timeline'
 import TitleBar from './TitleBar'
@@ -67,6 +68,7 @@ export default {
 	ParameterGroup,
 	ParameterHeading,
 	RoundButton,
+	Ruler,
 	Tab,
 	Tabs,
 	Timeline,
