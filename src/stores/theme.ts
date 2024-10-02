@@ -162,7 +162,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 				const cssValue = typeof value === 'number' ? `${value}px` : value
 
-				document.documentElement.style.setProperty(varName, cssValue)
+				document.body.style.setProperty(varName, cssValue)
 			}
 
 			metaThemeColor.setAttribute('content', theme.value.colorBackground)
