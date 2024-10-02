@@ -37,6 +37,7 @@ const pixelsPerUnit = computed(
 )
 
 const rootStyle = computed(() => ({
+	'background-size': `${pixelsPerUnit.value}px 100%`,
 	'background-position': `${-props.range[0] * pixelsPerUnit.value}px 0`,
 }))
 
@@ -68,6 +69,10 @@ useBndr($root, el => {
 
 <template>
 	<div class="TqRuler" ref="$root" :style="rootStyle">
+		<div class="content">
+			<slot />
+		</div>
+
 		<div
 			v-for="scale in _scales"
 			:key="scale.value"
@@ -82,14 +87,15 @@ useBndr($root, el => {
 <style lang="stylus" scoped>
 .TqRuler
 	position relative
-	height var(--header-height)
 	background-image linear-gradient(to right, var(--tq-color-border) 1px, transparent 1px)
-	background-size var(--koma-width) 100%
+
+.content, .scale
+	position absolute
+	inset 0
 
 .scale
-	position absolute
-	height 100%
-	border-left 1px solid var(--tq-color-on-background)
+	border-left 1px solid var(--tq-color-gray-on-background)
 	font-size 9px
+	color var(--tq-color-gray-on-background)
 	text-indent 0.4em
 </style>
