@@ -1,23 +1,24 @@
+import {MaybeElementRef, unrefElement} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
-import {onMounted, onUnmounted, Ref} from 'vue'
+import {onBeforeUnmount, onMounted} from 'vue'
 
 export function useBndr(
-	$element: Ref<null | HTMLElement>,
-	fn: ($element: HTMLElement) => void
+	$element: MaybeElementRef,
+	fn: ($element: HTMLElement | SVGElement) => void
 ) {
 	let dispose: ReturnType<typeof Bndr.createScope> | undefined
 
 	onMounted(() => {
-		if (!$element.value) throw new Error('No element')
+		const $el = unrefElement($element)
 
-		const $el = $element.value
+		if (!$el) return
 
 		dispose = Bndr.createScope(() => {
 			fn($el)
 		})
 	})
 
-	onUnmounted(() => {
+	onBeforeUnmount(() => {
 		dispose?.()
 		dispose = undefined
 	})
