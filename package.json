@@ -27,7 +27,7 @@
 		"@vueuse/core": "^11.0.3",
 		"@vueuse/gesture": "^2.0.0",
 		"bezier-easing": "^2.1.0",
-		"bndr-js": "^0.17.0",
+		"bndr-js": "^0.18.0",
 		"case": "^1.6.3",
 		"chroma-js": "^3.1.1",
 		"colorjs.io": "^0.5.0",
