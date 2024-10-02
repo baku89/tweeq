@@ -20,20 +20,23 @@ const open = ref(false)
 
 function onUpdate(value: any) {
 	desc.value!.value = value
+	onInput?.(value)
 }
 
+let onInput: ((value: any) => void) | undefined = undefined
 let endEdit: (value: any) => void
 
 modal.prompt = <T extends Record<string, unknown>>(
 	value: T,
 	scheme: Scheme<T>,
-	options?: ShowOptions
+	options?: ShowOptions<T>
 ): Promise<T> => {
 	if (desc.value) {
 		endEdit(desc.value.initialValue)
 	}
 
 	desc.value = {scheme, value, initialValue: value, options}
+	onInput = options?.onInput
 	open.value = true
 
 	return new Promise(resolve => {
