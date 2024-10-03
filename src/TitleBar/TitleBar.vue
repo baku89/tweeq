@@ -82,18 +82,13 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 	background linear-gradient(to bottom, var(--tq-color-background), transparent)
 	backdrop-filter blur(2px)
 	gap 9px
-	padding 6px
+	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
 	-webkit-app-region: drag
 	app-region: drag
 	line-height var(--tq-input-height)
 
-	--tq-input-height calc(var(--titlebar-area-height) - 12px)
-
 	@media (display-mode: window-controls-overlay)
 		background linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
-
-.app-icon.shown
-	color var(--tq-color-accent)
 
 .left, .center, .right
 	display flex
@@ -104,13 +99,17 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 		app-region no-drag
 
 .right
-	flex-direction row-reverse
+	justify-content flex-end
 
 .app-icon
-	height calc(var(--titlebar-area-height) - 0.8 * var(--tq-rem))
+	height var(--tq-input-height)
+
+	&.shown
+		color var(--tq-color-accent)
 
 .app-name
 	font-weight bold
+	font-family var(--tq-font-heading)
 	font-size calc(var(--titlebar-area-height) * .4)
 	margin-right 4px
 </style>

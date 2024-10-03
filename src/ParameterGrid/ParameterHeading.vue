@@ -25,6 +25,7 @@ defineSlots<{
 	grid-column 1 / 3
 
 .heading
+	font-family var(--tq-font-heading)
 	font-size 14px
 	font-weight bold
 	flex-grow 1
