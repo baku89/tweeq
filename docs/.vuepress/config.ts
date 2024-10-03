@@ -1,7 +1,7 @@
-import {defineUserConfig} from 'vuepress'
-import {defaultTheme} from '@vuepress/theme-default'
 import {viteBundler} from '@vuepress/bundler-vite'
+import {defaultTheme} from '@vuepress/theme-default'
 import glsl from 'vite-plugin-glsl'
+import {defineUserConfig} from 'vuepress'
 
 export default defineUserConfig({
 	title: 'Tweeq',

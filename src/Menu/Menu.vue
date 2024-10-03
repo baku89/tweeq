@@ -3,7 +3,7 @@ import {Icon} from '@iconify/vue'
 import type {IconSequence} from 'bndr-js'
 import {Menu as VMenu} from 'floating-vue'
 
-import BindIcon from '../BindIcon'
+import {BindIcon} from '../BindIcon'
 
 export interface MenuCommand {
 	icon?: string

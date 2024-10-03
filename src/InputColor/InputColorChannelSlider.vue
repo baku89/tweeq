@@ -2,7 +2,7 @@
 import {scalar} from 'linearly'
 import {computed, shallowRef} from 'vue'
 
-import GlslCanvas from '../GlslCanvas'
+import {GlslCanvas} from '../GlslCanvas'
 import useDrag from '../useDragV1'
 import {unsignedMod} from '../util'
 import SliderFragmentString from './slider.frag'

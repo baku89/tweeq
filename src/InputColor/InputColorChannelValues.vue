@@ -2,9 +2,9 @@
 import chroma from 'chroma-js'
 import {computed, ref} from 'vue'
 
-import InputDropdown from '../InputDropdown.vue'
-import InputNumber from '../InputNumber'
-import InputString from '../InputString'
+import {InputDropdown} from '../InputDropdown'
+import {InputNumber} from '../InputNumber'
+import {InputString} from '../InputString'
 import {Channels, ColorChannel, ColorSpace} from './types'
 
 interface Props {

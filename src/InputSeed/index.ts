@@ -1,2 +1,1 @@
-import InputSeed from './InputSeed.vue'
-export default InputSeed
+export {default as InputSeed} from './InputSeed.vue'

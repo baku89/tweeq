@@ -1,3 +1,2 @@
-import MonacoEditor from './MonacoEditor.vue'
-export * from './MonacoEditor.vue'
-export default MonacoEditor
+export {default as MonacoEditor} from './MonacoEditor.vue'
+export * from './types'

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {computed, ref, shallowRef} from 'vue'
 
-import Popover from '../Popover.vue'
+import Popover from '../Popover/Popover.vue'
 import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
 import {CubicBezierValue} from './util'
 

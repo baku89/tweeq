@@ -1,2 +1,1 @@
-import InputCheckbox from './InputCheckbox.vue'
-export default InputCheckbox
+export {default as InputCheckbox} from './InputCheckbox.vue'

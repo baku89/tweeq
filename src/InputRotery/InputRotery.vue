@@ -7,7 +7,7 @@ import {partial, range} from 'lodash-es'
 import {computed, ref, shallowRef} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
-import SvgIcon from '../SvgIcon.vue'
+import {SvgIcon} from '../SvgIcon'
 import {useCursorStyle} from '../use/useCursorStyle'
 import {useElementCenter} from '../use/useElementCenter'
 import {useDrag} from '../useDrag'

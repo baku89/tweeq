@@ -47,7 +47,7 @@
 import {clamp, random} from 'lodash-es'
 import {defineComponent, ref} from 'vue'
 
-import SvgIcon from '../SvgIcon.vue'
+import {SvgIcon} from '../SvgIcon'
 
 export default defineComponent({
 	name: 'InputSeed',

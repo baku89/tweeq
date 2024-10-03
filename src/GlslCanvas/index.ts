@@ -1,2 +1,1 @@
-import GlslCanvas from './GlslCanvas.vue'
-export default GlslCanvas
+export {default as GlslCanvas} from './GlslCanvas.vue'

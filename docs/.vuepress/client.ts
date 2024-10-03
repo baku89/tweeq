@@ -1,8 +1,8 @@
 import {defineClientConfig} from '@vuepress/client'
-import Tq from '../../src'
-import Example from './Example.vue'
-
 import {createPinia} from 'pinia'
+
+import * as Tq from '../../src'
+import Example from './Example.vue'
 
 export default defineClientConfig({
 	enhance({app}) {

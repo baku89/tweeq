@@ -1,29 +1,26 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-import {InputProps} from './types'
+import {InputProps} from '../types'
 
 interface Props extends InputProps {
-	modelValue: boolean
 	icon?: string
 	label?: string
+	tooltip?: string
+	blink?: boolean
+	gray?: boolean
 }
 
 defineProps<Props>()
-
-defineEmits<{
-	'update:modelValue': [boolean]
-}>()
 </script>
 
 <template>
 	<button
-		class="InputButtonToggle"
-		:class="{checked: modelValue}"
+		class="InputButton"
+		:class="{blink, gray}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
-		:disabled="!!disabled"
-		@click="$emit('update:modelValue', !modelValue)"
+		:disabled="disabled"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span v-if="label" class="label">{{ label }}</span>
@@ -31,14 +28,14 @@ defineEmits<{
 </template>
 
 <style lang="stylus" scoped>
-@import './common.styl'
+@import '../common.styl'
 
-.InputButtonToggle
-	border-radius var(--tq-input-border-radius)
-	background var(--tq-color-input)
-	color var(--tq-color-on-background)
+.InputButton
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
+	border-radius var(--tq-input-border-radius)
+	background var(--tq-color-accent)
+	color var(--tq-color-on-accent)
 	display flex
 	align-items center
 	justify-content center
@@ -49,26 +46,34 @@ defineEmits<{
 	button-focus-style()
 
 	&:hover
-		background var(--tq-color-input-hover)
-
-	&.checked
-		background var(--tq-color-accent)
-		color var(--tq-color-on-accent)
-
-		&:hover
-			background var(--tq-color-accent-hover)
+		background var(--tq-color-accent-hover)
 
 	&:has(.label)
-		padding 0 .7em
+		padding 0 1em
 
 	&:has(.icon):has(.label)
 		padding-left .5em
 
 	.icon
 		display block
-		width calc(var(--tq-input-height) - 4px)
-		height calc(var(--tq-input-height) - 4px)
 
 	.label
 		line-height var(--tq-input-height)
+
+	&.gray
+		background var(--tq-color-input)
+		color var(--tq-color-on-input)
+
+		&:hover
+			background var(--tq-color-accent-hover)
+
+	&.blink
+		animation blink .5s infinite
+		animation-direction alternate
+
+	@keyframes blink
+		0%
+			background var(--tq-color-input-vivid-accent)
+		100%
+			background var(--tq-color-accent-hover)
 </style>

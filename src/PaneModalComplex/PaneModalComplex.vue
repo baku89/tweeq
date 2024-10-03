@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 
-import InputButton from '../InputButton.vue'
-import InputComplex, {Scheme} from '../InputComplex'
-import PaneModal from '../PaneModal'
+import {InputButton} from '../InputButton'
+import {InputComplex, Scheme} from '../InputComplex'
+import {PaneModal} from '../PaneModal'
 import {useModalStore} from '../stores/modal'
 import {ShowOptions} from './types'
 

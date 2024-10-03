@@ -2,11 +2,11 @@
 import {capital} from 'case'
 import {computed} from 'vue'
 
-import InputCheckbox from '../InputCheckbox'
-import InputCode from '../InputCode'
+import {InputCheckbox} from '../InputCheckbox'
+import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
-import InputNumber from '../InputNumber'
-import InputString from '../InputString'
+import {InputNumber} from '../InputNumber'
+import {InputString} from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
 import {InputComplexProps, Scheme} from './types'
 

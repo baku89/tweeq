@@ -1,2 +1,1 @@
-import Ruler from './Ruler.vue'
-export default Ruler
+export {default as Ruler} from './Ruler.vue'

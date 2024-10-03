@@ -7,18 +7,13 @@ import TomorrowNight from 'monaco-themes/themes/Tomorrow-Night.json'
 import {onMounted, shallowRef, watch, watchEffect} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
-
-export interface ErrorInfo {
-	message: string
-	line: number
-	column: number
-}
+import {type MonacoEditorErrorInfo} from './types'
 
 interface Props {
 	modelValue: string
 	lang: string
 	cursorIndex?: number
-	errors?: ErrorInfo[] | null
+	errors?: MonacoEditorErrorInfo[] | null
 }
 
 const props = withDefaults(defineProps<Props>(), {})

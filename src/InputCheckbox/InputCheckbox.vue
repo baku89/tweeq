@@ -2,7 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
-import SvgIcon from '../SvgIcon.vue'
+import {SvgIcon} from '../SvgIcon'
 
 interface Props {
 	modelValue: boolean

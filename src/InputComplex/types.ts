@@ -1,4 +1,4 @@
-import {Props as CodeProps} from '../InputCode'
+import {InputCodeProps} from '../InputCode'
 import {InputColorProps} from '../InputColor'
 import {Props as NumberProps} from '../InputNumber'
 import {InputStringProps as StringProps} from '../InputString'
@@ -15,7 +15,7 @@ type ParameterDescString = Desc<
 	},
 	StringProps
 >
-type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, CodeProps>
+type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, InputCodeProps>
 type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
 type ParameterDescBoolean = {type: 'boolean'}
 

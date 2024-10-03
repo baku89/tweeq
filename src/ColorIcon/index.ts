@@ -1,2 +1,1 @@
-import ColorIcon from './ColorIcon.vue'
-export default ColorIcon
+export {default as ColorIcon} from './ColorIcon.vue'

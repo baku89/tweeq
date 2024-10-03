@@ -1,2 +1,1 @@
-import InputRotery from './InputRotery.vue'
-export default InputRotery
+export {default as InputRotery} from './InputRotery.vue'

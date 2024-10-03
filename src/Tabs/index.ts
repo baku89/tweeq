@@ -1,4 +1,2 @@
-import Tab from './Tab.vue'
-import Tabs from './Tabs.vue'
-
-export {Tab, Tabs}
+export {default as Tab} from './Tab.vue'
+export {default as Tabs} from './Tabs.vue'

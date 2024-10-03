@@ -1,2 +1,1 @@
-import BindIcon from './BindIcon.vue'
-export default BindIcon
+export {default as BindIcon} from './BindIcon.vue'

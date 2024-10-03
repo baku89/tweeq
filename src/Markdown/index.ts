@@ -1,3 +1,1 @@
-import Markdown from './Markdown.vue'
-
-export default Markdown
+export {default as Markdown} from './Markdown.vue'

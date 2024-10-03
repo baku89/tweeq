@@ -1,2 +1,1 @@
-import PaneSplit from './PaneSplit.vue'
-export default PaneSplit
+export {default as PaneSplit} from './PaneSplit.vue'

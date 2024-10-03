@@ -1,4 +1,2 @@
-import InputCubicBezier from './InputCubicBezier.vue'
-import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
-
-export {InputCubicBezier, InputCubicBezierPicker}
+export {default as InputCubicBezier} from './InputCubicBezier.vue'
+export {default as InputCubicBezierPicker} from './InputCubicBezierPicker.vue'

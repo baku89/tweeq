@@ -1,3 +1,1 @@
-import PaneModal from './PaneModal.vue'
-
-export default PaneModal
+export {default as PaneModal} from './PaneModal.vue'

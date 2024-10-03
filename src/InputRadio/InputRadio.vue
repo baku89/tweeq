@@ -2,7 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {computed} from 'vue'
 
-import {LabelizerProps, useLabelizer} from './types'
+import {LabelizerProps, useLabelizer} from '../types'
 
 interface CompleteOption {
 	value: T
@@ -67,7 +67,7 @@ function onChange(index: number) {
 </template>
 
 <style lang="stylus" scoped>
-@import './common.styl'
+@import '../common.styl'
 
 .InputRadio
 	position relative

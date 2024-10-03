@@ -4,7 +4,7 @@ import {useElementBounding} from '@vueuse/core'
 import {mat2d, vec2} from 'linearly'
 import {computed, shallowRef, watch, watchEffect} from 'vue'
 
-import {useZUI} from './use/useZUI'
+import {useZUI} from '../use/useZUI'
 
 const props = defineProps<{
 	transform?: mat2d

@@ -1,2 +1,1 @@
-import PaneExpandable from './PaneExpandable.vue'
-export default PaneExpandable
+export {default as PaneExpandable} from './PaneExpandable.vue'

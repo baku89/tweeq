@@ -5,8 +5,8 @@ import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
 import {computed, Ref, ref, shallowRef, watch} from 'vue'
 
-import InputString from './InputString'
-import Popover from './Popover.vue'
+import {InputString} from '../InputString'
+import {Popover} from '../Popover'
 import {
 	InputAlign,
 	InputFont,
@@ -14,8 +14,8 @@ import {
 	InputTheme,
 	LabelizerProps,
 	useLabelizer,
-} from './types'
-import {unsignedMod} from './util'
+} from '../types'
+import {unsignedMod} from '../util'
 
 type Props = LabelizerProps<T> &
 	InputProps & {
@@ -209,7 +209,7 @@ function onInputStringBlur(e: Event) {
 </template>
 
 <style lang="stylus" scoped>
-@import './common.styl'
+@import '../common.styl'
 
 $right-arrow-width = 1em
 

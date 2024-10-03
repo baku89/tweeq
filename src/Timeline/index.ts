@@ -1,3 +1,1 @@
-import Timeline from './Timeline.vue'
-
-export default Timeline
+export {default as Timeline} from './Timeline.vue'

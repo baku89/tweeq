@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputNumber from '../InputNumber'
+import {InputNumber} from '../InputNumber'
 import {InputHorizontalPosition} from '../types'
 
 interface Props {

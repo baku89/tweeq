@@ -1,4 +1,4 @@
-import components from './components'
+import * as components from './components'
 import {useInputColor} from './InputColor/useInputColor'
 import {useActionsStore} from './stores/actions'
 import {useAppConfigStore} from './stores/appConfig'

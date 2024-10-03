@@ -1,2 +1,1 @@
-import InputVec from './InputVec.vue'
-export default InputVec
+export {default as InputVec} from './InputVec.vue'

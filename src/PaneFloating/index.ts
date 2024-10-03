@@ -1,2 +1,1 @@
-import PaneFloating from './PaneFloating.vue'
-export default PaneFloating
+export {default as PaneFloating} from './PaneFloating.vue'

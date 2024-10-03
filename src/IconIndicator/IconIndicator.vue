@@ -20,7 +20,7 @@ defineProps<Props>()
 </template>
 
 <style lang="stylus" scoped>
-@import './common.styl'
+@import '../common.styl'
 
 .IconIndicator
 	height var(--tq-input-height)

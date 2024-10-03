@@ -1,2 +1,1 @@
-import TitleBar from './TitleBar.vue'
-export default TitleBar
+export {default as TitleBar} from './TitleBar.vue'
