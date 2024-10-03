@@ -92,7 +92,7 @@ export default function useDraggable(
 			// Fire onDragstart and onDrag
 			if (options.disableClick) {
 				startDrag()
-				options.onDrag && options.onDrag(drag)
+				options.onDrag?.(drag)
 			}
 
 			window.addEventListener('pointermove', onPointerDrag)
@@ -105,7 +105,7 @@ export default function useDraggable(
 			}
 
 			drag.isDragging = true
-			options.onDragStart && options.onDragStart(drag)
+			options.onDragStart?.(drag)
 		}
 
 		function onPointerDrag(e: PointerEvent) {
@@ -121,7 +121,7 @@ export default function useDraggable(
 				startDrag()
 			}
 
-			options.onDrag && options.onDrag(drag)
+			options.onDrag?.(drag)
 			drag.prevPos = drag.pos
 		}
 
@@ -130,9 +130,9 @@ export default function useDraggable(
 				document.exitPointerLock()
 			}
 			if (drag.isDragging) {
-				options.onDragEnd && options.onDragEnd(drag)
+				options.onDragEnd?.(drag)
 			} else {
-				options.onClick && options.onClick()
+				options.onClick?.()
 			}
 
 			// Reset

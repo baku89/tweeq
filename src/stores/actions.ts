@@ -177,7 +177,7 @@ export const useActionsStore = defineStore('actions', () => {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	 
 	const onBeforePerformHooks = new Set<(action: ActionItem) => void>()
 
 	function onBeforePerform(hook: (action: ActionItem) => void) {

@@ -46,7 +46,7 @@ watch(
 			refBound.update()
 			refBoundUpdateTimer = setInterval(refBound.update, 200)
 		} else {
-			refBoundUpdateTimer && clearInterval(refBoundUpdateTimer)
+			if (refBoundUpdateTimer) clearInterval(refBoundUpdateTimer)
 		}
 	}
 )

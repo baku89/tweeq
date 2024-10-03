@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed} from '@vue/reactivity'
 import {Menu as VMenu} from 'floating-vue'
+import {computed} from 'vue'
 import {ref} from 'vue'
 
 import ColorIcon from '../ColorIcon'
