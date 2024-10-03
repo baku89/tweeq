@@ -12,7 +12,7 @@ interface Props {
 	/**
 	 * タイムライン全体のフレーム範囲
 	 */
-	frameRange?: vec2
+	frameRange: vec2
 	/**
 	 * 1フレームの幅
 	 */
@@ -25,7 +25,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
 	frameWidth: 60,
-	frameWidthRange: [10, 100],
+	frameWidthRange: () => [10, 100],
 })
 
 defineSlots<{

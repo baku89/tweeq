@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {useElementBounding} from '@vueuse/core'
+import {MaybeElementRef, useElementBounding} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar, vec2} from 'linearly'
 import {range as _range} from 'lodash-es'
-import {computed, ref, watchEffect} from 'vue'
+import {computed, ref} from 'vue'
 
 import {useBndr} from '../use/useBndr'
 
@@ -15,13 +15,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-	'update:ref': [HTMLElement | null]
 	drag: [value: number]
 }>()
 
-const $root = ref<HTMLElement | null>(null)
-
-watchEffect(() => emit('update:ref', $root.value))
+const $root: MaybeElementRef = ref(null)
 
 const {width: rootWidth} = useElementBounding($root)
 

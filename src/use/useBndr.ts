@@ -1,10 +1,15 @@
-import {MaybeElementRef, unrefElement} from '@vueuse/core'
+import {
+	MaybeElement,
+	MaybeElementRef,
+	unrefElement,
+	UnRefElementReturn,
+} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {onBeforeUnmount, onMounted} from 'vue'
 
-export function useBndr(
-	$element: MaybeElementRef,
-	fn: ($element: HTMLElement | SVGElement) => void
+export function useBndr<T extends MaybeElement>(
+	$element: MaybeElementRef<T>,
+	fn: ($element: NonNullable<UnRefElementReturn<T>>) => void
 ) {
 	let dispose: ReturnType<typeof Bndr.createScope> | undefined
 
