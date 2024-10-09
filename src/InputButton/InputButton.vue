@@ -9,6 +9,7 @@ interface Props extends InputProps {
 	tooltip?: string
 	blink?: boolean
 	gray?: boolean
+	narrow?: boolean
 }
 
 defineProps<Props>()
@@ -17,7 +18,7 @@ defineProps<Props>()
 <template>
 	<button
 		class="InputButton"
-		:class="{blink, gray}"
+		:class="{blink, gray, narrow}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="disabled"
@@ -60,6 +61,7 @@ defineProps<Props>()
 	.label
 		line-height var(--tq-input-height)
 
+	// Styles
 	&.gray
 		background var(--tq-color-input)
 		color var(--tq-color-on-input)
@@ -76,4 +78,11 @@ defineProps<Props>()
 			background var(--tq-color-input-vivid-accent)
 		100%
 			background var(--tq-color-accent-hover)
+
+	&.narrow
+		min-width auto
+		width calc(var(--tq-input-height) * .75)
+
+		.icon
+			margin 0 -50%
 </style>
