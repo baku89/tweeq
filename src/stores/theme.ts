@@ -153,7 +153,14 @@ export const useThemeStore = defineStore('theme', () => {
 	})
 
 	// Promote all as CSS variabbles
-	const metaThemeColor = document.querySelector('meta[name=theme-color]')!
+	let metaThemeColor = document.querySelector('meta[name=theme-color]')
+
+	if (!metaThemeColor) {
+		metaThemeColor = document.createElement('meta')
+		metaThemeColor.setAttribute('name', 'theme-color')
+		document.head.appendChild(metaThemeColor)
+	}
+
 	watch(
 		theme,
 		() => {
