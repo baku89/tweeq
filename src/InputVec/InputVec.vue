@@ -32,16 +32,10 @@ function getMax(i: number): number | undefined {
 function getStep(i: number): number | undefined {
 	return Array.isArray(props.step) ? props.step[i] : props.step
 }
-
-function getHorizontalPosition(i: number): InputHorizontalPosition {
-	if (i === 0) return 'left'
-	if (i === props.modelValue.length - 1) return 'right'
-	return 'middle'
-}
 </script>
 
 <template>
-	<div class="InputVec">
+	<InputGroup class="InputVec">
 		<InputNumber
 			v-for="(v, i) in modelValue"
 			:key="i"
@@ -49,10 +43,9 @@ function getHorizontalPosition(i: number): InputHorizontalPosition {
 			:max="getMax(i)"
 			:step="getStep(i)"
 			:modelValue="v"
-			:horizontalPosition="getHorizontalPosition(i)"
 			@update:modelValue="updateValue(i, $event)"
 		/>
-	</div>
+	</InputGroup>
 </template>
 
 <style lang="stylus" scoped>

@@ -3,6 +3,7 @@ import chroma from 'chroma-js'
 import {computed, ref} from 'vue'
 
 import {InputDropdown} from '../InputDropdown'
+import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
 import {type Channels, type ColorChannel, type ColorSpace} from './types'
@@ -64,14 +65,14 @@ function colorCodeValidator(value: string) {
 </script>
 
 <template>
-	<div class="InputColorChannelValues">
+	<InputGroup class="InputColorChannelValues">
 		<InputDropdown
 			v-model="colorSpace"
 			theme="minimal"
 			:options="['rgb', 'hsv', 'hex']"
 			:labelizer="s => s.toUpperCase()"
 		/>
-		<div v-if="colorSpace === 'rgb'" class="values">
+		<InputGroup v-if="colorSpace === 'rgb'" class="values">
 			<InputNumber
 				class="channel"
 				:modelValue="r"
@@ -79,7 +80,6 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				horizontalPosition="left"
 				@update:modelValue="onUpdateChannel('r', $event)"
 			/>
 			<InputNumber
@@ -89,7 +89,6 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				horizontalPosition="middle"
 				@update:modelValue="onUpdateChannel('g', $event)"
 			/>
 			<InputNumber
@@ -99,7 +98,6 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				:horizontalPosition="alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('b', $event)"
 			/>
 			<InputNumber
@@ -111,11 +109,10 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontalPosition="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
-		</div>
-		<div v-if="colorSpace === 'hsv'" class="values">
+		</InputGroup>
+		<InputGroup v-if="colorSpace === 'hsv'" class="values">
 			<InputNumber
 				class="channel"
 				:modelValue="h"
@@ -124,7 +121,6 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="°"
-				horizontalPosition="left"
 				@update:modelValue="onUpdateChannel('h', $event)"
 			/>
 			<InputNumber
@@ -135,7 +131,6 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontalPosition="middle"
 				@update:modelValue="onUpdateChannel('s', $event)"
 			/>
 			<InputNumber
@@ -146,7 +141,6 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				:horizontalPosition="alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('v', $event)"
 			/>
 			<InputNumber
@@ -158,10 +152,9 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontalPosition="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
-		</div>
+		</InputGroup>
 		<InputString
 			v-if="colorSpace === 'hex'"
 			font="monospace"
@@ -170,7 +163,7 @@ function colorCodeValidator(value: string) {
 			:validator="colorCodeValidator"
 			@update:modelValue="emit('update:modelValue', $event)"
 		/>
-	</div>
+	</InputGroup>
 </template>
 
 <style lang="stylus" scoped>
