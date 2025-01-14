@@ -5,7 +5,7 @@ import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, shallowRef, watch} from 'vue'
 
-import {type BindIcon} from '../BindIcon'
+import {BindIcon} from '../BindIcon'
 import {type ActionItemOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {useBndr} from '../use/useBndr'
@@ -65,7 +65,7 @@ watch(filteredActions, () => {
 useBndr($popover, $popover => {
 	Bndr.keyboard()
 		.hotkey('command+p', {preventDefault: true, capture: true})
-		.on(() => $popover.togglePopover())
+		.on(() => $popover instanceof HTMLElement && $popover.togglePopover())
 })
 
 function onKeydown(e: KeyboardEvent) {

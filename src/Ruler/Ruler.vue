@@ -25,7 +25,6 @@ const {width: rootWidth} = useElementBounding($root)
 function defaultScaleComputed() {
 	const start = Math.ceil(props.range[0])
 	const end = Math.floor(props.range[1])
-
 	return _range(start, end + 1).map(value => ({value}))
 }
 
@@ -63,13 +62,11 @@ useBndr($root, el => {
 		})
 })
 </script>
-
 <template>
 	<div class="TqRuler" ref="$root" :style="rootStyle">
 		<div class="content">
 			<slot />
 		</div>
-
 		<div
 			v-for="scale in _scales"
 			:key="scale.value"

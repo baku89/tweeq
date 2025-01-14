@@ -19,9 +19,9 @@ import {
 	unsignedMod,
 } from '../util'
 import InputNumberScales from './InputNumberScales.vue'
-import {type Props} from './types'
+import {type InputNumberProps} from './types'
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<InputNumberProps>(), {
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
 	bar: 0,

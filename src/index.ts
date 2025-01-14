@@ -1,5 +1,4 @@
 export * from './components'
-export * from './InputComplex'
 export type {
 	Action,
 	ActionGroup,

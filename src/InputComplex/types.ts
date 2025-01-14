@@ -1,13 +1,13 @@
 import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
-import {type Props as NumberProps} from '../InputNumber'
+import {type InputNumberProps} from '../InputNumber'
 import {type InputStringProps as StringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 
 type Desc<T extends Record<string, unknown>, P> = T & Omit<P, 'modelValue'>
 
-type ParameterDescNumber = Desc<{type: 'number'}, NumberProps>
+type ParameterDescNumber = Desc<{type: 'number'}, InputNumberProps>
 type ParameterDescString = Desc<
 	{
 		type: 'string'

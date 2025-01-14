@@ -1,6 +1,6 @@
 import {type InputProps} from '../types'
 
-export interface Props extends InputProps {
+export interface InputNumberProps extends InputProps {
 	modelValue: number
 	min?: number
 	max?: number
