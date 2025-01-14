@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import {MaybeElementRef, useFocus} from '@vueuse/core'
+import {type MaybeElementRef, useFocus} from '@vueuse/core'
 import {identity} from 'lodash-es'
 import {ref, ref as shallowRef, watch} from 'vue'
 
-import {InputStringProps} from './types'
+import {type InputStringProps} from './types'
 
 const props = withDefaults(defineProps<InputStringProps>(), {
 	validator: () => identity,

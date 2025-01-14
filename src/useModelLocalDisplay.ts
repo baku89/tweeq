@@ -1,6 +1,14 @@
 import {extendRef, pausableWatch} from '@vueuse/shared'
-import {isSome, Option} from 'fp-ts/lib/Option'
-import {computed, readonly, Ref, ref, SetupContext, toRaw, watch} from 'vue'
+import {isSome, type Option} from 'fp-ts/lib/Option'
+import {
+	computed,
+	readonly,
+	type Ref,
+	ref,
+	type SetupContext,
+	toRaw,
+	watch,
+} from 'vue'
 
 interface ModelLocalDisplayOptions<T> {
 	props: {modelValue: T; updateOnBlur: boolean}

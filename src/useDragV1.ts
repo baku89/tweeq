@@ -1,6 +1,6 @@
 import {unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, Ref, ref, toRefs, watch} from 'vue'
+import {reactive, type Ref, ref, toRefs, watch} from 'vue'
 
 interface DragData {
 	pos: vec2

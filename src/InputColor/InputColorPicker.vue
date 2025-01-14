@@ -8,16 +8,16 @@ import InputColorChannelSlider from './InputColorChannelSlider.vue'
 import InputColorChannelValues from './InputColorChannelValues.vue'
 import InputColorPresets from './InputColorPresets.vue'
 import {
-	Channels,
-	DefualtColorPickers,
+	type Channels,
+	DefaultColorPickers,
 	hsv2rgb,
-	InputColorProps,
+	type InputColorProps,
 	rgb2hsv,
 } from './types'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
-	pickers: () => DefualtColorPickers,
+	pickers: () => DefaultColorPickers,
 })
 
 const emit = defineEmits<{

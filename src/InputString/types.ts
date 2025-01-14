@@ -1,9 +1,9 @@
 import {
-	InputAlign,
-	InputFont,
-	InputProps,
-	InputTheme,
-	Validator,
+	type InputAlign,
+	type InputFont,
+	type InputProps,
+	type InputTheme,
+	type Validator,
 } from '../types'
 
 export interface InputStringProps extends InputProps {

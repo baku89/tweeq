@@ -12,7 +12,12 @@ import {unsignedMod} from '../util'
 import InputColorPicker from './InputColorPicker.vue'
 import PadFragmentString from './pad.frag'
 import SliderFragmentString from './slider.frag'
-import {colorChannelToIndex, hsv2rgb, InputColorProps, rgb2hsv} from './types'
+import {
+	colorChannelToIndex,
+	hsv2rgb,
+	type InputColorProps,
+	rgb2hsv,
+} from './types'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,

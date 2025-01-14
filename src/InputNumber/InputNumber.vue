@@ -8,7 +8,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, nextTick, ref, shallowRef, StyleValue, watch} from 'vue'
+import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
 
 import {useDrag} from '../useDrag'
 import {

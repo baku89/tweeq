@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
 
-import {Scheme} from '../InputComplex'
-import {ShowOptions} from '../PaneModalComplex'
+import {type Scheme} from '../InputComplex'
+import {type ShowOptions} from '../PaneModalComplex'
 
 export type PromptFn = <T extends Record<string, unknown>>(
 	defaultValue: T,

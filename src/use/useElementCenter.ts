@@ -1,4 +1,4 @@
-import {MaybeComputedElementRef, useElementBounding} from '@vueuse/core'
+import {type MaybeComputedElementRef, useElementBounding} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
 import {computed} from 'vue'
 

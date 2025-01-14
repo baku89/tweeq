@@ -2,10 +2,10 @@
 import {ref} from 'vue'
 
 import {InputButton} from '../InputButton'
-import {InputComplex, Scheme} from '../InputComplex'
+import {InputComplex, type Scheme} from '../InputComplex'
 import {PaneModal} from '../PaneModal'
 import {useModalStore} from '../stores/modal'
-import {ShowOptions} from './types'
+import type {ShowOptions} from './types'
 
 const modal = useModalStore()
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {MonacoEditor} from '../MonacoEditor'
-import {InputCodeProps} from './types'
+import type {InputCodeProps} from './types'
 
 defineProps<InputCodeProps>()
 

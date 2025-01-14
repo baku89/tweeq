@@ -8,7 +8,7 @@ import {InputColor} from '../InputColor'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
-import {InputComplexProps, Scheme} from './types'
+import type {InputComplexProps, Scheme} from './types'
 
 const props = defineProps<InputComplexProps<T>>()
 

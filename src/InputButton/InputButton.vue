@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-import {InputProps} from '../types'
+import type {InputProps} from '../types'
 
 interface Props extends InputProps {
 	icon?: string

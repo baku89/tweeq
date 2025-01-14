@@ -1,8 +1,8 @@
 import {
-	MaybeElement,
-	MaybeElementRef,
+	type MaybeElement,
+	type MaybeElementRef,
 	unrefElement,
-	UnRefElementReturn,
+	type UnRefElementReturn,
 } from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {onBeforeUnmount, onMounted} from 'vue'

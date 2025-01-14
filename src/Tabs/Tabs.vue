@@ -3,7 +3,7 @@ import {onMounted, provide, reactive} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
-import {Tab, TabsState} from './types'
+import type {Tab, TabsState} from './types'
 
 interface Props {
 	name: string

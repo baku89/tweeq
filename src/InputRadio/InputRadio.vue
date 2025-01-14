@@ -2,7 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {computed} from 'vue'
 
-import {LabelizerProps, useLabelizer} from '../types'
+import {type LabelizerProps, useLabelizer} from '../types'
 
 interface CompleteOption {
 	value: T

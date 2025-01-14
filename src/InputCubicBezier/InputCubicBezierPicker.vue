@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import {templateRef} from '@vueuse/core'
-import {CubicBezierPoints} from '@vueuse/core'
+import {type CubicBezierPoints} from '@vueuse/core'
 import {vec2} from 'linearly'
 import {computed, ref} from 'vue-demi'
 
 import useDrag from '../useDragV1'
-import {CubicBezierValue} from './util'
+import {type CubicBezierValue} from './util'
 
 interface Props {
 	modelValue: CubicBezierValue

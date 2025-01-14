@@ -6,7 +6,7 @@ import {GlslCanvas} from '../GlslCanvas'
 import useDrag from '../useDragV1'
 import {unsignedMod} from '../util'
 import SliderFragmentString from './slider.frag'
-import {Channels, ColorChannel, colorChannelToIndex} from './types'
+import {type Channels, type ColorChannel, colorChannelToIndex} from './types'
 
 interface Props {
 	axis: ColorChannel

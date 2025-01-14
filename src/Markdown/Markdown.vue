@@ -8,8 +8,8 @@ import MarkdownIt from 'markdown-it'
 import MarkdownItAnchor from 'markdown-it-anchor'
 import MarkdownItDeflist from 'markdown-it-deflist'
 import MarkdownItFootnote from 'markdown-it-footnote'
-import MarkdownItTOC, {TocOptions} from 'markdown-it-toc-done-right'
-import {defineComponent, h, onMounted, PropType, ref, watch} from 'vue'
+import MarkdownItTOC, {type TocOptions} from 'markdown-it-toc-done-right'
+import {defineComponent, h, onMounted, type PropType, ref, watch} from 'vue'
 
 // import MarkdownItMonacoHighlight from './markdown-it-monaco-highlight'
 

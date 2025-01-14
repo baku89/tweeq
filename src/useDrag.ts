@@ -1,6 +1,6 @@
-import {MaybeRef, unrefElement} from '@vueuse/core'
+import {type MaybeRef, unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, Ref, toRefs, unref, watch} from 'vue'
+import {reactive, type Ref, toRefs, unref, watch} from 'vue'
 
 interface DragState {
 	xy: vec2

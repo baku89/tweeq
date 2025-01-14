@@ -5,7 +5,7 @@ import {computed, ref} from 'vue'
 import {InputDropdown} from '../InputDropdown'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
-import {Channels, ColorChannel, ColorSpace} from './types'
+import {type Channels, type ColorChannel, type ColorSpace} from './types'
 
 interface Props {
 	modelValue: string

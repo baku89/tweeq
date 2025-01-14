@@ -1,6 +1,6 @@
 import * as Bndr from 'bndr-js'
 import {mat2d, vec2} from 'linearly'
-import {Ref} from 'vue'
+import {type Ref} from 'vue'
 
 import {useBndr} from './useBndr'
 

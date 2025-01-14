@@ -1,6 +1,6 @@
-import {InjectionKey, provide, Ref, ref} from 'vue'
+import {type InjectionKey, provide, type Ref, ref} from 'vue'
 
-import {ColorSpace} from './types'
+import {type ColorSpace} from './types'
 
 export const InputColorPresetsKey: InjectionKey<string[]> = Symbol(
 	'InputColorPresetsKey'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {Icon} from '@iconify/vue'
-import {IconSequence} from 'bndr-js'
+import type {IconSequence} from 'bndr-js'
 
 interface Props {
 	icon: IconSequence

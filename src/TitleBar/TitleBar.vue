@@ -4,8 +4,8 @@ import {computed} from 'vue'
 import {ref} from 'vue'
 
 import {ColorIcon} from '../ColorIcon'
-import {Menu, MenuItem} from '../Menu'
-import {Action, useActionsStore} from '../stores/actions'
+import {Menu, type MenuItem} from '../Menu'
+import {type Action, useActionsStore} from '../stores/actions'
 interface Props {
 	name: string
 	/**

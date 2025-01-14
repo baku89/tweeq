@@ -3,16 +3,16 @@ import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
-import {computed, Ref, ref, shallowRef, watch} from 'vue'
+import {computed, type Ref, ref, shallowRef, watch} from 'vue'
 
 import {InputString} from '../InputString'
 import {Popover} from '../Popover'
 import {
-	InputAlign,
-	InputFont,
-	InputProps,
-	InputTheme,
-	LabelizerProps,
+	type InputAlign,
+	type InputFont,
+	type InputProps,
+	type InputTheme,
+	type LabelizerProps,
 	useLabelizer,
 } from '../types'
 import {unsignedMod} from '../util'

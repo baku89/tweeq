@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {MaybeElementRef, useElementBounding} from '@vueuse/core'
+import {type MaybeElementRef, useElementBounding} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar, vec2} from 'linearly'
 import {range as _range} from 'lodash-es'

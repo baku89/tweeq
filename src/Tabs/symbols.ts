@@ -1,6 +1,6 @@
-import {InjectionKey} from 'vue'
+import {type InjectionKey} from 'vue'
 
-import {AddTab, DeleteTab, TabsState, UpdateTab} from './types'
+import type {AddTab, DeleteTab, TabsState, UpdateTab} from './types'
 
 export const AddTabKey: InjectionKey<AddTab> = Symbol('addTab')
 

@@ -4,7 +4,7 @@ import {useActionsStore} from './stores/actions'
 import {useAppConfigStore} from './stores/appConfig'
 import {useModalStore} from './stores/modal'
 import {useThemeStore} from './stores/theme'
-import {ColorMode} from './theme'
+import type {ColorMode} from './theme'
 
 interface TweeqOptions {
 	colorMode?: ColorMode

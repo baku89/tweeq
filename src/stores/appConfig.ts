@@ -1,6 +1,6 @@
 import {extendRef} from '@vueuse/core'
 import {defineStore} from 'pinia'
-import {MaybeRef, ref, unref, watch} from 'vue'
+import {type MaybeRef, ref, unref, watch} from 'vue'
 
 function createGroup(path: MaybeRef<string>) {
 	function _ref<T>(name: string, defaultValue: T) {

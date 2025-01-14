@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {InputNumber} from '../InputNumber'
-import {InputHorizontalPosition} from '../types'
+import type {InputHorizontalPosition} from '../types'
 
 interface Props {
 	modelValue: readonly number[]

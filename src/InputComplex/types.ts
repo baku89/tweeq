@@ -1,7 +1,7 @@
-import {InputCodeProps} from '../InputCode'
-import {InputColorProps} from '../InputColor'
-import {Props as NumberProps} from '../InputNumber'
-import {InputStringProps as StringProps} from '../InputString'
+import {type InputCodeProps} from '../InputCode'
+import {type InputColorProps} from '../InputColor'
+import {type Props as NumberProps} from '../InputNumber'
+import {type InputStringProps as StringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 

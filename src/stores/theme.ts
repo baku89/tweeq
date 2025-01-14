@@ -9,7 +9,7 @@ import {kebab} from 'case'
 import {defineStore} from 'pinia'
 import {computed, toRefs, watch, watchEffect} from 'vue'
 
-import {ColorMode, generateThemeColorsRadix, Theme} from '../theme'
+import {type ColorMode, generateThemeColorsRadix, type Theme} from '../theme'
 import {useAppConfigStore} from './appConfig'
 
 export const useThemeStore = defineStore('theme', () => {

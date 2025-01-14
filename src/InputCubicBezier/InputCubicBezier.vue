@@ -3,7 +3,7 @@ import {computed, ref, shallowRef} from 'vue'
 
 import Popover from '../Popover/Popover.vue'
 import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
-import {CubicBezierValue} from './util'
+import type {CubicBezierValue} from './util'
 
 interface Props {
 	modelValue: CubicBezierValue

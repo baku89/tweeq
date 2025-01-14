@@ -1,4 +1,4 @@
-import {InputProps} from '../types'
+import type {InputProps} from '../types'
 
 export type Color = string
 export type ColorChannel = 'r' | 'g' | 'b' | 'a' | 'h' | 's' | 'v'
@@ -46,7 +46,7 @@ export type ColorPickerComponent =
 	| [type: 'values']
 	| [type: 'presets']
 
-export const DefualtColorPickers: ColorPickerComponent[] = [
+export const DefaultColorPickers: ColorPickerComponent[] = [
 	['pad', ['s', 'v']],
 	['slider', 'h'],
 	['slider', 'a'],

@@ -1,7 +1,7 @@
 import {uniqueId} from 'lodash-es'
 import {
 	computed,
-	MaybeRefOrGetter,
+	type MaybeRefOrGetter,
 	onBeforeUnmount,
 	ref,
 	unref,
