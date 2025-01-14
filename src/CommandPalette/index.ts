@@ -1,2 +1,1 @@
-import CommandPalette from './CommandPalette.vue'
-export default CommandPalette
+export {default as CommandPalette} from './CommandPalette.vue'

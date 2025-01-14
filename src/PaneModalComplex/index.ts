@@ -1,4 +1,2 @@
-import PaneModalComplex from './PaneModalComplex.vue'
-export default PaneModalComplex
-
+export {default as PaneModalComplex} from './PaneModalComplex.vue'
 export * from './types'
