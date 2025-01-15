@@ -9,14 +9,18 @@ const slots = useSlots()
 
 const Child = defineComponent({
 	render: () => {
-		const data = slots.default?.()
+		const vnode = slots.default?.()
 
-		if (!Array.isArray(data) || data.length <= 1) return data
+		if (!Array.isArray(vnode) || vnode.length <= 1) return vnode
 
-		return data.map((child: any, index: number) => {
+		return vnode.map((child: any, index: number) => {
 			return cloneVNode(child, {
 				horizontalPosition:
-					index === 0 ? 'left' : index === data.length - 1 ? 'right' : 'middle',
+					index === 0
+						? 'left'
+						: index === vnode.length - 1
+							? 'right'
+							: 'middle',
 			})
 		})
 	},
