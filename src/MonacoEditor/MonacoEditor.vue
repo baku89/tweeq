@@ -47,7 +47,7 @@ onMounted(() => {
 		// @ts-ignore
 		'bracketPairColorization.enabled': false,
 		fontLigatures: true,
-		fontFamily: 'Fira Code',
+		fontFamily: 'Geist Mono',
 		fontSize,
 		folding: false,
 		lineNumbers: 'off',

@@ -128,8 +128,8 @@ export const useThemeStore = defineStore('theme', () => {
 				dark ? affirmative.light.color : affirmative.dark.color
 			),
 
-			fontCode: "'Fira Code', monospace",
-			fontHeading: 'Inter, sans-serif',
+			fontCode: "'Geist Mono', monospace",
+			fontHeading: 'Geist, sans-serif',
 			fontUi: 'Inter, system-ui, sans-serif',
 			fontNumeric: 'Inter, system-ui, sans-serif',
 

@@ -108,7 +108,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 		color var(--tq-color-accent)
 
 .app-name
-	font-weight bold
+	font-family 500
 	font-family var(--tq-font-heading)
 	font-size calc(var(--titlebar-area-height) * .4)
 	margin-right 4px
