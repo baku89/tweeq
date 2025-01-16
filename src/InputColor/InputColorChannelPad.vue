@@ -3,7 +3,7 @@ import {scalar, vec2} from 'linearly'
 import {computed, shallowRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
-import useDrag from '../useDragV1'
+import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
 import FragmentString from './pad.frag'
 import {type Channels, type ColorChannel, colorChannelToIndex} from './types'
@@ -21,10 +21,10 @@ const emit = defineEmits<{
 
 const $root = shallowRef<null | HTMLElement>(null)
 
-const {isDragging: sliderTweaking} = useDrag($root, {
+const {dragging: sliderTweaking} = useDrag($root, {
 	disableClick: true,
-	onDrag({pos, right, left, bottom, top}) {
-		const chs = [...vec2.invlerp([left, bottom], [right, top], pos)]
+	onDrag({xy, right, left, bottom, top}) {
+		const chs = [...vec2.invlerp([left, bottom], [right, top], xy)]
 
 		for (let i = 0; i < 2; i++) {
 			if (props.axes[i] === 'h') {

@@ -7,7 +7,7 @@ import {computed, ref, shallowRef, watchEffect} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
-import useDraggable from '../useDragV1'
+import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
 import InputColorPicker from './InputColorPicker.vue'
 import PadFragmentString from './pad.frag'
@@ -68,7 +68,7 @@ function getHSVA() {
 	return {h: hsv[0], s: hsv[1], v: hsv[2], a: a}
 }
 
-const {origin, isDragging: tweaking} = useDraggable($button, {
+const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	onClick() {
 		open.value = !open.value

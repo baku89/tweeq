@@ -4,7 +4,7 @@ import {type CubicBezierPoints} from '@vueuse/core'
 import {vec2} from 'linearly'
 import {computed, ref} from 'vue-demi'
 
-import useDrag from '../useDragV1'
+import {useDrag} from '../useDrag'
 import {type CubicBezierValue} from './util'
 
 interface Props {
@@ -20,10 +20,10 @@ const emit = defineEmits<{
 const $editor = templateRef<HTMLElement>('$editor')
 
 useDrag($editor, {
-	onDrag({pos, left, right, top, bottom}) {
+	onDrag({xy, left, right, top, bottom}) {
 		if (draggingPoint.value === null) return
 
-		const uv = vec2.invlerp([left, bottom], [right, top], pos)
+		const uv = vec2.invlerp([left, bottom], [right, top], xy)
 		const [x, y] = vec2.clamp(uv, [0, 0], [1, 1])
 
 		const newValue: CubicBezierPoints = [...props.modelValue]
