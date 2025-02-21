@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 
 interface Props {
@@ -20,15 +21,15 @@ function updateValue(index: number, value: number) {
 	emit('update:modelValue', newValue)
 }
 
-function getMin(i: number): number | undefined {
+function minAt(i: number): number | undefined {
 	return Array.isArray(props.min) ? props.min[i] : props.min
 }
 
-function getMax(i: number): number | undefined {
+function maxAt(i: number): number | undefined {
 	return Array.isArray(props.max) ? props.max[i] : props.max
 }
 
-function getStep(i: number): number | undefined {
+function stepAt(i: number): number | undefined {
 	return Array.isArray(props.step) ? props.step[i] : props.step
 }
 </script>
@@ -38,17 +39,11 @@ function getStep(i: number): number | undefined {
 		<InputNumber
 			v-for="(v, i) in modelValue"
 			:key="i"
-			:min="getMin(i)"
-			:max="getMax(i)"
-			:step="getStep(i)"
+			:min="minAt(i)"
+			:max="maxAt(i)"
+			:step="stepAt(i)"
 			:modelValue="v"
 			@update:modelValue="updateValue(i, $event)"
 		/>
 	</InputGroup>
 </template>
-
-<style lang="stylus" scoped>
-.InputVec
-	display grid
-	grid-template-columns 1fr 1fr 1fr
-</style>
