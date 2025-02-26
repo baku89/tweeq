@@ -427,6 +427,14 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 //------------------------------------------------------------------------------
 // Styles
 
+const valueRangeState = computed(() => {
+	if (!barVisible.value) return {}
+
+	if (props.modelValue < props.min) return {'below-range': true}
+	if (props.modelValue > props.max) return {'above-range': true}
+	return {}
+})
+
 const scaleAttrs = (offset: number) => {
 	const precision = unsignedMod(
 		-Math.log10(speedMultiplierGesture.value) + offset,
@@ -484,7 +492,7 @@ const barStyle = computed<StyleValue>(() => {
 	<div
 		ref="$root"
 		class="InputNumber"
-		:class="{tweaking}"
+		:class="{tweaking, ...valueRangeState}"
 		:data-tweaking-mode="tweakMode"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
@@ -526,6 +534,26 @@ const barStyle = computed<StyleValue>(() => {
 .InputNumber
 	input-style()
 
+	&:before
+		content ''
+		position absolute
+		display block
+		height 100%
+		width 8px
+		top 0
+		pointer-events none
+		z-index 100
+		opacity .5
+
+	&.below-range:before
+		left 0
+		background linear-gradient(to right, var(--tq-color-accent), transparent)
+
+	&.above-range:before
+		right 0
+		background linear-gradient(to left, var(--tq-color-accent), transparent)
+
+
 .input
 	text-align center
 	position relative
@@ -543,17 +571,15 @@ const barStyle = computed<StyleValue>(() => {
 
 .bar
 	pointer-events none
-	background var(--tq-color-input-tinted-accent)
+	background var(--tq-color-input-vivid-accent)
 	hover-transition(background)
 
 	.InputNumber:hover &
 		background var(--tq-color-input-tinted-accent-hover)
 
-
 .tip
-	width 2px
-	margin-left -1px
-	background var(--tq-color-input-vivid-accent)
+	width 4px
+	margin-left -2px
 	hover-transition(opacity)
 
 	&:before
