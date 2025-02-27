@@ -37,7 +37,7 @@ hover-transition(prop = all)
 	for p in arguments
 		push(
 			values,
-			p + ' var(-tq-transition-duration) cubic-bezier(0.4, 0, 0.2, 1)'
+			p + ' var(--tq-transition-duration) cubic-bezier(0.4, 0, 0.2, 1)'
 		)
 
 	transition unquote(join(',', values))
