@@ -289,7 +289,7 @@ const overlayPath = computed(() => {
 		transform scale(3)
 
 	&__circle
-		fill var(--tq-color-input-tinted-accent)
+		fill var(--tq-color-input-vivid-accent)
 		stroke none
 		hover-transition(fill)
 
@@ -299,7 +299,7 @@ const overlayPath = computed(() => {
 
 	&__tip
 		transform-origin 16px 16px
-		stroke var(--tq-color-input-vivid-accent)
+		stroke var(--tq-color-input)
 		stroke-width 3
 		stroke-linecap round
 		hover-transition(stroke)

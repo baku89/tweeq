@@ -101,13 +101,14 @@ input-style()
 	&:hover
 		background var(--tq-color-input-hover)
 
-	&:focus-within, &.tweaking
+	&:has(:focus-visible), &.tweaking
 		z-index 1
 		box-shadow 0 0 0 1px var(--tq-color-accent)
 
-	&:has(input[invalid=true])
+	&:has(input[invalid])
 		--tq-color-on-background var(--tq-color-error)
 		--tq-color-accent var(--tq-color-error)
+		color var(--tq-color-on-background) !important
 
 	input
 		padding 4px 12px
@@ -128,7 +129,7 @@ input-style()
 		&:focus-within, &.tweaking
 			box-shadow 0 0 0 1px var(--tq-color-accent)
 
-	&[disabled=true]
+	&:has([disabled])
 		background transparent
 		box-shadow inset 0 0 0 1px var(--tq-color-border)
 		color var(--tq-color-gray-on-background)

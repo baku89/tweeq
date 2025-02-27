@@ -10,10 +10,14 @@
 		clampMin: {type: 'boolean'},
 		clampMax: {type: 'boolean'},
 		step: {type: 'number', min: 0, step: 0.01},
+		disabled: {type: 'boolean'},
+		invalid: {type: 'boolean'},
 		prefix: {type: 'string'},
 		suffix: {type: 'string'},
+		leftIcon: {type: 'string'},
+		rightIcon: {type: 'string'},
 	}"
-	:options="{min: 0, max: 2, clampMin: false, clampMax: false, step: 0.1, prefix: '', suffix: ''}"
+	:options="{min: 0, max: 2, clampMin: false, clampMax: false, step: 0.1, prefix: '', suffix: '', disabled: false, invalid: false}"
 	v-slot="{modelValue, update, options}"
 >
 	<InputNumber

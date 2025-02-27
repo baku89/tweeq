@@ -253,10 +253,10 @@ const validatedLocal = computed(() => {
 const isInvalid = computed(() => {
 	if (props.invalid) return true
 
-	if (tweaking.value) return false
+	if (tweaking.value) return undefined
 
 	// TODO: This is not accurate
-	return Math.abs(validatedLocal.value - local.value) > 10e-8
+	return Math.abs(validatedLocal.value - local.value) > 10e-8 || undefined
 })
 
 watch(validatedLocal, local => {
@@ -496,7 +496,6 @@ const barStyle = computed<StyleValue>(() => {
 		:data-tweaking-mode="tweakMode"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
-		:disabled="!!disabled"
 		v-bind="$attrs"
 	>
 		<div class="bar" :style="barStyle" />
@@ -511,7 +510,7 @@ const barStyle = computed<StyleValue>(() => {
 			pattern="d*"
 			:value="display"
 			:invalid="isInvalid"
-			:disabled="disabled"
+			:disabled="disabled || undefined"
 			@input="onInput"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
