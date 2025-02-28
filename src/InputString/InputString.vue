@@ -73,7 +73,7 @@ function onBlur(e: Event) {
 			type="text"
 			:value="display"
 			:disabled="disabled"
-			:invalid="invalid"
+			:invalid="invalid || undefined"
 			@focus="onFocus"
 			@blur="onBlur"
 			@input.stop="onInput"
