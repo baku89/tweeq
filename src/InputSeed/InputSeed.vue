@@ -1,3 +1,37 @@
+<script lang="ts" setup>
+import {clamp, random} from 'lodash-es'
+import {ref} from 'vue'
+
+import {SvgIcon} from '../SvgIcon'
+
+interface Props {
+	min?: number
+	max?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	min: 0,
+	max: 1,
+})
+
+const emit = defineEmits<{
+	'update:modelValue': [value: number]
+}>()
+
+const iconRot = ref(0)
+const iconNum = ref(3)
+
+function shuffle() {
+	iconRot.value += 90
+	const v = random(props.min, props.max, true)
+
+	const t = (v - props.min) / (props.max - props.min)
+	iconNum.value = clamp(Math.floor(t * 6) + 1, 1, 6)
+
+	emit('update:modelValue', v)
+}
+</script>
+
 <template>
 	<button class="InputSeed" @click="shuffle">
 		<SvgIcon
@@ -42,46 +76,6 @@
 		</SvgIcon>
 	</button>
 </template>
-
-<script lang="ts">
-import {clamp, random} from 'lodash-es'
-import {defineComponent, ref} from 'vue'
-
-import {SvgIcon} from '../SvgIcon'
-
-export default defineComponent({
-	name: 'InputSeed',
-	components: {
-		SvgIcon,
-	},
-	props: {
-		min: {
-			type: Number,
-			default: 0,
-		},
-		max: {
-			type: Number,
-			default: 1,
-		},
-	},
-	setup(props, context) {
-		const iconRot = ref(0)
-		const iconNum = ref(3)
-
-		function shuffle() {
-			iconRot.value += 90
-			const v = random(props.min, props.max, true)
-
-			const t = (v - props.min) / (props.max - props.min)
-			iconNum.value = clamp(Math.floor(t * 6) + 1, 1, 6)
-
-			context.emit('update:modelValue', v)
-		}
-
-		return {shuffle, iconRot, iconNum}
-	},
-})
-</script>
 
 <style lang="stylus">
 @import '../common.styl'

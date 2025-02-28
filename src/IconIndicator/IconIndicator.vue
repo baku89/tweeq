@@ -7,13 +7,17 @@ interface Props {
 }
 
 defineProps<Props>()
+
+defineEmits<{
+	'update:active': [boolean]
+}>()
 </script>
 
 <template>
 	<div
 		class="IconIndicator"
 		:class="{active: active, inactive: active === false}"
-		@click="$emit('update:modelValue', !active)"
+		@click="$emit('update:active', !active)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 	</div>

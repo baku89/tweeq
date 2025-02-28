@@ -63,7 +63,7 @@ useBndr($root, el => {
 })
 </script>
 <template>
-	<div class="TqRuler" ref="$root" :style="rootStyle">
+	<div ref="$root" class="TqRuler" :style="rootStyle">
 		<div class="content">
 			<slot />
 		</div>

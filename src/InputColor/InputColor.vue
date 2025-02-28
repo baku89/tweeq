@@ -200,7 +200,7 @@ const sliderHueUniforms = computed(() => {
 			/>
 		</div>
 	</Popover>
-	<div v-if="tweaking" popover="manual" ref="$overlay" class="overlay">
+	<div v-if="tweaking" ref="$overlay" popover="manual" class="overlay">
 		<GlslCanvas
 			class="pad"
 			:class="{show: tweakMode === 'pad'}"

@@ -9,11 +9,11 @@ interface CompleteOption {
 	label: string
 }
 
-interface Props extends LabelizerProps<T> {
+type Props = LabelizerProps<T> & {
 	modelValue: T
 }
 
-const props = withDefaults(defineProps<Props>(), {})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
 	'update:modelValue': [T]

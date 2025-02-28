@@ -14,13 +14,7 @@ interface Props {
 	}
 }
 
-const props = withDefaults(defineProps<Props>(), {
-	name: undefined,
-	options: () => ({
-		storageKey: undefined,
-		defaultTabHash: undefined,
-	}),
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
 	changed: [tab: Tab]
@@ -98,7 +92,7 @@ onMounted(() => {
 		return
 	}
 
-	if (props.options.defaultTabId && findTab(props.options.defaultTabId)) {
+	if (props.options?.defaultTabId && findTab(props.options.defaultTabId)) {
 		selectTab(props.options.defaultTabId)
 		return
 	}

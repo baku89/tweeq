@@ -177,7 +177,6 @@ export const useActionsStore = defineStore('actions', () => {
 		}
 	}
 
-	 
 	const onBeforePerformHooks = new Set<(action: ActionItem) => void>()
 
 	function onBeforePerform(hook: (action: ActionItem) => void) {
