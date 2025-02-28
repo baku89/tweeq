@@ -80,7 +80,6 @@ function onInput(e: InputEvent) {
 	stroke-width 3px
 	stroke-linecap round
 	stroke-linejoin round
-	hover-transition(stroke-dashoffset)
 
 	input:checked + &
 		stroke-dashoffset 0

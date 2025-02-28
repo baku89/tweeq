@@ -427,6 +427,10 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 //------------------------------------------------------------------------------
 // Multi Select
 
+watch(focusing, focusing => {
+	console.log('focusing', focusing)
+})
+
 //------------------------------------------------------------------------------
 // Styles
 
@@ -536,25 +540,34 @@ const barStyle = computed<StyleValue>(() => {
 .InputNumber
 	input-style()
 
+	$arrow-size = 4px
+
 	&:before
 		content ''
 		position absolute
 		display block
-		height 100%
-		width 8px
-		top 0
+		width 0
+		height 0
+		border-top $arrow-size solid transparent
+		border-bottom $arrow-size solid transparent
+		top 50%
+		margin-top -1 * $arrow-size
 		pointer-events none
 		z-index 100
-		opacity .5
+		opacity 0
 
 	&.below-range:before
 		left 0
-		background linear-gradient(to right, var(--tq-color-accent), transparent)
+		border-right $arrow-size solid var(--tq-color-accent)
+		opacity .3
 
 	&.above-range:before
 		right 0
-		background linear-gradient(to left, var(--tq-color-accent), transparent)
+		border-left $arrow-size solid var(--tq-color-accent)
+		opacity .3
 
+	&.tweaking.below-range:before, &.tweaking.above-range:before
+		opacity 1
 
 .input
 	text-align center
@@ -584,6 +597,12 @@ const barStyle = computed<StyleValue>(() => {
 	margin-left -2px
 	hover-transition(opacity)
 
+	.below-range &, .above-range &
+		pointer-events none
+
+	.tweaking &, &:hover
+		background var(--tq-color-accent)
+
 	&:before
 		content ''
 		position absolute
@@ -592,8 +611,6 @@ const barStyle = computed<StyleValue>(() => {
 		left calc(var(--tq-input-height) / -2)
 		right @left
 
-	.tweaking &, &:hover
-		background var(--tq-color-accent)
 
 .icon
 	width calc(var(--tq-input-height) - 4px)
