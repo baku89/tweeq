@@ -8,7 +8,8 @@
 		"build:vite": "vite build",
 		"build:stylus": "stylus src/global.styl src/common.styl src/setup.styl --out lib",
 		"build:doc": "vuepress build docs",
-		"build": "rm -rf lib && npm run build:vite && npm run build:stylus"
+		"build": "rm -rf lib && npm run build:vite && npm run build:stylus",
+		"lint": "eslint src"
 	},
 	"files": [
 		"lib"
@@ -49,27 +50,26 @@
 		"regl": "^2.1.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.21.0",
 		"@types/lodash-es": "^4.17.12",
-		"@typescript-eslint/eslint-plugin": "^8.5.0",
+		"@typescript-eslint/parser": "^8.25.0",
 		"@vitejs/plugin-vue": "^5.1.3",
-		"@vue/eslint-config-prettier": "^9.0.0",
-		"@vue/eslint-config-typescript": "^13.0.0",
+		"@vue/eslint-config-prettier": "^10.2.0",
 		"@vuepress/bundler-vite": "2.0.0-rc.7",
 		"@vuepress/plugin-palette": "2.0.0-rc.14",
 		"@vuepress/theme-default": "2.0.0-rc.1",
-		"eslint": "^9.10.0",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-plugin-prettier-vue": "^5.0.0",
+		"eslint": "^9.21.0",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
-		"eslint-plugin-unused-imports": "^4.1.3",
-		"eslint-plugin-vue": "^9.17.0",
+		"eslint-plugin-unused-imports": "^4.1.4",
+		"eslint-plugin-vue": "^9.32.0",
 		"prettier": "^3.2.5",
 		"stylus": "^0.63.0",
 		"typescript": "^5.5.3",
+		"typescript-eslint": "^8.25.0",
 		"vite": "^5.4.3",
 		"vite-plugin-dts": "^4.2.1",
-		"vite-plugin-eslint": "^1.8.1",
 		"vite-plugin-glsl": "1.3.0",
+		"vue-eslint-parser": "^9.4.3",
 		"vuepress": "2.0.0-rc.1"
 	}
 }
