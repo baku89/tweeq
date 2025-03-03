@@ -64,24 +64,24 @@ use-input-position()
 		border-radius 0
 
 	&[horizontal-position=left]
-		border-right 1px solid var(--tq-color-background)
+		margin-right 1px
 		border-top-right-radius 0
 		border-bottom-right-radius 0
 
 	&[horizontal-position=middle]
-		border-right 1px solid var(--tq-color-background)
+		margin-right 1px
 
 	&[horizontal-position=right]
 		border-top-left-radius 0
 		border-bottom-left-radius 0
 
 	&[vertical-position=top]
-		border-bottom 1px solid var(--tq-color-background)
+		margin-bottom 1px
 		border-bottom-right-radius 0
 		border-bottom-left-radius 0
 
 	&[vertical-position=middle]
-		border-bottom 1px solid var(--tq-color-background)
+		margin-bottom 1px
 
 	&[vertical-position=bottom]
 		border-top-left-radius 0
@@ -97,6 +97,7 @@ input-style()
 	font-size var(--tq-rem)
 	hover-transition(background, box-shadow)
 	overflow hidden
+	container-type inline-size
 
 	&:hover
 		background var(--tq-color-input-hover)
@@ -115,6 +116,11 @@ input-style()
 		width 100%
 		height 100%
 		user-select none
+
+		@container (max-width: 80px)
+			&
+				padding-left 0
+				padding-right 0
 
 		&::selection
 			background var(--tq-color-selection)
