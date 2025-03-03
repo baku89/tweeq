@@ -7,10 +7,12 @@ interface MultiSelectSource {
 	focusing: Ref<boolean>
 	getValue: () => number
 	setValue: (value: number) => void
+	conform: () => void
 }
 
 interface MultiSelectStore extends MultiSelectSource {
 	subFocusing: Ref<boolean>
+	initialValue?: number
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
@@ -50,21 +52,21 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		})
 	}
 
-	function register({el, focusing, getValue, setValue}: MultiSelectSource) {
+	function register(source: MultiSelectSource) {
 		const id = Symbol()
 		const subFocusing = ref(false)
 
-		store.set(id, {el, focusing, subFocusing, getValue, setValue})
+		store.set(id, {...source, subFocusing})
 
-		watch(focusing, () => {
-			if (!focusing.value && command.value) {
+		watch(source.focusing, () => {
+			if (!source.focusing.value && command.value) {
 				subFocusing.value = true
 			}
 
-			if (focusing.value && command.value) {
+			if (source.focusing.value && command.value) {
 				popupVisible.value = true
 				subFocusing.value = true
-				focusedElement.value = el.value
+				focusedElement.value = source.el.value
 			}
 		})
 
@@ -75,10 +77,27 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		return {subFocusing, unregister}
 	}
 
-	function update(updator: (value: number) => number) {
-		for (const {focusing, subFocusing, setValue, getValue} of store.values()) {
-			if (focusing.value || subFocusing.value) {
-				setValue(updator(getValue()))
+	function captureValues() {
+		for (const record of store.values()) {
+			if (record.focusing.value || record.subFocusing.value) {
+				const initialValue = record.getValue()
+				record.initialValue = initialValue
+			}
+		}
+	}
+
+	function updateValues(updator: (value: number) => number) {
+		for (const r of store.values()) {
+			if (r.focusing.value || r.subFocusing.value) {
+				r.setValue(updator(r.initialValue ?? r.getValue()))
+			}
+		}
+	}
+
+	function conformValues() {
+		for (const r of store.values()) {
+			if (r.focusing.value || r.subFocusing.value) {
+				r.conform()
 			}
 		}
 	}
@@ -87,7 +106,9 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		register,
 		popupVisible: readonly(popupVisible),
 		focusedElement: readonly(focusedElement),
-		update,
+		captureValues,
+		updateValues,
+		conformValues,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
 		},
