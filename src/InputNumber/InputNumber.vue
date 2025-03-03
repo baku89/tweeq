@@ -308,9 +308,7 @@ function onIncrementByKey(delta: number) {
 	}
 }
 
-function onPressEnter(e: Event) {
-	const el = e.target as HTMLInputElement
-
+function onPressEnter() {
 	let newValue = local.value
 	if (props.step) {
 		newValue = scalar.quantize(newValue, props.step)
@@ -318,9 +316,6 @@ function onPressEnter(e: Event) {
 	newValue = scalar.clamp(newValue, validMin.value, validMax.value)
 
 	emit('update:modelValue', newValue)
-
-	el.blur()
-	nextTick(() => el.focus())
 }
 
 //------------------------------------------------------------------------------
