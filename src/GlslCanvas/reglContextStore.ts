@@ -5,14 +5,14 @@ import {defineStore} from 'pinia'
 import Regl, {type DrawConfig} from 'regl'
 import {type Ref} from 'vue'
 
-const drawQueue = new PQueue({concurrency: 1})
-
 type Uniforms = Record<
 	string,
 	number | number[] | readonly [number, number, number, number]
 >
 
 export const useReglContextStore = defineStore('tweeq.reglContext', () => {
+	const drawQueue = new PQueue({concurrency: 1})
+
 	const REGL_QUAD_DEFAULT: DrawConfig = {
 		vert: `
 		precision mediump float;
@@ -45,11 +45,21 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 	function createDraw(img: Ref<HTMLImageElement | null>) {
 		let latestWorkId = uniqueId()
 
-		function waitTillImgMounted() {
-			return new Promise<HTMLImageElement>(resolve => {
-				whenever(img, resolve, {immediate: true, once: true, flush: 'sync'})
-			})
+		const {promise: waitTillImgMounted, resolve} = (
+			Promise as any
+		).withResolvers() as {
+			promise: Promise<HTMLImageElement>
+			resolve: (value: HTMLImageElement) => void
 		}
+
+		const pause = whenever(
+			img,
+			img => {
+				pause()
+				resolve(img)
+			},
+			{immediate: true, flush: 'sync'}
+		)
 
 		return function (frag: string, uniforms: Uniforms) {
 			const workId = uniqueId()
@@ -58,7 +68,7 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 			drawQueue.add(async () => {
 				if (latestWorkId !== workId) return
 
-				const img = await waitTillImgMounted()
+				const img = await waitTillImgMounted
 
 				canvas.width = img.clientWidth
 				canvas.height = img.clientHeight

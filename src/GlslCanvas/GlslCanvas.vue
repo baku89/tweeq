@@ -33,11 +33,11 @@ watch(
 </script>
 
 <template>
-	<img ref="$img" class="TqGlslCanvas" />
+	<img ref="$img" class="GlslCanvas" />
 </template>
 
 <style lang="stylus" scoped>
 
-.TqGlslCanvas
+.GlslCanvas
 	pointer-events none
 </style>

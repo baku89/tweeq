@@ -5,20 +5,18 @@ import {ref, shallowRef} from 'vue'
 import {Scheme} from '../../src'
 
 interface Props {
-	initialValue?: number
+	initialValue?: number | string
 	scheme: Scheme<T>
 	options: T
 }
 
-const props = withDefaults(defineProps<Props>(), {
-	initialValue: 0,
-})
+const props = defineProps<Props>()
 
 const localOptions = shallowRef<T>(cloneDeep(props.options))
 
 const modelValue = ref(props.initialValue)
 
-function update(value: number) {
+function update(value: any) {
 	modelValue.value = value
 }
 </script>

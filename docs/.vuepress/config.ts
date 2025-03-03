@@ -41,6 +41,10 @@ export default defineUserConfig({
 				text: 'Components',
 				link: '/components',
 			},
+			{
+				text: 'Example',
+				link: '/example',
+			},
 		],
 		logo: './logo.svg',
 		repo: 'baku89/tweeq',

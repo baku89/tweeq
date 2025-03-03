@@ -47,10 +47,11 @@
 		"monaco-themes": "^0.4.4",
 		"p-queue": "^8.0.1",
 		"pinia": "^2.2.2",
-		"regl": "^2.1.0"
+		"regl": "^2.1.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.21.0",
+		"@floating-ui/vue": "^1.1.6",
 		"@types/lodash-es": "^4.17.12",
 		"@typescript-eslint/parser": "^8.25.0",
 		"@vitejs/plugin-vue": "^5.1.3",

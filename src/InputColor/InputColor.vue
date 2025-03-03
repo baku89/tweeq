@@ -120,12 +120,6 @@ watchEffect(() => {
 })
 
 // Overlay
-const $overlay = shallowRef<HTMLElement | null>(null)
-
-watchEffect(() => {
-	$overlay.value?.togglePopover(tweaking.value)
-})
-
 const tweakPreviewStyle = computed(() => {
 	let color = chroma.valid(props.modelValue)
 		? chroma(props.modelValue)
@@ -200,7 +194,7 @@ const sliderHueUniforms = computed(() => {
 			/>
 		</div>
 	</Popover>
-	<div v-if="tweaking" ref="$overlay" popover="manual" class="overlay">
+	<div v-if="tweaking || true" class="overlay">
 		<GlslCanvas
 			class="pad"
 			:class="{show: tweakMode === 'pad'}"
@@ -270,6 +264,8 @@ const sliderHueUniforms = computed(() => {
 
 .overlay
 	position fixed
+	top 0
+	left 0
 	overflow visible
 	pointer-events none
 
