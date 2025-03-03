@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import {capital} from 'case'
-import {computed} from 'vue'
+import {computed, shallowRef, toRaw, watchEffect} from 'vue'
 
 import {InputCheckbox} from '../InputCheckbox'
 import {InputCode} from '../InputCode'
@@ -12,6 +12,12 @@ import type {InputComplexProps, Scheme} from './types'
 
 const props = defineProps<InputComplexProps<T>>()
 
+const currentValue = shallowRef<T>(toRaw(props.modelValue))
+
+watchEffect(() => {
+	currentValue.value = toRaw(props.modelValue)
+})
+
 const emit = defineEmits<{
 	'update:modelValue': [T]
 }>()
@@ -21,12 +27,12 @@ const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
 })
 
 function updateModelValue(name: keyof T, value: any) {
-	const modelValue: T = {...props.modelValue, [name]: value}
-	emit('update:modelValue', modelValue)
+	currentValue.value = {...currentValue.value, [name]: value}
+	emit('update:modelValue', currentValue.value)
 }
 
 function getModelValue<K extends keyof T>(name: K) {
-	return props.modelValue[name] as any
+	return currentValue.value[name] as any
 }
 </script>
 

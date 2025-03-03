@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import {cloneDeep} from 'lodash-es'
-import {ref} from 'vue'
+import {ref, shallowRef} from 'vue'
 
 import {Scheme} from '../../src'
 
@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 	initialValue: 0,
 })
 
-const localOptions = ref(cloneDeep(props.options))
+const localOptions = shallowRef<T>(cloneDeep(props.options))
 
 const modelValue = ref(props.initialValue)
 
@@ -30,7 +30,7 @@ function update(value: number) {
 		</div>
 
 		<div class="options">
-			<InputComplex :scheme="scheme" v-model="localOptions" />
+			<InputComplex v-model="localOptions" :scheme="scheme" />
 		</div>
 	</div>
 </template>

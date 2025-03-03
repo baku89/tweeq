@@ -101,7 +101,7 @@ input-style()
 	&:hover
 		background var(--tq-color-input-hover)
 
-	&:has(:focus-visible), &.tweaking
+	&:has(:focus-visible), &:has(input.focus), &.tweaking
 		z-index 1
 		box-shadow 0 0 0 1px var(--tq-color-accent)
 

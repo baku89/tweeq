@@ -8,8 +8,17 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
+import {
+	computed,
+	nextTick,
+	onBeforeUnmount,
+	ref,
+	shallowRef,
+	type StyleValue,
+	watch,
+} from 'vue'
 
+import {useMultiSelectStore} from '../stores/multiSelect'
 import {useDrag} from '../useDrag'
 import {
 	getNumberPresition,
@@ -370,6 +379,7 @@ useEventListener('touchstart', (e: TouchEvent) => {
 //------------------------------------------------------------------------------
 // Watchers
 
+// When the model value is changed from outside, update the local value
 watch(
 	() => [props.modelValue, focusing.value, tweaking.value] as const,
 	([value, focusing, tweaking]) => {
@@ -379,6 +389,8 @@ watch(
 	}
 )
 
+// When the model value is changed from outside while the input is not focused,
+// update the display value properly
 watch(
 	() =>
 		[
@@ -422,8 +434,17 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 //------------------------------------------------------------------------------
 // Multi Select
 
-watch(focusing, focusing => {
-	console.log('focusing', focusing)
+const multiSelect = useMultiSelectStore()
+
+const {subFocusing, unregister} = multiSelect.register({
+	el: $root,
+	focusing,
+	getValue: () => props.modelValue,
+	setValue: value => emit('update:modelValue', value),
+})
+
+onBeforeUnmount(() => {
+	unregister()
 })
 
 //------------------------------------------------------------------------------
@@ -507,6 +528,7 @@ const barStyle = computed<StyleValue>(() => {
 		<input
 			ref="$input"
 			class="input"
+			:class="{focus: subFocusing}"
 			type="text"
 			inputmode="numeric"
 			pattern="d*"
@@ -572,7 +594,7 @@ const barStyle = computed<StyleValue>(() => {
 	padding-left 0
 	padding-right 0
 
-	&:focus
+	&:focus, &.focus
 		pointer-events auto
 
 .bar, .tip
@@ -588,15 +610,14 @@ const barStyle = computed<StyleValue>(() => {
 		background var(--tq-color-input-tinted-accent-hover)
 
 .tip
-	width 4px
-	margin-left -2px
-	hover-transition(opacity)
+	width 1px
+	background var(--tq-color-accent)
 
 	.below-range &, .above-range &
 		pointer-events none
 
 	.tweaking &, &:hover
-		background var(--tq-color-accent)
+		transform scaleX(3)
 
 	&:before
 		content ''
