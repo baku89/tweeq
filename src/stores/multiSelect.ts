@@ -20,7 +20,8 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	let popupEl: HTMLElement | null = null
 
-	const store = new Map<symbol, MultiSelectStore>()
+	const selectStores = new Map<symbol, MultiSelectStore>()
+	const count = ref(0)
 
 	const popupVisible = ref(false)
 	const focusedElement = shallowRef<HTMLElement | null>(null)
@@ -29,7 +30,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		// Ignore non-primary pointer
 		if (e.button !== 0) return
 
-		const clickedOutside = ![...store.values()].some(({el}) => {
+		const clickedOutside = ![...selectStores.values()].some(({el}) => {
 			if (!el.value) return false
 			return e.target === el.value || el.value.contains(e.target as Node)
 		})
@@ -47,7 +48,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function defocusAll() {
 		popupVisible.value = false
 		focusedElement.value = null
-		store.forEach(({subFocusing}) => {
+		selectStores.forEach(({subFocusing}) => {
 			subFocusing.value = false
 		})
 	}
@@ -56,7 +57,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		const id = Symbol()
 		const subFocusing = ref(false)
 
-		store.set(id, {...source, subFocusing})
+		selectStores.set(id, {...source, subFocusing})
 
 		watch(source.focusing, () => {
 			if (!source.focusing.value && command.value) {
@@ -68,17 +69,19 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 				subFocusing.value = true
 				focusedElement.value = source.el.value
 			}
+
+			updateFocusCount()
 		})
 
 		function unregister() {
-			store.delete(id)
+			selectStores.delete(id)
 		}
 
 		return {subFocusing, unregister}
 	}
 
 	function captureValues() {
-		for (const record of store.values()) {
+		for (const record of selectStores.values()) {
 			if (record.focusing.value || record.subFocusing.value) {
 				const initialValue = record.getValue()
 				record.initialValue = initialValue
@@ -86,16 +89,35 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		}
 	}
 
-	function updateValues(updator: (value: number) => number) {
-		for (const r of store.values()) {
+	function updateFocusCount() {
+		count.value = [...selectStores.values()].filter(
+			({focusing, subFocusing}) => focusing.value || subFocusing.value
+		).length
+	}
+
+	function updateValues(updator: (values: number[]) => number[]) {
+		const values = []
+		const ids = []
+		for (const [id, r] of selectStores.entries()) {
 			if (r.focusing.value || r.subFocusing.value) {
-				r.setValue(updator(r.initialValue ?? r.getValue()))
+				ids.push(id)
+				values.push(r.initialValue ?? r.getValue())
+			}
+		}
+
+		const updatedValues = updator(values)
+		for (let i = 0; i < ids.length; i++) {
+			const id = ids[i]
+			const value = updatedValues[i]
+			const r = selectStores.get(id)
+			if (r) {
+				r.setValue(value)
 			}
 		}
 	}
 
 	function conformValues() {
-		for (const r of store.values()) {
+		for (const r of selectStores.values()) {
 			if (r.focusing.value || r.subFocusing.value) {
 				r.conform()
 			}
@@ -109,6 +131,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		captureValues,
 		updateValues,
 		conformValues,
+		focusCount: readonly(count),
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
 		},

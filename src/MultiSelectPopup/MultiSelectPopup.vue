@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {useFloating} from '@floating-ui/vue'
+import {autoUpdate, useFloating} from '@floating-ui/vue'
 import {onMounted, shallowRef, toRef} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
-import {useDrag} from '../useDrag'
+import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
+import MultiSelectSwap from './MultiSelectSwap.vue'
 
 const multiSelect = useMultiSelectStore()
 
@@ -14,18 +15,17 @@ onMounted(() => {
 	multiSelect.setPopupEl($root.value)
 })
 
-useDrag($root, {
-	lockPointer: true,
-	onDrag({delta}) {
-		multiSelect.update(x => x + delta[0] / 10)
-	},
-})
-
 const {floatingStyles} = useFloating(
 	toRef(multiSelect, 'focusedElement'),
 	$root,
-	{placement: 'bottom'}
+	{placement: 'bottom', whileElementsMounted: autoUpdate}
 )
+
+const adder = (px: number) => (value: number) => value + px / 100
+const multiplier = (px: number) => {
+	const scale = Math.max(0, px / 100 + 1)
+	return (value: number) => value * scale
+}
 </script>
 
 <template>
@@ -35,7 +35,9 @@ const {floatingStyles} = useFloating(
 		class="MultiSelectPopup"
 		:style="floatingStyles"
 	>
-		<div class="" />
+		<MultiSelectHorizontalSlider :updator="adder" icon="material-symbols:add" />
+		<MultiSelectHorizontalSlider :updator="multiplier" icon="mdi:multiply" />
+		<MultiSelectSwap v-if="multiSelect.focusCount === 2" />
 	</div>
 </template>
 
@@ -47,12 +49,13 @@ const {floatingStyles} = useFloating(
 	popup-style()
 	top 0
 	left 0
-	width 100px
-	height var(--tq-input-height)
 	z-index 1000
 	visibility hidden
-
-
+	display flex
+	padding 4px
+	border-color var(--tq-color-accent)
+	border-radius 0 0 var(--tq-input-border-radius) var(--tq-input-border-radius)
+	box-shadow none
 
 	&.visible
 		visibility visible

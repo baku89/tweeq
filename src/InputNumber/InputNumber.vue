@@ -249,15 +249,16 @@ const {dragging: tweaking} = useDrag($root, {
 //------------------------------------------------------------------------------
 // Emit update:modelValue when the local value is changed
 
-const validatedLocal = computed(() => {
-	let value = local.value
+function validate(value: number) {
 	if (props.step) {
 		value = scalar.quantize(value, props.step)
 	}
 	value = scalar.clamp(value, validMin.value, validMax.value)
 
 	return value
-})
+}
+
+const validatedLocal = computed(() => validate(local.value))
 
 const isInvalid = computed(() => {
 	if (props.invalid) return true
@@ -265,7 +266,8 @@ const isInvalid = computed(() => {
 	if (tweaking.value) return undefined
 
 	// TODO: This is not accurate
-	return Math.abs(validatedLocal.value - local.value) > 10e-8 || undefined
+	console.log(validatedLocal.value, local.value)
+	return !scalar.approx(validatedLocal.value, local.value) || undefined
 })
 
 watch(validatedLocal, local => {
@@ -273,6 +275,13 @@ watch(validatedLocal, local => {
 		emit('update:modelValue', local)
 	}
 })
+
+function conform() {
+	local.value = validatedLocal.value
+	display.value = toFixed(validatedLocal.value, precision.value)
+
+	emit('update:modelValue', validatedLocal.value)
+}
 
 //------------------------------------------------------------------------------
 // Input Events
@@ -315,16 +324,6 @@ function onIncrementByKey(delta: number) {
 		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
 		display.value = toFixed(local.value, prec)
 	}
-}
-
-function onPressEnter() {
-	let newValue = local.value
-	if (props.step) {
-		newValue = scalar.quantize(newValue, props.step)
-	}
-	newValue = scalar.clamp(newValue, validMin.value, validMax.value)
-
-	emit('update:modelValue', newValue)
 }
 
 //------------------------------------------------------------------------------
@@ -440,7 +439,10 @@ const {subFocusing, unregister} = multiSelect.register({
 	el: $root,
 	focusing,
 	getValue: () => props.modelValue,
-	setValue: value => emit('update:modelValue', value),
+	setValue(value) {
+		local.value = validate(value)
+	},
+	conform,
 })
 
 onBeforeUnmount(() => {
@@ -538,7 +540,7 @@ const barStyle = computed<StyleValue>(() => {
 			@input="onInput"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
-			@keydown.enter.prevent="onPressEnter"
+			@keydown.enter.prevent="conform"
 		/>
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
