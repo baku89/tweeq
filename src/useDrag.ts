@@ -17,6 +17,8 @@ interface DragState {
 	right: number
 	bottom: number
 	left: number
+	width: number
+	height: number
 	dragging: boolean
 	pointerLocked: boolean
 }
@@ -86,6 +88,8 @@ export function useDrag(
 		right: 0,
 		bottom: 0,
 		left: 0,
+		width: 0,
+		height: 0,
 		dragging: false,
 		pointerLocked: false,
 	})
@@ -97,12 +101,19 @@ export function useDrag(
 
 	const {lock, unlock} = usePointerLock(target)
 
-	watchEffect(() => {
-		state.top = unref(bound.top)
-		state.left = unref(bound.left)
-		state.bottom = unref(bound.bottom)
-		state.right = unref(bound.right)
-	})
+	watchEffect(
+		() => {
+			state.top = unref(bound.top)
+			state.left = unref(bound.left)
+			state.bottom = unref(bound.bottom)
+			state.right = unref(bound.right)
+			state.width = unref(bound.width)
+			state.height = unref(bound.height)
+			state.width = unref(bound.width)
+			state.height = unref(bound.height)
+		},
+		{flush: 'sync'}
+	)
 
 	watchEffect(() => {
 		state.origin = vec2.lerp(
@@ -149,6 +160,7 @@ export function useDrag(
 
 		// Initialize pointer position
 		state.xy = state.previous = state.initial = [event.clientX, event.clientY]
+		bound.update()
 
 		// Start drag immediately if disableClick is true or dragDelaySeconds is 0
 		if (disableClick || dragDelaySeconds <= 0) {
@@ -171,7 +183,9 @@ export function useDrag(
 		} else {
 			state.xy = [event.clientX, event.clientY]
 		}
+
 		state.delta = vec2.sub(state.xy, state.previous)
+		bound.update()
 
 		if (vec2.squaredLength(state.delta) === 0) return
 

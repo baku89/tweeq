@@ -73,5 +73,6 @@ export interface Theme {
 	panePadding: CSSNumber
 	scrollbarWidth: CSSNumber
 
-	transitionDuration: string
+	hoverTransitionDuration: string
+	activeTransitionDuration: string
 }

@@ -148,7 +148,8 @@ export const useThemeStore = defineStore('theme', () => {
 			panePadding: 12,
 			scrollbarWidth: 6,
 
-			transitionDuration: '0.15s',
+			hoverTransitionDuration: '0.15s',
+			activeTransitionDuration: '48ms',
 		}
 	})
 

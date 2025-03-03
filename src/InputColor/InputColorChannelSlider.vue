@@ -21,10 +21,31 @@ const emit = defineEmits<{
 
 const $root = shallowRef<null | HTMLElement>(null)
 
-const {dragging: sliderTweaking} = useDrag($root, {
+let initialChannel: number
+let isRelative = false
+
+const {
+	dragging: sliderTweaking,
+	left,
+	right,
+	top,
+	bottom,
+	xy,
+} = useDrag($root, {
 	disableClick: true,
-	onDrag({xy: [x], right, left}) {
-		let ch = scalar.invlerp(left, right, x)
+	onDragStart(_, event) {
+		isRelative = event.target !== $root.value
+		initialChannel = props.channels[props.axis]
+	},
+	onDrag({xy: [x], initial: [ix], right, left, width}) {
+		let ch: number
+
+		if (isRelative) {
+			const deltaCh = (x - ix) / width
+			ch = initialChannel + deltaCh
+		} else {
+			ch = scalar.invlerp(left, right, x)
+		}
 
 		if (props.axis === 'h') {
 			ch = unsignedMod(ch, 1)
@@ -34,6 +55,16 @@ const {dragging: sliderTweaking} = useDrag($root, {
 
 		emit('updateChannels', {[props.axis]: ch})
 	},
+})
+
+const tweakingInside = computed(() => {
+	return (
+		sliderTweaking.value &&
+		left.value <= xy.value[0] &&
+		right.value >= xy.value[0] &&
+		top.value <= xy.value[1] &&
+		bottom.value >= xy.value[1]
+	)
 })
 
 const uniforms = computed(() => {
@@ -54,13 +85,16 @@ const circleStyle = computed(() => {
 	return {
 		left: `${t * 100}%`,
 		background,
-		cursor: sliderTweaking.value ? 'none' : undefined,
 	}
 })
 </script>
 
 <template>
-	<div ref="$root" class="InputColorChannelSlider">
+	<div
+		ref="$root"
+		class="InputColorChannelSlider"
+		:style="{cursor: tweakingInside ? 'none' : undefined}"
+	>
 		<GlslCanvas
 			class="canvas"
 			:fragmentString="SliderFragmentString"

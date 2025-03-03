@@ -21,10 +21,34 @@ const emit = defineEmits<{
 
 const $root = shallowRef<null | HTMLElement>(null)
 
-const {dragging: sliderTweaking} = useDrag($root, {
+let initialChannels: vec2
+let isRelative = false
+
+const {
+	dragging: sliderTweaking,
+	left,
+	top,
+	right,
+	bottom,
+	xy,
+} = useDrag($root, {
 	disableClick: true,
-	onDrag({xy, right, left, bottom, top}) {
-		const chs = [...vec2.invlerp([left, bottom], [right, top], xy)]
+	onDragStart(_, event) {
+		isRelative = event.target !== $root.value
+		initialChannels = [
+			props.channels[props.axes[0]],
+			props.channels[props.axes[1]],
+		]
+	},
+	onDrag({xy, initial, right, left, bottom, top, width, height}) {
+		let chs: vec2.Mutable
+
+		if (isRelative) {
+			const deltaChs = vec2.div(vec2.sub(xy, initial), [width, -height])
+			chs = [...vec2.add(initialChannels, deltaChs)]
+		} else {
+			chs = [...vec2.invlerp([left, bottom], [right, top], xy)]
+		}
 
 		for (let i = 0; i < 2; i++) {
 			if (props.axes[i] === 'h') {
@@ -41,6 +65,16 @@ const {dragging: sliderTweaking} = useDrag($root, {
 
 		emit('updateChannels', newChannel)
 	},
+})
+
+const tweakingInside = computed(() => {
+	return (
+		sliderTweaking.value &&
+		left.value <= xy.value[0] &&
+		right.value >= xy.value[0] &&
+		top.value <= xy.value[1] &&
+		bottom.value >= xy.value[1]
+	)
 })
 
 const uniforms = computed(() => {
@@ -62,19 +96,22 @@ const circleStyle = computed(() => {
 		left: `${x * 100}%`,
 		bottom: `${y * 100}%`,
 		background,
-		cursor: sliderTweaking.value ? 'none' : undefined,
 	}
 })
 </script>
 
 <template>
-	<div ref="$root" class="InputColorChannelPad">
+	<div
+		ref="$root"
+		class="InputColorChannelPad"
+		:style="{cursor: tweakingInside ? 'none' : undefined}"
+	>
 		<GlslCanvas
 			class="canvas"
 			:fragmentString="FragmentString"
 			:uniforms="uniforms"
 		/>
-		<button
+		<div
 			class="circle"
 			:class="{tweaking: sliderTweaking}"
 			:style="circleStyle"

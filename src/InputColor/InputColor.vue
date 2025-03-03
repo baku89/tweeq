@@ -194,41 +194,43 @@ const sliderHueUniforms = computed(() => {
 			/>
 		</div>
 	</Popover>
-	<div v-if="tweaking || true" class="overlay">
-		<GlslCanvas
-			class="pad"
-			:class="{show: tweakMode === 'pad'}"
-			:fragmentString="PadFragmentString"
-			:uniforms="padUniforms"
-			:style="padStyle"
-		/>
-		<GlslCanvas
-			class="slider hue"
-			:class="{show: tweakMode === 'hue'}"
-			:fragmentString="SliderFragmentString"
-			:uniforms="sliderHueUniforms"
-			:style="tweakUIOffset"
-		/>
-		<div
-			class="slider alpha"
-			:class="{show: tweakMode === 'alpha'}"
-			:style="sliderAlphaStyle"
-		>
-			<div
-				class="alpha-gradient"
-				:style="{
-					'--model-value': modelValue,
-				}"
+	<Transition>
+		<div v-if="tweaking" class="overlay">
+			<GlslCanvas
+				class="pad"
+				:class="{show: tweakMode === 'pad'}"
+				:fragmentString="PadFragmentString"
+				:uniforms="padUniforms"
+				:style="padStyle"
 			/>
+			<GlslCanvas
+				class="slider hue"
+				:class="{show: tweakMode === 'hue'}"
+				:fragmentString="SliderFragmentString"
+				:uniforms="sliderHueUniforms"
+				:style="tweakUIOffset"
+			/>
+			<div
+				class="slider alpha"
+				:class="{show: tweakMode === 'alpha'}"
+				:style="sliderAlphaStyle"
+			>
+				<div
+					class="alpha-gradient"
+					:style="{
+						'--model-value': modelValue,
+					}"
+				/>
+			</div>
+			<button
+				class="tweak-preview"
+				:style="tweakUIOffset"
+				:class="{tweaking, checkerboard: tweakMode == 'alpha'}"
+			>
+				<div class="preview" :style="tweakPreviewStyle" />
+			</button>
 		</div>
-		<button
-			class="tweak-preview"
-			:style="tweakUIOffset"
-			:class="{tweaking, checkerboard: tweakMode == 'alpha'}"
-		>
-			<div class="preview" :style="tweakPreviewStyle" />
-		</button>
-	</div>
+	</Transition>
 </template>
 
 <style lang="stylus" scoped>
@@ -266,6 +268,7 @@ const sliderHueUniforms = computed(() => {
 	position fixed
 	top 0
 	left 0
+	z-index 200
 	overflow visible
 	pointer-events none
 
@@ -303,18 +306,20 @@ const sliderHueUniforms = computed(() => {
 	background linear-gradient(to right, transparent, var(--model-value))
 
 .tweak-preview
-	z-index 200
+	z-index 201
 	position fixed
-	border-radius var(--tq-input-border-radius)
 	overflow hidden
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	margin calc(var(--tq-input-height) / -2) 0 0 calc(var(--tq-input-height) / -2)
 	pointer-events none
-	opacity 0
-	transition transform .05s ease, border-radius .05s ease, opacity 0s ease .05s
+	transition all 2s ease
+
+	.v-enter-from &
+		opacity 0
 
 	&.tweaking
+
 		transition transform .05s ease, border-radius .05s ease
 		opacity 1
 		transform scale(3)
