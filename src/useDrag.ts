@@ -1,6 +1,11 @@
-import {type MaybeRef, unrefElement} from '@vueuse/core'
+import {
+	type MaybeRef,
+	useElementBounding,
+	useEventListener,
+	usePointerLock,
+} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, type Ref, toRefs, unref, watch} from 'vue'
+import {reactive, type Ref, toRefs, unref, watchEffect} from 'vue'
 
 interface DragState {
 	xy: vec2
@@ -86,128 +91,121 @@ export function useDrag(
 	})
 
 	let dragDelayTimer: ReturnType<typeof setTimeout> | undefined
+	let pointerdown = false
 
-	function setup(el: HTMLElement) {
-		el.addEventListener('pointerdown', onPointerDown)
+	const bound = useElementBounding(target)
 
-		function updateBounds(event: PointerEvent) {
-			if (event.movementX !== undefined && event.movementY !== undefined) {
-				state.xy = vec2.add(state.xy, [event.movementX, event.movementY])
-			} else {
-				state.xy = [event.clientX, event.clientY]
-			}
+	const {lock, unlock} = usePointerLock(target)
 
-			// Update bounds for V1 compatibility
-			const rect = el.getBoundingClientRect()
-			state.top = rect.top
-			state.right = rect.right
-			state.bottom = rect.bottom
-			state.left = rect.left
-			state.origin = vec2.lerp(
-				[rect.left, rect.top],
-				[rect.right, rect.bottom],
-				0.5
-			)
+	watchEffect(() => {
+		state.top = unref(bound.top)
+		state.left = unref(bound.left)
+		state.bottom = unref(bound.bottom)
+		state.right = unref(bound.right)
+	})
+
+	watchEffect(() => {
+		state.origin = vec2.lerp(
+			[state.left, state.top],
+			[state.right, state.bottom],
+			0.5
+		)
+	})
+
+	useEventListener(target, 'pointerdown', onPointerDown)
+	useEventListener(target, 'pointermove', onPointerMove)
+	useEventListener(target, 'pointerup', onPointerUp)
+
+	function fireDragStart(event: PointerEvent) {
+		if (
+			unref(lockPointer) &&
+			target.value &&
+			'requestPointerLock' in target.value
+		) {
+			lock(event)
+			state.pointerLocked = true
 		}
 
-		function fireDragStart(event: PointerEvent) {
-			if (unref(lockPointer) && 'requestPointerLock' in el) {
-				el.requestPointerLock()
-				state.pointerLocked = true
-			}
+		state.dragging = true
+		state.initial = state.previous
+		onDragStart?.(state, event)
 
-			state.dragging = true
-			state.initial = state.previous
-			onDragStart?.(state, event)
-
-			// For V1 compatibility, call onDrag immediately if disableClick is true
-			if (disableClick) {
-				onDrag?.(state, event)
-			}
-		}
-
-		function onPointerDown(event: PointerEvent) {
-			if (unref(disabled)) return
-			if (event.button !== 0) return // Ignore non-left click
-			if (!event.isPrimary) return
-			if (!pointerType.includes(event.pointerType as PointerType)) return
-
-			// Initialize pointer position
-			state.xy = state.previous = state.initial = [event.clientX, event.clientY]
-			updateBounds(event)
-
-			// Start drag immediately if disableClick is true or dragDelaySeconds is 0
-			if (disableClick || dragDelaySeconds <= 0) {
-				fireDragStart(event)
-			} else {
-				dragDelayTimer = setTimeout(
-					() => fireDragStart(event),
-					dragDelaySeconds * 1000
-				)
-			}
-
-			el.setPointerCapture(event.pointerId)
-			window.addEventListener('pointermove', onPointerMove)
-			window.addEventListener('pointerup', onPointerUp)
-		}
-
-		function onPointerMove(event: PointerEvent) {
-			if (unref(disabled)) return
-			if (!event.isPrimary) return
-
-			updateBounds(event)
-			state.delta = vec2.sub(state.xy, state.previous)
-
-			if (vec2.squaredLength(state.delta) === 0) return
-
-			if (state.dragging) {
-				onDrag?.(state, event)
-			} else if (!disableClick) {
-				// Determine whether dragging has started
-				const d = vec2.dist(state.initial, state.xy)
-				const minDragDistance = event.pointerType === 'mouse' ? 3 : 7
-				if (d >= minDragDistance) {
-					clearTimeout(dragDelayTimer)
-					fireDragStart(event)
-				}
-			}
-
-			state.previous = vec2.clone(state.xy)
-		}
-
-		function onPointerUp(event: PointerEvent) {
-			if (unref(disabled)) return
-			if (!event.isPrimary) return
-
-			if (unref(lockPointer) && 'exitPointerLock' in document) {
-				document.exitPointerLock()
-			}
-			state.pointerLocked = false
-
-			if (state.dragging) {
-				onDragEnd?.(state, event)
-			} else {
-				onClick?.()
-			}
-
-			// Reset
-			clearTimeout(dragDelayTimer)
-			state.dragging = false
-			state.xy = state.initial = state.delta = vec2.zero
-			window.removeEventListener('pointermove', onPointerMove)
-			window.removeEventListener('pointerup', onPointerUp)
+		if (disableClick) {
+			onDrag?.(state, event)
 		}
 	}
 
-	// Hooks
-	watch(
-		target,
-		() => {
-			const el = unrefElement(target)
-			if (el) setup(el)
-		},
-		{immediate: true, flush: 'post'}
-	)
+	function onPointerDown(event: PointerEvent) {
+		// Ignore when disabled
+		if (unref(disabled)) return
+		// Ignore non-left click
+		if (event.button !== 0 || !event.isPrimary) return
+		// Ignore non-pointer type
+		if (!pointerType.includes(event.pointerType as PointerType)) return
+
+		pointerdown = true
+
+		// Initialize pointer position
+		state.xy = state.previous = state.initial = [event.clientX, event.clientY]
+
+		// Start drag immediately if disableClick is true or dragDelaySeconds is 0
+		if (disableClick || dragDelaySeconds <= 0) {
+			fireDragStart(event)
+		} else {
+			dragDelayTimer = setTimeout(
+				() => fireDragStart(event),
+				dragDelaySeconds * 1000
+			)
+		}
+
+		target.value?.setPointerCapture(event.pointerId)
+	}
+
+	function onPointerMove(event: PointerEvent) {
+		if (!pointerdown) return
+
+		if (event.movementX !== undefined && event.movementY !== undefined) {
+			state.xy = vec2.add(state.xy, [event.movementX, event.movementY])
+		} else {
+			state.xy = [event.clientX, event.clientY]
+		}
+		state.delta = vec2.sub(state.xy, state.previous)
+
+		if (vec2.squaredLength(state.delta) === 0) return
+
+		if (state.dragging) {
+			onDrag?.(state, event)
+		} else if (!disableClick) {
+			// Determine whether dragging has started
+			const d = vec2.dist(state.initial, state.xy)
+			const minDragDistance = event.pointerType === 'mouse' ? 3 : 7
+			if (d >= minDragDistance) {
+				clearTimeout(dragDelayTimer)
+				fireDragStart(event)
+			}
+		}
+
+		state.previous = state.xy
+	}
+
+	function onPointerUp(event: PointerEvent) {
+		if (state.pointerLocked) {
+			unlock()
+		}
+		state.pointerLocked = false
+
+		if (state.dragging) {
+			onDragEnd?.(state, event)
+		} else {
+			onClick?.()
+		}
+
+		// Reset
+		clearTimeout(dragDelayTimer)
+		pointerdown = false
+		state.dragging = false
+		state.xy = state.initial = state.delta = vec2.zero
+	}
 
 	return toRefs(state)
 }
