@@ -18,7 +18,7 @@ onMounted(() => {
 const {floatingStyles} = useFloating(
 	toRef(multiSelect, 'focusedElement'),
 	$root,
-	{placement: 'bottom', whileElementsMounted: autoUpdate}
+	{placement: 'bottom-end', whileElementsMounted: autoUpdate}
 )
 
 const adder = (px: number) => (value: number) => value + px / 100
@@ -54,7 +54,6 @@ const multiplier = (px: number) => {
 	display flex
 	padding 4px
 	border-color var(--tq-color-accent)
-	border-radius 0 0 var(--tq-input-border-radius) var(--tq-input-border-radius)
 	box-shadow none
 
 	&.visible

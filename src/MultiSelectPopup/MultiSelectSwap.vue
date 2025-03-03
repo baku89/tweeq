@@ -5,7 +5,9 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 const multiSelect = useMultiSelectStore()
 
 function swap() {
+	multiSelect.captureValues()
 	multiSelect.updateValues(values => values.reverse())
+	multiSelect.conformValues()
 }
 </script>
 

@@ -64,10 +64,14 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 				subFocusing.value = true
 			}
 
-			if (source.focusing.value && command.value) {
-				popupVisible.value = true
-				subFocusing.value = true
-				focusedElement.value = source.el.value
+			if (source.focusing.value) {
+				if (command.value) {
+					popupVisible.value = true
+					subFocusing.value = true
+					focusedElement.value = source.el.value
+				} else {
+					defocusAll()
+				}
 			}
 
 			updateFocusCount()
