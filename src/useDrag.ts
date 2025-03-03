@@ -115,6 +115,8 @@ export function useDrag(
 	useEventListener(target, 'pointerdown', onPointerDown)
 	useEventListener(target, 'pointermove', onPointerMove)
 	useEventListener(target, 'pointerup', onPointerUp)
+	useEventListener(target, 'pointercancel', onPointerUp)
+	useEventListener(target, 'pointerleave', onPointerUp)
 
 	function fireDragStart(event: PointerEvent) {
 		if (
@@ -194,10 +196,12 @@ export function useDrag(
 		}
 		state.pointerLocked = false
 
-		if (state.dragging) {
-			onDragEnd?.(state, event)
-		} else {
-			onClick?.()
+		if (pointerdown) {
+			if (state.dragging) {
+				onDragEnd?.(state, event)
+			} else {
+				onClick?.()
+			}
 		}
 
 		// Reset
@@ -205,6 +209,7 @@ export function useDrag(
 		pointerdown = false
 		state.dragging = false
 		state.xy = state.initial = state.delta = vec2.zero
+		target.value?.releasePointerCapture(event.pointerId)
 	}
 
 	return toRefs(state)
