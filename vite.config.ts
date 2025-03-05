@@ -1,6 +1,5 @@
 import vue from '@vitejs/plugin-vue'
 import {resolve} from 'path'
-import {fileURLToPath} from 'url'
 import {defineConfig} from 'vite'
 import dts from 'vite-plugin-dts'
 import glsl from 'vite-plugin-glsl'
@@ -9,14 +8,6 @@ import glsl from 'vite-plugin-glsl'
 export default defineConfig(({mode}) => {
 	return {
 		plugins: [glsl(), vue(), dts({tsconfigPath: './tsconfig.build.json'})],
-		resolve: {
-			alias: [
-				{
-					find: 'tweeq',
-					replacement: fileURLToPath(new URL('./src', import.meta.url)),
-				},
-			],
-		},
 		publicDir: mode === 'development' ? undefined : false,
 		build: {
 			target: 'esnext',

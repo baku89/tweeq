@@ -1,8 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import {cloneDeep} from 'lodash-es'
+import {Scheme, Viewport} from 'tweeq'
 import {ref, shallowRef} from 'vue'
-
-import {Scheme} from '../../src'
 
 interface Props {
 	initialValue?: number | string
@@ -22,28 +21,25 @@ function update(value: any) {
 </script>
 
 <template>
-	<div class="Example">
-		<div class="Example__input">
+	<Viewport class="Example">
+		<div class="input">
 			<slot :modelValue="modelValue" :update="update" :options="localOptions" />
 		</div>
 
 		<div class="options">
 			<InputComplex v-model="localOptions" :scheme="scheme" />
 		</div>
-	</div>
+	</Viewport>
 </template>
 
-<style lang="stylus">
-@import '../../src/setup.styl'
-
+<style lang="stylus" scoped>
 .Example
-	setup()
 	position relative
 	padding 2rem 0
 	display grid
 	grid-template-columns min-content 1fr
 	gap 4rem
 
-	&__input
-		width 15rem
+.input
+	width 15rem
 </style>

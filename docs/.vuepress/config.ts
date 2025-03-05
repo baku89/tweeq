@@ -1,5 +1,6 @@
 import {viteBundler} from '@vuepress/bundler-vite'
 import {defaultTheme} from '@vuepress/theme-default'
+import {fileURLToPath} from 'url'
 import glsl from 'vite-plugin-glsl'
 import {defineUserConfig} from 'vuepress'
 
@@ -60,9 +61,13 @@ export default defineUserConfig({
 	bundler: viteBundler({
 		viteOptions: {
 			plugins: [glsl()],
-			define: {
-				// This is needed to make the PromiseQueue class available in the browser.
-				'process.env.PROMISE_QUEUE_COVERAGE': false,
+			resolve: {
+				alias: [
+					{
+						find: 'tweeq',
+						replacement: fileURLToPath(new URL('../../src', import.meta.url)),
+					},
+				],
 			},
 		},
 	}),

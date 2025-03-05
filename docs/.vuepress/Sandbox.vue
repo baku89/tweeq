@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
+import {InputComplex, Scheme} from 'tweeq'
 import {shallowRef} from 'vue'
-
-import {InputComplex, Scheme} from '../../src'
 
 interface Props {
 	initialValue: T
