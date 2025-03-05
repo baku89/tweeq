@@ -1,5 +1,15 @@
 ---
 home: true
+heroImage: /logo.svg
+heroHeight: 160
+actionText: Get Started →
+actions:
+  - text: Components
+    link: /components/
+    type: secondary
+  - text: Example
+    link: /example
+    type: secondary
 ---
 
 <div class="badges">
