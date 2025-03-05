@@ -1,6 +1,6 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T extends Record<string, unknown>">
 import {cloneDeep} from 'lodash-es'
-import {Scheme, Viewport} from 'tweeq'
+import {InputComplex, Scheme, Viewport} from 'tweeq'
 import {ref, shallowRef} from 'vue'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const localOptions = shallowRef<T>(cloneDeep(props.options))
+const options = shallowRef<T>(cloneDeep(props.options))
 
 const modelValue = ref(props.initialValue)
 
@@ -23,11 +23,11 @@ function update(value: any) {
 <template>
 	<Viewport class="Example">
 		<div class="input">
-			<slot :modelValue="modelValue" :update="update" :options="localOptions" />
+			<slot :modelValue="modelValue" :update="update" :options="options" />
 		</div>
 
 		<div class="options">
-			<InputComplex v-model="localOptions" :scheme="scheme" />
+			<InputComplex v-model="options" :scheme="scheme as any" />
 		</div>
 	</Viewport>
 </template>

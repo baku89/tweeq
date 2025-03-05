@@ -1,6 +1,7 @@
 export * from './ColorIcon'
 export * from './CommandPalette'
 export * from './IconIndicator'
+export * from './InputAngle'
 export * from './InputButton'
 export * from './InputButtonToggle'
 export * from './InputCheckbox'

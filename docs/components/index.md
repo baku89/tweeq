@@ -30,7 +30,7 @@
 	/>
 </InputExample>
 
-## InputRotery
+## InputAngle
 
 <InputExample
 	:initialValue="0"
@@ -40,7 +40,7 @@
 	}"
 	v-slot='{modelValue, update, options}'
 >
-	<InputRotery
+	<InputAngle
 		:modelValue='modelValue'
 		@update:modelValue='update'
 		v-bind='options'

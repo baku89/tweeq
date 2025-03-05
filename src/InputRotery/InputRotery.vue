@@ -12,13 +12,9 @@ import {useCursorStyle} from '../use/useCursorStyle'
 import {useElementCenter} from '../use/useElementCenter'
 import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
+import type {InputRoteryProps} from './types'
 
-interface Props {
-	modelValue: number
-	quantizeStep?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {quantizeStep: 45})
+const props = withDefaults(defineProps<InputRoteryProps>(), {quantizeStep: 45})
 
 const theme = useThemeStore()
 
@@ -59,6 +55,7 @@ const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 const {
 	dragging: tweaking,
 	initial,
+	origin,
 	xy,
 } = useDrag($el, {
 	dragDelaySeconds: 0,
@@ -140,7 +137,7 @@ const overlayLabelPos = computed(() => {
 })
 
 const overlayArrowAngle = computed(() => {
-	const p = vec2.sub(xy.value, initial.value)
+	const p = vec2.sub(xy.value, origin.value)
 	return vec2.angle(p) + 90
 })
 
@@ -222,10 +219,10 @@ const overlayPath = computed(() => {
 		:data-mode="tweakMode"
 		v-bind="$attrs"
 	>
-		<SvgIcon mode="block" class="InputRotery__rotery">
-			<circle class="InputRotery__circle" cx="16" cy="16" r="15" />
+		<SvgIcon mode="block" class="rotery">
+			<circle class="circle" cx="16" cy="16" r="15" />
 			<line
-				class="InputRotery__tip"
+				class="tip"
 				:style="{
 					transform: `rotate(${props.modelValue}deg)`,
 				}"
@@ -240,7 +237,7 @@ const overlayPath = computed(() => {
 	</button>
 	<teleport to="body">
 		<div v-if="tweaking" class="tq-overlay">
-			<svg class="InputRotery__overlay">
+			<svg class="overlay">
 				<path class="bold" :d="overlayPath" />
 				<path
 					class="thin gray"
@@ -251,7 +248,7 @@ const overlayPath = computed(() => {
 			</svg>
 			<div
 				ref="overlayLabel"
-				class="InputRotery__overlay-label"
+				class="overlay-label"
 				:style="{
 					top: overlayLabelPos[1] + 'px',
 					left: overlayLabelPos[0] + 'px',
@@ -279,68 +276,69 @@ const overlayPath = computed(() => {
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	hover-transition(transform)
-
-	&__rotery
-		width var(--tq-input-height)
-		height var(--tq-input-height)
+	z-index 1
 
 	&:hover, &.tweaking
-		z-index 1
 		transform scale(3)
 
-	&__circle
-		fill var(--tq-color-input-vivid-accent)
-		stroke none
-		hover-transition(fill)
-
-		~/:focus-visible &, &:hover, ~/.tweaking[data-mode=relative] &
-			fill var(--tq-color-input-tinted-accent-hover)
+.rotery
+	width var(--tq-input-height)
+	height var(--tq-input-height)
 
 
-	&__tip
-		transform-origin 16px 16px
-		stroke var(--tq-color-input)
-		stroke-width 3
-		stroke-linecap round
-		hover-transition(stroke)
+.circle
+	fill var(--tq-color-input-vivid-accent)
+	stroke none
+	hover-transition(fill)
 
-		~/[data-mode=absolute] &
-			stroke var(--tq-color-accent-hover)
+	~/:focus-visible &, &:hover, ~/.tweaking[data-mode=relative] &
+		fill var(--tq-color-input-tinted-accent-hover)
 
-	&__overlay
-		input-overlay()
 
-		.quantize
-			stroke var(--tq-color-input-tinted-accent-hover) !important
+.tip
+	transform-origin 16px 16px
+	stroke var(--tq-color-input)
+	stroke-width 3
+	stroke-linecap round
+	hover-transition(stroke)
 
-	&__overlay-label
-		tooltip-style()
-		z-index 1001
-		position fixed
-		font-numeric()
-		transform translate(-50%, -50%)
-		white-space nowrap
+	[data-mode=absolute] &
+		stroke var(--tq-color-accent-hover)
 
-		.arrows
+.overlay
+	input-overlay()
+
+	.quantize
+		stroke var(--tq-color-input-tinted-accent-hover) !important
+
+.overlay-label
+	tooltip-style()
+	z-index 1001
+	position fixed
+	font-numeric()
+	transform translate(-50%, -50%)
+	white-space nowrap
+
+	.arrows
+		position absolute
+		inset 0
+		color var(--tq-color-accent)
+
+		&:before, &:after
 			position absolute
-			inset 0
-			color var(--tq-color-accent)
+			top 50%
+			display block
+			width 1em
+			font-size 14px
+			text-align center
+			font-weight normal
+			transform translateY(-50%)
 
-			&:before, &:after
-				position absolute
-				top 50%
-				display block
-				width 1em
-				font-size 14px
-				text-align center
-				font-weight normal
-				transform translateY(-50%)
+		&:before
+			right 100%
+			content '<'
 
-			&:before
-				right 100%
-				content '<'
-
-			&:after
-				left 100%
-				content '>'
+		&:after
+			left 100%
+			content '>'
 </style>

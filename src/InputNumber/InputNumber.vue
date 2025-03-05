@@ -266,7 +266,6 @@ const isInvalid = computed(() => {
 	if (tweaking.value) return undefined
 
 	// TODO: This is not accurate
-	console.log(validatedLocal.value, local.value)
 	return !scalar.approx(validatedLocal.value, local.value) || undefined
 })
 

@@ -14,9 +14,13 @@ export type InputAlign = 'left' | 'center' | 'right'
 export type InputHorizontalPosition = 'left' | 'middle' | 'right'
 export type InputVerticalPosition = 'top' | 'middle' | 'bottom'
 
-export interface InputProps {
+export interface InputProps<T> {
+	modelValue: T
 	invalid?: boolean
 	disabled?: boolean
+}
+
+export interface InputBoxProps<T> extends InputProps<T> {
 	horizontalPosition?: InputHorizontalPosition
 	verticalPosition?: InputVerticalPosition
 }

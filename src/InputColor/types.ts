@@ -1,4 +1,4 @@
-import type {InputProps} from '../types'
+import type {InputBoxProps} from '../types'
 
 export type Color = string
 export type ColorChannel = 'r' | 'g' | 'b' | 'a' | 'h' | 's' | 'v'
@@ -53,7 +53,7 @@ export const DefaultColorPickers: ColorPickerComponent[] = [
 	['values'],
 ]
 
-export interface InputColorProps extends InputProps {
+export interface InputColorProps extends InputBoxProps<string> {
 	modelValue: string
 	alpha?: boolean
 	pickers?: ColorPickerComponent[]

@@ -9,22 +9,20 @@ import {InputString} from '../InputString'
 import {Popover} from '../Popover'
 import {
 	type InputAlign,
+	type InputBoxProps,
 	type InputFont,
-	type InputProps,
 	type InputTheme,
 	type LabelizerProps,
 	useLabelizer,
 } from '../types'
 import {unsignedMod} from '../util'
 
-type Props = LabelizerProps<T> &
-	InputProps & {
-		modelValue: T
-		icons?: string[]
-		theme?: InputTheme
-		font?: InputFont
-		align?: InputAlign
-	}
+interface Props extends LabelizerProps<T>, InputBoxProps<T> {
+	icons?: string[]
+	theme?: InputTheme
+	font?: InputFont
+	align?: InputAlign
+}
 
 const props = withDefaults(defineProps<Props>(), {
 	prefix: '',

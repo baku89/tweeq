@@ -1,13 +1,12 @@
 import {
 	type InputAlign,
+	type InputBoxProps,
 	type InputFont,
-	type InputProps,
 	type InputTheme,
 	type Validator,
 } from '../types'
 
-export interface InputStringProps extends InputProps {
-	modelValue: string
+export interface InputStringProps extends InputBoxProps<string> {
 	theme?: InputTheme
 	font?: InputFont
 	align?: InputAlign

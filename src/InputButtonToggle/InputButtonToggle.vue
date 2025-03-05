@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-import type {InputProps} from '../types'
+import type {InputBoxProps} from '../types'
 
-interface Props extends InputProps {
-	modelValue: boolean
+interface Props extends InputBoxProps<boolean> {
 	icon?: string
 	label?: string
 }

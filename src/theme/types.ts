@@ -60,6 +60,8 @@ export interface Theme {
 	fontNumeric: string
 
 	// UI Metrics
+	rem: number
+
 	paneBorderRadius: CSSNumber
 
 	popupWidth: CSSNumber

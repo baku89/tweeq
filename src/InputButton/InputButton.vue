@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-import type {InputProps} from '../types'
+import type {InputBoxProps} from '../types'
 
-interface Props extends InputProps {
+interface Props extends InputBoxProps<void> {
 	icon?: string
 	label?: string
 	tooltip?: string
