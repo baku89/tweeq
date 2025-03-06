@@ -266,7 +266,7 @@ const overlayPath = computed(() => {
 	</teleport>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 .InputRotery
@@ -287,12 +287,14 @@ const overlayPath = computed(() => {
 
 
 .circle
-	fill var(--tq-color-input-vivid-accent)
+	fill var(--tq-color-accent)
 	stroke none
 	hover-transition(fill)
 
-	~/:focus-visible &, &:hover, ~/.tweaking[data-mode=relative] &
-		fill var(--tq-color-input-tinted-accent-hover)
+	&:hover,
+	.InputRotery:focus-visible &,
+	.InputRotery.tweaking[data-mode=relative] &
+		fill var(--tq-color-accent-hover)
 
 
 .tip

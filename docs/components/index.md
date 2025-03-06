@@ -60,3 +60,43 @@
 		@update:modelValue="update"
 	/>
 </InputExample>
+
+## InputButton
+
+<InputExample
+	:initialValue="0"
+	:scheme="{label: {type: 'string'}}"
+	:options="{label: 'Click me'}"
+	v-slot="{options}"
+>
+	<InputButton :label="options.label" />
+</InputExample>
+
+## InputDropdown
+
+<InputExample
+	initialValue="apple"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, update}"
+>
+	<InputDropdown
+		:modelValue="modelValue"
+		:options="['apple', 'banana', 'cherry']"
+		@update:modelValue="update"
+	/>
+</InputExample>
+
+## InputString
+
+<InputExample
+	initialValue="Baby salmon"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, update}"
+>
+	<InputString
+		:modelValue="modelValue"
+		@update:modelValue="update"
+	/>
+</InputExample>

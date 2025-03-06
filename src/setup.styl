@@ -3,7 +3,7 @@
 setup()
 	reset()
 	background var(--tq-color-background)
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	user-select none
 	font-family 'Inter'
 	font-size var(--tq-rem)
@@ -28,7 +28,7 @@ setup()
 
 	::-webkit-scrollbar-thumb
 		border-radius 9999px
-		background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
+		background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
 
 	button, input
 		padding 0
@@ -41,7 +41,7 @@ setup()
 		user-select none
 
 .tq-overlay
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	user-select none
 	font-family 'Inter'
 	font-size var(--tq-rem)

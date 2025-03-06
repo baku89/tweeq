@@ -35,7 +35,7 @@ defineEmits<{
 .InputButtonToggle
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
 	display flex

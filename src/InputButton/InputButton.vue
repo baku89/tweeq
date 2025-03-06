@@ -75,7 +75,7 @@ defineProps<Props>()
 
 	@keyframes blink
 		0%
-			background var(--tq-color-input-vivid-accent)
+			background var(--tq-color-accent)
 		100%
 			background var(--tq-color-accent-hover)
 

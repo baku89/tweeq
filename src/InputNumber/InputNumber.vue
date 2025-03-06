@@ -587,6 +587,13 @@ const barStyle = computed<StyleValue>(() => {
 	&.tweaking.below-range:before, &.tweaking.above-range:before
 		opacity 1
 
+	&:has(input[disabled])
+		.bar
+			background var(--tq-color-accent-soft)
+
+		.tip
+			pointer-events none
+
 .input
 	text-align center
 	position relative
@@ -604,15 +611,21 @@ const barStyle = computed<StyleValue>(() => {
 
 .bar
 	pointer-events none
-	background var(--tq-color-input-vivid-accent)
+	background var(--tq-color-accent-soft)
 	hover-transition(background)
 
 	.InputNumber:hover &
-		background var(--tq-color-input-tinted-accent-hover)
+		background var(--tq-color-accent-soft-hover)
 
 .tip
 	width 1px
 	background var(--tq-color-accent)
+	opacity .3
+
+	.InputNumber:hover &,
+	.tweaking &
+		opacity 1
+
 
 	.below-range &, .above-range &
 		pointer-events none
@@ -632,7 +645,7 @@ const barStyle = computed<StyleValue>(() => {
 .icon
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
-	color var(--tq-color-gray-on-background)
+	color var(--tq-color-text-mute)
 	opacity .7
 	position absolute
 	z-index 100

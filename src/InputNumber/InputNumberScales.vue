@@ -33,8 +33,6 @@ const style = computed(() => {
 	if (scaleGap.value === 0) return {}
 
 	return {
-		backgroundImage:
-			'linear-gradient(to right, var(--tq-color-input-scale) 1px, transparent 1px)',
 		backgroundSize: `${scaleGap.value}px 100%`,
 	}
 })
@@ -46,6 +44,7 @@ const style = computed(() => {
 
 <style lang="stylus" scoped>
 .InputNumberScales
+	background-image: linear-gradient(to right, var(--tq-color-border-subtle) 1px, transparent 1px)
 
 	position absolute
 	inset 0

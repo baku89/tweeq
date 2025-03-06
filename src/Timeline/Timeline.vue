@@ -222,5 +222,5 @@ function offsetStyle(offset: number) {
 	position absolute
 	height 100%
 	border-radius 9999px
-	background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
+	background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
 </style>

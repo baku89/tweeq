@@ -9,9 +9,13 @@ export default defineClientConfig({
 		const pinia = createPinia()
 		app.use(pinia)
 
-		app.component('InputNumber', Tq.InputNumber)
 		app.component('InputAngle', Tq.InputAngle)
 		app.component('InputColor', Tq.InputColor)
+		app.component('InputDropdown', Tq.InputDropdown)
+		app.component('InputButton', Tq.InputButton)
+		app.component('InputNumber', Tq.InputNumber)
+		app.component('InputString', Tq.InputString)
+
 		app.component('MultiSelectPopup', Tq.MultiSelectPopup)
 		app.component('InputExample', InputExample)
 		app.component('Sandbox', Sandbox)

@@ -91,7 +91,7 @@ const transformStyles = computed(() => {
 	&.dots
 		--bg var(--tq-color-background)
 		background-image linear-gradient(to right, transparent 1px, var(--bg) 1px), linear-gradient(to bottom, transparent 1px, var(--bg) 1px)
-		background-color var(--tq-color-gray-on-background)
+		background-color var(--tq-color-text-mute)
 
 .transform
 	position absolute

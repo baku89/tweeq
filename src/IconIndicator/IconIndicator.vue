@@ -34,10 +34,10 @@ defineEmits<{
 	justify-content center
 	hover-transition(color)
 	border-radius 9999px
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 
 	&.inactive
-		color var(--tq-color-gray-on-background)
+		color var(--tq-color-text-mute)
 	&.active
 		color var(--tq-color-accent)
 

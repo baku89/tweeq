@@ -12,34 +12,51 @@ export interface ThemeOptions {
 export interface Theme {
 	// Colors
 
-	// Accent
+	/** The accent color */
 	colorAccent: string
+
+	/** The color of the text on the accent color */
 	colorOnAccent: string
+
+	/** The hover color of the accent color */
 	colorAccentHover: string
 
-	// Background
+	/** Soft colors of the accent color, can be used as background of the input box, such as bar of the input number */
+	colorAccentSoft: string
+
+	/** Hover colors of the soft accent color */
+	colorAccentSoftHover: string
+
+	/** Background color of the app */
 	colorBackground: string
-	colorOnBackground: string
-	colorGrayOnBackground: string
+
+	/** Colors of the text on the background color */
+	colorText: string
+
+	/** Colors for muted texts, such as "inactive menu" or "info texts" */
+	colorTextMute: string
+
+	/** Color for subtle text, such as as "placeholders" or "caret icon". */
+	colorTextSubtle: string
 
 	// Surface
 	colorSurface: string
+
+	/** The color of the border, such as the border of disabled input */
 	colorBorder: string
+
+	/** The subtle color of the border, such as scales of the input number */
+	colorBorderSubtle: string
+
+	/** The color of the shadow, such as the shadow of the dropdown */
 	colorShadow: string
 
 	// Input
-	// Background of the input
+
+	/** Background of the input box */
 	colorInput: string
-	// Hover color of the input
+	/** Background of the input box when hovered */
 	colorInputHover: string
-	// The color of the bar
-	colorInputTintedAccent: string
-	// The hover color of the bar
-	colorInputTintedAccentHover: string
-	// The tip color of the bar (becomes accent color when hovered)
-	colorInputVividAccent: string
-	// The scale color of the input
-	colorInputScale: string
 
 	// Selection
 	colorSelection: string
@@ -62,18 +79,18 @@ export interface Theme {
 	// UI Metrics
 	rem: number
 
-	paneBorderRadius: CSSNumber
+	paneBorderRadius: number
 
-	popupWidth: CSSNumber
-	popupPadding: CSSNumber
-	popupBorderRadius: CSSNumber
+	popupWidth: number
+	popupPadding: number
+	popupBorderRadius: number
 
-	inputBorderRadius: CSSNumber
-	inputHeight: CSSNumber
-	inputGap: CSSNumber
+	inputBorderRadius: number
+	inputHeight: number
+	inputGap: number
 
-	panePadding: CSSNumber
-	scrollbarWidth: CSSNumber
+	panePadding: number
+	scrollbarWidth: number
 
 	hoverTransitionDuration: string
 	activeTransitionDuration: string

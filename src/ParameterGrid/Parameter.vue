@@ -40,7 +40,7 @@ defineSlots<{
 	align-items center
 	display flex
 	gap 4px
-	color var(--tq-color-gray-on-background)
+	color var(--tq-color-text-mute)
 
 .label
 	height var(--tq-input-height)

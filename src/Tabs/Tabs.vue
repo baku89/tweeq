@@ -162,14 +162,14 @@ onMounted(() => {
 	hover-transition(border-bottom-color)
 
 	&.active
-		border-bottom-color var(--tq-color-on-background)
+		border-bottom-color var(--tq-color-text)
 
 		&:hover
 			border-bottom-color var(--tq-color-accent)
 
 .tablist-link
 	text-decoration none
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	opacity .4
 	hover-transition(opacity)
 

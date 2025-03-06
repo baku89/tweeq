@@ -24,11 +24,13 @@
 			padding 0
 			border 0
 			vertical-align baseline
+			color inherit
 			font inherit
 			font-size inherit
 			box-sizing border-box
 			font-weight inherit
 			font-style normal
+			text-align inherit
 			list-style none
 			outline none
 			cursor inherit
@@ -45,5 +47,5 @@
 
 		::-webkit-scrollbar-thumb
 				border-radius 9999px
-				background 'color-mix(in srgb, var(--tq-color-on-background) 20%, transparent)' % ''
+				background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
 </style>

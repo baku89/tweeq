@@ -57,7 +57,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 	const theme = computed<Theme>(() => {
 		// Get the theme from a hex color
-		const themeColorsRadix = generateThemeColorsRadix({
+		const radixColors = generateThemeColorsRadix({
 			appearance: colorMode.value,
 			background: backgroundColor.value,
 			accent: accentColor.value,
@@ -66,7 +66,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 		const dark = colorMode.value === 'dark'
 
-		const colors = materialTheme.value.schemes[dark ? 'dark' : 'light']
+		const materialColors = materialTheme.value.schemes[dark ? 'dark' : 'light']
 
 		const accent = argbFromHex(accentColor.value)
 
@@ -84,48 +84,46 @@ export const useThemeStore = defineStore('theme', () => {
 
 		return {
 			// Accent
-			colorAccent: themeColorsRadix.accentScale[8],
-			colorOnAccent: themeColorsRadix.accentContrast,
-			colorAccentHover: themeColorsRadix.accentScale[9],
+			colorAccent: radixColors.accentScale[8],
+			colorOnAccent: radixColors.accentContrast,
+			colorAccentHover: radixColors.accentScale[9],
+			colorAccentSoft: radixColors.accentScale[4],
+			colorAccentSoftHover: radixColors.accentScale[5],
 
 			// Background
-			colorBackground: themeColorsRadix.background,
-			colorOnBackground: themeColorsRadix.grayScale[11],
-			colorGrayOnBackground: themeColorsRadix.grayScale[10],
+			colorBackground: radixColors.background,
+			colorText: radixColors.grayScale[11],
+			colorTextMute: radixColors.grayScale[10],
+			colorTextSubtle: radixColors.grayScale[9],
 
 			// Surface
-			colorSurface: `color-mix(in srgb, transparent, ${themeColorsRadix.grayScale[0]} 80%)`,
-			colorBorder: themeColorsRadix.grayScaleAlpha[3],
+			colorSurface: `color-mix(in srgb, transparent, ${radixColors.grayScale[0]} 80%)`,
+			colorBorder: radixColors.grayScaleAlpha[3],
+			colorBorderSubtle: radixColors.grayScaleAlpha[2],
 			colorShadow: dark
 				? '#000000aa'
-				: `color-mix(in srgb, transparent, ${themeColorsRadix.grayScale[11]} 20%)`,
+				: `color-mix(in srgb, transparent, ${radixColors.grayScale[11]} 20%)`,
 
 			// Input
-			// Background of the input
-			colorInput: themeColorsRadix.grayScale[2],
-			// Hover color of the input
-			colorInputHover: themeColorsRadix.grayScale[4],
-			// The color of the bar
-			colorInputTintedAccent: themeColorsRadix.accentScale[2],
-			// The hover color of the bar
-			colorInputTintedAccentHover: themeColorsRadix.accentScale[7],
-			// The tip color of the bar (becomes accent color when hovered)
-			colorInputVividAccent: themeColorsRadix.accentScale[6],
-			// The scale color of the input
-			colorInputScale: themeColorsRadix.grayScaleAlpha[2],
+			colorInput: radixColors.grayScale[2],
+			colorInputHover: radixColors.grayScale[3],
 
 			// Selection
-			colorSelection: themeColorsRadix.accentScale[10],
-			colorOnSelection: themeColorsRadix.background,
+			colorSelection: radixColors.accentScale[10],
+			colorOnSelection: radixColors.background,
 
 			// Secondary Colors
-			colorSecondary: toColor(colors.secondary),
+			colorSecondary: toColor(materialColors.secondary),
 
 			// Semantic Colors: Can be used as same as accent color
-			colorError: toColor(dark ? error.light.color : error.dark.color),
-			colorRec: toColor(dark ? error.light.color : error.dark.color),
+			colorError: toColor(dark ? error.dark.color : error.light.color),
+			colorErrorSoft: toColor(
+				dark ? error.dark.color : error.light.colorContainer
+			),
+
+			colorRec: toColor(dark ? error.dark.color : error.light.color),
 			colorAffirmative: toColor(
-				dark ? affirmative.light.color : affirmative.dark.color
+				dark ? affirmative.dark.color : affirmative.light.color
 			),
 
 			fontCode: "'Geist Mono', monospace",

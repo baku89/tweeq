@@ -27,6 +27,7 @@ interface Props extends LabelizerProps<T>, InputBoxProps<T> {
 const props = withDefaults(defineProps<Props>(), {
 	prefix: '',
 	suffix: '',
+	align: 'center',
 })
 
 const labelizer = useLabelizer(props)
@@ -121,6 +122,7 @@ function onPressArrow(isUp: boolean) {
 }
 
 function onInputPointerdown(e: PointerEvent) {
+	console.log('onInputPointerdown', e.isPrimary)
 	if (e.isPrimary) {
 		open.value = true
 	}
@@ -217,9 +219,6 @@ $right-arrow-width = 1em
 	width 100%
 	height var(--tq-input-height)
 
-	&.open .input
-		background var(--tq-color-accent-hover)
-
 .input
 	cursor default
 
@@ -231,7 +230,7 @@ $right-arrow-width = 1em
 	width calc(.8 * var(--tq-input-height))
 	height 100%
 	pointer-events none
-	color var(--tq-color-gray-on-background)
+	color var(--tq-color-text-subtle)
 	opacity .4
 	hover-transition(opacity)
 
@@ -260,11 +259,11 @@ $right-arrow-width = 1em
 	align-items center
 	align-content center
 	justify-content center
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	border-radius var(--tq-input-border-radius)
 
 	&.startValue
-		background var(--tq-color-input-vivid-accent)
+		background var(--tq-color-accent-soft)
 
 	&.active
 		background var(--tq-color-accent)

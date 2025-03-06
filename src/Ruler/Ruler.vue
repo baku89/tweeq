@@ -88,8 +88,8 @@ useBndr($root, el => {
 	inset 0
 
 .scale
-	border-left 1px solid var(--tq-color-gray-on-background)
+	border-left 1px solid var(--tq-color-text-mute)
 	font-size 9px
-	color var(--tq-color-gray-on-background)
+	color var(--tq-color-text-mute)
 	text-indent 0.4em
 </style>

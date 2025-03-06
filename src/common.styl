@@ -19,7 +19,7 @@ popup-style()
 	padding var(--tq-popup-padding)
 	border-radius var(--tq-popup-border-radius)
 	box-shadow 0 0 20px 0px var(--tq-color-shadow)
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 
 button-focus-style()
 	position relative
@@ -63,7 +63,7 @@ use-input-font()
 
 use-input-align()
 	&[align=left]
-		text-align center
+		text-align left
 
 	&[align=center]
 		text-align center
@@ -105,7 +105,7 @@ input-style()
 	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
-	color var(--tq-color-on-background)
+	color var(--tq-color-text)
 	font-size var(--tq-rem)
 	hover-transition(background, box-shadow)
 	overflow hidden
@@ -119,9 +119,7 @@ input-style()
 		box-shadow 0 0 0 1px var(--tq-color-accent)
 
 	&:has(input[invalid])
-		--tq-color-on-background var(--tq-color-error)
-		--tq-color-accent var(--tq-color-error)
-		color var(--tq-color-on-background) !important
+		--tq-color-text var(--tq-color-error)
 
 	input
 		padding 4px 12px
@@ -149,8 +147,10 @@ input-style()
 
 	&:has([disabled])
 		background transparent
+		--tq-color-accent var(--tq-color-text-border)
+		--tq-color-accent-soft var(--tq-color-border-subtle)
+		--tq-color-text var(--tq-color-text-mute)
 		box-shadow inset 0 0 0 1px var(--tq-color-border)
-		color var(--tq-color-gray-on-background)
 
 	use-input-font()
 	use-input-align()
