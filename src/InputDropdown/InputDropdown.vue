@@ -7,24 +7,11 @@ import {computed, type Ref, ref, shallowRef, watch} from 'vue'
 
 import {InputString} from '../InputString'
 import {Popover} from '../Popover'
-import {
-	type InputAlign,
-	type InputBoxProps,
-	type InputFont,
-	type InputTheme,
-	type LabelizerProps,
-	useLabelizer,
-} from '../types'
+import {useLabelizer} from '../types'
 import {unsignedMod} from '../util'
+import type {InputDropdownProps} from './types'
 
-interface Props extends LabelizerProps<T>, InputBoxProps<T> {
-	icons?: string[]
-	theme?: InputTheme
-	font?: InputFont
-	align?: InputAlign
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<InputDropdownProps<T>>(), {
 	prefix: '',
 	suffix: '',
 	align: 'center',

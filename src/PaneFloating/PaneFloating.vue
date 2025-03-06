@@ -5,27 +5,9 @@ import * as Bndr from 'bndr-js'
 import {computed, onMounted, shallowRef, watch} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
+import type {PaneFloatingProps, Position} from './types'
 
-type PaneDimension = number | 'minimized'
-
-type Position =
-	| {anchor: 'maximized'}
-	| {anchor: 'top'; height: PaneDimension}
-	| {anchor: 'left-top'; width: PaneDimension; height: PaneDimension}
-	| {anchor: 'left'; width: PaneDimension}
-	| {anchor: 'left-bottom'; width: PaneDimension; height: PaneDimension}
-	| {anchor: 'bottom'; height: PaneDimension}
-	| {anchor: 'right-bottom'; width: PaneDimension; height: PaneDimension}
-	| {anchor: 'right'; width: PaneDimension}
-	| {anchor: 'right-top'; width: PaneDimension; height: PaneDimension}
-
-interface Props {
-	name: string
-	icon: string
-	position?: Position
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PaneFloatingProps>(), {
 	position: () => {
 		return {
 			anchor: 'right-top',

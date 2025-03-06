@@ -3,3 +3,10 @@ export interface MonacoEditorErrorInfo {
 	line: number
 	column: number
 }
+
+export interface MonacoEditorProps {
+	modelValue: string
+	lang: string
+	cursorIndex?: number
+	errors?: MonacoEditorErrorInfo[] | null
+}

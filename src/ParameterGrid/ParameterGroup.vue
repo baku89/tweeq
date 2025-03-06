@@ -3,14 +3,9 @@ import {Icon} from '@iconify/vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import ParameterHeading from './ParameterHeading.vue'
+import {ParameterGroupProps} from './types'
 
-interface Props {
-	name: string
-	label: string
-	icon?: string
-}
-
-const props = defineProps<Props>()
+const props = defineProps<ParameterGroupProps>()
 
 defineSlots<{
 	default: void

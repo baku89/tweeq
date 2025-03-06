@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import {Icon} from '@iconify/vue'
 
-interface Props {
-	label?: string
-	icon?: string
-}
-
-defineProps<Props>()
+import type {ParameterProps} from './types'
+defineProps<ParameterProps>()
 
 defineSlots<{
 	default: void

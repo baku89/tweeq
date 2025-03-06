@@ -3,18 +3,9 @@ import {onMounted, provide, reactive} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
-import type {Tab, TabsState} from './types'
+import type {Tab, TabsProps, TabsState} from './types'
 
-interface Props {
-	name: string
-	cacheLifetime?: number
-	options?: {
-		storageKey?: string
-		defaultTabId?: string
-	}
-}
-
-const props = defineProps<Props>()
+const props = defineProps<TabsProps>()
 
 const emit = defineEmits<{
 	changed: [tab: Tab]

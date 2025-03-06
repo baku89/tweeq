@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-interface Props {
-	active?: boolean
-	icon: string
-}
+import {IconIndicatorProps} from './types'
 
-defineProps<Props>()
+defineProps<IconIndicatorProps>()
 
 defineEmits<{
 	'update:active': [boolean]

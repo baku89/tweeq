@@ -10,10 +10,17 @@ export interface Tab extends PushTabOptions {
 }
 
 export interface Tabs {
-	cacheLifetime: number
 	options: {
 		useUrlFragment?: boolean
 		defaultTabHash?: string | null
+	}
+}
+
+export interface TabsProps {
+	name: string
+	options?: {
+		storageKey?: string
+		defaultTabId?: string
 	}
 }
 

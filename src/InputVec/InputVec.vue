@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
+import {InputVecProps} from './types'
 
-interface Props {
-	modelValue: readonly number[]
-	min?: readonly number[] | number
-	max?: readonly number[] | number
-	step?: readonly number[] | number
-}
-
-const props = defineProps<Props>()
+const props = defineProps<InputVecProps>()
 
 const emit = defineEmits<{
 	'update:modelValue': [readonly number[]]

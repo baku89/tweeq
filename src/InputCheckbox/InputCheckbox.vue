@@ -3,13 +3,9 @@ import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
 import {SvgIcon} from '../SvgIcon'
+import {InputCheckboxProps} from './types'
 
-interface Props {
-	modelValue: boolean
-	label?: string
-}
-
-defineProps<Props>()
+defineProps<InputCheckboxProps>()
 
 const emit = defineEmits<{
 	'update:modelValue': [boolean]

@@ -3,13 +3,9 @@ import {clamp, random} from 'lodash-es'
 import {ref} from 'vue'
 
 import {SvgIcon} from '../SvgIcon'
+import type {InputSeedProps} from './types'
 
-interface Props {
-	min?: number
-	max?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<InputSeedProps>(), {
 	min: 0,
 	max: 1,
 })

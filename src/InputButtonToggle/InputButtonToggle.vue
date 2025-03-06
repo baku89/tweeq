@@ -1,14 +1,9 @@
 <script lang="ts" setup>
 import {Icon} from '@iconify/vue'
 
-import type {InputBoxProps} from '../types'
+import {InputButtonToggleProps} from './types'
 
-interface Props extends InputBoxProps<boolean> {
-	icon?: string
-	label?: string
-}
-
-defineProps<Props>()
+defineProps<InputButtonToggleProps>()
 
 defineEmits<{
 	'update:modelValue': [boolean]

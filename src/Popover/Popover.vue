@@ -8,21 +8,9 @@ import {
 import {scalar, vec2} from 'linearly'
 import {computed, shallowRef, watch} from 'vue'
 
-type PlacementDirection = 'top' | 'right' | 'bottom' | 'left'
-type PlacementAlign = 'start' | 'end'
-type Placement =
-	| vec2
-	| PlacementDirection
-	| `${PlacementDirection}-${PlacementAlign}`
+import type {Placement, PopoverProps} from './types'
 
-interface Props {
-	reference: HTMLElement | null
-	open: boolean
-	placement?: Placement
-	lightDismiss?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PopoverProps>(), {
 	open: false,
 	placement: 'bottom-start',
 	lightDismiss: true,

@@ -2,11 +2,9 @@
 import {Icon} from '@iconify/vue'
 import {ref} from 'vue'
 
-interface Props {
-	icon: string
-}
+import type {PaneExpandableProps} from './types'
 
-defineProps<Props>()
+defineProps<PaneExpandableProps>()
 
 const emit = defineEmits<{
 	expand: []

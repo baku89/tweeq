@@ -6,14 +6,9 @@ import {ref} from 'vue'
 import {ColorIcon} from '../ColorIcon'
 import {Menu, type MenuItem} from '../Menu'
 import {type Action, useActionsStore} from '../stores/actions'
-interface Props {
-	name: string
-	/**
-	 * URL to the icon image.
-	 */
-	icon: string
-}
-defineProps<Props>()
+import type {TitleBarProps} from './types'
+
+defineProps<TitleBarProps>()
 
 defineSlots<{
 	left(): any

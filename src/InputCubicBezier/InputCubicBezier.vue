@@ -1,15 +1,12 @@
 <script lang="ts" setup>
 import {computed, ref, shallowRef} from 'vue'
 
-import Popover from '../Popover/Popover.vue'
+import {Popover} from '../Popover'
 import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
+import type {InputCubicBezierProps} from './types'
 import type {CubicBezierValue} from './util'
 
-interface Props {
-	modelValue: CubicBezierValue
-}
-
-const props = defineProps<Props>()
+const props = defineProps<InputCubicBezierProps>()
 
 const emit = defineEmits<{
 	'update:modelValue': [CubicBezierValue]

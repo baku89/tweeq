@@ -5,15 +5,9 @@ import {clamp} from 'lodash-es'
 import {computed, onMounted, shallowRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
+import {PaneSplitProps} from './types'
 
-interface Props {
-	name: string
-	direction: 'horizontal' | 'vertical'
-	size?: number
-	scroll?: [boolean, boolean]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PaneSplitProps>(), {
 	size: 50,
 	scroll: () => [true, true],
 })

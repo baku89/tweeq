@@ -7,23 +7,9 @@ import {computed, shallowRef, watch} from 'vue'
 
 import {useBndr} from '../use/useBndr'
 import {toPercent} from '../util'
+import type {TimelineProps} from './types'
 
-interface Props {
-	/**
-	 * タイムライン全体のフレーム範囲
-	 */
-	frameRange: vec2
-	/**
-	 * 1フレームの幅
-	 */
-	frameWidth: number
-	/**
-	 * 1フレームの幅の範囲
-	 */
-	frameWidthRange: vec2
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<TimelineProps>(), {
 	frameWidth: 60,
 	frameWidthRange: () => [10, 100],
 })

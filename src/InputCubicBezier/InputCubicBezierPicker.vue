@@ -5,13 +5,10 @@ import {vec2} from 'linearly'
 import {computed, ref} from 'vue-demi'
 
 import {useDrag} from '../useDrag'
+import type {InputCubicBezierProps} from './types'
 import {type CubicBezierValue} from './util'
 
-interface Props {
-	modelValue: CubicBezierValue
-}
-
-const props = defineProps<Props>()
+const props = defineProps<InputCubicBezierProps>()
 
 const emit = defineEmits<{
 	'update:modelValue': [CubicBezierValue]
