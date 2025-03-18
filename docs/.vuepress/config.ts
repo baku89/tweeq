@@ -43,12 +43,7 @@ export default defineUserConfig({
 		repo: 'baku89/tweeq',
 	}),
 	locales: {
-		'/': {
-			lang: 'English',
-			title: 'Tweeq',
-			description:
-				'A collection of Vue.js components for creative professionals',
-		},
+		'/': {lang: 'en-US'},
 	},
 	bundler: viteBundler({
 		viteOptions: {
