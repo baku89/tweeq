@@ -9,6 +9,6 @@ export interface InputButtonProps {
 	label?: string
 	tooltip?: string
 	blink?: boolean
-	gray?: boolean
+	subtle?: boolean
 	narrow?: boolean
 }

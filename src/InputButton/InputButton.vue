@@ -9,7 +9,7 @@ defineProps<InputButtonProps>()
 <template>
 	<button
 		class="InputButton"
-		:class="{blink, gray, narrow}"
+		:class="{blink, subtle, narrow}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="disabled"
@@ -32,7 +32,7 @@ defineProps<InputButtonProps>()
 	align-items center
 	justify-content center
 	hover-transition(background, color)
-	gap 4px
+	gap 2px
 
 	use-input-position()
 	button-focus-style()
@@ -48,14 +48,17 @@ defineProps<InputButtonProps>()
 
 	.icon
 		display block
+		font-size var(--tq-input-height)
 
 	.label
 		line-height var(--tq-input-height)
 
 	// Styles
-	&.gray
+	&.subtle
 		background var(--tq-color-input)
-		color var(--tq-color-on-input)
+
+		&:not(:hover)
+			color var(--tq-color-on-input)
 
 		&:hover
 			background var(--tq-color-accent-hover)
