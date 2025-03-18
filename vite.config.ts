@@ -18,6 +18,11 @@ export default defineConfig(({mode}) => {
 			outDir: 'lib',
 			rollupOptions: {
 				external: ['vue'],
+				output: {
+					globals: {
+						vue: 'Vue',
+					},
+				},
 			},
 		},
 

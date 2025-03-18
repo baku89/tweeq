@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {vec2} from 'linearly'
-import MonacoEditor from 'monaco-editor-vue3'
+import MonacoEditorVue3 from 'monaco-editor-vue3'
 
 import type {MonacoEditorProps} from './types'
 
@@ -181,11 +181,11 @@ defineEmits<{
 </script>
 
 <template>
-	<MonacoEditor class="MonacoEditor" />
+	<MonacoEditorVue3 class="TqMonacoEditor" />
 </template>
 
 <style lang="stylus" scoped>
-.MonacoEditor
+.TqMonacoEditor
 	position relative
 	min-height 0
 	background transparent
