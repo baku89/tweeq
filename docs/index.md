@@ -24,7 +24,7 @@ Tweeq is a collection of [Vue.js](https://vuejs.org) components for creative pro
 
 It is continuously developed by the visual artist [Baku Hashimoto](https://baku89.com).
 
-# How to Use
+## How to Use
 
 ### Installation
 
