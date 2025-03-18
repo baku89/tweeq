@@ -1,17 +1,11 @@
 <script lang="ts">
 // Forked from: https://github.com/JanGuillermo/vue3-markdown-it
-
-import './katex.css'
-
-import MarkdownItKatex from '@traptitech/markdown-it-katex'
 import MarkdownIt from 'markdown-it'
 import MarkdownItAnchor from 'markdown-it-anchor'
 import MarkdownItDeflist from 'markdown-it-deflist'
 import MarkdownItFootnote from 'markdown-it-footnote'
 import MarkdownItTOC, {type TocOptions} from 'markdown-it-toc-done-right'
 import {defineComponent, h, onMounted, type PropType, ref, watch} from 'vue'
-
-// import MarkdownItMonacoHighlight from './markdown-it-monaco-highlight'
 
 export default defineComponent({
 	name: 'MarkdownIt',
@@ -70,8 +64,6 @@ export default defineComponent({
 				.use(MarkdownItAnchor, props.anchor)
 				.use(MarkdownItDeflist)
 				.use(MarkdownItFootnote)
-				.use(MarkdownItKatex)
-				// .use(MarkdownItMonacoHighlight)
 				.use(MarkdownItTOC, props.toc)
 				.set({
 					breaks: props.breaks,
