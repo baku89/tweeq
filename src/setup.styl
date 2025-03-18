@@ -5,7 +5,7 @@ setup()
 	background var(--tq-color-background)
 	color var(--tq-color-text)
 	user-select none
-	font-family 'Inter'
+	font-family var(--tq-font-ui)
 	font-size var(--tq-rem)
 
 	::selection
@@ -20,6 +20,7 @@ setup()
 		font-style normal
 		font-size inherit
 		cursor inherit
+		transition-behavior allow-discrete
 
 	::-webkit-scrollbar
 		width var(--tq-scrollbar-width)
