@@ -33,9 +33,9 @@ vec3 hsv2rgb(vec3 c) {
 }
 
 void main() {
-	vec3 _hsv = hsva.rgb;
+	vec3 hsv = hsva.rgb;
 
-	vec3 rgb = hsv2rgb(_hsv);
+	vec3 rgb = hsv2rgb(hsv);
 	vec4 outColor = vec4(rgb, 1.0);
 
 
@@ -55,24 +55,24 @@ void main() {
 		} else if (axis == A) {
 			outColor.a = t;
 		} else {
-			vec3 _hsv = rgb2hsv(outColor.rgb);
+			vec3 hsv = rgb2hsv(outColor.rgb);
 
-			if (_hsv[1] == 0.0 || _hsv[2] == 0.0) {
-				_hsv[0] = hue == NONE ? hsva[0] : hue;
-				_hsv[1] = sat == NONE ? hsva[1] : sat;
+			if (hsv[1] == 0.0 || hsv[2] == 0.0) {
+				hsv[0] = hue == NONE ? hsva[0] : hue;
+				hsv[1] = sat == NONE ? hsva[1] : sat;
 			}
 
 			if (axis == H) {
-				_hsv[0] = t;
+				hsv[0] = t;
 				hue = t;
 			} else if (axis == S) {
-				_hsv[1] = t;
+				hsv[1] = t;
 				sat = t;
 			} else if (axis == V) {
-				_hsv[2] = t;
+				hsv[2] = t;
 			}
 
-			outColor.rgb = hsv2rgb(_hsv);
+			outColor.rgb = hsv2rgb(hsv);
 		}
 	}
 
