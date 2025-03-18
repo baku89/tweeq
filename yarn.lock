@@ -1821,10 +1821,10 @@ birpc@^0.2.19:
   resolved "https://registry.yarnpkg.com/birpc/-/birpc-0.2.19.tgz#cdd183a4a70ba103127d49765b4a71349da5a0ca"
   integrity sha512-5WeXXAvTmitV1RqJFppT5QtUiz2p1mRSYU000Jkft5ZUCLJIk4uQriYNO50HknxKwM6jd8utNc66K1qGIwwWBQ==
 
-bndr-js@^0.18.1:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.18.1.tgz#44207701c86d3a2d331298dfe1249d551787c827"
-  integrity sha512-23rPcq0MZLS4gzEfImRQtczXCodcpxn04l0bsFPU47suUo7p0ZKyrnuczPAbNIgkgRzIpwGfn4ZG3k2YEN8Cgg==
+bndr-js@^0.18.5:
+  version "0.18.5"
+  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.18.5.tgz#1a9f5f88fb02f58190afed37a283d77a2c5839db"
+  integrity sha512-84IppJKbW4/ls3EUzGdwv4T4wwbbmPWr2PYzlmBymj90uZw9cCkLxq2m1NYSjL/SlBlOJUTLkkMDEjc8QzLLvA==
   dependencies:
     case "^1.6.3"
     linearly "^0.20.3"
@@ -3256,20 +3256,6 @@ mlly@^1.7.3:
     pkg-types "^1.3.0"
     ufo "^1.5.4"
 
-monaco-editor-vue3@^0.1.10:
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/monaco-editor-vue3/-/monaco-editor-vue3-0.1.10.tgz#617784c95490a6d7da3b183e390c16db5a72d9c8"
-  integrity sha512-C1jhyx+KHQyW1AbjuA8DhIZSqkVquV7MnuWXG9jESd0e+CkzEFzuk1RvNqlN2eJ2fRkvF32yEPHYfvz9quOhHQ==
-  dependencies:
-    monaco-editor "^0.33.0"
-    vite-plugin-monaco-editor "^1.1.0"
-    vue "^3.2.37"
-
-monaco-editor@^0.33.0:
-  version "0.33.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.33.0.tgz#842e244f3750a2482f8a29c676b5684e75ff34af"
-  integrity sha512-VcRWPSLIUEgQJQIE0pVT8FcGBIgFoxz7jtqctE+IiCxWugD0DwgyQBcZBhdSrdMC84eumoqMZsGl2GTreOzwqw==
-
 monaco-themes@^0.4.4:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/monaco-themes/-/monaco-themes-0.4.4.tgz#28ab13e538c4867a9bc89dc67f15dfaf3fc69de1"
@@ -4359,11 +4345,6 @@ vite-plugin-glsl@^1.3.3:
   dependencies:
     "@rollup/pluginutils" "^5.1.4"
 
-vite-plugin-monaco-editor@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-monaco-editor/-/vite-plugin-monaco-editor-1.1.0.tgz#a6238c2e13d5e98dd54a1bc51f6f189325219de3"
-  integrity sha512-IvtUqZotrRoVqwT0PBBDIZPNraya3BxN/bfcNfnxZ5rkJiGcNtO5eAOWWSgT7zullIAEqQwxMU83yL9J5k7gww==
-
 vite@^5.4.3:
   version "5.4.11"
   resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.11.tgz#3b415cd4aed781a356c1de5a9ebafb837715f6e5"
@@ -4426,7 +4407,7 @@ vue-router@^4.5.0:
   dependencies:
     "@vue/devtools-api" "^6.6.4"
 
-vue@^3.2.37, vue@^3.5.13:
+vue@^3.5.13:
   version "3.5.13"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.5.13.tgz#9f760a1a982b09c0c04a867903fc339c9f29ec0a"
   integrity sha512-wmeiSMxkZCSc+PM2w2VRsOYAZC8GdipNFRTsLSfodVqI9mbejKeXEGr8SckuLnrQPGe3oJN5c3K0vpoU9q/wCQ==

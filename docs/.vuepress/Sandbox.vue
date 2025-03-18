@@ -17,9 +17,15 @@ function update(value: T) {
 </script>
 
 <template>
-	<Viewport class="Sandbox">
-		<InputComplex :modelValue="modelValue" :update="update" :scheme="scheme" />
-	</Viewport>
+	<ClientOnly>
+		<Viewport class="Sandbox">
+			<InputComplex
+				:modelValue="modelValue"
+				:update="update"
+				:scheme="scheme"
+			/>
+		</Viewport>
+	</ClientOnly>
 </template>
 
 <style lang="stylus" scoped>

@@ -5,7 +5,7 @@ import {
 	themeFromSourceColor,
 } from '@material/material-color-utilities'
 import {toReactive} from '@vueuse/core'
-import {kebab} from 'case'
+import Case from 'case'
 import {defineStore} from 'pinia'
 import {computed, toRefs, watch, watchEffect} from 'vue'
 
@@ -164,7 +164,7 @@ export const useThemeStore = defineStore('theme', () => {
 		theme,
 		() => {
 			for (const [key, value] of Object.entries(theme.value)) {
-				const varName = '--tq-' + kebab(key)
+				const varName = '--tq-' + Case.kebab(key)
 
 				const cssValue = typeof value === 'number' ? `${value}px` : value
 

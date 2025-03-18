@@ -25,7 +25,10 @@ export default defineConfig(({mode}) => {
 				},
 			},
 		},
-
+		ssr: {
+			noExternal: ['@baku89/pave'],
+			external: ['paper', 'paper-jsdom-canvas'],
+		},
 		define: {
 			// This is needed to make the PromiseQueue class available in the browser.
 			'process.env.PROMISE_QUEUE_COVERAGE': false,

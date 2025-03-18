@@ -21,15 +21,17 @@ function update(value: any) {
 </script>
 
 <template>
-	<Viewport class="Example">
-		<div class="input">
-			<slot :modelValue="modelValue" :update="update" :options="options" />
-		</div>
+	<ClientOnly>
+		<Viewport class="Example">
+			<div class="input">
+				<slot :modelValue="modelValue" :update="update" :options="options" />
+			</div>
 
-		<div class="options">
-			<InputComplex v-model="options" :scheme="scheme as any" />
-		</div>
-	</Viewport>
+			<div class="options">
+				<InputComplex v-model="options" :scheme="scheme as any" />
+			</div>
+		</Viewport>
+	</ClientOnly>
 </template>
 
 <style lang="stylus" scoped>

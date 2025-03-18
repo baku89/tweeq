@@ -1,5 +1,5 @@
 import * as Bndr from 'bndr-js'
-import {title} from 'case'
+import Case from 'case'
 import {defineStore} from 'pinia'
 import {markRaw, onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
 
@@ -41,12 +41,29 @@ export interface ActionGroupOptions {
 	children: ActionOptions[]
 }
 
-const keyboard = Bndr.keyboard()
-const gamepad = Bndr.gamepad()
+// 型定義だけを行い、実際の初期化はクライアントサイドでのみ行う
+let keyboard: ReturnType<typeof Bndr.keyboard> | undefined
+let gamepad: ReturnType<typeof Bndr.gamepad> | undefined
+
+// クライアントサイドでのみ初期化する関数
+const initBndr = () => {
+	if (typeof window !== 'undefined' && (!keyboard || !gamepad)) {
+		keyboard = Bndr.keyboard()
+		gamepad = Bndr.gamepad()
+	}
+}
 
 function bindDescriptorToEmitter(
 	descriptor: BindDescriptor
 ): Bndr.Emitter | undefined {
+	// SSRの場合は早期リターン
+	if (typeof window === 'undefined') {
+		return undefined
+	}
+
+	// 必要なら初期化
+	initBndr()
+
 	const binds = Array.isArray(descriptor) ? descriptor : [descriptor]
 
 	const emitters = binds.map(b => {
@@ -54,13 +71,13 @@ function bindDescriptorToEmitter(
 			if (b.startsWith('gamepad:')) {
 				// Gamepad
 				const button = b.split(':')[1]
-				return gamepad.button(button as Bndr.ButtonName).down()
+				return gamepad!.button(button as Bndr.ButtonName).down()
 			} else {
 				const repeat = b.endsWith('?repeat')
 				b = b.replace(/\?.+$/, '')
 
 				// keyboard
-				return keyboard.hotkey(b, {
+				return keyboard!.hotkey(b, {
 					capture: true,
 					preventDefault: true,
 					repeat,
@@ -83,6 +100,11 @@ export const useActionsStore = defineStore('actions', () => {
 	const menu = ref<Action[]>([])
 
 	function register(options: ActionOptions[]) {
+		// SSRの場合は何もしない
+		if (typeof window === 'undefined') {
+			return
+		}
+
 		const emitters = new Set<Bndr.Emitter>()
 
 		for (const option of options) {
@@ -106,7 +128,7 @@ export const useActionsStore = defineStore('actions', () => {
 		}
 
 		function registerGroup(option: ActionGroupOptions, parent: Action[]) {
-			const label = option.label ? option.label : title(option.id)
+			const label = option.label ? option.label : Case.title(option.id)
 
 			let group: ActionGroup
 
@@ -134,7 +156,7 @@ export const useActionsStore = defineStore('actions', () => {
 				existingAction.bind?.dispose()
 			}
 
-			const label = option.label ? option.label : title(option.id)
+			const label = option.label ? option.label : Case.title(option.id)
 			const bind = option.bind
 				? bindDescriptorToEmitter(option.bind)
 				: undefined
@@ -162,6 +184,11 @@ export const useActionsStore = defineStore('actions', () => {
 	}
 
 	async function perform(id: string): Promise<void> {
+		// SSRの場合は何もしない
+		if (typeof window === 'undefined') {
+			return
+		}
+
 		const action = allActions[id]
 		if (!action) {
 			throw new Error(`Action ${id} is not registered`)

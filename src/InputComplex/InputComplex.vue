@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
-import {capital} from 'case'
+import Case from 'case'
 import {computed, shallowRef, toRaw, watchEffect} from 'vue'
 
 import {InputCheckbox} from '../InputCheckbox'
@@ -42,7 +42,7 @@ function getModelValue<K extends keyof T>(name: K) {
 		<Parameter
 			v-for="[name, param] in entries"
 			:key="name"
-			:label="param.label ?? capital(name as any)"
+			:label="param.label ?? Case.capital(name as any)"
 			:icon="param.icon"
 		>
 			<InputNumber

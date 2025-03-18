@@ -1,4 +1,4 @@
-import {capital} from 'case'
+import Case from 'case'
 import {computed} from 'vue'
 
 export type Validator<T> = (value: T) => T | undefined
@@ -41,7 +41,7 @@ export function useLabelizer<T>(props: LabelizerProps<T>) {
 		const suffix = props.suffix || ''
 
 		if (!props.labels) {
-			return (v: T) => prefix + capital(String(v)) + suffix
+			return (v: T) => prefix + Case.capital(String(v)) + suffix
 		}
 
 		const labels = props.labels

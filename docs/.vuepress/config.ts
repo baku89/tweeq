@@ -53,6 +53,9 @@ export default defineUserConfig({
 	bundler: viteBundler({
 		viteOptions: {
 			plugins: [glsl()],
+			build: {
+				ssr: false,
+			},
 			resolve: {
 				alias: [
 					{
@@ -60,6 +63,10 @@ export default defineUserConfig({
 						replacement: fileURLToPath(new URL('../../src', import.meta.url)),
 					},
 				],
+			},
+			ssr: {
+				noExternal: ['paper', 'paper-jsdom', '@baku89/pave'],
+				external: ['paper', 'paper-jsdom', '@baku89/pave'],
 			},
 		},
 	}),

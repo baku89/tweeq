@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import {vec2} from 'linearly'
-import MonacoEditorVue3 from 'monaco-editor-vue3'
 
 import type {MonacoEditorProps} from './types'
 
-withDefaults(defineProps<MonacoEditorProps>(), {})
+const props = withDefaults(defineProps<MonacoEditorProps>(), {})
 
 defineEmits<{
 	'update:modelValue': [value: string]
@@ -181,7 +180,7 @@ defineEmits<{
 </script>
 
 <template>
-	<MonacoEditorVue3 class="TqMonacoEditor" />
+	<div class="TqMonacoEditor">{{ props.modelValue }}</div>
 </template>
 
 <style lang="stylus" scoped>
