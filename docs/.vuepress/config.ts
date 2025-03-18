@@ -23,14 +23,6 @@ export default defineUserConfig({
 				crossorigin: 'anonymous',
 			},
 		],
-		[
-			'link',
-			{
-				rel: 'stylesheet',
-				href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
-				crossorigin: 'anonymous',
-			},
-		],
 	],
 	theme: defaultTheme({
 		navbar: [
@@ -40,7 +32,7 @@ export default defineUserConfig({
 			},
 			{
 				text: 'Components',
-				link: '/components/',
+				link: '/components',
 			},
 			{
 				text: 'Example',
@@ -55,7 +47,7 @@ export default defineUserConfig({
 			lang: 'English',
 			title: 'Tweeq',
 			description:
-				'A collection of Vue.js components for designers and artists',
+				'A collection of Vue.js components for creative professionals',
 		},
 	},
 	bundler: viteBundler({
