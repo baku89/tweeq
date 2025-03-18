@@ -1,6 +1,6 @@
 import {onKeyStroke, useEventListener, useKeyModifier} from '@vueuse/core'
 import {defineStore} from 'pinia'
-import {readonly, type Ref, ref, shallowRef, watch} from 'vue'
+import {type Ref, ref, shallowRef, watch} from 'vue'
 
 interface MultiSelectSource {
 	el: Ref<HTMLElement | null>
@@ -21,7 +21,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	let popupEl: HTMLElement | null = null
 
 	const selectStores = new Map<symbol, MultiSelectStore>()
-	const count = ref(0)
+	const focusCount = ref(0)
 
 	const popupVisible = ref(false)
 	const focusedElement = shallowRef<HTMLElement | null>(null)
@@ -94,7 +94,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	}
 
 	function updateFocusCount() {
-		count.value = [...selectStores.values()].filter(
+		focusCount.value = [...selectStores.values()].filter(
 			({focusing, subFocusing}) => focusing.value || subFocusing.value
 		).length
 	}
@@ -130,12 +130,12 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	return {
 		register,
-		popupVisible: readonly(popupVisible),
-		focusedElement: readonly(focusedElement),
+		popupVisible,
+		focusedElement,
 		captureValues,
 		updateValues,
 		conformValues,
-		focusCount: readonly(count),
+		focusCount,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
 		},
