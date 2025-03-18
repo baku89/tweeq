@@ -10,7 +10,6 @@ export default defineConfig(({mode}) => {
 		plugins: [glsl(), vue(), dts({tsconfigPath: './tsconfig.build.json'})],
 		publicDir: mode === 'development' ? undefined : false,
 		build: {
-			target: 'esnext',
 			lib: {
 				name: 'Tweeq',
 				entry: resolve(__dirname, 'src/index.ts'),
@@ -18,7 +17,7 @@ export default defineConfig(({mode}) => {
 			},
 			outDir: 'lib',
 			rollupOptions: {
-				external: ['vue', '@traptitech/markdown-it-katex', 'monaco-editor'],
+				external: ['vue'],
 			},
 		},
 
