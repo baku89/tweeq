@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-import {InputComplex, Scheme} from 'tweeq'
+import {InputComplex, Scheme, Viewport} from 'tweeq'
 import {shallowRef} from 'vue'
 
 interface Props {
@@ -17,16 +17,12 @@ function update(value: T) {
 </script>
 
 <template>
-	<div class="Sandbox">
+	<Viewport class="Sandbox">
 		<InputComplex :modelValue="modelValue" :update="update" :scheme="scheme" />
-	</div>
+	</Viewport>
 </template>
 
-<style lang="stylus">
-@import '../../src/setup.styl'
-
+<style lang="stylus" scoped>
 .Sandbox
-	setup()
-	position relative
 	padding 2rem 0
 </style>

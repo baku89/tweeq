@@ -5,7 +5,7 @@ heroHeight: 160
 actionText: Get Started →
 actions:
   - text: Components
-    link: /components/
+    link: /components
     type: secondary
   - text: Example
     link: /example
