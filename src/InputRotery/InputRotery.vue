@@ -216,7 +216,7 @@ const overlayPath = computed(() => {
 		ref="$el"
 		class="InputRotery"
 		:class="{tweaking}"
-		:data-mode="tweakMode"
+		:tweak-mode="tweakMode"
 		v-bind="$attrs"
 	>
 		<SvgIcon mode="block" class="rotery">
@@ -235,35 +235,29 @@ const overlayPath = computed(() => {
 			/>
 		</SvgIcon>
 	</button>
-	<teleport to="body">
-		<div v-if="tweaking" class="tq-overlay">
-			<svg class="overlay">
-				<path class="bold" :d="overlayPath" />
-				<path
-					class="thin gray"
-					:class="{dashed: !doQuantize, bold: doQuantize, quantize: doQuantize}"
-					:d="metersPath"
-				/>
-				<path class="bold" :d="activeMeterPath" />
-			</svg>
-			<div
-				ref="overlayLabel"
-				class="overlay-label"
+	<div v-if="tweaking" class="overlay">
+		<svg>
+			<path class="thin gray" :class="{quantize: doQuantize}" :d="metersPath" />
+			<path class="bold" :d="overlayPath" />
+			<path class="bold" :d="activeMeterPath" />
+		</svg>
+		<div
+			ref="overlayLabel"
+			class="overlay-label"
+			:style="{
+				top: overlayLabelPos[1] + 'px',
+				left: overlayLabelPos[0] + 'px',
+			}"
+		>
+			{{ display }}
+			<span
+				class="arrows"
 				:style="{
-					top: overlayLabelPos[1] + 'px',
-					left: overlayLabelPos[0] + 'px',
+					transform: `rotate(${overlayArrowAngle}deg)`,
 				}"
-			>
-				{{ display }}
-				<span
-					class="arrows"
-					:style="{
-						transform: `rotate(${overlayArrowAngle}deg)`,
-					}"
-				/>
-			</div>
+			/>
 		</div>
-	</teleport>
+	</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -278,7 +272,7 @@ const overlayPath = computed(() => {
 	hover-transition(transform)
 	z-index 1
 
-	&:hover, &.tweaking
+	&:hover, &:focus-visible, &.tweaking
 		transform scale(3)
 
 .rotery
@@ -289,12 +283,14 @@ const overlayPath = computed(() => {
 .circle
 	fill var(--tq-color-accent)
 	stroke none
-	hover-transition(fill)
 
 	&:hover,
 	.InputRotery:focus-visible &,
-	.InputRotery.tweaking[data-mode=relative] &
+	.InputRotery[tweak-mode=relative] &
 		fill var(--tq-color-accent-hover)
+
+	.InputRotery[tweak-mode=absolute] &
+		fill var(--tq-color-accent-soft)
 
 
 .tip
@@ -302,16 +298,16 @@ const overlayPath = computed(() => {
 	stroke var(--tq-color-input)
 	stroke-width 3
 	stroke-linecap round
-	hover-transition(stroke)
 
-	[data-mode=absolute] &
+	[tweak-mode=absolute] &
 		stroke var(--tq-color-accent-hover)
 
 .overlay
 	input-overlay()
 
 	.quantize
-		stroke var(--tq-color-input-tinted-accent-hover) !important
+		stroke-width 2
+		stroke var(--tq-color-accent-soft-hover) !important
 
 .overlay-label
 	tooltip-style()

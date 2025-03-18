@@ -86,7 +86,7 @@ export const useThemeStore = defineStore('theme', () => {
 			// Accent
 			colorAccent: radixColors.accentScale[8],
 			colorOnAccent: radixColors.accentContrast,
-			colorAccentHover: radixColors.accentScale[9],
+			colorAccentHover: radixColors.accentScale[10],
 			colorAccentSoft: radixColors.accentScale[4],
 			colorAccentSoftHover: radixColors.accentScale[5],
 

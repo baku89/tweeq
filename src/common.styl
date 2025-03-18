@@ -12,7 +12,7 @@ tooltip-style()
 	border-radius 9999px
 	background var(--tq-color-surface)
 	color var(--tq-color-on-surface)
-	backdrop-filter blur(6px)
+	backdrop-filter blur(6px)	
 
 popup-style()
 	pane-style()
@@ -158,19 +158,24 @@ input-style()
 
 input-overlay()
 	position fixed
-	top 0
-	left 0
+	inset 0
 	z-index 1000
-	width 100%
-	height 100%
+	pointer-events none
+
+	svg
+		position absolute
+		inset 0
+		width 100vw
+		height 100vh
+		stroke-linecap round
+		stroke-linejoin round
 
 	.thin, .bold, .extra-bold
 		fill none
 		stroke var(--tq-color-accent)
-		stroke-linecap butt
 
-		&.gray
-			stroke var(--tq-color-border)
+	.gray
+		stroke var(--tq-color-border)
 
 	.thin
 		stroke-width 1
@@ -180,10 +185,6 @@ input-overlay()
 
 	.extra-bold
 		stroke-width 4
-
-	.dashed
-		fill none
-		stroke-width 1
 
 	.label
 		font-size 1em
