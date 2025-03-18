@@ -1,4 +1,8 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import {useTweeq} from '../useTweeq'
+
+useTweeq()
+</script>
 
 <template>
 	<div class="TqViewport">
