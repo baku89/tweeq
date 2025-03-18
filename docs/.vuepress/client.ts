@@ -2,13 +2,8 @@ import {defineClientConfig} from '@vuepress/client'
 import {createPinia} from 'pinia'
 import {App} from 'vue'
 
-// ブラウザでない環境で問題を起こす可能性のあるimportを避けるために
-// コンポーネントをダイナミックインポートする関数
 const registerComponents = async (app: App) => {
-	// tweeqのコンポーネントを動的に読み込む
 	const Tq = await import('tweeq')
-
-	// ドキュメント用のカスタムコンポーネント
 	const InputExample = await import('./InputExample.vue')
 	const Sandbox = await import('./Sandbox.vue')
 
@@ -27,7 +22,7 @@ const registerComponents = async (app: App) => {
 }
 
 export default defineClientConfig({
-	enhance({app}) {
+	enhance: async ({app}) => {
 		// Piniaの設定
 		const pinia = createPinia()
 		app.use(pinia)
@@ -35,7 +30,7 @@ export default defineClientConfig({
 		// クライアントサイドでのみコンポーネントを登録
 		if (typeof window !== 'undefined') {
 			// ブラウザ環境でのみ実行される
-			registerComponents(app)
+			await registerComponents(app)
 		}
 	},
 })
