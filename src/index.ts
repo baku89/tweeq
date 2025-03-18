@@ -9,4 +9,3 @@ export type {
 } from './stores/actions'
 export * from './use/useBndr'
 export {initTweeq, useTweeq} from './useTweeq'
-export * from './util'
