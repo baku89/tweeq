@@ -65,11 +65,26 @@
 
 <InputExample
 	:initialValue="0"
-	:scheme="{label: {type: 'string'}}"
-	:options="{label: 'Click me'}"
+	:scheme="{
+		label: {type: 'string'},
+		icon: {type: 'string'},
+		subtle: {type: 'boolean'},
+		blink: {type: 'boolean'},
+	}"
+	:options="{
+		label: 'Click me',
+		icon: '',
+		subtle: false,
+		blink: false,
+	}"
 	v-slot="{options}"
 >
-	<InputButton :label="options.label" />
+	<InputButton
+		:label="options.label"
+		:icon="options.icon"
+		:subtle="options.subtle"
+		:blink="options.blink"
+	/>
 </InputExample>
 
 ## InputDropdown

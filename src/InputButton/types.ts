@@ -10,5 +10,4 @@ export interface InputButtonProps {
 	tooltip?: string
 	blink?: boolean
 	subtle?: boolean
-	narrow?: boolean
 }

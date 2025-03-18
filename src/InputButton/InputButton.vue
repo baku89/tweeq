@@ -9,7 +9,7 @@ defineProps<InputButtonProps>()
 <template>
 	<button
 		class="InputButton"
-		:class="{blink, subtle, narrow}"
+		:class="{blink, subtle}"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
 		:disabled="disabled"
@@ -32,7 +32,9 @@ defineProps<InputButtonProps>()
 	align-items center
 	justify-content center
 	hover-transition(background, color)
-	gap 2px
+	gap .2em
+	--bg var(--tq-color-accent)
+	--bg-blink var(--tq-color-accent-hover)
 
 	use-input-position()
 	button-focus-style()
@@ -40,11 +42,11 @@ defineProps<InputButtonProps>()
 	&:hover
 		background var(--tq-color-accent-hover)
 
-	&:has(.label)
-		padding 0 1em
+	&:has(.label):not(:has(.icon))
+		padding 0 .75em
 
 	&:has(.icon):has(.label)
-		padding-left .5em
+		padding 0 .75em 0 0.2em
 
 	.icon
 		display block
@@ -56,9 +58,11 @@ defineProps<InputButtonProps>()
 	// Styles
 	&.subtle
 		background var(--tq-color-input)
+		--bg var(--tq-color-input)
+		--bg-blink var(--tq-color-input-hover)
 
 		&:not(:hover)
-			color var(--tq-color-on-input)
+			color var(--tq-color-text)
 
 		&:hover
 			background var(--tq-color-accent-hover)
@@ -69,14 +73,7 @@ defineProps<InputButtonProps>()
 
 	@keyframes blink
 		0%
-			background var(--tq-color-accent)
+			background var(--bg)
 		100%
-			background var(--tq-color-accent-hover)
-
-	&.narrow
-		min-width auto
-		width calc(var(--tq-input-height) * .75)
-
-		.icon
-			margin 0 -50%
+			background var(--bg-blink)
 </style>
