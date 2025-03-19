@@ -57,7 +57,7 @@ interface UseDragOptions {
 	 */
 	disableClick?: boolean
 
-	onClick?: () => void
+	onClick?: (state: DragState, event: PointerEvent) => void
 	onDrag?: (state: DragState, event: PointerEvent) => void
 	onDragStart?: (state: DragState, event: PointerEvent) => void
 	onDragEnd?: (state: DragState, event: PointerEvent) => void
@@ -214,7 +214,7 @@ export function useDrag(
 			if (state.dragging) {
 				onDragEnd?.(state, event)
 			} else {
-				onClick?.()
+				onClick?.(state, event)
 			}
 		}
 
