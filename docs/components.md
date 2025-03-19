@@ -2,6 +2,35 @@
 
 # Components
 
+
+## Common Properties
+
+### Props
+
+| Name | Type |  Description |
+|------|---------|-------------|
+| `modelValue` | `T`  | The model value |
+
+
+### Attributes
+
+| Name | Type |  Description |
+|------|---------|-------------|
+| `disabled` | `boolean` | Whether the input is disabled |
+| `invalid` | `boolean` | Whether the input is invalid |
+| `horizontal-position` | `'left' \| 'center' \| 'right'` | The horizontal position of the input |
+| `vertical-position` | `'top' \| 'center' \| 'bottom'` | The vertical position of the input |
+
+
+### Events
+
+| Name | Payload | Description |
+|------|---------|-------------|
+| `update:modelValue` | `value: T` | Emitted when the model value is updated |
+| `focus` | `e: Event` | Emitted when the input is focused |
+| `blur` | `e: Event` | Emitted when the input is blurred |
+| `confirm` | `void` | Emitted when the editing or tweaking is finished |
+
 ## InputNumber
 
 <InputExample
