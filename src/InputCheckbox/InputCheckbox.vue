@@ -34,8 +34,8 @@ const {tweakingValue} = useInputSwitch({
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
-				@focus="emit('focus', $event)"
-				@blur="emit('blur', $event)"
+				@focus="emit('focus')"
+				@blur="emit('blur')"
 			/>
 			<SvgIcon mode="block" class="mark">
 				<path class="subtle" d="M5,19l8,6L27,9" />

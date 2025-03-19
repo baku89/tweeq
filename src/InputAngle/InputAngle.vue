@@ -25,8 +25,8 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 		<InputRotery
 			v-bind="props"
 			@update:modelValue="emit('update:modelValue', $event)"
-			@focus="emit('focus', $event)"
-			@blur="emit('blur', $event)"
+			@focus="emit('focus')"
+			@blur="emit('blur')"
 			@confirm="emit('confirm')"
 		/>
 		<InputNumber
@@ -36,8 +36,8 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 			:precision="0"
 			suffix="°"
 			@update:modelValue="emit('update:modelValue', $event)"
-			@focus="emit('focus', $event)"
-			@blur="emit('blur', $event)"
+			@focus="emit('focus')"
+			@blur="emit('blur')"
 			@confirm="emit('confirm')"
 		/>
 	</div>

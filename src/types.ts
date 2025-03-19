@@ -22,8 +22,8 @@ export interface InputProps<T> {
 
 export interface InputEmits<T> {
 	'update:modelValue': [value: T]
-	focus: [e: Event]
-	blur: [e: Event]
+	focus: []
+	blur: []
 	confirm: []
 }
 

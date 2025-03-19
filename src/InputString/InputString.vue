@@ -23,7 +23,7 @@ const emit = defineEmits<InputEmits<string>>()
 
 function onFocus(e: Event) {
 	;(e.target as HTMLInputElement).select()
-	emit('focus', e)
+	emit('focus')
 }
 
 function onInput(e: Event) {
@@ -33,8 +33,9 @@ function onInput(e: Event) {
 	emit('update:modelValue', newValue)
 }
 
-function onBlur(e: Event) {
-	emit('blur', e)
+function onBlur() {
+	emit('confirm')
+	emit('blur')
 }
 </script>
 
@@ -58,7 +59,7 @@ function onBlur(e: Event) {
 			@focus="onFocus"
 			@blur="onBlur"
 			@input.stop="onInput"
-			@keydown.enter.prevent="emit('confirm')"
+			@keydown.enter="emit('confirm')"
 		/>
 	</div>
 </template>

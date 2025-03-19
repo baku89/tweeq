@@ -71,9 +71,9 @@ export function useInputSwitch({
 		emit('confirm')
 	})
 
-	useEventListener(input, 'focus', e => emit('focus', e))
+	useEventListener(input, 'focus', () => emit('focus'))
 
-	useEventListener(input, 'blur', e => emit('blur', e))
+	useEventListener(input, 'blur', () => emit('blur'))
 
 	return {tweakingValue}
 }

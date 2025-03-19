@@ -7,7 +7,7 @@ import {computed, type Ref, ref, shallowRef, watch} from 'vue'
 
 import {InputString} from '../InputString'
 import {Popover} from '../Popover'
-import {useLabelizer} from '../types'
+import {type InputEmits, useLabelizer} from '../types'
 import {unsignedMod} from '../util'
 import type {InputDropdownProps} from './types'
 
@@ -19,11 +19,7 @@ const props = withDefaults(defineProps<InputDropdownProps<T>>(), {
 
 const labelizer = useLabelizer(props)
 
-const emit = defineEmits<{
-	'update:modelValue': [value: T]
-	focus: [e: Event]
-	blur: [e: Event]
-}>()
+const emit = defineEmits<InputEmits<T>>()
 
 defineOptions({
 	inheritAttrs: false,
@@ -114,9 +110,9 @@ function onInputPointerdown(e: PointerEvent) {
 	}
 }
 
-function onInputStringFocus(e: Event) {
+function onInputStringFocus() {
 	open.value = true
-	emit('focus', e)
+	emit('focus')
 }
 
 function onInputStringUpdate(value: string) {
@@ -126,9 +122,9 @@ function onInputStringUpdate(value: string) {
 	open.value = true
 }
 
-function onInputStringBlur(e: Event) {
+function onInputStringBlur() {
 	open.value = false
-	emit('blur', e)
+	emit('blur')
 }
 </script>
 

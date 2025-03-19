@@ -182,7 +182,7 @@ const {dragging: tweaking} = useDrag($root, {
 		speedMultiplierGesture.value = 1
 		displayPrecision.value = getNumberPresition(display.value)
 
-		emit('focus', event)
+		emit('focus')
 	},
 	onDrag(state, event) {
 		const [dx, dy] = state.delta
@@ -239,11 +239,11 @@ const {dragging: tweaking} = useDrag($root, {
 			}, 200)
 		}
 	},
-	onDragEnd(_, event) {
+	onDragEnd() {
 		displayPrecision.value = 0
 
 		emit('confirm')
-		emit('blur', event)
+		emit('blur')
 	},
 })
 
@@ -298,9 +298,9 @@ function onInput(e: Event) {
 	display.value = el.value
 }
 
-function onBlur(e: FocusEvent) {
+function onBlur() {
 	emit('confirm')
-	emit('blur', e)
+	emit('blur')
 }
 
 //------------------------------------------------------------------------------
@@ -527,7 +527,7 @@ const barStyle = computed<StyleValue>(() => {
 			:invalid="isInvalid"
 			:disabled="disabled || undefined"
 			@input="onInput"
-			@focus="emit('focus', $event)"
+			@focus="emit('focus')"
 			@blur="onBlur"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
