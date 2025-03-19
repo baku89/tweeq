@@ -1,18 +1,18 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends readonly number[]">
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
+import {InputEmits} from '../types'
 import {InputVecProps} from './types'
 
-const props = defineProps<InputVecProps>()
+const props = defineProps<InputVecProps<T>>()
 
-const emit = defineEmits<{
-	'update:modelValue': [readonly number[]]
-}>()
+const emit = defineEmits<InputEmits<T, [index: number]>>()
 
 function updateValue(index: number, value: number) {
 	const newValue = [...props.modelValue]
 	newValue[index] = value
-	emit('update:modelValue', newValue)
+
+	emit('update:modelValue', newValue as unknown as T, index)
 }
 
 function minAt(i: number): number | undefined {
@@ -25,6 +25,10 @@ function maxAt(i: number): number | undefined {
 
 function stepAt(i: number): number | undefined {
 	return Array.isArray(props.step) ? props.step[i] : props.step
+}
+
+function leftIconAt(i: number) {
+	return Array.isArray(props.icon) ? props.icon[i] : props.icon
 }
 
 function horizontalPositionAt(i: number): 'left' | 'right' | 'middle' {
@@ -44,9 +48,13 @@ function horizontalPositionAt(i: number): 'left' | 'right' | 'middle' {
 			:min="minAt(i)"
 			:max="maxAt(i)"
 			:step="stepAt(i)"
+			:leftIcon="leftIconAt(i)"
 			:modelValue="v"
 			:horizontal-position="horizontalPositionAt(i)"
 			@update:modelValue="updateValue(i, $event)"
+			@focus="emit('focus', i)"
+			@blur="emit('blur', i)"
+			@confirm="emit('confirm', i)"
 		/>
 	</InputGroup>
 </template>
