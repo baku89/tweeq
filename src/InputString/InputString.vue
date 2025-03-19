@@ -51,10 +51,6 @@ function onInput(e: Event) {
 
 	emit('input', e)
 }
-
-function onBlur(e: Event) {
-	emit('blur', e)
-}
 </script>
 
 <template>
@@ -75,7 +71,7 @@ function onBlur(e: Event) {
 			:disabled="disabled"
 			:invalid="invalid || undefined"
 			@focus="onFocus"
-			@blur="onBlur"
+			@blur="$emit('blur', $event)"
 			@input.stop="onInput"
 		/>
 	</div>

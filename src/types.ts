@@ -20,6 +20,13 @@ export interface InputProps<T> {
 	disabled?: boolean
 }
 
+export interface InputEmits<T> {
+	'update:modelValue': [value: T]
+	focus: [e: Event]
+	blur: [e: Event]
+	confirm: []
+}
+
 export interface InputBoxProps<T> extends InputProps<T> {
 	horizontalPosition?: InputHorizontalPosition
 	verticalPosition?: InputVerticalPosition

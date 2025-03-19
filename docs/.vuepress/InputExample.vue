@@ -15,14 +15,30 @@ const options = shallowRef<T>(cloneDeep(props.options))
 
 const modelValue = ref(props.initialValue)
 
-function update(value: any) {
-	modelValue.value = value
-}
-
 const isFullScreen = ref(false)
 
 function fullScreen() {
 	isFullScreen.value = !isFullScreen.value
+}
+
+const listeners = {
+	update: (value: any) => {
+		// eslint-disable-next-line no-console
+		console.info('update\t', value)
+		modelValue.value = value
+	},
+	focus: (e: Event) => {
+		// eslint-disable-next-line no-console
+		console.info('focus\t', e)
+	},
+	blur: (e: Event) => {
+		// eslint-disable-next-line no-console
+		console.info('blur\t', e)
+	},
+	confirm: () => {
+		// eslint-disable-next-line no-console
+		console.info('confirm\t')
+	},
 }
 </script>
 
@@ -37,7 +53,11 @@ function fullScreen() {
 				@click="fullScreen"
 			/>
 			<div class="input">
-				<slot :modelValue="modelValue" :update="update" :options="options" />
+				<slot
+					:modelValue="modelValue"
+					:options="options"
+					:listeners="listeners"
+				/>
 			</div>
 
 			<div class="options">

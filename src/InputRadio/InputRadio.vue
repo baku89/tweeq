@@ -2,7 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {computed} from 'vue'
 
-import {type LabelizerProps, useLabelizer} from '../types'
+import {type InputEmits, type LabelizerProps, useLabelizer} from '../types'
 
 interface CompleteOption {
 	value: T
@@ -15,9 +15,7 @@ type Props = LabelizerProps<T> & {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
-	'update:modelValue': [T]
-}>()
+const emit = defineEmits<InputEmits<T>>()
 
 defineSlots<{
 	option: {label: string; value: T; isActive: boolean}
@@ -74,14 +72,11 @@ function onChange(index: number) {
 	display flex
 	overflow hidden
 	background var(--tq-color-input)
-	// width 12.6em
 	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
+	padding 0
 	gap 1px
-	hover-transition(background, box-shadow)
-
-	// &:focus-within
-	// 	box-shadow 0 0 0 1px var(--tq-color-accent)
+	hover-transition(background)
 
 .list
 	flex-grow 1

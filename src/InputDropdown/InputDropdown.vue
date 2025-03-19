@@ -109,7 +109,6 @@ function onPressArrow(isUp: boolean) {
 }
 
 function onInputPointerdown(e: PointerEvent) {
-	console.log('onInputPointerdown', e.isPrimary)
 	if (e.isPrimary) {
 		open.value = true
 	}

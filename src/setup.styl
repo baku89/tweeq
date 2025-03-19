@@ -14,12 +14,24 @@ setup()
 
 	*, *:before, *:after
 		content unset
+		margin 0
+		border 0
+		padding 0
+		background transparent
 		box-sizing border-box
 		outline none
+		
+		color inherit
 		font-weight inherit
 		font-style normal
 		font-size inherit
+		font-size inherit
+		font-family inherit
+		text-align inherit
+		line-height inherit
+
 		cursor inherit
+		user-select none
 		transition-behavior allow-discrete
 
 	::-webkit-scrollbar
@@ -31,12 +43,5 @@ setup()
 		border-radius 9999px
 		background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
 
-	button, input
-		padding 0
-		border 0
-		background transparent
-		color inherit
-		text-align inherit
-		font-size inherit
-		font-family inherit
-		user-select none
+
+

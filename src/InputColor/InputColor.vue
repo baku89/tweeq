@@ -7,6 +7,7 @@ import {computed, ref, shallowRef, watchEffect} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
+import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
 import InputColorPicker from './InputColorPicker.vue'
@@ -25,9 +26,7 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
 })
 
-const emit = defineEmits<{
-	'update:modelValue': [string]
-}>()
+const emit = defineEmits<InputEmits<string>>()
 
 defineSlots<{
 	default: void
@@ -142,6 +141,9 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		const newValue = chroma(r * 255, g * 255, b * 255, a).hex()
 
 		emit('update:modelValue', newValue)
+	},
+	onDragEnd() {
+		emit('confirm')
 	},
 })
 
@@ -276,6 +278,7 @@ const sliderUniforms = computed(() => {
 				:pickers="pickers"
 				:presets="presets"
 				@update:modelValue="emit('update:modelValue', $event)"
+				@confirm="emit('confirm')"
 			/>
 		</div>
 	</Popover>

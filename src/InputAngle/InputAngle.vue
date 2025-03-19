@@ -6,13 +6,11 @@ import {InputNumber} from '../InputNumber'
 import {InputRotery} from '../InputRotery'
 import type {InputRoteryProps} from '../InputRotery/types'
 import {useThemeStore} from '../stores/theme'
+import {InputEmits} from '../types'
 
 const props = defineProps<InputRoteryProps>()
 
-const emit = defineEmits<{
-	'update:modelValue': [number]
-	change: [number]
-}>()
+const emit = defineEmits<InputEmits<number>>()
 
 const theme = useThemeStore()
 
@@ -27,7 +25,9 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 		<InputRotery
 			v-bind="props"
 			@update:modelValue="emit('update:modelValue', $event)"
-			@change="emit('change', $event)"
+			@focus="emit('focus', $event)"
+			@blur="emit('blur', $event)"
+			@confirm="emit('confirm')"
 		/>
 		<InputNumber
 			v-if="showNumber"
@@ -36,7 +36,9 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 			:precision="0"
 			suffix="°"
 			@update:modelValue="emit('update:modelValue', $event)"
-			@change="emit('change', $event)"
+			@focus="emit('focus', $event)"
+			@blur="emit('blur', $event)"
+			@confirm="emit('confirm')"
 		/>
 	</div>
 </template>

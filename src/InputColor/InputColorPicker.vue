@@ -3,6 +3,7 @@ import {Icon} from '@iconify/vue'
 import {computedWithControl} from '@vueuse/core'
 import chroma from 'chroma-js'
 
+import {InputEmits} from '../types'
 import InputColorChannelPad from './InputColorChannelPad.vue'
 import InputColorChannelSlider from './InputColorChannelSlider.vue'
 import InputColorChannelValues from './InputColorChannelValues.vue'
@@ -20,9 +21,7 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 	pickers: () => DefaultColorPickers,
 })
 
-const emit = defineEmits<{
-	'update:modelValue': [string]
-}>()
+const emit = defineEmits<InputEmits<string>>()
 
 let prevChannels: Channels = {r: 1, g: 1, b: 1, a: 1, h: 0, s: 0, v: 1}
 let prevValue = ''

@@ -5,36 +5,37 @@ import {ref} from 'vue'
 import InputSwitchOverlay from '../InputSwitch/InputSwitchOverlay.vue'
 import {useInputSwitch} from '../InputSwitch/utils'
 import {SvgIcon} from '../SvgIcon'
+import {InputEmits} from '../types'
 import {InputCheckboxProps} from './types'
 
 const props = defineProps<InputCheckboxProps>()
 
-const emit = defineEmits<{
-	'update:modelValue': [boolean]
-}>()
+const emit = defineEmits<InputEmits<boolean>>()
 
 const id = ref(uniqueId('InputCheckbox_'))
 
-const $track = ref<HTMLDivElement | null>(null)
-const $input = ref<HTMLInputElement | null>(null)
+const track = ref<HTMLDivElement | null>(null)
+const input = ref<HTMLInputElement | null>(null)
 
-const {tweakingValue} = useInputSwitch(
-	$track,
-	$input,
-	() => props.modelValue,
-	value => emit('update:modelValue', value)
-)
+const {tweakingValue} = useInputSwitch({
+	track,
+	input,
+	props,
+	emit,
+})
 </script>
 
 <template>
 	<div class="InputCheckbox">
-		<div ref="$track" class="checkbox">
+		<div ref="track" class="checkbox">
 			<input
 				:id="id"
 				ref="$input"
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
+				@focus="emit('focus', $event)"
+				@blur="emit('blur', $event)"
 			/>
 			<SvgIcon mode="block" class="mark">
 				<path class="subtle" d="M5,19l8,6L27,9" />

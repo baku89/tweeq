@@ -2,35 +2,34 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
+import {InputEmits} from '../types'
 import InputSwitchOverlay from './InputSwitchOverlay.vue'
 import {InputSwitchProps} from './types'
 import {useInputSwitch} from './utils'
 
 const props = defineProps<InputSwitchProps>()
 
-const emit = defineEmits<{
-	'update:modelValue': [boolean]
-}>()
+const emit = defineEmits<InputEmits<boolean>>()
 
 const id = ref(uniqueId('InputSwitch_'))
 
-const $track = ref<HTMLDivElement | null>(null)
-const $input = ref<HTMLInputElement | null>(null)
+const track = ref<HTMLDivElement | null>(null)
+const input = ref<HTMLInputElement | null>(null)
 
-const {tweakingValue} = useInputSwitch(
-	$track,
-	$input,
-	() => props.modelValue,
-	value => emit('update:modelValue', value)
-)
+const {tweakingValue} = useInputSwitch({
+	track,
+	input,
+	props,
+	emit,
+})
 </script>
 
 <template>
 	<div class="InputSwitch">
-		<div ref="$track" class="track">
+		<div ref="track" class="track">
 			<input
 				:id="id"
-				ref="$input"
+				ref="input"
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
