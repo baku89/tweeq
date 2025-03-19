@@ -26,10 +26,10 @@
 
 | Name | Payload | Description |
 |------|---------|-------------|
+| `focus` | | Emitted when the input is focused or started tweaking |
 | `update:modelValue` | `value: T` | Emitted when the model value is updated |
-| `focus` | `e: Event` | Emitted when the input is focused |
-| `blur` | `e: Event` | Emitted when the input is blurred |
-| `confirm` | `void` | Emitted when the editing or tweaking is finished |
+| `confirm` | | Emitted when the editing or tweaking is finished |
+| `blur` | | Emitted when the input is blurred or finished tweaking |
 
 ## InputNumber
 
@@ -226,6 +226,24 @@
 	:options="{}"
 	v-slot="{modelValue, options, listeners}">
 	<InputVec
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
+
+## InputSize
+
+<InputExample
+	:initialValue="[0, 0]"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputSize
 		:modelValue="modelValue"
 		v-bind="options"
 		@update:modelValue="listeners.update"
