@@ -20,11 +20,11 @@ export interface InputProps<T> {
 	disabled?: boolean
 }
 
-export interface InputEmits<T> {
-	'update:modelValue': [value: T]
-	focus: []
-	blur: []
-	confirm: []
+export interface InputEmits<T, Args extends unknown[] = []> {
+	'update:modelValue': [value: T, ...args: Args]
+	focus: [...args: Args]
+	blur: [...args: Args]
+	confirm: [...args: Args]
 }
 
 export interface InputBoxProps<T> extends InputProps<T> {
