@@ -2,11 +2,11 @@
 import Case from 'case'
 import {computed, shallowRef, toRaw, watchEffect} from 'vue'
 
-import {InputCheckbox} from '../InputCheckbox'
 import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
+import {InputSwitch} from '../InputSwitch'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
 import type {InputComplexProps, Scheme} from './types'
 
@@ -71,7 +71,7 @@ function getModelValue<K extends keyof T>(name: K) {
 					@update:modelValue="updateModelValue(name, $event)"
 				/>
 			</template>
-			<InputCheckbox
+			<InputSwitch
 				v-else-if="param.type === 'boolean'"
 				:modelValue="getModelValue(name)"
 				v-bind="param"
