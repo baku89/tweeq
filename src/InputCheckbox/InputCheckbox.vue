@@ -2,6 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
+import InputSwitchOverlay from '../InputSwitch/InputSwitchOverlay.vue'
 import {useInputSwitch} from '../InputSwitch/utils'
 import {SvgIcon} from '../SvgIcon'
 import {InputCheckboxProps} from './types'
@@ -17,7 +18,7 @@ const id = ref(uniqueId('InputCheckbox_'))
 const $track = ref<HTMLDivElement | null>(null)
 const $input = ref<HTMLInputElement | null>(null)
 
-useInputSwitch(
+const {tweakingValue} = useInputSwitch(
 	$track,
 	$input,
 	() => props.modelValue,
@@ -38,6 +39,7 @@ useInputSwitch(
 			<SvgIcon mode="block" class="mark">
 				<path class="subtle" d="M5,19l8,6L27,9" />
 			</SvgIcon>
+			<InputSwitchOverlay :modelValue="tweakingValue" />
 		</div>
 		<label v-if="label" :for="id">
 			{{ label }}

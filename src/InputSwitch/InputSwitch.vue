@@ -2,6 +2,7 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
+import InputSwitchOverlay from './InputSwitchOverlay.vue'
 import {InputSwitchProps} from './types'
 import {useInputSwitch} from './utils'
 
@@ -16,7 +17,7 @@ const id = ref(uniqueId('InputSwitch_'))
 const $track = ref<HTMLDivElement | null>(null)
 const $input = ref<HTMLInputElement | null>(null)
 
-useInputSwitch(
+const {tweakingValue} = useInputSwitch(
 	$track,
 	$input,
 	() => props.modelValue,
@@ -35,6 +36,7 @@ useInputSwitch(
 				type="checkbox"
 			/>
 			<div class="handle" />
+			<InputSwitchOverlay :modelValue="tweakingValue" />
 		</div>
 		<label v-if="label" :for="id">
 			{{ label }}

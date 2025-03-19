@@ -1,5 +1,5 @@
 import {useEventListener} from '@vueuse/core'
-import {Ref} from 'vue'
+import {computed, Ref} from 'vue'
 
 import {useDrag} from '../useDrag'
 
@@ -9,16 +9,36 @@ export function useInputSwitch(
 	getValue: () => boolean,
 	setValue: (value: boolean) => void
 ) {
-	useDrag($track, {
+	const tweakThreshold = 3
+
+	const {dragging, initial, xy} = useDrag($track, {
 		onClick() {
 			$input.value?.focus()
 			setValue(!getValue())
 		},
 		onDragEnd({initial: [ix], xy: [x]}) {
 			const dx = x - ix
+
 			$input.value?.focus()
-			setValue(dx > 0)
+
+			if (Math.abs(dx) <= tweakThreshold) {
+				setValue(!getValue())
+			} else {
+				setValue(dx > 0)
+			}
 		},
+	})
+
+	const tweakingValue = computed(() => {
+		if (!dragging.value) return null
+
+		const dx = xy.value[0] - initial.value[0]
+
+		if (Math.abs(dx) <= tweakThreshold) {
+			return !getValue()
+		} else {
+			return dx > 0
+		}
 	})
 
 	useEventListener($input, 'keydown', (e: KeyboardEvent) => {
@@ -42,4 +62,6 @@ export function useInputSwitch(
 		const value = $input.value!.checked
 		setValue(value)
 	})
+
+	return {tweakingValue}
 }
