@@ -51,12 +51,15 @@
 
 <InputExample
 	initialValue="#ff0000"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, update}"
+	:scheme="{
+		alpha: {type: 'boolean'},
+	}"
+	:options="{alpha: false}"
+	v-slot="{modelValue, update, options}"
 >
 	<InputColor
 		:modelValue="modelValue"
+		:alpha="options.alpha"
 		@update:modelValue="update"
 	/>
 </InputExample>
@@ -120,12 +123,15 @@
 
 <InputExample
 	:initialValue="false"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, update}"
+	:scheme="{
+		label: {type: 'string'},
+	}"
+	:options="{label: ''}"
+	v-slot="{modelValue, update, options}"
 >
 	<InputCheckbox
 		:modelValue="modelValue"
+		:label="options.label"
 		@update:modelValue="update"
 	/>
 </InputExample>
