@@ -4,7 +4,7 @@ import {InputButton, InputComplex, Viewport} from 'tweeq'
 import {ref, shallowRef} from 'vue'
 
 interface Props {
-	initialValue?: number | string | boolean
+	initialValue?: any
 	scheme: any
 	options: T
 }
@@ -22,22 +22,22 @@ function fullScreen() {
 }
 
 const listeners = {
-	update: (value: any) => {
+	update: (value: any, ...args: any[]) => {
 		// eslint-disable-next-line no-console
-		console.info('update\t', value)
+		console.info('update\t', value, ...args)
 		modelValue.value = value
 	},
-	focus: (e: Event) => {
+	focus: (...args: any[]) => {
 		// eslint-disable-next-line no-console
-		console.info('focus\t', e)
+		console.info('focus\t', ...args)
 	},
-	blur: (e: Event) => {
+	blur: (...args: any[]) => {
 		// eslint-disable-next-line no-console
-		console.info('blur\t', e)
+		console.info('blur\t', ...args)
 	},
-	confirm: () => {
+	confirm: (...args: any[]) => {
 		// eslint-disable-next-line no-console
-		console.info('confirm\t')
+		console.info('confirm\t', ...args)
 	},
 }
 </script>
