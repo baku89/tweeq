@@ -53,13 +53,13 @@ const {tweakingValue} = useInputSwitch(
 .InputCheckbox
 	display flex
 	align-items center
+	gap 1em
 
 .checkbox
 	position relative
 	background var(--tq-color-input)
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
-	gap 1em
 	active-transition(background)
 	button-focus-style()
 
