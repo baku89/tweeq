@@ -116,6 +116,20 @@
 	/>
 </InputExample>
 
+## InputCheckbox
+
+<InputExample
+	:initialValue="false"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, update}"
+>
+	<InputCheckbox
+		:modelValue="modelValue"
+		@update:modelValue="update"
+	/>
+</InputExample>
+
 ## InputSwitch
 
 <InputExample

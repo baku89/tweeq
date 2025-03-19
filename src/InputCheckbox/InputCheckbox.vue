@@ -2,10 +2,11 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
+import {useInputSwitch} from '../InputSwitch/utils'
 import {SvgIcon} from '../SvgIcon'
 import {InputCheckboxProps} from './types'
 
-defineProps<InputCheckboxProps>()
+const props = defineProps<InputCheckboxProps>()
 
 const emit = defineEmits<{
 	'update:modelValue': [boolean]
@@ -13,27 +14,32 @@ const emit = defineEmits<{
 
 const id = ref(uniqueId('InputCheckbox_'))
 
-function onInput(e: InputEvent) {
-	const value = (e.target as HTMLInputElement).checked
-	emit('update:modelValue', value)
-}
+const $track = ref<HTMLDivElement | null>(null)
+const $input = ref<HTMLInputElement | null>(null)
+
+useInputSwitch(
+	$track,
+	$input,
+	() => props.modelValue,
+	value => emit('update:modelValue', value)
+)
 </script>
 
 <template>
 	<div class="InputCheckbox">
-		<div class="checkbox">
+		<div ref="$track" class="checkbox">
 			<input
 				:id="id"
+				ref="$input"
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
-				@input="onInput($event as InputEvent)"
 			/>
-			<SvgIcon mode="block" class="checkmark">
-				<path d="M5,19l8,6L27,9" />
+			<SvgIcon mode="block" class="mark">
+				<path class="subtle" d="M5,19l8,6L27,9" />
 			</SvgIcon>
 		</div>
-		<label v-if="label" class="label" :for="id">
+		<label v-if="label" :for="id">
 			{{ label }}
 		</label>
 	</div>
@@ -48,11 +54,20 @@ function onInput(e: InputEvent) {
 
 .checkbox
 	position relative
-	input-style()
+	background var(--tq-color-input)
+	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
+	gap 1em
+	active-transition(background)
+	button-focus-style()
 
-	&:focus-within
+	&:hover
 		background var(--tq-color-input-hover)
+
+	&:has(:checked)
+		background var(--tq-color-accent)
+		&:hover
+			background var(--tq-color-accent-hover)
 
 .input
 	display block
@@ -61,7 +76,7 @@ function onInput(e: InputEvent) {
 	margin 0 !important
 	opacity 0
 
-.checkmark
+.mark
 	position absolute
 	top 0
 	left 0
@@ -71,17 +86,11 @@ function onInput(e: InputEvent) {
 	pointer-events none
 	text-align center
 	line-height var(--tq-input-height)
-	stroke-dasharray 32
-	stroke-dashoffset 32
-	stroke-width 3px
+	stroke-width 4px
 	stroke-linecap round
 	stroke-linejoin round
+	stroke var(--tq-color-border)
 
 	input:checked + &
-		stroke-dashoffset 0
-
-
-// Label
-.label
-	margin-left 9px
+		stroke var(--tq-color-background)
 </style>

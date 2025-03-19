@@ -2,8 +2,8 @@
 import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
-import {useDrag} from '../useDrag'
 import {InputSwitchProps} from './types'
+import {useInputSwitch} from './utils'
 
 const props = defineProps<InputSwitchProps>()
 
@@ -16,54 +16,25 @@ const id = ref(uniqueId('InputSwitch_'))
 const $track = ref<HTMLDivElement | null>(null)
 const $input = ref<HTMLInputElement | null>(null)
 
-useDrag($track, {
-	onClick() {
-		$input.value?.focus()
-		emit('update:modelValue', !props.modelValue)
-	},
-	onDragEnd({initial: [ix], xy: [x]}) {
-		const dx = x - ix
-		$input.value?.focus()
-		emit('update:modelValue', dx > 0)
-	},
-})
-
-function onInput(e: InputEvent) {
-	const value = (e.target as HTMLInputElement).checked
-	emit('update:modelValue', value)
-}
-
-function onKeyDown(e: KeyboardEvent) {
-	const key = e.key.toLowerCase()
-
-	if (key === ' ') {
-		update(!props.modelValue)
-	} else if (key === 't' || key === '1' || key === 'y' || key === 'p') {
-		update(true)
-	} else if (key === 'f' || key === '0' || key === 'n' || key === 'm') {
-		update(false)
-	}
-
-	function update(value: boolean) {
-		e.preventDefault()
-		emit('update:modelValue', value)
-	}
-}
+useInputSwitch(
+	$track,
+	$input,
+	() => props.modelValue,
+	value => emit('update:modelValue', value)
+)
 </script>
 
 <template>
 	<div class="InputSwitch">
-		<div ref="$track" class="track" :class="{on: modelValue}">
-			<div class="handle" />
+		<div ref="$track" class="track">
 			<input
 				:id="id"
 				ref="$input"
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
-				@keydown="onKeyDown($event)"
-				@input="onInput($event as InputEvent)"
 			/>
+			<div class="handle" />
 		</div>
 		<label v-if="label" :for="id">
 			{{ label }}
@@ -90,7 +61,7 @@ function onKeyDown(e: KeyboardEvent) {
 	&:hover
 		background-color var(--tq-color-input-hover)
 
-	&.on
+	&:has(:checked)
 		background-color var(--tq-color-accent)
 
 		&:hover
@@ -115,15 +86,12 @@ function onKeyDown(e: KeyboardEvent) {
 	active-transition(left, background-color)
 	pointer-events none
 
-	.on &
+	:checked + &
 		left calc(100% - var(--tq-input-height) + 4px)
 		background-color var(--tq-color-background)
 
 .input
-	display block
 	position absolute
-	inset 0
-	accent-color red
 	opacity 0
 	pointer-events none
 </style>
