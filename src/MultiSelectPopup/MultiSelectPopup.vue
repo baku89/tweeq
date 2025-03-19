@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {autoUpdate, useFloating} from '@floating-ui/vue'
-import {onMounted, shallowRef, toRef} from 'vue'
+import {onMounted, shallowRef, toRef, watchEffect} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
@@ -26,6 +26,10 @@ const multiplier = (px: number) => {
 	const scale = Math.max(0, px / 100 + 1)
 	return (value: number) => value * scale
 }
+
+watchEffect(() => {
+	$root.value?.togglePopover(multiSelect.popupVisible)
+})
 </script>
 
 <template>
@@ -34,6 +38,7 @@ const multiplier = (px: number) => {
 		:class="{visible: multiSelect.popupVisible}"
 		class="MultiSelectPopup"
 		:style="floatingStyles"
+		popover="manual"
 	>
 		<MultiSelectHorizontalSlider :updator="adder" icon="material-symbols:add" />
 		<MultiSelectHorizontalSlider :updator="multiplier" icon="mdi:multiply" />
@@ -47,6 +52,7 @@ const multiplier = (px: number) => {
 .MultiSelectPopup
 	position fixed
 	popup-style()
+	margin 0
 	top 0
 	left 0
 	z-index 1000
