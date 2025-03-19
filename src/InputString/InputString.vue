@@ -1,38 +1,25 @@
 <script lang="ts" setup>
-import {type MaybeElementRef, useFocus} from '@vueuse/core'
-import {identity} from 'lodash-es'
+import {type MaybeElementRef} from '@vueuse/core'
 import {ref, ref as shallowRef, watch} from 'vue'
 
+import {InputEmits} from '../types'
 import {type InputStringProps} from './types'
 
-const props = withDefaults(defineProps<InputStringProps>(), {
-	validator: () => identity,
-})
+const props = defineProps<InputStringProps>()
 
 const display = ref(props.modelValue)
+
 const $input: MaybeElementRef = shallowRef(null)
-const focusing = useFocus($input).focused
 
 watch(
-	() => [focusing.value, props.modelValue] as const,
-	([focusing, modelValue]) => {
-		if (focusing) {
-			if (props.forceUpdateOnFocusing) {
-				display.value = modelValue
-			}
-		} else {
-			display.value = modelValue
-		}
+	() => props.modelValue,
+	value => {
+		display.value = value
 	},
 	{immediate: true}
 )
 
-const emit = defineEmits<{
-	'update:modelValue': [string]
-	focus: [e: Event]
-	blur: [e: Event]
-	input: [e: Event]
-}>()
+const emit = defineEmits<InputEmits<string>>()
 
 function onFocus(e: Event) {
 	;(e.target as HTMLInputElement).select()
@@ -43,13 +30,11 @@ function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
 	display.value = newValue
 
-	const validatedValue = props.validator(newValue)
+	emit('update:modelValue', newValue)
+}
 
-	if (validatedValue !== undefined) {
-		emit('update:modelValue', validatedValue)
-	}
-
-	emit('input', e)
+function onBlur(e: Event) {
+	emit('blur', e)
 }
 </script>
 
@@ -71,8 +56,9 @@ function onInput(e: Event) {
 			:disabled="disabled"
 			:invalid="invalid || undefined"
 			@focus="onFocus"
-			@blur="$emit('blur', $event)"
+			@blur="onBlur"
 			@input.stop="onInput"
+			@keydown.enter.prevent="emit('confirm')"
 		/>
 	</div>
 </template>

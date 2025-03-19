@@ -119,7 +119,9 @@ function onInputStringFocus(e: Event) {
 	emit('focus', e)
 }
 
-function onInput() {
+function onInputStringUpdate(value: string) {
+	display.value = value
+
 	displayEdited.value = true
 	open.value = true
 }
@@ -140,18 +142,17 @@ function onInputStringBlur(e: Event) {
 		:disabled="disabled"
 	>
 		<InputString
-			v-model="display"
+			:modelValue="display"
 			class="input"
 			:theme="theme"
 			:font="font"
 			:align="align"
-			:forceUpdateOnFocusing="true"
 			:horizontal-position="horizontalPosition"
 			:vertical-position="verticalPosition"
+			@update:modelValue="onInputStringUpdate"
 			@pointerdown="onInputPointerdown"
 			@focus="onInputStringFocus"
 			@blur="onInputStringBlur"
-			@input="onInput"
 			@keydown.enter.prevent="open = !open"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
