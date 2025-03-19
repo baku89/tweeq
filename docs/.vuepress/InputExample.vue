@@ -4,7 +4,7 @@ import {InputButton, InputComplex, Scheme, Viewport} from 'tweeq'
 import {ref, shallowRef} from 'vue'
 
 interface Props {
-	initialValue?: number | string
+	initialValue?: number | string | boolean
 	scheme: Scheme<T>
 	options: T
 }

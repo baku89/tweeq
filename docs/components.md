@@ -115,3 +115,20 @@
 		@update:modelValue="update"
 	/>
 </InputExample>
+
+## InputSwitch
+
+<InputExample
+	:initialValue="false"
+	:scheme="{
+		label: {type: 'string'},
+	}"
+	:options="{label: ''}"
+	v-slot="{modelValue, update, options}"
+>
+	<InputSwitch
+		:modelValue="modelValue"
+		:label="options.label"
+		@update:modelValue="update"
+	/>
+</InputExample>
