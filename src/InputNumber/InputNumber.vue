@@ -643,13 +643,12 @@ const barStyle = computed<StyleValue>(() => {
 
 
 .icon
-	width calc(var(--tq-input-height) - 4px)
-	height calc(var(--tq-input-height) - 4px)
+	width var(--tq-input-height)
+	height var(--tq-input-height)
 	color var(--tq-color-text-mute)
 	opacity .7
 	position absolute
 	z-index 100
-	top 2px
 	pointer-events none
 
 	&.left
