@@ -8,6 +8,7 @@ import {computed, ref, shallowRef} from 'vue'
 
 import {useThemeStore} from '../stores/theme'
 import {SvgIcon} from '../SvgIcon'
+import type {InputEmits} from '../types'
 import {useCursorStyle} from '../use/useCursorStyle'
 import {useElementCenter} from '../use/useElementCenter'
 import {useDrag} from '../useDrag'
@@ -18,10 +19,7 @@ const props = withDefaults(defineProps<InputRoteryProps>(), {quantizeStep: 45})
 
 const theme = useThemeStore()
 
-const emit = defineEmits<{
-	'update:modelValue': [number]
-	change: [number]
-}>()
+const emit = defineEmits<InputEmits<number>>()
 
 defineOptions({
 	inheritAttrs: false,
@@ -32,7 +30,6 @@ function signedAngleBetween(target: number, source: number) {
 	return unsignedMod(ret + 180, 360) - 180
 }
 
-const localRaw = ref(props.modelValue)
 const local = ref(props.modelValue)
 
 const display = computed(() => {
@@ -52,6 +49,9 @@ const center = useElementCenter($el)
 
 const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
+// Local value before quantize
+let localRaw = props.modelValue
+
 const {
 	dragging: tweaking,
 	initial,
@@ -59,32 +59,36 @@ const {
 	xy,
 } = useDrag($el, {
 	dragDelaySeconds: 0,
-	onDragStart() {
-		valueOnTweak.value = localRaw.value = props.modelValue
+	onDragStart({xy}) {
+		valueOnTweak.value = localRaw = props.modelValue
+
+		if (tweakMode.value === 'absolute') {
+			const p = vec2.sub(xy, center.value)
+			const angle = vec2.angle(p)
+			const diff = signedAngleBetween(angle, localRaw)
+
+			localRaw += diff
+		}
 	},
 	onDrag({xy, previous}) {
 		const p = vec2.sub(xy, center.value)
 		const pp = vec2.sub(previous, center.value)
 
 		const delta = vec2.angle(pp, p)
-		localRaw.value += delta
+		localRaw += delta
+
+		local.value = localRaw
 
 		if (doQuantize.value) {
-			local.value = scalar.quantize(localRaw.value, props.quantizeStep)
-		} else {
-			local.value = localRaw.value
+			local.value = scalar.quantize(local.value, props.quantizeStep)
 		}
 
-		if (props.modelValue !== local.value) {
-			emit('update:modelValue', local.value)
-		}
+		emit('update:modelValue', local.value)
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
 
-		if (valueOnTweak.value !== local.value) {
-			emit('change', local.value)
-		}
+		emit('confirm')
 	},
 })
 
@@ -221,18 +225,18 @@ const overlayPath = computed(() => {
 	>
 		<SvgIcon mode="block" class="rotery">
 			<circle class="circle" cx="16" cy="16" r="15" />
-			<line
-				class="tip"
-				:style="{
-					transform: `rotate(${props.modelValue}deg)`,
-				}"
-				x1="20"
-				y1="16"
-				x2="30"
-				y2="16"
+			<g
+				transform-origin="16 16"
+				:style="{transform: `rotate(${props.modelValue}deg)`}"
 				@pointerenter="tweakMode = 'absolute'"
 				@pointerleave="!tweaking && (tweakMode = 'relative')"
-			/>
+			>
+				<path
+					class="absolute-mode-area"
+					d="M 16 16 L 16 32 A 16 16 0 0 0 16 0 Z"
+				/>
+				<path class="tip" d="M20 16 L30 16" />
+			</g>
 		</SvgIcon>
 	</button>
 	<div v-if="tweaking" class="overlay">
@@ -292,6 +296,9 @@ const overlayPath = computed(() => {
 	.InputRotery[tweak-mode=absolute] &
 		fill var(--tq-color-accent-soft)
 
+.absolute-mode-area
+	fill transparent
+	stroke none
 
 .tip
 	transform-origin 16px 16px
