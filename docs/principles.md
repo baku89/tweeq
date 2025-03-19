@@ -12,15 +12,18 @@ The design principles of Tweeq articulated below define the essential qualities 
 
 _Users should have fine control over how much a parameter changes per input action._
 
+ - Press `Shift` and `Option` keys to multiply the speed of a parameter change on drag by 10x or 0.1x.
+ - Swipe up and down on a numeric slider to change seek rate on touch devices.
+
 ### Input Parallelization & Serialization
 
-_Users should be able to increase or decrease the degree of integration[^1] in their input actions._
+_Users should be able to control multiple parameters simultaneously or focus on manipulating a single parameter individually._
 
 ### Relative & Absolute Adjustments
 
 _Users should be able to manipulate parameters both relatively and absolutely._
 
-### Gestural & Digital Inputs
+### Continuous & Discrete Controls
 
 _Users should be able to control parameters both through continuous gestural inputs and discrete digital inputs._
 
