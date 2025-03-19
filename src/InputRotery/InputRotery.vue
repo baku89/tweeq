@@ -241,8 +241,25 @@ const overlayPath = computed(() => {
 	</button>
 	<div v-if="tweaking" class="overlay">
 		<svg>
+			<defs>
+				<marker
+					id="arrow"
+					markerWidth="6"
+					markerHeight="6"
+					refX="3"
+					refY="3"
+					orient="auto"
+					fill="var(--tq-color-accent)"
+				>
+					<path d="M 0 0 L 6 3 L 0 6 Z" />
+				</marker>
+			</defs>
 			<path class="thin gray" :class="{quantize: doQuantize}" :d="metersPath" />
-			<path class="bold" :d="overlayPath" />
+			<path
+				class="bold"
+				:d="overlayPath"
+				:marker-end="tweakMode === 'relative' ? 'url(#arrow)' : ''"
+			/>
 			<path class="bold" :d="activeMeterPath" />
 		</svg>
 		<div
