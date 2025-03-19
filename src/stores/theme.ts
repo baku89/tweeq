@@ -147,7 +147,7 @@ export const useThemeStore = defineStore('theme', () => {
 			scrollbarWidth: 6,
 
 			hoverTransitionDuration: '0.15s',
-			activeTransitionDuration: '48ms',
+			activeTransitionDuration: '64ms',
 		}
 	})
 

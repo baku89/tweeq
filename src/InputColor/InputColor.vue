@@ -383,7 +383,7 @@ const sliderUniforms = computed(() => {
 	height var(--tq-input-height)
 	margin calc(var(--tq-input-height) / -2) 0 0 calc(var(--tq-input-height) / -2)
 	pointer-events none
-	hover-transition(transform, border-radius)
+	active-transition(transform, border-radius)
 	transform scale(3)
 	border-radius calc(var(--tq-input-height) / 2)
 	background-checkerboard()
@@ -399,7 +399,7 @@ const sliderUniforms = computed(() => {
 	tooltip-style()
 	font-numeric()
 	transform translate(-50%, calc(-100% - var(--tq-input-height) * 1.7))
-	hover-transition(transform, opacity)
+	active-transition(transform, opacity)
 	display flex
 	gap .2em
 
