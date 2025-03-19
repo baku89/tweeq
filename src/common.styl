@@ -24,7 +24,7 @@ popup-style()
 button-focus-style()
 	position relative
 
-	&:focus-visible
+	&:focus-visible, &:has(input:focus-visible)
 		&:before
 			content ''
 			position absolute
