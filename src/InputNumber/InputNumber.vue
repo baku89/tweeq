@@ -19,6 +19,7 @@ import {
 } from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
+import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
 import {
 	getNumberPresition,
@@ -45,12 +46,7 @@ defineOptions({
 	inheritAttrs: false,
 })
 
-const emit = defineEmits<{
-	'update:modelValue': [value: number]
-	focus: []
-	input: [Event]
-	blur: []
-}>()
+const emit = defineEmits<InputEmits<number>>()
 
 const $root = shallowRef<HTMLElement | null>(null)
 const $input = shallowRef<HTMLInputElement | null>(null)
@@ -275,7 +271,7 @@ watch(validatedLocal, local => {
 	}
 })
 
-function conform() {
+function confirm() {
 	local.value = validatedLocal.value
 	display.value = toFixed(validatedLocal.value, precision.value)
 
@@ -294,8 +290,6 @@ function onInput(e: Event) {
 	}
 
 	display.value = el.value
-
-	emit('input', e)
 }
 
 //------------------------------------------------------------------------------
@@ -411,21 +405,6 @@ watch(
 	{immediate: true}
 )
 
-// Emit events
-watch(
-	() => [focusing.value, tweaking.value] as const,
-	([focusing, tweaking], [prevFocusing, prevTweaking]) => {
-		const curt = focusing || tweaking
-		const prev = prevFocusing || prevTweaking
-
-		if (curt && !prev) {
-			emit('focus')
-		} else if (!curt && prev) {
-			emit('blur')
-		}
-	}
-)
-
 // Click to select all
 whenever(focusing, () => nextTick(() => $input.value?.select()))
 
@@ -441,7 +420,7 @@ const {subFocusing, unregister} = multiSelect.register({
 	setValue(value) {
 		local.value = validate(value)
 	},
-	conform,
+	confirm,
 })
 
 onBeforeUnmount(() => {
@@ -537,9 +516,11 @@ const barStyle = computed<StyleValue>(() => {
 			:invalid="isInvalid"
 			:disabled="disabled || undefined"
 			@input="onInput"
+			@focus="emit('focus', $event)"
+			@blur="emit('blur', $event)"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
-			@keydown.enter.prevent="conform"
+			@keydown.enter.prevent="confirm"
 		/>
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />

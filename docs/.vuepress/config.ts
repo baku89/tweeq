@@ -55,7 +55,7 @@ export default defineUserConfig({
 	},
 	bundler: viteBundler({
 		viteOptions: {
-			plugins: [glsl()],
+			plugins: [glsl() as any],
 			build: {
 				ssr: false,
 			},

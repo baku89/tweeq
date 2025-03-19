@@ -1,11 +1,11 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import {cloneDeep} from 'lodash-es'
-import {InputButton, InputComplex, Scheme, Viewport} from 'tweeq'
+import {InputButton, InputComplex, Viewport} from 'tweeq'
 import {ref, shallowRef} from 'vue'
 
 interface Props {
 	initialValue?: number | string | boolean
-	scheme: Scheme<T>
+	scheme: any
 	options: T
 }
 

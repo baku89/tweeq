@@ -7,7 +7,7 @@ interface MultiSelectSource {
 	focusing: Ref<boolean>
 	getValue: () => number
 	setValue: (value: number) => void
-	conform: () => void
+	confirm: () => void
 }
 
 interface MultiSelectStore extends MultiSelectSource {
@@ -123,7 +123,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function conformValues() {
 		for (const r of selectStores.values()) {
 			if (r.focusing.value || r.subFocusing.value) {
-				r.conform()
+				r.confirm()
 			}
 		}
 	}
