@@ -238,7 +238,7 @@
 ## InputSize
 
 <InputExample
-	:initialValue="[0, 0]"
+	:initialValue="[100, 250]"
 	:scheme="{}"
 	:options="{}"
 	v-slot="{modelValue, options, listeners}"
