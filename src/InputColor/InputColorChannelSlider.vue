@@ -121,8 +121,7 @@ const circleStyle = computed(() => {
 	width 100%
 	height 100%
 	border-radius var(--tq-input-border-radius)
-	background red
-	background-checkerboard()
+	background-checkerboard(transparent)
 
 .circle
 	circle()

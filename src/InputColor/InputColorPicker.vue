@@ -45,10 +45,10 @@ const channels = computedWithControl(
 		let [h, s] = hsv
 		const v = hsv[2]
 
-		if (isNaN(h) || v === 0) {
+		if (isNaN(h)) {
 			h = prevChannels.h
 		}
-		if (isNaN(s) || v === 0) {
+		if (isNaN(s)) {
 			s = prevChannels.s
 		}
 
@@ -103,23 +103,23 @@ async function pickColor() {
 
 <template>
 	<div class="InputColorPicker">
-		<template v-for="(u, i) in pickers">
+		<template v-for="([type, ch], i) in pickers">
 			<InputColorChannelPad
-				v-if="u[0] === 'pad'"
+				v-if="type === 'pad'"
 				:key="i"
 				:channels="channels"
-				:axes="u[1]"
+				:axes="ch"
 				@updateChannels="updateChannels"
 			/>
 			<InputColorChannelSlider
-				v-if="u[0] === 'slider' && !(!alpha && u[1] === 'a')"
+				v-if="type === 'slider' && !(!alpha && ch === 'a')"
 				:key="i"
 				:channels="channels"
-				:axis="u[1]"
+				:axis="ch"
 				@updateChannels="updateChannels"
 			/>
 			<InputColorChannelValues
-				v-if="u[0] === 'values'"
+				v-if="type === 'values'"
 				:key="i"
 				:modelValue="modelValue"
 				:channels="channels"

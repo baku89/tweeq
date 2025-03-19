@@ -69,18 +69,20 @@ function decomposeChannels() {
 	const rgba = chroma(props.modelValue).rgba()
 	const [r, g, b, a] = rgba
 	const hsv = rgb2hsv([r / 255, g / 255, b / 255])
+	let [h, s] = hsv
+	const v = hsv[2]
 
-	if (isNaN(hsv[0])) {
-		hsv[0] = 0
+	if (isNaN(h)) {
+		h = 0
 	}
-	if (isNaN(hsv[1])) {
-		hsv[1] = 0
+	if (isNaN(s)) {
+		s = 0
 	}
 
 	return {
-		h: hsv[0],
-		s: hsv[1],
-		v: hsv[2],
+		h,
+		s,
+		v,
 		r: r / 255,
 		g: g / 255,
 		b: b / 255,

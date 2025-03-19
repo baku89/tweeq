@@ -68,13 +68,13 @@ function colorCodeValidator(value: string) {
 	<InputGroup class="InputColorChannelValues">
 		<InputDropdown
 			v-model="colorSpace"
+			class="color-space"
 			theme="minimal"
 			:options="['rgb', 'hsv', 'hex']"
 			:labelizer="s => s.toUpperCase()"
 		/>
-		<InputGroup v-if="colorSpace === 'rgb'" class="values">
+		<InputGroup v-if="colorSpace === 'rgb'" class="channel">
 			<InputNumber
-				class="channel"
 				:modelValue="r"
 				:min="0"
 				:max="255"
@@ -83,7 +83,6 @@ function colorCodeValidator(value: string) {
 				@update:modelValue="onUpdateChannel('r', $event)"
 			/>
 			<InputNumber
-				class="channel"
 				:modelValue="g"
 				:min="0"
 				:max="255"
@@ -92,7 +91,6 @@ function colorCodeValidator(value: string) {
 				@update:modelValue="onUpdateChannel('g', $event)"
 			/>
 			<InputNumber
-				class="channel"
 				:modelValue="b"
 				:min="0"
 				:max="255"
@@ -102,7 +100,6 @@ function colorCodeValidator(value: string) {
 			/>
 			<InputNumber
 				v-if="props.alpha"
-				class="channel"
 				:modelValue="a"
 				:min="0"
 				:max="100"
@@ -112,9 +109,8 @@ function colorCodeValidator(value: string) {
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
 		</InputGroup>
-		<InputGroup v-if="colorSpace === 'hsv'" class="values">
+		<InputGroup v-else-if="colorSpace === 'hsv'" class="channel">
 			<InputNumber
-				class="channel"
 				:modelValue="h"
 				:min="0"
 				:max="360"
@@ -124,7 +120,6 @@ function colorCodeValidator(value: string) {
 				@update:modelValue="onUpdateChannel('h', $event)"
 			/>
 			<InputNumber
-				class="channel"
 				:modelValue="s"
 				:min="0"
 				:max="100"
@@ -134,7 +129,6 @@ function colorCodeValidator(value: string) {
 				@update:modelValue="onUpdateChannel('s', $event)"
 			/>
 			<InputNumber
-				class="channel"
 				:modelValue="v"
 				:min="0"
 				:max="100"
@@ -145,7 +139,6 @@ function colorCodeValidator(value: string) {
 			/>
 			<InputNumber
 				v-if="props.alpha"
-				class="channel"
 				:modelValue="a"
 				:min="0"
 				:max="100"
@@ -156,7 +149,7 @@ function colorCodeValidator(value: string) {
 			/>
 		</InputGroup>
 		<InputString
-			v-if="colorSpace === 'hex'"
+			v-else-if="colorSpace === 'hex'"
 			font="monospace"
 			class="channel"
 			:modelValue="colorCode"
@@ -168,13 +161,8 @@ function colorCodeValidator(value: string) {
 
 <style lang="stylus" scoped>
 
-.InputColorChannelValues
-	display grid
-	gap var(--tq-input-gap)
-	grid-template-columns 60px 1fr
-
-.values
-	display flex
+.color-space
+	width 4em
 
 .channel
 	flex-grow 1
