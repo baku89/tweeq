@@ -80,6 +80,7 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
+				horizontal-position="left"
 				@update:modelValue="onUpdateChannel('r', $event)"
 			/>
 			<InputNumber
@@ -88,6 +89,7 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
+				horizontal-position="middle"
 				@update:modelValue="onUpdateChannel('g', $event)"
 			/>
 			<InputNumber
@@ -96,6 +98,7 @@ function colorCodeValidator(value: string) {
 				:max="255"
 				:precision="0"
 				:bar="false"
+				:horizontal-position="props.alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('b', $event)"
 			/>
 			<InputNumber
@@ -106,6 +109,7 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
+				horizontal-position="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
 		</InputGroup>
@@ -117,6 +121,7 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="°"
+				horizontal-position="left"
 				@update:modelValue="onUpdateChannel('h', $event)"
 			/>
 			<InputNumber
@@ -126,6 +131,7 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
+				horizontal-position="middle"
 				@update:modelValue="onUpdateChannel('s', $event)"
 			/>
 			<InputNumber
@@ -135,6 +141,7 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
+				:horizontal-position="props.alpha ? 'middle' : 'right'"
 				@update:modelValue="onUpdateChannel('v', $event)"
 			/>
 			<InputNumber
@@ -145,6 +152,7 @@ function colorCodeValidator(value: string) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
+				horizontal-position="right"
 				@update:modelValue="onUpdateChannel('a', $event)"
 			/>
 		</InputGroup>
@@ -162,7 +170,7 @@ function colorCodeValidator(value: string) {
 <style lang="stylus" scoped>
 
 .color-space
-	width 4em
+	width 5em
 
 .channel
 	flex-grow 1

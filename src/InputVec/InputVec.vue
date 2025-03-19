@@ -26,6 +26,14 @@ function maxAt(i: number): number | undefined {
 function stepAt(i: number): number | undefined {
 	return Array.isArray(props.step) ? props.step[i] : props.step
 }
+
+function horizontalPositionAt(i: number): 'left' | 'right' | 'middle' {
+	return i === 0
+		? 'left'
+		: i === props.modelValue.length - 1
+			? 'right'
+			: 'middle'
+}
 </script>
 
 <template>
@@ -37,6 +45,7 @@ function stepAt(i: number): number | undefined {
 			:max="maxAt(i)"
 			:step="stepAt(i)"
 			:modelValue="v"
+			:horizontal-position="horizontalPositionAt(i)"
 			@update:modelValue="updateValue(i, $event)"
 		/>
 	</InputGroup>

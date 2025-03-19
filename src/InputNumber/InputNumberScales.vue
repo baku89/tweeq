@@ -45,8 +45,8 @@ const style = computed(() => {
 <style lang="stylus" scoped>
 .InputNumberScales
 	background-image: linear-gradient(to right, var(--tq-color-border-subtle) 1px, transparent 1px)
-
 	position absolute
 	inset 0
+	mask linear-gradient(to right, transparent 1px, black 1px, transparent calc(100% - 1px), black calc(100% - 1px))
 	pointer-events none
 </style>

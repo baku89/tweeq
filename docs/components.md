@@ -217,3 +217,20 @@
 		@confirm="listeners.confirm"
 	/>
 </InputExample>
+
+## InputVec
+
+<InputExample
+	:initialValue="[0, 0, 0, 0]"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, options, listeners}">
+	<InputVec
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
