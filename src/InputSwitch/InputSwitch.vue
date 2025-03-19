@@ -68,7 +68,7 @@ const {tweakingValue} = useInputSwitch({
 		&:hover
 			background-color var(--tq-color-accent-hover)
 
-	&:has(.input:focus)
+	&:focus-within
 		&:before
 			content ''
 			position absolute
@@ -83,7 +83,7 @@ const {tweakingValue} = useInputSwitch({
 	width calc(var(--tq-input-height) - 8px)
 	height calc(var(--tq-input-height) - 8px)
 	border-radius 9999px
-	background-color var(--tq-color-text-mute)
+	background-color var(--tq-color-text-subtle)
 	active-transition(left, background-color)
 	pointer-events none
 
@@ -95,4 +95,7 @@ const {tweakingValue} = useInputSwitch({
 	position absolute
 	opacity 0
 	pointer-events none
+
+	&:focus
+		pointer-events auto
 </style>
