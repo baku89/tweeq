@@ -2,50 +2,53 @@
 import ExampleContainer from './ExampleContainer.vue'
 
 const initialValue = {
-	key: 255,
+	keyIntensity: 255,
 	keyColor: '#dcd7f5',
-	fill: 255,
+	fillIntensity: 255,
 	fillColor: '#f19999',
-	back: 0,
+	backIntensity: 0,
 	backColor: '#ffffff',
 }
 
 const scheme = {
-	key: {
+	keyIntensity: {
 		type: 'number',
 		min: 0,
 		max: 255,
 		clampMin: true,
 		clampMax: true,
-		icon: 'mdi-lightbulb',
+		icon: 'mdi:lightbulb',
 	},
 	keyColor: {
 		type: 'string',
 		ui: 'color',
+		icon: 'mdi:color',
 	},
-	fill: {
+	fillIntensity: {
 		type: 'number',
 		min: 0,
 		max: 255,
 		clampMin: true,
 		clampMax: true,
-		icon: 'mdi-lightbulb',
+		icon: 'mdi:lightbulb',
 	},
 	fillColor: {
 		type: 'string',
 		ui: 'color',
+		icon: 'mdi:color',
 	},
-	back: {
+	backIntensity: {
 		type: 'number',
 		min: 0,
 		max: 255,
 		clampMin: true,
 		clampMax: true,
-		icon: 'mdi-lightbulb',
+		icon: 'mdi:lightbulb',
 	},
 	backColor: {
 		type: 'string',
 		ui: 'color',
+		icon: 'mdi:color',
 	},
 }
 </script>
