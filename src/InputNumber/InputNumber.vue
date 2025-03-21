@@ -429,7 +429,7 @@ const {subFocusing, unregister} = multiSelect.register({
 	focusing,
 	getValue: () => props.modelValue,
 	setValue(value) {
-		local.value = validate(value)
+		emit('update:modelValue', value)
 	},
 	confirm,
 })
