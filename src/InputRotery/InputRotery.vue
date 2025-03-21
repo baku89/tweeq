@@ -90,17 +90,17 @@ const {
 		emit('update:modelValue', local.value)
 
 		if (tweakMode.value === 'relative') {
-			multiSelect.captureValues()
-			multiSelect.updateValues(values => values.map(v => v + delta))
+			multi.capture()
+			multi.update((v: number) => v + delta)
 		} else {
-			multiSelect.updateValues(values => values.map(constant(local.value)))
+			multi.update(constant(local.value))
 		}
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
 
 		emit('confirm')
-		multiSelect.confirmValues()
+		multi.confirm()
 	},
 })
 
@@ -240,9 +240,7 @@ const overlayPath = computed(() => {
 //------------------------------------------------------------------------------
 // Multi Select
 
-const multiSelect = useMultiSelectStore()
-
-const {subfocus} = multiSelect.register({
+const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing: useFocus($root).focused,
@@ -261,7 +259,7 @@ const {subfocus} = multiSelect.register({
 	<button
 		ref="$root"
 		class="InputRotery"
-		:class="{tweaking, subfocus: subfocus}"
+		:class="{tweaking, subfocus: multi.subfocus}"
 		:tweak-mode="tweakMode"
 		v-bind="$attrs"
 	>

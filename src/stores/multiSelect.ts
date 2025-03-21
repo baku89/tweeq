@@ -1,4 +1,9 @@
-import {onKeyStroke, useEventListener, useKeyModifier} from '@vueuse/core'
+import {
+	onKeyStroke,
+	reactiveComputed,
+	useEventListener,
+	useKeyModifier,
+} from '@vueuse/core'
 import {defineStore} from 'pinia'
 import {
 	computed,
@@ -6,7 +11,6 @@ import {
 	reactive,
 	type Ref,
 	shallowRef,
-	toRef,
 	watch,
 } from 'vue'
 
@@ -50,6 +54,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		})
 	}
 
+	// Defocus all when clicking outside of inputs except for popup
 	useEventListener('pointerdown', e => {
 		// Ignore non-primary pointer
 		if (e.button !== 0) return
@@ -67,8 +72,14 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		}
 	})
 
+	// Defocus all when pressing Escape
 	onKeyStroke('Escape', defocusAll)
 
+	const multiSelected = computed(() => {
+		return selectedInputs.value.length > 1
+	})
+
+	// Entry point for multi select for each input component
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
 
@@ -91,6 +102,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			}
 		})
 
+		// Automatically remove the input when unmounted
 		onBeforeUnmount(() => {
 			inputs.splice(
 				inputs.findIndex(input => input.id === id),
@@ -98,7 +110,36 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			)
 		})
 
-		return {subfocus: toRef(store, 'subfocus')}
+		function update(updator: (value: any, context: {i: number}) => any) {
+			selectedInputs.value.forEach((input, i) => {
+				if (input.id === id) return
+
+				const context = {i}
+
+				const newValue = updator(
+					input.capturedValue ?? input.getValue(),
+					context
+				)
+
+				input.setValue(newValue)
+			})
+		}
+
+		function confirm() {
+			selectedInputs.value.forEach(input => {
+				if (input.id === id) return
+				input.confirm()
+			})
+		}
+
+		return reactiveComputed(() => ({
+			subfocus: store.subfocus,
+			index: selectedInputs.value.findIndex(input => input.id === id),
+			capture: captureValues,
+			update,
+			confirm,
+			multiSelected,
+		}))
 	}
 
 	function captureValues() {

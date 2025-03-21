@@ -3,7 +3,7 @@ import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash-es'
-import {computed, ref, shallowRef, watchEffect} from 'vue'
+import {computed, ref, shallowRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
@@ -93,7 +93,7 @@ function decomposeChannels() {
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	onClick() {
-		if (multiSelect.selectedInputs.length > 1) return
+		if (multi.multiSelected) return
 		open.value = !open.value
 	},
 	onDragStart() {
@@ -254,9 +254,7 @@ const sliderUniforms = computed(() => {
 //------------------------------------------------------------------------------
 // Multi Select
 
-const multiSelect = useMultiSelectStore()
-
-const {subfocus} = multiSelect.register({
+const multi = useMultiSelectStore().register({
 	type: 'color',
 	el: $button,
 	focusing: useFocus($button).focused,
@@ -269,11 +267,12 @@ const {subfocus} = multiSelect.register({
 	},
 })
 
-watchEffect(() => {
-	if (multiSelect.selectedInputs.length > 1) {
+whenever(
+	() => multi.multiSelected,
+	() => {
 		open.value = false
 	}
-})
+)
 </script>
 
 <template>
@@ -281,7 +280,7 @@ watchEffect(() => {
 		v-bind="$attrs"
 		ref="$button"
 		class="InputColorPad"
-		:class="{focus: (open && (shift || meta)) || subfocus}"
+		:class="{focus: (open && (shift || meta)) || multi.subfocus}"
 	>
 		<slot>
 			<div

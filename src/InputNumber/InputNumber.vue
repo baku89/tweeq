@@ -280,12 +280,12 @@ function confirm() {
 // Input Events
 
 function onEnter() {
-	multiSelect.confirmValues()
+	multi.confirm()
 	confirm()
 }
 
 function onFocus() {
-	multiSelect.captureValues()
+	multi.capture()
 	emit('focus')
 }
 
@@ -295,8 +295,9 @@ function onInput(e: Event) {
 	display.value = el.value
 
 	try {
-		const fn = eval(`(x, index) => ${el.value}`)
-		multiSelect.updateValues(vs => vs.map(fn))
+		const fn = eval(`(x, {i}) => ${el.value}`)
+		local.value = fn(local.value, {i: multi.index})
+		multi.update(fn)
 		return
 	} catch (e) {
 		// eslint-disable-next-line no-console
@@ -306,7 +307,7 @@ function onInput(e: Event) {
 
 function onBlur() {
 	confirm()
-	multiSelect.confirmValues()
+	multi.confirm()
 	emit('blur')
 }
 
@@ -429,16 +430,14 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 //------------------------------------------------------------------------------
 // Multi Select
 
-const multiSelect = useMultiSelectStore()
-
-const {subfocus} = multiSelect.register({
+const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing,
 	getValue: () => props.modelValue,
 	setValue(value) {
 		local.value = value
-		emit('update:modelValue', value)
+		emit('update:modelValue', validatedLocal.value)
 	},
 	confirm,
 })
@@ -524,7 +523,7 @@ const barStyle = computed<StyleValue>(() => {
 		<input
 			ref="$input"
 			class="input"
-			:class="{focus: subfocus}"
+			:class="{focus: multi.subfocus}"
 			type="text"
 			inputmode="numeric"
 			pattern="d*"
