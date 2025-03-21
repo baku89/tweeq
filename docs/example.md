@@ -2,7 +2,7 @@
 
 # Examples
 
-## 3-Channel DMX
+## Three-Point Lighting
 
 <ExampleThreePointLighting />
 
