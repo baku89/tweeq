@@ -18,6 +18,8 @@ export function clamp(min: number, max: number): Validator<number> {
 
 export function quantize(step: number): Validator<number> {
 	return value => {
+		if (step === 0) return {value, log: []}
+
 		const quantized = scalar.quantize(value, step)
 
 		if (!scalar.approx(value, quantized)) {

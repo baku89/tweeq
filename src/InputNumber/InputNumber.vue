@@ -20,6 +20,7 @@ import {
 	toPercent,
 	unsignedMod,
 } from '../util'
+import * as V from '../validator'
 import InputNumberScales from './InputNumberScales.vue'
 import {type InputNumberProps} from './types'
 
@@ -252,35 +253,45 @@ const {dragging: tweaking} = useDrag($root, {
 //------------------------------------------------------------------------------
 // Emit update:modelValue when the local value is changed
 
-function validate(value: number) {
-	if (props.step) {
-		value = scalar.quantize(value, props.step)
-	}
-	value = scalar.clamp(value, validMin.value, validMax.value)
+const validate = computed(() =>
+	V.compose(
+		V.clamp(validMin.value, validMax.value),
+		V.quantize(props.step ?? 0)
+	)
+)
 
-	return value
-}
+const validateResult = computed(() => validate.value(local.value))
 
-const validated = computed(() => validate(local.value))
+const validLocal = ref(props.modelValue)
+
+watch(
+	validateResult,
+	result => {
+		if (!result.value) return
+
+		validLocal.value = result.value
+	},
+	{flush: 'sync'}
+)
 
 const isInvalid = computed(() => {
 	if (props.invalid) return true
 
-	if (tweaking.value) return undefined
-
-	// TODO: This is not accurate
-	return !scalar.approx(validated.value, local.value) || undefined
+	return validateResult.value.log.length > 0
 })
 
-watch(validated, validated => {
-	emit('update:modelValue', validated)
-})
+watch(
+	validLocal,
+	() => {
+		emit('update:modelValue', validLocal.value)
+	},
+	{flush: 'sync'}
+)
 
 function confirm() {
-	local.value = validated.value
-	display.value = toFixed(validated.value, precision.value)
+	local.value = validLocal.value
+	display.value = toFixed(validLocal.value, precision.value)
 
-	emit('update:modelValue', validated.value)
 	emit('confirm')
 }
 
@@ -442,10 +453,9 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing,
-	getValue: () => validated.value,
+	getValue: () => validateResult.value,
 	setValue(value) {
 		local.value = value
-		emit('update:modelValue', validated.value)
 	},
 	confirm,
 })
