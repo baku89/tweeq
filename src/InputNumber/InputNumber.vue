@@ -261,7 +261,7 @@ function validate(value: number) {
 	return value
 }
 
-const validatedLocal = computed(() => validate(local.value))
+const validated = computed(() => validate(local.value))
 
 const isInvalid = computed(() => {
 	if (props.invalid) return true
@@ -269,20 +269,18 @@ const isInvalid = computed(() => {
 	if (tweaking.value) return undefined
 
 	// TODO: This is not accurate
-	return !scalar.approx(validatedLocal.value, local.value) || undefined
+	return !scalar.approx(validated.value, local.value) || undefined
 })
 
-watch(validatedLocal, local => {
-	if (local !== props.modelValue) {
-		emit('update:modelValue', local)
-	}
+watch(validated, validated => {
+	emit('update:modelValue', validated)
 })
 
 function confirm() {
-	local.value = validatedLocal.value
-	display.value = toFixed(validatedLocal.value, precision.value)
+	local.value = validated.value
+	display.value = toFixed(validated.value, precision.value)
 
-	emit('update:modelValue', validatedLocal.value)
+	emit('update:modelValue', validated.value)
 	emit('confirm')
 }
 
@@ -444,10 +442,10 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing,
-	getValue: () => validatedLocal.value,
+	getValue: () => validated.value,
 	setValue(value) {
 		local.value = value
-		emit('update:modelValue', validatedLocal.value)
+		emit('update:modelValue', validated.value)
 	},
 	confirm,
 })
