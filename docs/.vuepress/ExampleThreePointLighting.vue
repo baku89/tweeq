@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import ExampleContainer from './ExampleContainer.vue'
 
-const initialValue = {key: 255, fill: 255, back: 0}
+const initialValue = {
+	key: 255,
+	keyColor: '#dcd7f5',
+	fill: 255,
+	fillColor: '#f19999',
+	back: 0,
+	backColor: '#ffffff',
+}
 
 const scheme = {
 	key: {
@@ -12,6 +19,10 @@ const scheme = {
 		clampMax: true,
 		icon: 'mdi-lightbulb',
 	},
+	keyColor: {
+		type: 'string',
+		ui: 'color',
+	},
 	fill: {
 		type: 'number',
 		min: 0,
@@ -19,6 +30,10 @@ const scheme = {
 		clampMin: true,
 		clampMax: true,
 		icon: 'mdi-lightbulb',
+	},
+	fillColor: {
+		type: 'string',
+		ui: 'color',
 	},
 	back: {
 		type: 'number',
@@ -28,6 +43,10 @@ const scheme = {
 		clampMax: true,
 		icon: 'mdi-lightbulb',
 	},
+	backColor: {
+		type: 'string',
+		ui: 'color',
+	},
 }
 </script>
 
@@ -35,18 +54,24 @@ const scheme = {
 	<ExampleContainer :initialValue="initialValue" :scheme="scheme">
 		<template #default="{modelValue}">
 			<div class="preview">
-				<img
-					src="/assets/three-point-lighting_key.png"
-					:style="{opacity: modelValue.key / 255}"
-				/>
-				<img
-					src="/assets/three-point-lighting_fill.png"
-					:style="{opacity: modelValue.fill / 255}"
-				/>
-				<img
-					src="/assets/three-point-lighting_back.png"
-					:style="{opacity: modelValue.back / 255}"
-				/>
+				<div
+					class="pass"
+					:style="{color: modelValue.keyColor, opacity: modelValue.key / 255}"
+				>
+					<img src="/assets/three-point-lighting_key.png" />
+				</div>
+				<div
+					class="pass"
+					:style="{color: modelValue.fillColor, opacity: modelValue.fill / 255}"
+				>
+					<img src="/assets/three-point-lighting_fill.png" />
+				</div>
+				<div
+					class="pass"
+					:style="{color: modelValue.backColor, opacity: modelValue.back / 255}"
+				>
+					<img src="/assets/three-point-lighting_back.png" />
+				</div>
 			</div>
 		</template>
 	</ExampleContainer>
@@ -62,8 +87,20 @@ const scheme = {
 	position relative
 	background black
 
+.pass
+	position absolute
+	inset 0
+	mix-blend-mode screen
+
+	&:after
+		content ''
+		position absolute
+		inset 0
+		background-color currentColor
+		z-index 1
+		mix-blend-mode multiply
+
 	img
 		position absolute
 		inset 0
-		mix-blend-mode screen
 </style>
