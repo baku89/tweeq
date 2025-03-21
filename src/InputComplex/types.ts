@@ -2,7 +2,7 @@ import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
 import {type InputNumberProps} from '../InputNumber'
 import {type InputRoteryProps} from '../InputRotery'
-import {type InputStringProps as StringProps} from '../InputString'
+import {type InputStringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 
@@ -19,7 +19,7 @@ type ParameterDescString = Desc<
 		type: 'string'
 		ui?: undefined
 	},
-	StringProps
+	InputStringProps
 >
 type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, InputCodeProps>
 type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
