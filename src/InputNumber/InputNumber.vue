@@ -7,6 +7,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
+import {constant} from 'lodash-es'
 import {
 	computed,
 	nextTick,
@@ -280,6 +281,8 @@ function confirm() {
 	local.value = validatedLocal.value
 	display.value = toFixed(validatedLocal.value, precision.value)
 
+	multiSelect.updateValues(vs => vs.map(constant(validatedLocal.value)))
+
 	emit('update:modelValue', validatedLocal.value)
 	emit('confirm')
 }
@@ -293,6 +296,7 @@ function onInput(e: Event) {
 	const newValue = parseFloat(el.value)
 	if (!isNaN(newValue)) {
 		local.value = newValue
+		multiSelect.updateValues(vs => vs.map(constant(newValue)))
 	}
 
 	display.value = el.value
