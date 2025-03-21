@@ -3,7 +3,6 @@ import {uniqueId} from 'lodash-es'
 import {ref} from 'vue'
 
 import {InputEmits} from '../types'
-import InputSwitchOverlay from './InputSwitchOverlay.vue'
 import {InputSwitchProps} from './types'
 import {useInputSwitch} from './utils'
 
@@ -34,8 +33,7 @@ const {tweakingValue} = useInputSwitch({
 				class="input"
 				type="checkbox"
 			/>
-			<div class="handle" />
-			<InputSwitchOverlay :modelValue="tweakingValue" />
+			<div class="handle" :class="{tweaking: tweakingValue !== null}" />
 		</div>
 		<label v-if="label" :for="id">
 			{{ label }}
@@ -68,7 +66,7 @@ const {tweakingValue} = useInputSwitch({
 		&:hover
 			background-color var(--tq-color-accent-hover)
 
-	&:focus-within
+	&:has(.input:focus-visible)
 		&:before
 			content ''
 			position absolute
@@ -84,13 +82,18 @@ const {tweakingValue} = useInputSwitch({
 	height calc(var(--tq-input-height) - 8px)
 	border-radius 9999px
 	background-color var(--tq-color-text-subtle)
-	active-transition(left, background-color)
+	active-transition(left, width, background-color)
 	pointer-events none
+
+	&.tweaking
+		width calc(var(--tq-input-height) - 4px)
 
 	:checked + &
 		left calc(100% - var(--tq-input-height) + 4px)
 		background-color var(--tq-color-background)
 
+		&.tweaking
+			left calc(100% - var(--tq-input-height))
 .input
 	position absolute
 	opacity 0

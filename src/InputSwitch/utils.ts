@@ -17,19 +17,27 @@ export function useInputSwitch({
 	const tweakThreshold = 3
 
 	const {dragging, initial, xy} = useDrag(track, {
+		dragDelaySeconds: 0.2,
 		onClick() {
 			emit('update:modelValue', !props.modelValue)
 			emit('confirm')
 			input.value?.focus()
 		},
-		onDragEnd({initial: [ix], xy: [x]}) {
+		onDragStart() {
+			emit('focus')
+
+			emit('update:modelValue', !props.modelValue)
+		},
+		onDrag({initial: [ix], xy: [x]}) {
 			const dx = x - ix
 
-			if (Math.abs(dx) <= tweakThreshold) {
-				emit('update:modelValue', !props.modelValue)
-			} else {
-				emit('update:modelValue', dx > 0)
+			const newValue = dx > 0
+
+			if (newValue !== props.modelValue) {
+				emit('update:modelValue', newValue)
 			}
+		},
+		onDragEnd() {
 			emit('confirm')
 			input.value?.focus()
 		},
@@ -71,7 +79,10 @@ export function useInputSwitch({
 		emit('confirm')
 	})
 
-	useEventListener(input, 'focus', () => emit('focus'))
+	useEventListener(input, 'focus', (e: FocusEvent) => {
+		// Only emit focus event when the focus is triggered by the keyboard
+		if (e.relatedTarget !== null) emit('focus')
+	})
 
 	useEventListener(input, 'blur', () => emit('blur'))
 
