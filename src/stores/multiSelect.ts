@@ -1,16 +1,16 @@
 import {onKeyStroke, useEventListener, useKeyModifier} from '@vueuse/core'
 import {defineStore} from 'pinia'
-import {type Ref, ref, shallowRef, watch} from 'vue'
+import {computed, reactive, type Ref, ref, shallowRef, toRef, watch} from 'vue'
 
 interface MultiSelectSource {
 	el: Ref<HTMLElement | null>
-	focusing: Ref<boolean>
+	focusing: Readonly<Ref<boolean>>
 	getValue: () => number
 	setValue: (value: number) => void
 	confirm: () => void
 }
 
-interface MultiSelectStore extends MultiSelectSource {
+interface MultiSelectInput extends MultiSelectSource {
 	subFocusing: Ref<boolean>
 	initialValue?: number
 }
@@ -20,8 +20,13 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	let popupEl: HTMLElement | null = null
 
-	const selectStores = new Map<symbol, MultiSelectStore>()
-	const focusCount = ref(0)
+	const inputs = reactive(new Map<symbol, MultiSelectInput>())
+
+	const selectedInputs = computed(() =>
+		[...inputs.values()].filter(input => input.focusing || input.subFocusing)
+	)
+
+	const focusCount = computed(() => selectedInputs.value.length)
 
 	const popupVisible = ref(false)
 	const focusedElement = shallowRef<HTMLElement | null>(null)
@@ -30,9 +35,9 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		// Ignore non-primary pointer
 		if (e.button !== 0) return
 
-		const clickedOutside = ![...selectStores.values()].some(({el}) => {
-			if (!el.value) return false
-			return e.target === el.value || el.value.contains(e.target as Node)
+		const clickedOutside = ![...inputs.values()].some(({el}) => {
+			if (!el) return false
+			return e.target === el || el.contains(e.target as Node)
 		})
 
 		const clickedPopup =
@@ -48,84 +53,64 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function defocusAll() {
 		popupVisible.value = false
 		focusedElement.value = null
-		selectStores.forEach(({subFocusing}) => {
-			subFocusing.value = false
+		inputs.forEach(input => {
+			input.subFocusing = false
 		})
 	}
 
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
-		const subFocusing = ref(false)
 
-		selectStores.set(id, {...source, subFocusing})
+		const store = reactive({...source, subFocusing: false})
+
+		inputs.set(id, store)
 
 		watch(source.focusing, () => {
 			if (!source.focusing.value && command.value) {
-				subFocusing.value = true
+				store.subFocusing = true
 			}
 
 			if (source.focusing.value) {
 				if (command.value) {
 					popupVisible.value = true
-					subFocusing.value = true
+					store.subFocusing = true
 					focusedElement.value = source.el.value
 				} else {
 					defocusAll()
 				}
 			}
-
-			updateFocusCount()
 		})
 
 		function unregister() {
-			selectStores.delete(id)
+			inputs.delete(id)
 		}
 
-		return {subFocusing, unregister}
+		return {subFocusing: toRef(store, 'subFocusing'), unregister}
 	}
 
 	function captureValues() {
-		for (const record of selectStores.values()) {
-			if (record.focusing.value || record.subFocusing.value) {
-				const initialValue = record.getValue()
-				record.initialValue = initialValue
-			}
-		}
-	}
-
-	function updateFocusCount() {
-		focusCount.value = [...selectStores.values()].filter(
-			({focusing, subFocusing}) => focusing.value || subFocusing.value
-		).length
+		selectedInputs.value.forEach(input => {
+			input.initialValue = input.getValue()
+		})
 	}
 
 	function updateValues(updator: (values: number[]) => number[]) {
-		const values = []
-		const ids = []
-		for (const [id, r] of selectStores.entries()) {
-			if (r.focusing.value || r.subFocusing.value) {
-				ids.push(id)
-				values.push(r.initialValue ?? r.getValue())
-			}
-		}
+		const values = selectedInputs.value.map(
+			input => input.initialValue ?? input.getValue()
+		)
 
 		const updatedValues = updator(values)
-		for (let i = 0; i < ids.length; i++) {
-			const id = ids[i]
-			const value = updatedValues[i]
-			const r = selectStores.get(id)
-			if (r) {
-				r.setValue(value)
-			}
-		}
+
+		selectedInputs.value.forEach((input, i) => {
+			input.setValue(updatedValues[i])
+		})
 	}
 
 	function confirmValues() {
-		for (const r of selectStores.values()) {
-			if (r.focusing.value || r.subFocusing.value) {
-				r.confirm()
-			}
-		}
+		selectedInputs.value.forEach(input => {
+			input.confirm()
+			input.initialValue = undefined
+		})
 	}
 
 	return {
