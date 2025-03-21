@@ -42,6 +42,14 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	const focusedElement = shallowRef<HTMLElement | null>(null)
 
+	// Defocus logics
+	function defocusAll() {
+		focusedElement.value = null
+		inputs.forEach(input => {
+			input.subfocus = false
+		})
+	}
+
 	useEventListener('pointerdown', e => {
 		// Ignore non-primary pointer
 		if (e.button !== 0) return
@@ -60,13 +68,6 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	})
 
 	onKeyStroke('Escape', defocusAll)
-
-	function defocusAll() {
-		focusedElement.value = null
-		inputs.forEach(input => {
-			input.subfocus = false
-		})
-	}
 
 	function register(source: MultiSelectSource) {
 		const id = Symbol()

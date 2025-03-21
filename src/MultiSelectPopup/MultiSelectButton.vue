@@ -9,13 +9,12 @@ const props = defineProps<{
 
 const multiSelect = useMultiSelectStore()
 
-function swap() {
-	multiSelect.captureValues()
+function edit() {
 	multiSelect.updateValues(props.updator)
 	multiSelect.confirmValues()
 }
 </script>
 
 <template>
-	<IconIndicator :icon="icon" @click="swap" />
+	<IconIndicator :icon="icon" @click="edit" />
 </template>
