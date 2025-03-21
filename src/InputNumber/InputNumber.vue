@@ -148,6 +148,8 @@ const maxSpeed = computed(() => {
 	return barVisible.value ? 1 : 1000
 })
 
+let deltaAccumulated = 0
+
 const {dragging: tweaking} = useDrag($root, {
 	lockPointer: computed(() => !barVisible.value),
 	disabled: computed(() => props.disabled || focusing.value),
@@ -168,13 +170,17 @@ const {dragging: tweaking} = useDrag($root, {
 				props.min,
 				props.max
 			)
+
+			multi.update(() => local.value)
 		}
 
+		deltaAccumulated = 0
 		tweakMode.value = state.xy
 		speedMultiplierGesture.value = 1
 		displayPrecision.value = getNumberPresition(display.value)
 
 		emit('focus')
+		multi.capture()
 	},
 	onDrag(state, event) {
 		const [dx, dy] = state.delta
@@ -211,7 +217,11 @@ const {dragging: tweaking} = useDrag($root, {
 				? (props.max - props.min) / width.value
 				: 1
 
-			local.value += dx * baseSpeed * speed.value
+			const delta = dx * baseSpeed * speed.value
+
+			local.value += delta
+			deltaAccumulated += delta
+			multi.update(v => v + deltaAccumulated)
 
 			if (!barVisible.value) {
 				local.value = scalar.clamp(local.value, validMin.value, validMax.value)
@@ -434,7 +444,7 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing,
-	getValue: () => props.modelValue,
+	getValue: () => validatedLocal.value,
 	setValue(value) {
 		local.value = value
 		emit('update:modelValue', validatedLocal.value)
@@ -445,7 +455,7 @@ const multi = useMultiSelectStore().register({
 //------------------------------------------------------------------------------
 // Styles
 
-const valueRangeState = computed(() => {
+const valueRangeStateClasses = computed(() => {
 	if (!barVisible.value) return {}
 
 	if (props.modelValue < props.min) return {'below-range': true}
@@ -510,7 +520,7 @@ const barStyle = computed<StyleValue>(() => {
 	<div
 		ref="$root"
 		class="InputNumber"
-		:class="{tweaking, ...valueRangeState}"
+		:class="valueRangeStateClasses"
 		:data-tweaking-mode="tweakMode"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
@@ -523,7 +533,7 @@ const barStyle = computed<StyleValue>(() => {
 		<input
 			ref="$input"
 			class="input"
-			:class="{focus: multi.subfocus}"
+			:class="{focus: tweaking || multi.subfocus}"
 			type="text"
 			inputmode="numeric"
 			pattern="d*"
