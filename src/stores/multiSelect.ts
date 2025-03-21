@@ -24,6 +24,7 @@ export interface MultiSelectSource {
 }
 
 interface MultiSelectInput extends MultiSelectSource {
+	id: symbol
 	subfocus: Ref<boolean>
 	capturedValue?: number | string
 }
@@ -33,10 +34,10 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	let popupEl: HTMLElement | null = null
 
-	const inputs = reactive(new Map<symbol, MultiSelectInput>())
+	const inputs = reactive<MultiSelectInput[]>([])
 
 	const selectedInputs = computed(() =>
-		[...inputs.values()].filter(input => input.focusing || input.subfocus)
+		inputs.filter(input => input.focusing || input.subfocus)
 	)
 
 	const focusedElement = shallowRef<HTMLElement | null>(null)
@@ -70,9 +71,9 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
 
-		const store = reactive({...source, subfocus: false})
+		const store = reactive({id, ...source, subfocus: false})
 
-		inputs.set(id, store)
+		inputs.push(store)
 
 		watch(source.focusing, () => {
 			if (!source.focusing.value && meta.value) {
@@ -90,7 +91,10 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		})
 
 		onBeforeUnmount(() => {
-			inputs.delete(id)
+			inputs.splice(
+				inputs.findIndex(input => input.id === id),
+				1
+			)
 		})
 
 		return {subfocus: toRef(store, 'subfocus')}
