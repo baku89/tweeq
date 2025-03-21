@@ -163,7 +163,7 @@ export function useDrag(
 		bound.update()
 
 		// Start drag immediately if disableClick is true or dragDelaySeconds is 0
-		if (disableClick || dragDelaySeconds <= 0) {
+		if (disableClick || dragDelaySeconds === 0) {
 			fireDragStart(event)
 		} else {
 			dragDelayTimer = setTimeout(
@@ -172,7 +172,7 @@ export function useDrag(
 			)
 		}
 
-		target.value?.setPointerCapture(event.pointerId)
+		;(event.target as Element).setPointerCapture(event.pointerId)
 	}
 
 	function onPointerMove(event: PointerEvent) {
@@ -223,7 +223,7 @@ export function useDrag(
 		pointerdown = false
 		state.dragging = false
 		state.xy = state.initial = state.delta = vec2.zero
-		target.value?.releasePointerCapture(event.pointerId)
+		;(event.target as Element).releasePointerCapture(event.pointerId)
 	}
 
 	return toRefs(state)
