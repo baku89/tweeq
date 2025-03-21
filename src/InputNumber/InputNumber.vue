@@ -7,7 +7,6 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {constant} from 'lodash-es'
 import {
 	computed,
 	nextTick,
@@ -281,8 +280,6 @@ function confirm() {
 	local.value = validatedLocal.value
 	display.value = toFixed(validatedLocal.value, precision.value)
 
-	multiSelect.updateValues(vs => vs.map(constant(validatedLocal.value)))
-
 	emit('update:modelValue', validatedLocal.value)
 	emit('confirm')
 }
@@ -290,20 +287,34 @@ function confirm() {
 //------------------------------------------------------------------------------
 // Input Events
 
+function onEnter() {
+	multiSelect.confirmValues()
+	confirm()
+}
+
+function onFocus() {
+	multiSelect.captureValues()
+	emit('focus')
+}
+
 function onInput(e: Event) {
 	const el = e.target as HTMLInputElement
 
-	const newValue = parseFloat(el.value)
-	if (!isNaN(newValue)) {
-		local.value = newValue
-		multiSelect.updateValues(vs => vs.map(constant(newValue)))
-	}
-
 	display.value = el.value
+
+	try {
+		const fn = eval(`(x, index) => ${el.value}`)
+		multiSelect.updateValues(vs => vs.map(fn))
+		return
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error('[InputNumber] Error evaluating expression', e)
+	}
 }
 
 function onBlur() {
-	emit('confirm')
+	confirm()
+	multiSelect.confirmValues()
 	emit('blur')
 }
 
@@ -433,6 +444,7 @@ const {subFocusing, unregister} = multiSelect.register({
 	focusing,
 	getValue: () => props.modelValue,
 	setValue(value) {
+		local.value = value
 		emit('update:modelValue', value)
 	},
 	confirm,
@@ -531,11 +543,11 @@ const barStyle = computed<StyleValue>(() => {
 			:invalid="isInvalid"
 			:disabled="disabled || undefined"
 			@input="onInput"
-			@focus="emit('focus')"
+			@focus="onFocus"
 			@blur="onBlur"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
-			@keydown.enter.prevent="confirm"
+			@keydown.enter.prevent="onEnter"
 		/>
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
