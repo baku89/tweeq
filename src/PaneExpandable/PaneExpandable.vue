@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue'
 import {ref} from 'vue'
 
+import {Icon} from '../Icon'
 import type {PaneExpandableProps} from './types'
 
 defineProps<PaneExpandableProps>()

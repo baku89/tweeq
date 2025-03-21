@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {Icon} from '@iconify/vue'
+import {Icon} from '../Icon'
 
 defineProps<{
 	modelValue: null | 'toggle' | boolean

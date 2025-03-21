@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue'
 import type {IconSequence} from 'bndr-js'
 import {Menu as VMenu} from 'floating-vue'
 
 import {BindIcon} from '../BindIcon'
+import {Icon} from '../Icon'
 
 export interface MenuCommand {
 	icon?: string

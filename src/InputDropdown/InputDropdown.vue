@@ -1,10 +1,10 @@
 <script lang="ts" setup generic="T">
-import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
 import {computed, type Ref, ref, shallowRef, watch} from 'vue'
 
+import {Icon} from '../Icon'
 import {InputString} from '../InputString'
 import {Popover} from '../Popover'
 import {type InputEmits, useLabelizer} from '../types'

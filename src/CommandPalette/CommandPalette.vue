@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue'
 import {useEventListener} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, shallowRef, watch} from 'vue'
 
 import {BindIcon} from '../BindIcon'
+import {Icon} from '../Icon'
 import {type ActionItemOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {useBndr} from '../use/useBndr'

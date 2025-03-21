@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue'
 import {vec2} from 'linearly'
 import {ref} from 'vue'
 
+import {Icon} from '../Icon'
 import {InputVec} from '../InputVec'
 import {InputEmits, InputProps} from '../types'
 

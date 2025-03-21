@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue'
-
+import {Icon} from '../Icon'
 import type {ParameterProps} from './types'
 defineProps<ParameterProps>()
 

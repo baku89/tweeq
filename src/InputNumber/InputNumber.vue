@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import {Icon} from '@iconify/vue'
 import {
 	useElementBounding,
 	useEventListener,
@@ -18,6 +17,7 @@ import {
 	watch,
 } from 'vue'
 
+import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
@@ -642,6 +642,7 @@ const barStyle = computed<StyleValue>(() => {
 	position absolute
 	z-index 100
 	pointer-events none
+	top 0
 
 	&.left
 		left 3px

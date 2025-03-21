@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import {Icon} from '@iconify/vue'
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {computed, onMounted, shallowRef, watch} from 'vue'
 
+import {Icon} from '../Icon'
 import {useAppConfigStore} from '../stores/appConfig'
 import type {PaneFloatingProps, Position} from './types'
 

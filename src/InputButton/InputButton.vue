@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import {Icon} from '@iconify/vue'
-
+import {Icon} from '../Icon'
 import type {InputButtonProps} from './types'
 
 defineProps<InputButtonProps>()

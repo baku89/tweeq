@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {Icon} from '@iconify/vue'
 import {computedWithControl} from '@vueuse/core'
 import chroma from 'chroma-js'
 
+import {Icon} from '../Icon'
 import {InputEmits} from '../types'
 import InputColorChannelPad from './InputColorChannelPad.vue'
 import InputColorChannelSlider from './InputColorChannelSlider.vue'
