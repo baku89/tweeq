@@ -3,7 +3,7 @@ import {Path} from '@baku89/pave'
 import {useFocus, useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
 import {scalar, vec2} from 'linearly'
-import {constant, partial, range} from 'lodash-es'
+import {partial, range} from 'lodash-es'
 import {computed, ref, shallowRef} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -93,7 +93,7 @@ const {
 			multi.capture()
 			multi.update((v: number) => v + delta)
 		} else {
-			multi.update(constant(local.value))
+			multi.update(() => local.value)
 		}
 	},
 	onDragEnd() {
