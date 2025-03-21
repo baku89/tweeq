@@ -33,7 +33,6 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 			v-if="showNumber"
 			class="number"
 			v-bind="props"
-			:precision="0"
 			suffix="°"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
