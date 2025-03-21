@@ -25,7 +25,7 @@ export interface MultiSelectSource {
 
 interface MultiSelectInput extends MultiSelectSource {
 	subfocus: Ref<boolean>
-	initialValue?: number | string
+	capturedValue?: number | string
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
@@ -98,13 +98,13 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	function captureValues() {
 		selectedInputs.value.forEach(input => {
-			input.initialValue = input.getValue()
+			input.capturedValue = input.getValue()
 		})
 	}
 
 	function updateValues(updator: (values: number[]) => number[]) {
 		const values = selectedInputs.value.map(
-			input => input.initialValue ?? input.getValue()
+			input => input.capturedValue ?? input.getValue()
 		)
 
 		const updatedValues = updator(values)
@@ -117,7 +117,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function confirmValues() {
 		selectedInputs.value.forEach(input => {
 			input.confirm()
-			input.initialValue = undefined
+			input.capturedValue = undefined
 		})
 	}
 
