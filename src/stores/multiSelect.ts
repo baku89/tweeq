@@ -5,7 +5,6 @@ import {
 	onBeforeUnmount,
 	reactive,
 	type Ref,
-	ref,
 	shallowRef,
 	toRef,
 	watch,
@@ -13,24 +12,24 @@ import {
 
 import {nodeContains} from '../util'
 
-export type MultiSelectType = 'number' | 'color'
+export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
 
 export interface MultiSelectSource {
 	type: MultiSelectType
 	el: Ref<HTMLElement | null>
 	focusing: Readonly<Ref<boolean>>
-	getValue: () => number
-	setValue: (value: number) => void
+	getValue: () => any
+	setValue: (value: any) => void
 	confirm: () => void
 }
 
 interface MultiSelectInput extends MultiSelectSource {
 	subFocusing: Ref<boolean>
-	initialValue?: number
+	initialValue?: number | string
 }
 
-export const useMultiSelectStore = defineStore('multi			Select', () => {
-	const command = useKeyModifier('Meta')
+export const useMultiSelectStore = defineStore('multiSelect', () => {
+	const meta = useKeyModifier('Meta')
 
 	let popupEl: HTMLElement | null = null
 
@@ -42,7 +41,6 @@ export const useMultiSelectStore = defineStore('multi			Select', () => {
 
 	const focusCount = computed(() => selectedInputs.value.length)
 
-	const popupVisible = ref(false)
 	const focusedElement = shallowRef<HTMLElement | null>(null)
 
 	useEventListener('pointerdown', e => {
@@ -65,7 +63,6 @@ export const useMultiSelectStore = defineStore('multi			Select', () => {
 	onKeyStroke('Escape', defocusAll)
 
 	function defocusAll() {
-		popupVisible.value = false
 		focusedElement.value = null
 		inputs.forEach(input => {
 			input.subFocusing = false
@@ -80,13 +77,12 @@ export const useMultiSelectStore = defineStore('multi			Select', () => {
 		inputs.set(id, store)
 
 		watch(source.focusing, () => {
-			if (!source.focusing.value && command.value) {
+			if (!source.focusing.value && meta.value) {
 				store.subFocusing = true
 			}
 
 			if (source.focusing.value) {
-				if (command.value) {
-					popupVisible.value = true
+				if (meta.value) {
 					store.subFocusing = true
 					focusedElement.value = source.el.value
 				} else {
@@ -129,12 +125,12 @@ export const useMultiSelectStore = defineStore('multi			Select', () => {
 
 	return {
 		register,
-		popupVisible,
 		focusedElement,
 		captureValues,
 		updateValues,
 		confirmValues,
 		focusCount,
+		selectedInputs,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
 		},

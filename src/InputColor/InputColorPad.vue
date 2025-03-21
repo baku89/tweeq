@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {useMagicKeys} from '@vueuse/core'
+import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash-es'
@@ -7,6 +7,7 @@ import {computed, ref, shallowRef, watchEffect} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
+import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
@@ -35,7 +36,7 @@ defineSlots<{
 const $button = shallowRef<HTMLElement | null>(null)
 const open = ref(false)
 
-const {shift, alt, h, f, a, s, v, r, g, b} = useMagicKeys()
+const {shift, meta, alt, h, f, a, s, v, r, g, b} = useMagicKeys()
 
 const tweakMode = computed(() => {
 	if (shift.value || h.value || f.value) {
@@ -91,6 +92,10 @@ function decomposeChannels() {
 
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
+	onClick() {
+		if (multiSelect.focusCount > 1) return
+		open.value = !open.value
+	},
 	onDragStart() {
 		tweakChannels.value = decomposeChannels()
 	},
@@ -147,16 +152,8 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	},
 })
 
-function onClickButton() {
-	if (tweaking.value) return
-
-	open.value = !open.value
-}
-
-watchEffect(() => {
-	if (tweaking.value) {
-		open.value = false
-	}
+whenever(tweaking, () => {
+	open.value = false
 })
 
 const overlayLabel = computed<[string, string, boolean?][]>(() => {
@@ -253,6 +250,30 @@ const sliderUniforms = computed(() => {
 		offset: 0,
 	}
 })
+
+//------------------------------------------------------------------------------
+// Multi Select
+
+const multiSelect = useMultiSelectStore()
+
+const {subFocusing} = multiSelect.register({
+	type: 'color',
+	el: $button,
+	focusing: useFocus($button).focused,
+	getValue: () => props.modelValue,
+	setValue(value) {
+		emit('update:modelValue', value)
+	},
+	confirm() {
+		emit('confirm')
+	},
+})
+
+watchEffect(() => {
+	if (multiSelect.focusCount > 1) {
+		open.value = false
+	}
+})
 </script>
 
 <template>
@@ -260,7 +281,7 @@ const sliderUniforms = computed(() => {
 		v-bind="$attrs"
 		ref="$button"
 		class="InputColorPad"
-		@click="onClickButton"
+		:class="{focus: (open && (shift || meta)) || subFocusing}"
 	>
 		<slot>
 			<div
@@ -272,7 +293,12 @@ const sliderUniforms = computed(() => {
 			/>
 		</slot>
 	</button>
-	<Popover v-model:open="open" :reference="$button" placement="bottom-start">
+	<Popover
+		:open="open && !(shift || meta)"
+		:reference="$button"
+		placement="bottom-start"
+		@update:open="open = $event"
+	>
 		<div class="floating">
 			<InputColorPicker
 				:modelValue="modelValue"
@@ -337,6 +363,7 @@ const sliderUniforms = computed(() => {
 	use-input-position()
 
 	.InputColorPad:focus-visible &,
+	.InputColorPad.focus &,
 	&:hover, &.tweaking
 		box-shadow 0 0 0 1px var(--tq-color-accent)
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {autoUpdate, useFloating} from '@floating-ui/vue'
-import {onMounted, shallowRef, toRef, watchEffect} from 'vue'
+import {computed, onMounted, shallowRef, toRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
@@ -8,6 +8,10 @@ import MultiSelectButton from './MultiSelectButton.vue'
 import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
 
 const multiSelect = useMultiSelectStore()
+
+const selectedTypes = computed(() =>
+	multiSelect.selectedInputs.map(i => i.type)
+)
 
 const $root = shallowRef<HTMLElement | null>(null)
 
@@ -58,21 +62,32 @@ const actions: MultiSelectAction[] = [
 	},
 ]
 
+const enabledActions = computed(() =>
+	actions.filter(a => a.enabled(selectedTypes.value))
+)
+
+const visible = computed(() => {
+	if (multiSelect.focusCount <= 1) return false
+	if (enabledActions.value.length === 0) return false
+
+	return true
+})
+
 watchEffect(() => {
-	$root.value?.togglePopover(multiSelect.popupVisible)
+	$root.value?.togglePopover(visible.value)
 })
 </script>
 
 <template>
 	<div
 		ref="$root"
-		:class="{visible: multiSelect.popupVisible}"
+		:class="{visible}"
 		class="TqMultiSelectPopup"
 		:style="floatingStyles"
 		popover="manual"
 	>
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
-		<template v-for="action in actions" :key="action.icon">
+		<template v-for="action in enabledActions" :key="action.icon">
 			<MultiSelectHorizontalSlider
 				v-if="action.type === 'slider'"
 				:updator="action.updator"
