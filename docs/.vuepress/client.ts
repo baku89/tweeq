@@ -4,7 +4,7 @@ import {App} from 'vue'
 
 const registerComponents = async (app: App) => {
 	const Tq = await import('tweeq')
-	const InputExample = await import('./InputExample.vue')
+	const DemoComponent = await import('./DemoComponent.vue')
 	const Sandbox = await import('./Sandbox.vue')
 
 	// Tweeqコンポーネントを登録
@@ -14,7 +14,7 @@ const registerComponents = async (app: App) => {
 	}
 
 	// ドキュメント用のカスタムコンポーネントを登録
-	app.component('InputExample', InputExample.default)
+	app.component('DemoComponent', DemoComponent.default)
 	app.component('Sandbox', Sandbox.default)
 }
 

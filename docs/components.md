@@ -35,7 +35,8 @@
 
 ### InputAngle
 
-<InputExample
+<DemoComponent
+	name="InputAngle"
 	:initialValue="0"
 	:options="{quantizeStep: 30, angleOffset: 0}"
 	:scheme="{
@@ -52,11 +53,12 @@
 		@confirm='listeners.confirm'
 		v-bind='options'
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputButton
 
-<InputExample
+<DemoComponent
+	name="InputButton"
 	:initialValue="0"
 	:scheme="{
 		label: {type: 'string'},
@@ -75,11 +77,12 @@
 	<InputButton
 		v-bind="options"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputCheckbox
 
-<InputExample
+<DemoComponent
+	name="InputCheckbox"
 	:initialValue="false"
 	:scheme="{
 		label: {type: 'string'},
@@ -95,11 +98,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputColor
 
-<InputExample
+<DemoComponent
+	name="InputColor"
 	initialValue="#ff0000"
 	:scheme="{
 		alpha: {type: 'boolean'},
@@ -115,11 +119,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputDropdown
 
-<InputExample
+<DemoComponent
+	name="InputDropdown"
 	initialValue="apple"
 	:scheme="{}"
 	:options="{}"
@@ -133,11 +138,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputNumber
 
-<InputExample
+<DemoComponent
+	name="InputNumber"
 	:initialValue="0"
 	:scheme="{
 		min: {type: 'number'},
@@ -164,11 +170,12 @@
 		@confirm="listeners.confirm"
 		v-bind="options"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputRadio
 
-<InputExample
+<DemoComponent
+	name="InputRadio"
 	initialValue="apple"
 	:scheme="{}"
 	:options="{}"
@@ -182,11 +189,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputSize
 
-<InputExample
+<DemoComponent
+	name="InputSize"
 	:initialValue="[100, 250]"
 	:scheme="{}"
 	:options="{}"
@@ -200,11 +208,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputString
 
-<InputExample
+<DemoComponent
+	name="InputString"
 	initialValue="Baby salmon"
 	:scheme="{}"
 	:options="{}"
@@ -217,11 +226,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputSwitch
 
-<InputExample
+<DemoComponent
+	name="InputSwitch"
 	:initialValue="false"
 	:scheme="{
 		label: {type: 'string'},
@@ -237,11 +247,12 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
 
 ### InputVec
 
-<InputExample
+<DemoComponent
+	name="InputVec"
 	:initialValue="[0, 0, 0, 0]"
 	:scheme="{}"
 	:options="{}"
@@ -254,4 +265,4 @@
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
 	/>
-</InputExample>
+</DemoComponent>
