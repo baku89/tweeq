@@ -61,8 +61,12 @@ const listeners = {
 .DemoComponent
 	display grid
 	grid-template-columns min-content 1fr
-	gap 4rem
 
 .input
 	width 15rem
+
+.options
+	border-left 1px solid black
+	margin-left 2rem
+	padding-left 2rem
 </style>
