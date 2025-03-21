@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {scalar, vec2} from 'linearly'
-import {computed, shallowRef} from 'vue'
+import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {useDrag} from '../useDrag'
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	updateChannels: [Partial<Channels>]
 }>()
 
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 
 let initialChannels: vec2
 let isRelative = false

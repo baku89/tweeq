@@ -2,7 +2,7 @@
 import {useEventListener} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
-import {computed, ref, shallowRef, watch} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
@@ -13,7 +13,7 @@ import {unsignedMod} from '../util'
 
 const actions = useActionsStore()
 
-const $popover = shallowRef<HTMLElement>()
+const $popover = useTemplateRef('$popover')
 const searchWord = ref('')
 
 const appConfig = useAppConfigStore()

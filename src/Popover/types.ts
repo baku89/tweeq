@@ -8,7 +8,7 @@ export type Placement =
 	| `${PlacementDirection}-${PlacementAlign}`
 
 export interface PopoverProps {
-	reference: HTMLElement | undefined
+	reference: HTMLElement | null
 	open: boolean
 	placement?: Placement
 	lightDismiss?: boolean

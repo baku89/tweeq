@@ -5,7 +5,7 @@ import {type Ref} from 'vue'
 import {useBndr} from './useBndr'
 
 export function useZUI(
-	element: Ref<HTMLElement | undefined>,
+	element: Ref<HTMLElement | null>,
 	onTransform: (delta: mat2d) => void
 ) {
 	useBndr(element, element => {

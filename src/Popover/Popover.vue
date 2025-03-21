@@ -6,7 +6,7 @@ import {
 	useWindowSize,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, shallowRef, watch} from 'vue'
+import {computed, useTemplateRef, watch} from 'vue'
 
 import type {Placement, PopoverProps} from './types'
 
@@ -22,7 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const $reference = computed(() => props.reference)
-const $popover = shallowRef<HTMLElement>()
+const $popover = useTemplateRef('$popover')
 
 const refBound = useElementBounding($reference)
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {computed, ref, shallowRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {Popover} from '../Popover'
 import InputCubicBezierPicker from './InputCubicBezierPicker.vue'
@@ -16,7 +16,7 @@ defineOptions({
 	inheritAttrs: false,
 })
 
-const $button = shallowRef<HTMLElement>()
+const $button = useTemplateRef('$button')
 const open = ref(false)
 
 const easingPath = computed(() => {

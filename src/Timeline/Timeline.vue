@@ -3,7 +3,7 @@ import {useElementBounding} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar, vec2} from 'linearly'
 import {clamp} from 'lodash-es'
-import {computed, shallowRef, watch} from 'vue'
+import {computed, shallowRef, useTemplateRef, watch} from 'vue'
 
 import {useBndr} from '../use/useBndr'
 import {toPercent} from '../util'
@@ -39,7 +39,7 @@ const emit = defineEmits<{
 	'update:frameWidth': [number]
 }>()
 
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 const {width: containerWidth} = useElementBounding($root)
 
 useBndr($root, $root => {

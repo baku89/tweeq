@@ -2,7 +2,7 @@
 import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
-import {computed, type Ref, ref, shallowRef, watch} from 'vue'
+import {computed, type Ref, ref, useTemplateRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputString} from '../InputString'
@@ -26,7 +26,7 @@ defineOptions({
 })
 
 const open = ref(false)
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 
 const rootBound = useElementBounding($root)
 

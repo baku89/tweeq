@@ -4,7 +4,7 @@ import chroma from 'chroma-js'
 import Color from 'colorjs.io'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash-es'
-import {computed, ref, shallowRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
@@ -37,7 +37,7 @@ defineSlots<{
 	default: void
 }>()
 
-const $button = shallowRef<HTMLElement>()
+const $button = useTemplateRef('$button')
 const open = ref(false)
 
 const {shift, meta, alt, h, f, a, s, v, r, g, b} = useMagicKeys()

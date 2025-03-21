@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useElementSize} from '@vueuse/core'
-import {computed, shallowRef} from 'vue'
+import {computed, useTemplateRef} from 'vue'
 
 interface Props {
 	min?: number
@@ -10,7 +10,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const $el = shallowRef<HTMLElement>()
+const $el = useTemplateRef('$el')
 
 const {width} = useElementSize($el)
 

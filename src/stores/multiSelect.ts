@@ -22,7 +22,7 @@ type MultiSelectValue = number | string | boolean
 
 export interface MultiSelectSource {
 	type: MultiSelectType
-	el: Ref<HTMLElement | undefined>
+	el: Ref<HTMLElement | null>
 	focusing: Readonly<Ref<boolean>>
 	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
@@ -38,7 +38,7 @@ interface MultiSelectInput extends MultiSelectSource {
 export const useMultiSelectStore = defineStore('multiSelect', () => {
 	const meta = useKeyModifier('Meta')
 
-	let popupEl: HTMLElement | undefined
+	let popupEl: HTMLElement | null
 
 	const inputs = reactive<MultiSelectInput[]>([])
 
@@ -46,11 +46,11 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		inputs.filter(input => input.focusing || input.subfocus)
 	)
 
-	const focusedElement = shallowRef<HTMLElement>()
+	const focusedElement = shallowRef<HTMLElement | null>(null)
 
 	// Defocus logics
 	function defocusAll() {
-		focusedElement.value = undefined
+		focusedElement.value = null
 		inputs.forEach(input => {
 			input.subfocus = false
 		})

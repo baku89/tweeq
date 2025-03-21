@@ -4,7 +4,7 @@ import {useFocus, useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
 import {scalar, vec2} from 'linearly'
 import {partial, range} from 'lodash-es'
-import {computed, ref, shallowRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
@@ -43,7 +43,7 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 

@@ -2,7 +2,7 @@
 import {useElementSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {clamp} from 'lodash-es'
-import {computed, onMounted, shallowRef} from 'vue'
+import {computed, onMounted, useTemplateRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import {PaneSplitProps} from './types'
@@ -14,8 +14,8 @@ const props = withDefaults(defineProps<PaneSplitProps>(), {
 
 const appConfig = useAppConfigStore()
 
-const $root = shallowRef<HTMLElement>()
-const $divider = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
+const $divider = useTemplateRef('$divider')
 
 const rootSize = useElementSize($root)
 

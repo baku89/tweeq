@@ -64,7 +64,7 @@ interface UseDragOptions {
 }
 
 export function useDrag(
-	target: Ref<HTMLElement | undefined>,
+	target: Ref<HTMLElement | SVGElement | null>,
 	{
 		disabled,
 		lockPointer = false,
@@ -99,7 +99,7 @@ export function useDrag(
 
 	const bound = useElementBounding(target)
 
-	const {lock, unlock} = usePointerLock(target)
+	const {lock, unlock} = usePointerLock(target as any)
 
 	watchEffect(
 		() => {

@@ -9,8 +9,8 @@ export function useInputSwitch({
 	props,
 	emit,
 }: {
-	track: Ref<undefined | HTMLElement>
-	input: Ref<undefined | HTMLInputElement>
+	track: Ref<HTMLElement | null>
+	input: Ref<HTMLInputElement | null>
 	props: Pick<InputCheckboxProps, 'modelValue'>
 	emit: any
 }) {

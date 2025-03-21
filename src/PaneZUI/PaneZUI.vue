@@ -2,7 +2,7 @@
 import {Rect} from '@baku89/pave'
 import {useElementBounding} from '@vueuse/core'
 import {mat2d, vec2} from 'linearly'
-import {computed, shallowRef, watch, watchEffect} from 'vue'
+import {computed, shallowRef, useTemplateRef, watch, watchEffect} from 'vue'
 
 import {useZUI} from '../use/useZUI'
 
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 	'update:visibleRect': [Rect]
 }>()
 
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 
 const {width: rootWidth, height: rootHeight} = useElementBounding($root)
 

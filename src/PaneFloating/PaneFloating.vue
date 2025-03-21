@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {useCssVar, useElementBounding, useWindowSize} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
-import {computed, onMounted, shallowRef, watch} from 'vue'
+import {computed, onMounted, useTemplateRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {useAppConfigStore} from '../stores/appConfig'
@@ -52,11 +52,11 @@ const style = computed(() => {
 	}
 })
 
-const $root = shallowRef<HTMLElement>()
-const $top = shallowRef<HTMLElement>()
-const $right = shallowRef<HTMLElement>()
-const $left = shallowRef<HTMLElement>()
-const $bottom = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
+const $top = useTemplateRef('$top')
+const $right = useTemplateRef('$right')
+const $left = useTemplateRef('$left')
+const $bottom = useTemplateRef('$bottom')
 
 const bound = useElementBounding($root)
 

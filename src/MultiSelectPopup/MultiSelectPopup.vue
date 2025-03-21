@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {autoUpdate, useFloating} from '@floating-ui/vue'
-import {computed, onMounted, shallowRef, toRef, watchEffect} from 'vue'
+import {computed, onMounted, toRef, useTemplateRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
@@ -13,7 +13,7 @@ const selectedTypes = computed(() =>
 	multiSelect.selectedInputs.map(i => i.type)
 )
 
-const $root = shallowRef<HTMLElement>()
+const $root = useTemplateRef('$root')
 
 onMounted(() => {
 	if (!$root.value) return

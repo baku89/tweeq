@@ -7,7 +7,14 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
+import {
+	computed,
+	nextTick,
+	ref,
+	type StyleValue,
+	useTemplateRef,
+	watch,
+} from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -41,8 +48,8 @@ defineOptions({
 
 const emit = defineEmits<InputEmits<number>>()
 
-const $root = shallowRef<HTMLElement>()
-const $input = shallowRef<HTMLInputElement>()
+const $root = useTemplateRef('$root')
+const $input = useTemplateRef('$input')
 const {left, top, width, height, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused

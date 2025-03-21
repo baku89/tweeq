@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {type CubicBezierPoints} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {computed, ref, shallowRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {useDrag} from '../useDrag'
 import type {InputCubicBezierProps} from './types'
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 	'update:modelValue': [CubicBezierValue]
 }>()
 
-const $editor = shallowRef<HTMLElement>()
+const $editor = useTemplateRef('$editor')
 
 useDrag($editor, {
 	onDrag({xy, left, right, top, bottom}) {

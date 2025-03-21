@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {uniqueId} from 'lodash-es'
-import {ref, shallowRef} from 'vue'
+import {ref, useTemplateRef} from 'vue'
 
 import InputSwitchOverlay from '../InputSwitch/InputSwitchOverlay.vue'
 import {useInputSwitch} from '../InputSwitch/utils'
@@ -14,8 +14,8 @@ const emit = defineEmits<InputEmits<boolean>>()
 
 const id = ref(uniqueId('InputCheckbox_'))
 
-const track = shallowRef<HTMLDivElement>()
-const input = shallowRef<HTMLInputElement>()
+const track = useTemplateRef('track')
+const input = useTemplateRef('input')
 
 const {tweakingValue} = useInputSwitch({
 	track,
@@ -30,7 +30,7 @@ const {tweakingValue} = useInputSwitch({
 		<div ref="track" class="checkbox">
 			<input
 				:id="id"
-				ref="$input"
+				ref="input"
 				:checked="!!modelValue"
 				class="input"
 				type="checkbox"
