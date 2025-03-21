@@ -11,6 +11,10 @@ interface Props {
 
 const props = defineProps<Props>()
 
+defineSlots<{
+	default: (props: {modelValue: T}) => any
+}>()
+
 const modelValue = shallowRef(props.initialValue)
 
 function update(value: T) {
@@ -23,16 +27,26 @@ function update(value: T) {
 		<template #default="{isFullscreen}">
 			<div class="sandbox" :class="{fullscreen: isFullscreen}">
 				<InputComplex
+					class="parameters"
 					:modelValue="modelValue"
-					:update="update"
 					:scheme="scheme"
+					@update:modelValue="update"
 				/>
+				<slot :modelValue="modelValue" />
 			</div>
 		</template>
 	</DemoContainer>
 </template>
 
 <style lang="stylus" scoped>
+
+.sandbox
+	display flex
+	gap 2rem
+
 .sandbox.fullscreen
 	width 480px
+
+.parameters
+	flex-grow 1
 </style>

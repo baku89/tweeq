@@ -5,8 +5,10 @@ import {App} from 'vue'
 const registerComponents = async (app: App) => {
 	const Tq = await import('tweeq')
 	const DemoComponent = await import('./DemoComponent.vue')
-	const Sandbox = await import('./Sandbox.vue')
-
+	const ExampleContainer = await import('./ExampleContainer.vue')
+	const ExampleThreePointLighting = await import(
+		'./ExampleThreePointLighting.vue'
+	)
 	// Tweeqコンポーネントを登録
 	for (const [key, value] of Object.entries(Tq)) {
 		if (typeof value === 'function') continue
@@ -15,7 +17,8 @@ const registerComponents = async (app: App) => {
 
 	// ドキュメント用のカスタムコンポーネントを登録
 	app.component('DemoComponent', DemoComponent.default)
-	app.component('Sandbox', Sandbox.default)
+	app.component('ExampleContainer', ExampleContainer.default)
+	app.component('ExampleThreePointLighting', ExampleThreePointLighting.default)
 }
 
 export default defineClientConfig({
