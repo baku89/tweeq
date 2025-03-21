@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
+import Color from 'colorjs.io'
 import {vec2} from 'linearly'
 import {clamp} from 'lodash-es'
 import {computed, ref, shallowRef} from 'vue'
@@ -8,6 +9,7 @@ import {computed, ref, shallowRef} from 'vue'
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
 import {useMultiSelectStore} from '../stores/multiSelect'
+import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
@@ -28,6 +30,8 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 })
 
 const emit = defineEmits<InputEmits<string>>()
+
+const theme = useThemeStore()
 
 defineSlots<{
 	default: void
@@ -187,6 +191,15 @@ const tweakUIOffset = computed(() => {
 	}
 })
 
+const defaultButtonStyle = computed(() => {
+	const contrast = Color.contrastWCAG21(props.modelValue, theme.backgroundColor)
+
+	return {
+		color: props.modelValue,
+		'--outline': contrast > 1.1 ? 'transparent' : 'var(--tq-color-border)',
+	}
+})
+
 const tweakPreviewStyle = computed(() => {
 	let color = chroma.valid(props.modelValue)
 		? chroma(props.modelValue)
@@ -286,7 +299,7 @@ whenever(
 			<div
 				class="default-button"
 				:class="{open, tweaking}"
-				:style="{color: modelValue}"
+				:style="defaultButtonStyle"
 				:horizontal-position="horizontalPosition"
 				:vertical-position="verticalPosition"
 			/>
@@ -360,11 +373,13 @@ whenever(
 	hover-transition(box-shadow)
 	background-checkerboard()
 	use-input-position()
+	box-shadow inset 0 0 0 1px var(--outline)
 
 	.InputColorPad:focus-visible &,
 	.InputColorPad.focus &,
 	&:hover, &.tweaking
-		box-shadow 0 0 0 1px var(--tq-color-accent)
+		--outline var(--tq-color-accent) !important
+		box-shadow 0 0 0 1px var(--outline)
 
 .floating
 	width var(--tq-popup-width)
