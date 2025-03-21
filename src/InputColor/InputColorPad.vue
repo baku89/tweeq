@@ -93,7 +93,7 @@ function decomposeChannels() {
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	onClick() {
-		if (multiSelect.focusCount > 1) return
+		if (multiSelect.selectedInputs.length > 1) return
 		open.value = !open.value
 	},
 	onDragStart() {
@@ -261,7 +261,7 @@ const {subFocusing} = multiSelect.register({
 	el: $button,
 	focusing: useFocus($button).focused,
 	getValue: () => props.modelValue,
-	setValue(value) {
+	setValue(value: string) {
 		emit('update:modelValue', value)
 	},
 	confirm() {
@@ -270,7 +270,7 @@ const {subFocusing} = multiSelect.register({
 })
 
 watchEffect(() => {
-	if (multiSelect.focusCount > 1) {
+	if (multiSelect.selectedInputs.length > 1) {
 		open.value = false
 	}
 })

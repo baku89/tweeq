@@ -67,7 +67,7 @@ const enabledActions = computed(() =>
 )
 
 const visible = computed(() => {
-	if (multiSelect.focusCount <= 1) return false
+	if (multiSelect.selectedInputs.length <= 1) return false
 	if (enabledActions.value.length === 0) return false
 
 	return true

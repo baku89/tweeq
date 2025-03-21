@@ -39,8 +39,6 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		[...inputs.values()].filter(input => input.focusing || input.subFocusing)
 	)
 
-	const focusCount = computed(() => selectedInputs.value.length)
-
 	const focusedElement = shallowRef<HTMLElement | null>(null)
 
 	useEventListener('pointerdown', e => {
@@ -129,7 +127,6 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		captureValues,
 		updateValues,
 		confirmValues,
-		focusCount,
 		selectedInputs,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
