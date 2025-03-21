@@ -251,7 +251,7 @@ const overlayPath = computed(() => {
 				/>
 				<path class="tip" d="M20 16 L30 16" />
 			</g>
-			<circle cx="16" cy="16" r="6" fill="transparent" stroke="none" />
+			<circle cx="16" cy="16" r="7" fill="transparent" stroke="none" />
 		</SvgIcon>
 	</button>
 	<div v-if="tweaking" class="overlay">
@@ -297,20 +297,28 @@ const overlayPath = computed(() => {
 .InputRotery
 	position relative
 	display block
-	overflow hidden
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	hover-transition(transform)
 	z-index 1
 
-	&:hover, &:focus-visible, &.tweaking
+	&:hover, &.tweaking
 		z-index 2
-		transform scale(3)
+
+		.rotery
+			transform scale(3)
+
+	&:focus-visible:not(:hover, .tweaking):before
+		content ''
+		position absolute
+		inset -3px
+		border-radius 50%
+		border 1px solid var(--tq-color-accent-hover)
+
 
 .rotery
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-
+	hover-transition(transform)
 
 .circle
 	fill var(--tq-color-accent)
