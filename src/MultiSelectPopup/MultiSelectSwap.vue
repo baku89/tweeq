@@ -7,7 +7,7 @@ const multiSelect = useMultiSelectStore()
 function swap() {
 	multiSelect.captureValues()
 	multiSelect.updateValues(values => values.reverse())
-	multiSelect.conformValues()
+	multiSelect.confirmValues()
 }
 </script>
 

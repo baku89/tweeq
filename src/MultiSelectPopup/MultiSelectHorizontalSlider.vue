@@ -25,7 +25,7 @@ const {dragging} = useDrag($root, {
 		multiSelect.updateValues(values => values.map(f))
 	},
 	onDragEnd() {
-		multiSelect.conformValues()
+		multiSelect.confirmValues()
 	},
 })
 </script>

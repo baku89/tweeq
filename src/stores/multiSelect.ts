@@ -120,7 +120,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		}
 	}
 
-	function conformValues() {
+	function confirmValues() {
 		for (const r of selectStores.values()) {
 			if (r.focusing.value || r.subFocusing.value) {
 				r.confirm()
@@ -134,7 +134,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		focusedElement,
 		captureValues,
 		updateValues,
-		conformValues,
+		confirmValues,
 		focusCount,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
