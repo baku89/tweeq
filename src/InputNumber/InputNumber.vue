@@ -598,7 +598,7 @@ const barStyle = computed<StyleValue>(() => {
 	padding-left 0
 	padding-right 0
 
-	&:focus, &.focus
+	&:focus
 		pointer-events auto
 
 .bar, .tip
