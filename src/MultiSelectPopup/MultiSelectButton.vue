@@ -2,15 +2,20 @@
 import {IconIndicator} from '../IconIndicator'
 import {useMultiSelectStore} from '../stores/multiSelect'
 
+const props = defineProps<{
+	icon: string
+	updator: (values: number[]) => number[]
+}>()
+
 const multiSelect = useMultiSelectStore()
 
 function swap() {
 	multiSelect.captureValues()
-	multiSelect.updateValues(values => values.reverse())
+	multiSelect.updateValues(props.updator)
 	multiSelect.confirmValues()
 }
 </script>
 
 <template>
-	<IconIndicator icon="material-symbols:swap-vert" @click="swap" />
+	<IconIndicator :icon="icon" @click="swap" />
 </template>

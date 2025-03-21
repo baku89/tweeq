@@ -4,8 +4,8 @@ import {onMounted, shallowRef, toRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
+import MultiSelectButton from './MultiSelectButton.vue'
 import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
-import MultiSelectSwap from './MultiSelectSwap.vue'
 
 const multiSelect = useMultiSelectStore()
 
@@ -22,11 +22,13 @@ const {floatingStyles} = useFloating(
 	{placement: 'bottom-end', whileElementsMounted: autoUpdate}
 )
 
-const adder = (px: number) => (value: number) => value + px / 100
+const adder = (px: number) => (value: number) => value + px / 10
 const multiplier = (px: number) => {
 	const scale = Math.max(0, px / 100 + 1)
 	return (value: number) => value * scale
 }
+
+const swapper = (values: number[]) => values.reverse()
 
 watchEffect(() => {
 	$root.value?.togglePopover(multiSelect.popupVisible)
@@ -44,7 +46,11 @@ watchEffect(() => {
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
 		<MultiSelectHorizontalSlider :updator="adder" icon="material-symbols:add" />
 		<MultiSelectHorizontalSlider :updator="multiplier" icon="mdi:multiply" />
-		<MultiSelectSwap v-if="multiSelect.focusCount === 2" />
+		<MultiSelectButton
+			v-if="multiSelect.focusCount === 2"
+			:updator="swapper"
+			icon="material-symbols:swap-vert"
+		/>
 	</div>
 </template>
 

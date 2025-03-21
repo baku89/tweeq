@@ -16,6 +16,7 @@ const multiSelect = useMultiSelectStore()
 const $root = templateRef('$root')
 
 const {dragging} = useDrag($root, {
+	lockPointer: true,
 	onDragStart() {
 		multiSelect.captureValues()
 	},
