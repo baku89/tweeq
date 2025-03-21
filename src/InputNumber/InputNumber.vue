@@ -638,6 +638,7 @@ const barStyle = computed<StyleValue>(() => {
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	color var(--tq-color-text-mute)
+	transform scale(0.8)
 	opacity .7
 	position absolute
 	z-index 100

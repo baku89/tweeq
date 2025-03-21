@@ -35,7 +35,7 @@ function recordValueOnEdit() {
 	<div class="TqInputSize">
 		<InputVec
 			:modelValue="modelValue"
-			:icon="['mdi:plus', 'mdi:minus']"
+			:icon-old="['mdi:arrow-left-right', 'mdi:arrow-up-down']"
 			@update:modelValue="onUpdate"
 			@focus="recordValueOnEdit"
 			@confirm="recordValueOnEdit"
@@ -59,7 +59,7 @@ function recordValueOnEdit() {
 	position absolute
 	top 0
 	left 50%
-	transform translateX(-50%)
+	transform translateX(-50%) scale(0.8)
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	color var(--tq-color-text-subtle)
@@ -73,4 +73,8 @@ function recordValueOnEdit() {
 
 		&:hover
 			color var(--tq-color-accent-hover)
+
+:deep(.InputNumber:not(:first-child))
+	.icon.left
+		left calc(var(--tq-input-height) * .3)
 </style>
