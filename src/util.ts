@@ -7,10 +7,13 @@ export function precisionOf(step: number) {
  */
 export function toFixed(value: number, precision: number) {
 	// TODO: Fix this
-	// eslint-disable-next-line no-console
-	if (value === undefined) console.error('Error')
+	if (typeof value !== 'number') {
+		// eslint-disable-next-line no-console
+		console.error('Error', value)
+		throw new Error('Error')
+	}
 
-	return (value ?? 0)
+	return value
 		.toFixed(precision)
 		.replace(/\.(.*?)[0]+$/, '.$1')
 		.replace(/\.$/, '')
