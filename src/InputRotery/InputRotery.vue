@@ -243,6 +243,7 @@ const overlayPath = computed(() => {
 const multiSelect = useMultiSelectStore()
 
 const {subFocusing} = multiSelect.register({
+	type: 'number',
 	el: $root,
 	focusing: useFocus($root).focused,
 	getValue: () => props.modelValue,

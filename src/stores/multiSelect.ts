@@ -13,7 +13,10 @@ import {
 
 import {nodeContains} from '../util'
 
-interface MultiSelectSource {
+export type MultiSelectType = 'number' | 'color'
+
+export interface MultiSelectSource {
+	type: MultiSelectType
 	el: Ref<HTMLElement | null>
 	focusing: Readonly<Ref<boolean>>
 	getValue: () => number

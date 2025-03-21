@@ -432,6 +432,7 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 const multiSelect = useMultiSelectStore()
 
 const {subFocusing} = multiSelect.register({
+	type: 'number',
 	el: $root,
 	focusing,
 	getValue: () => props.modelValue,

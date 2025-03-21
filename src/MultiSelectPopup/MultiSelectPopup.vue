@@ -3,7 +3,7 @@ import {autoUpdate, useFloating} from '@floating-ui/vue'
 import {onMounted, shallowRef, toRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
-import {useMultiSelectStore} from '../stores/multiSelect'
+import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
 import MultiSelectButton from './MultiSelectButton.vue'
 import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
 
@@ -22,13 +22,41 @@ const {floatingStyles} = useFloating(
 	{placement: 'bottom-end', whileElementsMounted: autoUpdate}
 )
 
-const adder = (px: number) => (value: number) => value + px / 10
-const multiplier = (px: number) => {
-	const scale = Math.max(0, px / 100 + 1)
-	return (value: number) => value * scale
-}
+type MultiSelectAction = {
+	enabled: (types: MultiSelectType[]) => boolean
+	icon: string
+} & (
+	| {
+			type: 'slider'
+			updator: (px: number) => (values: any[]) => any[]
+	  }
+	| {
+			type: 'button'
+			updator: (values: any[]) => any[]
+	  }
+)
 
-const swapper = (values: number[]) => values.reverse()
+const actions: MultiSelectAction[] = [
+	{
+		type: 'slider',
+		enabled: types => types.every(t => t === 'number'),
+		updator: (px: number) => (values: number[]) => values.map(v => v + px / 10),
+		icon: 'material-symbols:add',
+	},
+	{
+		type: 'slider',
+		enabled: types => types.every(t => t === 'number'),
+		updator: (px: number) => (values: number[]) =>
+			values.map(v => v * (px / 100 + 1)),
+		icon: 'mdi:multiply',
+	},
+	{
+		type: 'button',
+		enabled: types => types.length === 2 && types[0] === types[1],
+		updator: values => values.reverse(),
+		icon: 'material-symbols:swap-vert',
+	},
+]
 
 watchEffect(() => {
 	$root.value?.togglePopover(multiSelect.popupVisible)
@@ -44,13 +72,18 @@ watchEffect(() => {
 		popover="manual"
 	>
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
-		<MultiSelectHorizontalSlider :updator="adder" icon="material-symbols:add" />
-		<MultiSelectHorizontalSlider :updator="multiplier" icon="mdi:multiply" />
-		<MultiSelectButton
-			v-if="multiSelect.focusCount === 2"
-			:updator="swapper"
-			icon="material-symbols:swap-vert"
-		/>
+		<template v-for="action in actions" :key="action.icon">
+			<MultiSelectHorizontalSlider
+				v-if="action.type === 'slider'"
+				:updator="action.updator"
+				:icon="action.icon"
+			/>
+			<MultiSelectButton
+				v-else-if="action.type === 'button'"
+				:updator="action.updator"
+				:icon="action.icon"
+			/>
+		</template>
 	</div>
 </template>
 

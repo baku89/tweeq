@@ -7,7 +7,7 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {useDrag} from '../useDrag'
 
 const props = defineProps<{
-	updator: (px: number) => (value: number) => number
+	updator: (px: number) => (values: number[]) => number[]
 	icon: string
 }>()
 
@@ -23,7 +23,7 @@ const {dragging} = useDrag($root, {
 	onDrag({xy, initial}) {
 		const delta = vec2.sub(xy, initial)
 		const f = props.updator(delta[0])
-		multiSelect.updateValues(values => values.map(f))
+		multiSelect.updateValues(f)
 	},
 	onDragEnd() {
 		multiSelect.confirmValues()
