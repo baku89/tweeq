@@ -1,13 +1,19 @@
 import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
 import {type InputNumberProps} from '../InputNumber'
+import {type InputRoteryProps} from '../InputRotery'
 import {type InputStringProps as StringProps} from '../InputString'
 
 type ParameterBase = {label?: string; icon?: string}
 
 type Desc<T extends Record<string, unknown>, P> = T & Omit<P, 'modelValue'>
 
-type ParameterDescNumber = Desc<{type: 'number'}, InputNumberProps>
+type ParameterDescNumber = Desc<
+	{type: 'number'; ui?: undefined},
+	InputNumberProps
+>
+type ParameterDescAngle = Desc<{type: 'number'; ui: 'angle'}, InputRoteryProps>
+
 type ParameterDescString = Desc<
 	{
 		type: 'string'
@@ -20,7 +26,7 @@ type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
 type ParameterDescBoolean = {type: 'boolean'}
 
 type ParameterDescForType<T> = T extends number
-	? ParameterDescNumber
+	? ParameterDescNumber | ParameterDescAngle
 	: T extends string
 		? ParameterDescString | ParameterDescCode | ParameterDescColor
 		: T extends boolean

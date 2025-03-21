@@ -2,6 +2,7 @@
 import Case from 'case'
 import {computed, shallowRef, toRaw, watchEffect} from 'vue'
 
+import {InputAngle} from '../InputAngle'
 import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
 import {InputNumber} from '../InputNumber'
@@ -45,12 +46,20 @@ function getModelValue<K extends keyof T>(name: K) {
 			:label="param.label ?? Case.capital(name as any)"
 			:icon="param.icon"
 		>
-			<InputNumber
-				v-if="param.type === 'number'"
-				:modelValue="getModelValue(name)"
-				v-bind="param"
-				@update:modelValue="updateModelValue(name, $event)"
-			/>
+			<template v-if="param.type === 'number'">
+				<InputAngle
+					v-if="param.ui === 'angle'"
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+				<InputNumber
+					v-else
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+			</template>
 			<template v-else-if="param.type === 'string'">
 				<InputCode
 					v-if="param.ui === 'code'"
