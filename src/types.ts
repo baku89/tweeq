@@ -1,8 +1,6 @@
 import Case from 'case'
 import {computed} from 'vue'
 
-export type Validator<T> = (value: T) => T | undefined
-
 export type Labelizer<T> = (v: T) => string
 
 export type InputTheme = 'minimal' | 'underline'
