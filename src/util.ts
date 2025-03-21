@@ -1,4 +1,11 @@
+/**
+ * Get the precision of a step
+ * @param step - The step to get the precision of
+ * @returns The precision of the step. If the step is 0, it returns 0
+ */
 export function precisionOf(step: number) {
+	if (step === 0) return 0
+
 	return Math.max(0, Math.ceil(-Math.log10(step)))
 }
 
