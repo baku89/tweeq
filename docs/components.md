@@ -31,7 +31,111 @@
 | `confirm` | | Emitted when the editing or tweaking is finished |
 | `blur` | | Emitted when the input is blurred or finished tweaking |
 
-## InputNumber
+## Input Components
+
+### InputAngle
+
+<InputExample
+	:initialValue="0"
+	:options="{quantizeStep: 30, angleOffset: 0}"
+	:scheme="{
+		quantizeStep: {type: 'number', step: 1, min: 1, max: 360},
+		angleOffset: {type: 'number', ui: 'angle', step: 1, min: -180, max: 180},
+	}"
+	v-slot='{modelValue, options, listeners}'
+>
+	<InputAngle
+		:modelValue='modelValue'
+		@update:modelValue='listeners.update'
+		@focus='listeners.focus'
+		@blur='listeners.blur'
+		@confirm='listeners.confirm'
+		v-bind='options'
+	/>
+</InputExample>
+
+### InputButton
+
+<InputExample
+	:initialValue="0"
+	:scheme="{
+		label: {type: 'string'},
+		icon: {type: 'string'},
+		subtle: {type: 'boolean'},
+		blink: {type: 'boolean'},
+	}"
+	:options="{
+		label: 'Click me',
+		icon: '',
+		subtle: false,
+		blink: false,
+	}"
+	v-slot="{options}"
+>
+	<InputButton
+		v-bind="options"
+	/>
+</InputExample>
+
+### InputCheckbox
+
+<InputExample
+	:initialValue="false"
+	:scheme="{
+		label: {type: 'string'},
+	}"
+	:options="{label: ''}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputCheckbox
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
+
+### InputColor
+
+<InputExample
+	initialValue="#ff0000"
+	:scheme="{
+		alpha: {type: 'boolean'},
+	}"
+	:options="{alpha: false}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputColor
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
+
+### InputDropdown
+
+<InputExample
+	initialValue="apple"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, listeners}"
+>
+	<InputDropdown
+		:modelValue="modelValue"
+		:options="['apple', 'banana', 'cherry']"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
+
+### InputNumber
 
 <InputExample
 	:initialValue="0"
@@ -62,89 +166,7 @@
 	/>
 </InputExample>
 
-## InputAngle
-
-<InputExample
-	:initialValue="0"
-	:options="{quantizeStep: 30, angleOffset: 0}"
-	:scheme="{
-		quantizeStep: {type: 'number', step: 1, min: 1, max: 360},
-		angleOffset: {type: 'number', ui: 'angle', step: 1, min: -180, max: 180},
-	}"
-	v-slot='{modelValue, options, listeners}'
->
-	<InputAngle
-		:modelValue='modelValue'
-		@update:modelValue='listeners.update'
-		@focus='listeners.focus'
-		@blur='listeners.blur'
-		@confirm='listeners.confirm'
-		v-bind='options'
-	/>
-</InputExample>
-
-## InputColor
-
-<InputExample
-	initialValue="#ff0000"
-	:scheme="{
-		alpha: {type: 'boolean'},
-	}"
-	:options="{alpha: false}"
-	v-slot="{modelValue, options, listeners}"
->
-	<InputColor
-		:modelValue="modelValue"
-		v-bind="options"
-		@update:modelValue="listeners.update"
-		@focus="listeners.focus"
-		@blur="listeners.blur"
-		@confirm="listeners.confirm"
-	/>
-</InputExample>
-
-## InputButton
-
-<InputExample
-	:initialValue="0"
-	:scheme="{
-		label: {type: 'string'},
-		icon: {type: 'string'},
-		subtle: {type: 'boolean'},
-		blink: {type: 'boolean'},
-	}"
-	:options="{
-		label: 'Click me',
-		icon: '',
-		subtle: false,
-		blink: false,
-	}"
-	v-slot="{options}"
->
-	<InputButton
-		v-bind="options"
-	/>
-</InputExample>
-
-## InputDropdown
-
-<InputExample
-	initialValue="apple"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, listeners}"
->
-	<InputDropdown
-		:modelValue="modelValue"
-		:options="['apple', 'banana', 'cherry']"
-		@update:modelValue="listeners.update"
-		@focus="listeners.focus"
-		@blur="listeners.blur"
-		@confirm="listeners.confirm"
-	/>
-</InputExample>
-
-## InputRadio
+### InputRadio
 
 <InputExample
 	initialValue="apple"
@@ -162,7 +184,25 @@
 	/>
 </InputExample>
 
-## InputString
+### InputSize
+
+<InputExample
+	:initialValue="[100, 250]"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputSize
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</InputExample>
+
+### InputString
 
 <InputExample
 	initialValue="Baby salmon"
@@ -179,27 +219,7 @@
 	/>
 </InputExample>
 
-## InputCheckbox
-
-<InputExample
-	:initialValue="false"
-	:scheme="{
-		label: {type: 'string'},
-	}"
-	:options="{label: ''}"
-	v-slot="{modelValue, options, listeners}"
->
-	<InputCheckbox
-		:modelValue="modelValue"
-		v-bind="options"
-		@update:modelValue="listeners.update"
-		@focus="listeners.focus"
-		@blur="listeners.blur"
-		@confirm="listeners.confirm"
-	/>
-</InputExample>
-
-## InputSwitch
+### InputSwitch
 
 <InputExample
 	:initialValue="false"
@@ -219,7 +239,7 @@
 	/>
 </InputExample>
 
-## InputVec
+### InputVec
 
 <InputExample
 	:initialValue="[0, 0, 0, 0]"
@@ -227,24 +247,6 @@
 	:options="{}"
 	v-slot="{modelValue, options, listeners}">
 	<InputVec
-		:modelValue="modelValue"
-		v-bind="options"
-		@update:modelValue="listeners.update"
-		@focus="listeners.focus"
-		@blur="listeners.blur"
-		@confirm="listeners.confirm"
-	/>
-</InputExample>
-
-## InputSize
-
-<InputExample
-	:initialValue="[100, 250]"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, options, listeners}"
->
-	<InputSize
 		:modelValue="modelValue"
 		v-bind="options"
 		@update:modelValue="listeners.update"
