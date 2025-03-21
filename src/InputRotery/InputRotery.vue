@@ -238,7 +238,7 @@ const overlayPath = computed(() => {
 		v-bind="$attrs"
 	>
 		<SvgIcon mode="block" class="rotery">
-			<circle class="circle" cx="16" cy="16" r="15" />
+			<circle class="circle" cx="16" cy="16" r="16" />
 			<g
 				transform-origin="16 16"
 				:style="roteryStyles"
@@ -251,6 +251,7 @@ const overlayPath = computed(() => {
 				/>
 				<path class="tip" d="M20 16 L30 16" />
 			</g>
+			<circle cx="16" cy="16" r="6" fill="transparent" stroke="none" />
 		</SvgIcon>
 	</button>
 	<div v-if="tweaking" class="overlay">
@@ -303,6 +304,7 @@ const overlayPath = computed(() => {
 	z-index 1
 
 	&:hover, &:focus-visible, &.tweaking
+		z-index 2
 		transform scale(3)
 
 .rotery
