@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-import {InputComplex, Viewport} from 'tweeq'
+import {InputComplex} from 'tweeq'
 import {shallowRef} from 'vue'
+
+import DemoContainer from './DemoContainer.vue'
 
 interface Props {
 	initialValue: T
@@ -17,18 +19,20 @@ function update(value: T) {
 </script>
 
 <template>
-	<ClientOnly>
-		<Viewport class="Sandbox">
-			<InputComplex
-				:modelValue="modelValue"
-				:update="update"
-				:scheme="scheme"
-			/>
-		</Viewport>
-	</ClientOnly>
+	<DemoContainer class="Sandbox">
+		<template #default="{isFullscreen}">
+			<div class="sandbox" :class="{fullscreen: isFullscreen}">
+				<InputComplex
+					:modelValue="modelValue"
+					:update="update"
+					:scheme="scheme"
+				/>
+			</div>
+		</template>
+	</DemoContainer>
 </template>
 
 <style lang="stylus" scoped>
-.Sandbox
-	padding 2rem 0
+.sandbox.fullscreen
+	width 480px
 </style>
