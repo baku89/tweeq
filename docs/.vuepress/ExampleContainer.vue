@@ -43,9 +43,10 @@ function update(value: T) {
 .sandbox
 	display flex
 	gap 2rem
+	align-items start
 
 .sandbox.fullscreen
-	width 480px
+	width 960px
 
 .parameters
 	flex-grow 1
