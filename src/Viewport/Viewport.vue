@@ -53,3 +53,8 @@ useTweeq()
 				border-radius 9999px
 				background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
 </style>
+
+<style lang="stylus">
+:root
+	interpolate-size allow-keywords
+</style>
