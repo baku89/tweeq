@@ -18,11 +18,13 @@ import {nodeContains} from '../util'
 
 export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
 
+type MultiSelectValue = number | string | boolean
+
 export interface MultiSelectSource {
 	type: MultiSelectType
 	el: Ref<HTMLElement | null>
 	focusing: Readonly<Ref<boolean>>
-	getValue: () => any
+	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
 	confirm: () => void
 }
@@ -30,7 +32,7 @@ export interface MultiSelectSource {
 interface MultiSelectInput extends MultiSelectSource {
 	id: symbol
 	subfocus: Ref<boolean>
-	capturedValue?: number | string
+	capturedValue?: MultiSelectValue
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
@@ -148,7 +150,9 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		})
 	}
 
-	function updateValues(updator: (values: number[]) => number[]) {
+	function updateValues(
+		updator: (values: MultiSelectValue[]) => MultiSelectValue[]
+	) {
 		const values = selectedInputs.value.map(
 			input => input.capturedValue ?? input.getValue()
 		)

@@ -7,7 +7,15 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
+import {
+	computed,
+	nextTick,
+	ref,
+	shallowRef,
+	type StyleValue,
+	watch,
+	watchEffect,
+} from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -83,7 +91,9 @@ const speed = computed(() => {
 })
 
 // Precision
-const displayPrecision = ref(0)
+const displayPrecision = computed(() => {
+	return getNumberPresition(display.value)
+})
 
 const sliderPrecision = computed(() => {
 	if (
@@ -101,16 +111,20 @@ const sliderPrecision = computed(() => {
 const tweakPrecision = computed(() => precisionOf(speed.value))
 
 const precision = computed(() => {
-	const precisionByStep = precisionOf(props.step ?? 0)
-	if (isFinite(precisionByStep)) {
-		return precisionByStep
-	} else {
-		return Math.max(
-			displayPrecision.value,
-			sliderPrecision.value,
-			tweakPrecision.value
-		)
-	}
+	return Math.max(
+		precisionOf(props.step ?? 0),
+		displayPrecision.value,
+		sliderPrecision.value,
+		tweakPrecision.value
+	)
+})
+
+watchEffect(() => {
+	console.info('precision', {
+		displayPrecision: displayPrecision.value,
+		// sliderPrecision: sliderPrecision.value,
+		// tweakPrecision: tweakPrecision.value,
+	})
 })
 
 const pointerSize = ref(0)
@@ -178,7 +192,6 @@ const {dragging: tweaking} = useDrag($root, {
 		deltaAccumulated = 0
 		tweakMode.value = state.xy
 		speedMultiplierGesture.value = 1
-		displayPrecision.value = getNumberPresition(display.value)
 
 		emit('focus')
 		multi.capture()
@@ -243,8 +256,6 @@ const {dragging: tweaking} = useDrag($root, {
 		}
 	},
 	onDragEnd() {
-		displayPrecision.value = 0
-
 		emit('confirm')
 		emit('blur')
 	},
@@ -267,7 +278,7 @@ const validLocal = ref(props.modelValue)
 watch(
 	validateResult,
 	result => {
-		if (!result.value) return
+		if (result.value === undefined) return
 
 		validLocal.value = result.value
 	},
@@ -290,7 +301,7 @@ watch(
 
 function confirm() {
 	local.value = validLocal.value
-	display.value = toFixed(validLocal.value, precision.value)
+	display.value = toFixed(local.value, precision.value)
 
 	emit('confirm')
 }
@@ -337,8 +348,6 @@ function onIncrementByKey(delta: number) {
 	if (props.step !== undefined) {
 		// If step is defined
 		local.value += props.step * delta * Math.max(1, speedMultiplierKey.value)
-		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
-		display.value = toFixed(local.value, precisionOf(props.step))
 	} else {
 		let multiplier = speedMultiplierKey.value
 
@@ -346,14 +355,8 @@ function onIncrementByKey(delta: number) {
 			multiplier *= 0.1
 		}
 
-		const prec = Math.max(
-			getNumberPresition(display.value),
-			precisionOf(multiplier)
-		)
-
 		local.value += delta * multiplier
 		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
-		display.value = toFixed(local.value, prec)
 	}
 }
 
@@ -436,7 +439,7 @@ watch(
 
 		const displayNumber = tweaking
 			? modelValue.toFixed(precision)
-			: toFixed(modelValue, props.precision)
+			: toFixed(modelValue, precision)
 
 		display.value = prefix + displayNumber + suffix
 	},
@@ -453,7 +456,7 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing,
-	getValue: () => validateResult.value,
+	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
 	},
