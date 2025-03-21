@@ -7,15 +7,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {
-	computed,
-	nextTick,
-	onBeforeUnmount,
-	ref,
-	shallowRef,
-	type StyleValue,
-	watch,
-} from 'vue'
+import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -439,7 +431,7 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 
 const multiSelect = useMultiSelectStore()
 
-const {subFocusing, unregister} = multiSelect.register({
+const {subFocusing} = multiSelect.register({
 	el: $root,
 	focusing,
 	getValue: () => props.modelValue,
@@ -448,10 +440,6 @@ const {subFocusing, unregister} = multiSelect.register({
 		emit('update:modelValue', value)
 	},
 	confirm,
-})
-
-onBeforeUnmount(() => {
-	unregister()
 })
 
 //------------------------------------------------------------------------------

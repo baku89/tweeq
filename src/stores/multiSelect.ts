@@ -1,6 +1,15 @@
 import {onKeyStroke, useEventListener, useKeyModifier} from '@vueuse/core'
 import {defineStore} from 'pinia'
-import {computed, reactive, type Ref, ref, shallowRef, toRef, watch} from 'vue'
+import {
+	computed,
+	onBeforeUnmount,
+	reactive,
+	type Ref,
+	ref,
+	shallowRef,
+	toRef,
+	watch,
+} from 'vue'
 
 import {nodeContains} from '../util'
 
@@ -83,11 +92,11 @@ export const useMultiSelectStore = defineStore('multi			Select', () => {
 			}
 		})
 
-		function unregister() {
+		onBeforeUnmount(() => {
 			inputs.delete(id)
-		}
+		})
 
-		return {subFocusing: toRef(store, 'subFocusing'), unregister}
+		return {subFocusing: toRef(store, 'subFocusing')}
 	}
 
 	function captureValues() {
