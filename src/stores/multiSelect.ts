@@ -2,6 +2,8 @@ import {onKeyStroke, useEventListener, useKeyModifier} from '@vueuse/core'
 import {defineStore} from 'pinia'
 import {computed, reactive, type Ref, ref, shallowRef, toRef, watch} from 'vue'
 
+import {nodeContains} from '../util'
+
 interface MultiSelectSource {
 	el: Ref<HTMLElement | null>
 	focusing: Readonly<Ref<boolean>>
@@ -15,7 +17,7 @@ interface MultiSelectInput extends MultiSelectSource {
 	initialValue?: number
 }
 
-export const useMultiSelectStore = defineStore('multiSelect', () => {
+export const useMultiSelectStore = defineStore('multi			Select', () => {
 	const command = useKeyModifier('Meta')
 
 	let popupEl: HTMLElement | null = null
@@ -35,13 +37,13 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		// Ignore non-primary pointer
 		if (e.button !== 0) return
 
+		const target = e.target as Node
+
 		const clickedOutside = ![...inputs.values()].some(({el}) => {
-			if (!el) return false
-			return e.target === el || el.contains(e.target as Node)
+			return el && nodeContains(el, target)
 		})
 
-		const clickedPopup =
-			popupEl === e.target || popupEl?.contains(e.target as Node)
+		const clickedPopup = popupEl && nodeContains(popupEl, target)
 
 		if (clickedOutside && !clickedPopup) {
 			defocusAll()

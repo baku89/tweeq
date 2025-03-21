@@ -42,3 +42,7 @@ export function isDecendantElementOf(child: Element, parent: Element) {
 export function toPercent(value: number): string {
 	return `${value * 100}%`
 }
+
+export function nodeContains(parent: Node, child: Node) {
+	return parent === child || parent.contains(child)
+}
