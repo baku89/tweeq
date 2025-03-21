@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {templateRef} from '@vueuse/core'
 import {vec2} from 'linearly'
+import {shallowRef} from 'vue'
 
 import {IconIndicator} from '../IconIndicator'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const multiSelect = useMultiSelectStore()
 
-const $root = templateRef('$root')
+const $root = shallowRef<HTMLDivElement>()
 
 const {dragging} = useDrag($root, {
 	lockPointer: true,

@@ -20,7 +20,7 @@ const emit = defineEmits<{
 	'update:open': [boolean]
 }>()
 
-const $root = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
 
 useEventListener($root, 'toggle', (e: ToggleEvent) => {
 	if (e.newState !== 'open') {

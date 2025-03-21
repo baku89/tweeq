@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
-import {computed, ref} from 'vue'
+import {computed, ref as shallowRef} from 'vue'
 
 import {InputGroup} from '../InputGroup'
 import {InputString} from '../InputString'
@@ -14,7 +14,7 @@ const emit = defineEmits<InputEmits<string>>()
 
 const theme = useThemeStore()
 
-const $root = ref<HTMLElement>()
+const $root = shallowRef<HTMLElement>()
 const {width} = useElementSize($root)
 
 const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)

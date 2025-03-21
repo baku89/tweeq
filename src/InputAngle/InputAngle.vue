@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
-import {computed, ref} from 'vue'
+import {computed, shallowRef} from 'vue'
 
 import {InputNumber} from '../InputNumber'
 import {InputRotery} from '../InputRotery'
@@ -14,7 +14,7 @@ const emit = defineEmits<InputEmits<number>>()
 
 const theme = useThemeStore()
 
-const $root = ref<HTMLElement>()
+const $root = shallowRef<HTMLElement>()
 const {width} = useElementSize($root)
 
 const showNumber = computed(() => width.value > theme.inputHeight * 4)

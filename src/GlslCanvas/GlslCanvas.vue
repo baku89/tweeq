@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 	uniforms: () => ({}),
 })
 
-const $img = shallowRef<null | HTMLImageElement>(null)
+const $img = shallowRef<HTMLImageElement>()
 
 const draw = useReglContextStore().createDraw($img)
 

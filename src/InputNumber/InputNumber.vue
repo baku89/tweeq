@@ -41,8 +41,8 @@ defineOptions({
 
 const emit = defineEmits<InputEmits<number>>()
 
-const $root = shallowRef<HTMLElement | null>(null)
-const $input = shallowRef<HTMLInputElement | null>(null)
+const $root = shallowRef<HTMLElement>()
+const $input = shallowRef<HTMLInputElement>()
 const {left, top, width, height, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused
@@ -113,7 +113,8 @@ const precision = computed(() => {
 		precisionOf(props.step ?? 0),
 		displayPrecision.value,
 		sliderPrecision.value,
-		tweakPrecision.value
+		tweakPrecision.value,
+		props.precision
 	)
 })
 

@@ -16,7 +16,7 @@ defineOptions({
 	inheritAttrs: false,
 })
 
-const $button = shallowRef<HTMLElement | null>(null)
+const $button = shallowRef<HTMLElement>()
 const open = ref(false)
 
 const easingPath = computed(() => {

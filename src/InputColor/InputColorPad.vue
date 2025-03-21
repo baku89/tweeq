@@ -33,7 +33,7 @@ defineSlots<{
 	default: void
 }>()
 
-const $button = shallowRef<HTMLElement | null>(null)
+const $button = shallowRef<HTMLElement>()
 const open = ref(false)
 
 const {shift, meta, alt, h, f, a, s, v, r, g, b} = useMagicKeys()

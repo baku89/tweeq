@@ -13,7 +13,7 @@ import {unsignedMod} from '../util'
 
 const actions = useActionsStore()
 
-const $popover = shallowRef<HTMLElement | null>(null)
+const $popover = shallowRef<HTMLElement>()
 const searchWord = ref('')
 
 const appConfig = useAppConfigStore()

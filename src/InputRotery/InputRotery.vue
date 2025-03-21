@@ -43,7 +43,7 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const $root = shallowRef<null | HTMLElement>(null)
+const $root = shallowRef<HTMLElement>()
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 

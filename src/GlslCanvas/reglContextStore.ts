@@ -42,7 +42,7 @@ export const useReglContextStore = defineStore('tweeq.reglContext', () => {
 		},
 	})
 
-	function createDraw(img: Ref<HTMLImageElement | null>) {
+	function createDraw(img: Ref<HTMLImageElement | undefined>) {
 		let latestWorkId = uniqueId()
 
 		const {promise: waitTillImgMounted, resolve} = (

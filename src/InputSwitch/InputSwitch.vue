@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {uniqueId} from 'lodash-es'
-import {ref} from 'vue'
+import {ref, shallowRef} from 'vue'
 
 import {InputEmits} from '../types'
 import {InputSwitchProps} from './types'
@@ -12,8 +12,8 @@ const emit = defineEmits<InputEmits<boolean>>()
 
 const id = ref(uniqueId('InputSwitch_'))
 
-const track = ref<HTMLDivElement | null>(null)
-const input = ref<HTMLInputElement | null>(null)
+const track = shallowRef<HTMLDivElement>()
+const input = shallowRef<HTMLInputElement>()
 
 const {tweakingValue} = useInputSwitch({
 	track,

@@ -10,7 +10,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const $el = shallowRef<HTMLElement | null>(null)
+const $el = shallowRef<HTMLElement>()
 
 const {width} = useElementSize($el)
 

@@ -39,7 +39,7 @@ const emit = defineEmits<{
 	'update:frameWidth': [number]
 }>()
 
-const $root = shallowRef<null | HTMLElement>(null)
+const $root = shallowRef<HTMLElement>()
 const {width: containerWidth} = useElementBounding($root)
 
 useBndr($root, $root => {

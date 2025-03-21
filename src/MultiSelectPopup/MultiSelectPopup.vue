@@ -13,7 +13,7 @@ const selectedTypes = computed(() =>
 	multiSelect.selectedInputs.map(i => i.type)
 )
 
-const $root = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
 
 onMounted(() => {
 	if (!$root.value) return

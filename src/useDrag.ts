@@ -64,7 +64,7 @@ interface UseDragOptions {
 }
 
 export function useDrag(
-	target: Ref<null | HTMLElement>,
+	target: Ref<HTMLElement | undefined>,
 	{
 		disabled,
 		lockPointer = false,

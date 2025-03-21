@@ -22,7 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const $reference = computed(() => props.reference)
-const $popover = shallowRef<null | HTMLElement>(null)
+const $popover = shallowRef<HTMLElement>()
 
 const refBound = useElementBounding($reference)
 

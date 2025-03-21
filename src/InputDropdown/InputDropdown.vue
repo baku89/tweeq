@@ -26,7 +26,7 @@ defineOptions({
 })
 
 const open = ref(false)
-const $root = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
 
 const rootBound = useElementBounding($root)
 

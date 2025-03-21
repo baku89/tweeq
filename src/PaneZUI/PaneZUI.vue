@@ -16,7 +16,7 @@ const emit = defineEmits<{
 	'update:visibleRect': [Rect]
 }>()
 
-const $root = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
 
 const {width: rootWidth, height: rootHeight} = useElementBounding($root)
 

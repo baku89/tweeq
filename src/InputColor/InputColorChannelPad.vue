@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	updateChannels: [Partial<Channels>]
 }>()
 
-const $root = shallowRef<null | HTMLElement>(null)
+const $root = shallowRef<HTMLElement>()
 
 let initialChannels: vec2
 let isRelative = false

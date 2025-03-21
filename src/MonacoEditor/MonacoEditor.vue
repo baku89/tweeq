@@ -11,8 +11,8 @@ defineEmits<{
 	'update:cursorPosition': [value: vec2]
 }>()
 
-// const $root = shallowRef<HTMLElement | null>(null)
-// const $editor = shallowRef<HTMLElement | null>(null)
+// const $root = shallowRef<HTMLElement>()
+// const $editor = shallowRef<HTMLElement>()
 
 // initialze Monaco editor
 // onMounted(() => {

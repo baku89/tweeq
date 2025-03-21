@@ -14,8 +14,8 @@ const props = withDefaults(defineProps<PaneSplitProps>(), {
 
 const appConfig = useAppConfigStore()
 
-const $root = shallowRef<HTMLElement | null>(null)
-const $divider = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
+const $divider = shallowRef<HTMLElement>()
 
 const rootSize = useElementSize($root)
 

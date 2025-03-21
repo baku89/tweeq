@@ -52,11 +52,11 @@ const style = computed(() => {
 	}
 })
 
-const $root = shallowRef<HTMLElement | null>(null)
-const $top = shallowRef<HTMLElement | null>(null)
-const $right = shallowRef<HTMLElement | null>(null)
-const $left = shallowRef<HTMLElement | null>(null)
-const $bottom = shallowRef<HTMLElement | null>(null)
+const $root = shallowRef<HTMLElement>()
+const $top = shallowRef<HTMLElement>()
+const $right = shallowRef<HTMLElement>()
+const $left = shallowRef<HTMLElement>()
+const $bottom = shallowRef<HTMLElement>()
 
 const bound = useElementBounding($root)
 
