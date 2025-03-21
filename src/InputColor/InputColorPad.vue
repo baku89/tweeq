@@ -256,7 +256,7 @@ const sliderUniforms = computed(() => {
 
 const multiSelect = useMultiSelectStore()
 
-const {subFocusing} = multiSelect.register({
+const {subfocus} = multiSelect.register({
 	type: 'color',
 	el: $button,
 	focusing: useFocus($button).focused,
@@ -281,7 +281,7 @@ watchEffect(() => {
 		v-bind="$attrs"
 		ref="$button"
 		class="InputColorPad"
-		:class="{focus: (open && (shift || meta)) || subFocusing}"
+		:class="{focus: (open && (shift || meta)) || subfocus}"
 	>
 		<slot>
 			<div

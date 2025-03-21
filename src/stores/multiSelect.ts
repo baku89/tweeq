@@ -24,7 +24,7 @@ export interface MultiSelectSource {
 }
 
 interface MultiSelectInput extends MultiSelectSource {
-	subFocusing: Ref<boolean>
+	subfocus: Ref<boolean>
 	initialValue?: number | string
 }
 
@@ -36,7 +36,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	const inputs = reactive(new Map<symbol, MultiSelectInput>())
 
 	const selectedInputs = computed(() =>
-		[...inputs.values()].filter(input => input.focusing || input.subFocusing)
+		[...inputs.values()].filter(input => input.focusing || input.subfocus)
 	)
 
 	const focusedElement = shallowRef<HTMLElement | null>(null)
@@ -63,25 +63,25 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	function defocusAll() {
 		focusedElement.value = null
 		inputs.forEach(input => {
-			input.subFocusing = false
+			input.subfocus = false
 		})
 	}
 
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
 
-		const store = reactive({...source, subFocusing: false})
+		const store = reactive({...source, subfocus: false})
 
 		inputs.set(id, store)
 
 		watch(source.focusing, () => {
 			if (!source.focusing.value && meta.value) {
-				store.subFocusing = true
+				store.subfocus = true
 			}
 
 			if (source.focusing.value) {
 				if (meta.value) {
-					store.subFocusing = true
+					store.subfocus = true
 					focusedElement.value = source.el.value
 				} else {
 					defocusAll()
@@ -93,7 +93,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			inputs.delete(id)
 		})
 
-		return {subFocusing: toRef(store, 'subFocusing')}
+		return {subfocus: toRef(store, 'subfocus')}
 	}
 
 	function captureValues() {

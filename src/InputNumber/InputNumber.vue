@@ -431,7 +431,7 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 
 const multiSelect = useMultiSelectStore()
 
-const {subFocusing} = multiSelect.register({
+const {subfocus} = multiSelect.register({
 	type: 'number',
 	el: $root,
 	focusing,
@@ -524,7 +524,7 @@ const barStyle = computed<StyleValue>(() => {
 		<input
 			ref="$input"
 			class="input"
-			:class="{focus: subFocusing}"
+			:class="{focus: subfocus}"
 			type="text"
 			inputmode="numeric"
 			pattern="d*"

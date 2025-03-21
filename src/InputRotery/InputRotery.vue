@@ -242,7 +242,7 @@ const overlayPath = computed(() => {
 
 const multiSelect = useMultiSelectStore()
 
-const {subFocusing} = multiSelect.register({
+const {subfocus} = multiSelect.register({
 	type: 'number',
 	el: $root,
 	focusing: useFocus($root).focused,
@@ -261,7 +261,7 @@ const {subFocusing} = multiSelect.register({
 	<button
 		ref="$root"
 		class="InputRotery"
-		:class="{tweaking, 'sub-focusing': subFocusing}"
+		:class="{tweaking, subfocus: subfocus}"
 		:tweak-mode="tweakMode"
 		v-bind="$attrs"
 	>
@@ -336,7 +336,7 @@ const {subFocusing} = multiSelect.register({
 			transform scale(1.8)
 
 	&:focus-visible,
-	&.sub-focusing
+	&.subfocus
 		&:before
 			content ''
 			position absolute
