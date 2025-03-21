@@ -66,9 +66,10 @@
 
 <InputExample
 	:initialValue="0"
-	:options="{quantizeStep: 30}"
+	:options="{quantizeStep: 30, angleOffset: 0}"
 	:scheme="{
 		quantizeStep: {type: 'number', step: 1, min: 1, max: 360},
+		angleOffset: {type: 'number', ui: 'angle', step: 1, min: -180, max: 180},
 	}"
 	v-slot='{modelValue, options, listeners}'
 >

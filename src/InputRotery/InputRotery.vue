@@ -15,7 +15,10 @@ import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
 import type {InputRoteryProps} from './types'
 
-const props = withDefaults(defineProps<InputRoteryProps>(), {quantizeStep: 45})
+const props = withDefaults(defineProps<InputRoteryProps>(), {
+	quantizeStep: 45,
+	angleOffset: -90,
+})
 
 const theme = useThemeStore()
 
@@ -64,7 +67,7 @@ const {
 
 		if (tweakMode.value === 'absolute') {
 			const p = vec2.sub(xy, center.value)
-			const angle = vec2.angle(p)
+			const angle = vec2.angle(p) - props.angleOffset
 			const diff = signedAngleBetween(angle, localRaw)
 
 			localRaw += diff
@@ -136,19 +139,31 @@ function clampPos(p: vec2): vec2 {
 	return [x, y]
 }
 
+const roteryStyles = computed(() => {
+	const rotation = props.modelValue + props.angleOffset
+	return {
+		transform: `rotate(${rotation}deg)`,
+	}
+})
+
 const overlayLabelPos = computed(() => {
 	return clampPos(xy.value)
 })
 
-const overlayArrowAngle = computed(() => {
+const overlayArrowStyles = computed(() => {
 	const p = vec2.sub(xy.value, origin.value)
-	return vec2.angle(p) + 90
+	const angle = vec2.angle(p) + 90
+
+	return {
+		transform: `rotate(${angle}deg)`,
+	}
 })
 
 function radialLine(angle: number, innerRadius: number, outerRadius: number) {
+	const a = angle + props.angleOffset
 	return Path.line(
-		vec2.dir(angle, innerRadius, center.value),
-		vec2.dir(angle, outerRadius, center.value)
+		vec2.dir(a, innerRadius, center.value),
+		vec2.dir(a, outerRadius, center.value)
 	)
 }
 
@@ -175,19 +190,18 @@ const overlayPath = computed(() => {
 
 	if (tweakMode.value === 'absolute') {
 		const dist = vec2.distance(center.value, xy.value)
-		const to = vec2.dir(props.modelValue, dist, center.value)
+		const angle = props.modelValue
 
 		const innerRadius = theme.inputHeight
-		const dir = vec2.normalize(vec2.sub(to, c))
-		const from = vec2.scaleAndAdd(c, dir, innerRadius)
+		const outerRadius = dist
 
-		return Path.toSVGString(Path.line(from, to))
+		return Path.toSVGString(radialLine(angle, innerRadius, outerRadius))
 	} else {
 		const baseRadius = theme.inputHeight * 4
 		const radiusStep = theme.inputHeight * 0.25
 
-		const start = valueOnTweak.value
-		const end = props.modelValue
+		const start = valueOnTweak.value + props.angleOffset
+		const end = props.modelValue + props.angleOffset
 
 		const turns =
 			Math.floor(Math.abs(end - start) / 360) * Math.sign(end - start)
@@ -227,7 +241,7 @@ const overlayPath = computed(() => {
 			<circle class="circle" cx="16" cy="16" r="15" />
 			<g
 				transform-origin="16 16"
-				:style="{transform: `rotate(${props.modelValue}deg)`}"
+				:style="roteryStyles"
 				@pointerenter="tweakMode = 'absolute'"
 				@pointerleave="!tweaking && (tweakMode = 'relative')"
 			>
@@ -271,12 +285,7 @@ const overlayPath = computed(() => {
 			}"
 		>
 			{{ display }}
-			<span
-				class="arrows"
-				:style="{
-					transform: `rotate(${overlayArrowAngle}deg)`,
-				}"
-			/>
+			<span class="arrows" :style="overlayArrowStyles" />
 		</div>
 	</div>
 </template>
