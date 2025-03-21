@@ -7,15 +7,7 @@ import {
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {
-	computed,
-	nextTick,
-	ref,
-	shallowRef,
-	type StyleValue,
-	watch,
-	watchEffect,
-} from 'vue'
+import {computed, nextTick, ref, shallowRef, type StyleValue, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -92,7 +84,11 @@ const speed = computed(() => {
 
 // Precision
 const displayPrecision = computed(() => {
-	return getNumberPresition(display.value)
+	const displayWithoutSuffix = display.value.replace(
+		new RegExp(`${props.suffix}$`),
+		''
+	)
+	return getNumberPresition(displayWithoutSuffix)
 })
 
 const sliderPrecision = computed(() => {
@@ -108,7 +104,9 @@ const sliderPrecision = computed(() => {
 	}
 })
 
-const tweakPrecision = computed(() => precisionOf(speed.value))
+const tweakPrecision = computed(() =>
+	tweaking.value ? precisionOf(speed.value) : 0
+)
 
 const precision = computed(() => {
 	return Math.max(
@@ -117,14 +115,6 @@ const precision = computed(() => {
 		sliderPrecision.value,
 		tweakPrecision.value
 	)
-})
-
-watchEffect(() => {
-	console.info('precision', {
-		displayPrecision: displayPrecision.value,
-		// sliderPrecision: sliderPrecision.value,
-		// tweakPrecision: tweakPrecision.value,
-	})
 })
 
 const pointerSize = ref(0)
