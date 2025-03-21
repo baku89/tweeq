@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import {Path} from '@baku89/pave'
-import {useMagicKeys} from '@vueuse/core'
+import {useFocus, useMagicKeys} from '@vueuse/core'
 import {checkIntersection} from 'line-intersect'
 import {scalar, vec2} from 'linearly'
-import {partial, range} from 'lodash-es'
+import {constant, partial, range} from 'lodash-es'
 import {computed, ref, shallowRef} from 'vue'
 
+import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {SvgIcon} from '../SvgIcon'
 import type {InputEmits} from '../types'
@@ -42,13 +43,13 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const $el = shallowRef<null | HTMLElement>(null)
+const $root = shallowRef<null | HTMLElement>(null)
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
 const valueOnTweak = ref(props.modelValue)
 
-const center = useElementCenter($el)
+const center = useElementCenter($root)
 
 const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
@@ -60,7 +61,7 @@ const {
 	initial,
 	origin,
 	xy,
-} = useDrag($el, {
+} = useDrag($root, {
 	dragDelaySeconds: 0,
 	onDragStart({xy}) {
 		valueOnTweak.value = localRaw = props.modelValue
@@ -87,11 +88,19 @@ const {
 		}
 
 		emit('update:modelValue', local.value)
+
+		if (tweakMode.value === 'relative') {
+			multiSelect.captureValues()
+			multiSelect.updateValues(values => values.map(v => v + delta))
+		} else {
+			multiSelect.updateValues(values => values.map(constant(local.value)))
+		}
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
 
 		emit('confirm')
+		multiSelect.confirmValues()
 	},
 })
 
@@ -227,13 +236,31 @@ const overlayPath = computed(() => {
 		return Path.toSVGString(Path.merge([...revolutions, arc]))
 	}
 })
+
+//------------------------------------------------------------------------------
+// Multi Select
+
+const multiSelect = useMultiSelectStore()
+
+const {subFocusing} = multiSelect.register({
+	el: $root,
+	focusing: useFocus($root).focused,
+	getValue: () => props.modelValue,
+	setValue(value) {
+		local.value = value
+		emit('update:modelValue', value)
+	},
+	confirm() {
+		emit('confirm')
+	},
+})
 </script>
 
 <template>
 	<button
-		ref="$el"
+		ref="$root"
 		class="InputRotery"
-		:class="{tweaking}"
+		:class="{tweaking, 'sub-focusing': subFocusing}"
 		:tweak-mode="tweakMode"
 		v-bind="$attrs"
 	>
@@ -305,14 +332,16 @@ const overlayPath = computed(() => {
 		z-index 2
 
 		.rotery
-			transform scale(3)
+			transform scale(1.8)
 
-	&:focus-visible:not(:hover, .tweaking):before
-		content ''
-		position absolute
-		inset -3px
-		border-radius 50%
-		border 1px solid var(--tq-color-accent-hover)
+	&:focus-visible,
+	&.sub-focusing
+		&:before
+			content ''
+			position absolute
+			inset -3px
+			border-radius 50%
+			border 1px solid var(--tq-color-accent-hover)
 
 
 .rotery
