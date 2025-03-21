@@ -59,19 +59,28 @@ const scheme = {
 			<div class="preview">
 				<div
 					class="pass"
-					:style="{color: modelValue.keyColor, opacity: modelValue.key / 255}"
+					:style="{
+						color: modelValue.keyColor,
+						opacity: modelValue.keyIntensity / 255,
+					}"
 				>
 					<img src="/assets/three-point-lighting_key.png" />
 				</div>
 				<div
 					class="pass"
-					:style="{color: modelValue.fillColor, opacity: modelValue.fill / 255}"
+					:style="{
+						color: modelValue.fillColor,
+						opacity: modelValue.fillIntensity / 255,
+					}"
 				>
 					<img src="/assets/three-point-lighting_fill.png" />
 				</div>
 				<div
 					class="pass"
-					:style="{color: modelValue.backColor, opacity: modelValue.back / 255}"
+					:style="{
+						color: modelValue.backColor,
+						opacity: modelValue.backIntensity / 255,
+					}"
 				>
 					<img src="/assets/three-point-lighting_back.png" />
 				</div>
