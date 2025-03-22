@@ -29,3 +29,32 @@
 		color5: {type: 'string', ui: 'color', icon: 'mdi-palette'},
 	}"
 />
+
+## Bunch of Switches
+
+<ExampleContainer
+	:initialValue="{
+		switch_1: true,
+		switch_2: false,
+		switch_3: true,
+		switch_4: false,
+		switch_5: true,
+		switch_6: false,
+		switch_7: true,
+		switch_8: false,
+		switch_9: true,
+		switch_10: false,
+	}"
+	:scheme="{
+		switch_1: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_2: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_3: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_4: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_5: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_6: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_7: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_8: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_9: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+		switch_10: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
+	}"
+/>
