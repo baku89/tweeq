@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import {useTweeq} from '../useTweeq'
+import {initTweeq} from '../useTweeq'
 
-useTweeq()
+initTweeq('viewport')
 </script>
 
 <template>
