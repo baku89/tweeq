@@ -151,7 +151,7 @@
 		bar: {type: 'number'},
 		clampMin: {type: 'boolean'},
 		clampMax: {type: 'boolean'},
-		step: {type: 'number', min: 0, step: 0.01},
+		step: {type: 'number', min: 0},
 		precision: {
 			type: 'number',
 			min: 0,

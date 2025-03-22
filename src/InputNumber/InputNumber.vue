@@ -3,7 +3,7 @@ import {
 	useElementBounding,
 	useEventListener,
 	useFocus,
-	useKeyModifier,
+	useMagicKeys,
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
@@ -61,7 +61,8 @@ const barVisible = computed(() => {
 	return (
 		props.bar !== false &&
 		props.min !== Number.MIN_SAFE_INTEGER &&
-		props.max !== Number.MAX_SAFE_INTEGER
+		props.max !== Number.MAX_SAFE_INTEGER &&
+		width.value > 0
 	)
 })
 
@@ -72,30 +73,22 @@ const validMax = computed(() =>
 	props.clampMax ? props.max : Number.MAX_SAFE_INTEGER
 )
 
-const alt = useKeyModifier('Alt')
-const shift = useKeyModifier('Shift')
+const {alt, shift} = useMagicKeys()
 const speedMultiplierKey = computed(() => {
 	return (alt.value ? 0.1 : 1) * (shift.value ? 10 : 1)
 })
 const speedMultiplierGesture = ref(1)
 const speed = computed(() => {
-	const key = speedMultiplierKey.value
-	const gesture = speedMultiplierGesture.value
-	const gestureQuantized =
-		gesture > 1
-			? Math.round(gesture)
-			: scalar.quantize(gesture, 10 ** Math.floor(Math.log10(gesture)))
-
-	return key * gestureQuantized
+	return speedMultiplierKey.value * speedMultiplierGesture.value
 })
 
 // Precision
+const stepPrecision = computed(() => {
+	return props.step ? precisionOf(props.step) : null
+})
+
 const displayPrecision = computed(() => {
-	const displayWithoutSuffix = display.value.replace(
-		new RegExp(`${props.suffix}$`),
-		''
-	)
-	return getNumberPresition(displayWithoutSuffix)
+	return getNumberPresition(display.value)
 })
 
 const sliderPrecision = computed(() => {
@@ -116,12 +109,14 @@ const tweakPrecision = computed(() =>
 )
 
 const precision = computed(() => {
-	return Math.max(
-		precisionOf(props.step ?? 0),
-		displayPrecision.value,
-		sliderPrecision.value,
-		tweakPrecision.value,
-		props.precision
+	return (
+		stepPrecision.value ??
+		Math.max(
+			props.precision,
+			displayPrecision.value,
+			sliderPrecision.value,
+			tweakPrecision.value
+		)
 	)
 })
 
@@ -132,29 +127,17 @@ let resetTweakModeTimer: ReturnType<typeof setTimeout>
 /** When the value is vec2, it means the origin point to determine the drag mode */
 const tweakMode = ref<vec2 | 'value' | 'speed'>(vec2.zero)
 
-const pxPerStep = computed(() => {
-	if (
-		props.max === undefined ||
-		props.min === undefined ||
-		props.step === undefined ||
-		width.value === 0
-	) {
-		return 0
-	}
-
-	const gap = (props.step / (props.max - props.min)) * width.value
-
-	return gap
-})
-
 const minSpeed = computed(() => {
-	if (pxPerStep.value > 1) {
-		return 1
-	} else {
-		const prec =
-			props.step !== undefined ? precisionOf(props.step) : props.precision
-		return 10 ** -prec
+	let prec = props.precision
+
+	if (props.step && barVisible.value) {
+		const stepCount = (props.max - props.min) / props.step
+		const pxPerStep = width.value / stepCount
+
+		prec = precisionOf(pxPerStep)
 	}
+
+	return 10 ** -prec
 })
 
 const maxSpeed = computed(() => {
@@ -234,10 +217,6 @@ const {dragging: tweaking} = useDrag($root, {
 			local.value += delta
 			deltaAccumulated += delta
 			multi.update(v => v + deltaAccumulated)
-
-			if (!barVisible.value) {
-				local.value = scalar.clamp(local.value, validMin.value, validMax.value)
-			}
 		} else if (tweakMode.value === 'speed') {
 			speedMultiplierGesture.value = scalar.clamp(
 				speedMultiplierGesture.value * 0.98 ** dy,
@@ -343,7 +322,7 @@ function onBlur() {
 // Hotkeys
 
 function onIncrementByKey(delta: number) {
-	if (props.step !== undefined) {
+	if (props.step) {
 		// If step is defined
 		local.value += props.step * delta * Math.max(1, speedMultiplierKey.value)
 	} else {
@@ -429,19 +408,15 @@ watch(
 			tweaking.value,
 			focusing.value,
 			precision.value,
-			props.prefix,
-			props.suffix,
 		] as const,
-	([modelValue, tweaking, focusing, precision, prefix, suffix]) => {
+	([modelValue, tweaking, focusing, precision]) => {
 		if (focusing) return
 
-		const displayNumber = tweaking
+		display.value = tweaking
 			? modelValue.toFixed(precision)
 			: toFixed(modelValue, precision)
-
-		display.value = prefix + displayNumber + suffix
 	},
-	{immediate: true}
+	{immediate: true, flush: 'sync'}
 )
 
 // Click to select all
@@ -546,7 +521,7 @@ const barStyle = computed<StyleValue>(() => {
 			type="text"
 			inputmode="numeric"
 			pattern="d*"
-			:value="display"
+			:value="focusing ? display : prefix + display + suffix"
 			:invalid="isInvalid"
 			:disabled="disabled || undefined"
 			@input="onInput"
