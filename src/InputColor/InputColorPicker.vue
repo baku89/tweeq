@@ -36,6 +36,12 @@ function onUpdateLocal(value: HSVA) {
 	emit('update:modelValue', emittedModel)
 }
 
+function onUpdateColorCode(value: string) {
+	local.value = css2hsva(value)
+	emittedModel = value
+	emit('update:modelValue', value)
+}
+
 // EyeDropper
 const isEyeDropperSupported = 'EyeDropper' in window
 
@@ -70,7 +76,7 @@ async function pickColor() {
 				:colorCode="modelValue"
 				:hsva="local"
 				:alpha="alpha"
-				@update:colorCode="emit('update:modelValue', $event)"
+				@update:colorCode="onUpdateColorCode"
 				@update:hsva="onUpdateLocal"
 			/>
 		</template>

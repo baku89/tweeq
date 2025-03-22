@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
+import {useFocus, useFocusWithin, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import Color from 'colorjs.io'
 import {vec2} from 'linearly'
@@ -61,6 +61,14 @@ const tweakMode = computed(() => {
 
 const local = ref<HSVA>({h: 0, s: 0, v: 0, a: 0})
 const decompose = css2hsva
+const compose = hsva2hex
+
+const $floating = useTemplateRef('$floating')
+const floatingFocused = useFocusWithin($floating).focused
+
+const temporarilyHidePopup = computed(() => {
+	return !floatingFocused.value && (shift.value || meta.value)
+})
 
 // Update local value when model value changes externally
 watch(
@@ -73,8 +81,6 @@ watch(
 )
 
 const tweakWidth = 300
-
-const compose = hsva2hex
 
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
@@ -253,7 +259,7 @@ whenever(
 		v-bind="$attrs"
 		ref="$button"
 		class="InputColorPad"
-		:class="{focus: (open && (shift || meta)) || multi.subfocus}"
+		:class="{focus: (open && temporarilyHidePopup) || multi.subfocus}"
 	>
 		<slot>
 			<div
@@ -266,12 +272,12 @@ whenever(
 		</slot>
 	</button>
 	<Popover
-		:open="open && !(shift || meta)"
+		:open="open && !temporarilyHidePopup"
 		:reference="$button"
 		placement="bottom-start"
 		@update:open="open = $event"
 	>
-		<div class="floating">
+		<div ref="$floating" class="floating">
 			<InputColorPicker
 				:modelValue="modelValue"
 				:alpha="alpha"
