@@ -202,7 +202,7 @@ export function hsva2hex(value: HSVA): string {
 	return chroma(r * 255, g * 255, b * 255, value.a).hex()
 }
 
-export function hex2hsva(value: string): HSVA {
+export function css2hsva(value: string): HSVA {
 	if (!chroma.valid(value)) {
 		return {h: 0, s: 0, v: 0, a: 1}
 	}

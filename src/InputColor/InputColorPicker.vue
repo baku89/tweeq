@@ -8,7 +8,7 @@ import InputColorChannelSlider from './InputColorChannelSlider.vue'
 import InputColorChannelValues from './InputColorChannelValues.vue'
 import InputColorPresets from './InputColorPresets.vue'
 import {DefaultColorPickers, HSVA, type InputColorProps} from './types'
-import {hex2hsva, hsva2hex} from './utils'
+import {css2hsva, hsva2hex} from './utils'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
@@ -17,14 +17,14 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 
 const emit = defineEmits<InputEmits<string>>()
 
-const local = ref<HSVA>(hex2hsva(props.modelValue))
+const local = ref<HSVA>(css2hsva(props.modelValue))
 let emittedModel: string | null = null
 
 watch(
 	() => props.modelValue,
 	model => {
 		if (model !== emittedModel) {
-			local.value = hex2hsva(model)
+			local.value = css2hsva(model)
 		}
 	},
 	{flush: 'sync'}

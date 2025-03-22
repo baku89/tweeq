@@ -20,7 +20,7 @@ import {
 	type HSVA,
 	type InputColorProps,
 } from './types'
-import {hex2hsva, hsv2rgb, hsva2hex, tweakHSVAChannel} from './utils'
+import {css2hsva, hsv2rgb, hsva2hex, tweakHSVAChannel} from './utils'
 import WheelFragmentString from './wheel.frag'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
@@ -60,7 +60,7 @@ const tweakMode = computed(() => {
 })
 
 const local = ref<HSVA>({h: 0, s: 0, v: 0, a: 0})
-const decompose = hex2hsva
+const decompose = css2hsva
 
 // Update local value when model value changes externally
 watch(
