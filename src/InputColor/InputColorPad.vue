@@ -375,7 +375,7 @@ whenever(
 	use-input-position()
 	box-shadow inset 0 0 0 1px var(--outline)
 
-	.InputColorPad:focus-visible &,
+	.InputColorPad:focus &,
 	.InputColorPad.focus &,
 	&:hover, &.tweaking
 		--outline var(--tq-color-accent) !important
