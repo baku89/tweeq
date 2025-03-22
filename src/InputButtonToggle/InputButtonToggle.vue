@@ -39,7 +39,9 @@ defineEmits<{
 	gap 4px
 
 	use-input-position()
-	button-focus-style()
+
+	&:focus-visible
+		button-focus-style()
 
 	&:hover
 		background var(--tq-color-input-hover)

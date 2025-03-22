@@ -72,6 +72,9 @@ defineExpose({
 	input-box-style()
 	input-element-style()
 
+	&:focus
+		input-box-focus()
+
 	&:disabled
 		input-box-disabled()
 

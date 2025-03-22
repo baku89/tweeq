@@ -89,6 +89,10 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		inputs.push(store)
 
+		const readyToBeSelected = computed(() => {
+			return meta.value && !selectedInputs.value.some(input => input.id === id)
+		})
+
 		watch(source.focusing, () => {
 			if (!source.focusing.value && meta.value) {
 				store.subfocus = true
@@ -114,7 +118,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		function update(updator: (value: any, context: {i: number}) => any) {
 			selectedInputs.value.forEach((input, i) => {
-				if (input.id === id) return
+				if (input.id === id || input.type !== source.type) return
 
 				const context = {i}
 
@@ -138,6 +142,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			subfocus: store.subfocus,
 			index: selectedInputs.value.findIndex(input => input.id === id),
 			capture: captureValues,
+			readyToBeSelected,
 			update,
 			confirm,
 			multiSelected,

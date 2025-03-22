@@ -36,7 +36,9 @@ defineProps<InputButtonProps>()
 	--bg-blink var(--tq-color-accent-hover)
 
 	use-input-position()
-	button-focus-style()
+
+	&:focus-visible
+		button-focus-style()
 
 	&:hover
 		background var(--tq-color-accent-hover)

@@ -24,13 +24,12 @@ popup-style()
 button-focus-style()
 	position relative
 
-	&:focus-visible, &:has(input:focus-visible)
-		&:before
-			content ''
-			position absolute
-			inset -3px
-			border 1px solid var(--tq-color-accent)
-			border-radius calc(var(--tq-input-border-radius) + 2px)
+	&:before
+		content ''
+		position absolute
+		inset -3px
+		border 1px solid var(--tq-color-accent)
+		border-radius calc(var(--tq-input-border-radius) + 2px)
 
 hover-transition(prop = all)
 	values = ()

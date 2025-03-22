@@ -60,7 +60,10 @@ const {tweakingValue} = useInputSwitch({
 	border-radius var(--tq-input-border-radius)
 	width var(--tq-input-height)
 	active-transition(background)
-	button-focus-style()
+
+	&:has(.input:focus),
+	&.subfocus
+		button-focus-style()
 
 	&:hover
 		background var(--tq-color-input-hover)

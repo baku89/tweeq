@@ -15,7 +15,7 @@ const id = ref(uniqueId('InputSwitch_'))
 const track = useTemplateRef('track')
 const input = useTemplateRef('input')
 
-const {tweakingValue} = useInputSwitch({
+const {tweakingValue, subfocus} = useInputSwitch({
 	track,
 	input,
 	props,
@@ -25,7 +25,7 @@ const {tweakingValue} = useInputSwitch({
 
 <template>
 	<div class="InputSwitch">
-		<div ref="track" class="track">
+		<div ref="track" class="track" :class="{subfocus}">
 			<input
 				:id="id"
 				ref="input"
@@ -66,7 +66,8 @@ const {tweakingValue} = useInputSwitch({
 		&:hover
 			background-color var(--tq-color-accent-hover)
 
-	&:has(.input:focus-visible)
+	&:has(.input:focus),
+	&.subfocus
 		&:before
 			content ''
 			position absolute

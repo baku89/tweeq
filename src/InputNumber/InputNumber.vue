@@ -264,6 +264,7 @@ watch(
 
 const invalid = computed(() => {
 	if (props.invalid) return true
+	if (tweaking.value) return false
 
 	return validateResult.value.log.length > 0
 })
