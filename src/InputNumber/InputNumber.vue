@@ -617,9 +617,13 @@ const barStyle = computed<StyleValue>(() => {
 	background var(--tq-color-accent)
 	opacity .3
 
+	&:hover,
+	.InputNumber.tweaking &
+		width 3px
+		margin-left -1px
+
 	.InputNumber:hover &,
 	.InputNumber.tweaking &
-		transform scaleX(3)
 		opacity 1
 
 	.below-range &,
