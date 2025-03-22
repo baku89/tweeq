@@ -1,28 +1,33 @@
 <script lang="ts" setup>
-import {scalar, vec2} from 'linearly'
+import {vec2} from 'linearly'
 import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {useDrag} from '../useDrag'
-import {unsignedMod} from '../util'
 import FragmentString from './pad.frag'
-import {type Channels, type ColorChannel, colorChannelToIndex} from './types'
+import {type ColorChannel, colorChannelToIndex, HSVA} from './types'
+import {
+	getHSVAChannel,
+	hsva2hex,
+	setHSVAChannel,
+	tweakHSVAChannel,
+} from './utils'
 
 interface Props {
 	axes: [ColorChannel, ColorChannel]
-	channels: Channels
+	modelValue: HSVA
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-	updateChannels: [Partial<Channels>]
+	'update:modelValue': [HSVA]
 }>()
 
 const $root = useTemplateRef('$root')
 
-let initialChannels: vec2
-let isRelative = false
+let local: HSVA
+// let isRelative = false
 
 const {
 	dragging: sliderTweaking,
@@ -33,37 +38,29 @@ const {
 	xy,
 } = useDrag($root, {
 	disableClick: true,
-	onDragStart(_, event) {
-		isRelative = event.target !== $root.value
-		initialChannels = [
-			props.channels[props.axes[0]],
-			props.channels[props.axes[1]],
-		]
+	onDragStart({left, right, top, bottom, xy}, event) {
+		local = props.modelValue
+
+		const isAbsolute = event.target === $root.value
+
+		if (isAbsolute) {
+			const values = vec2.invlerp([left, bottom], [right, top], xy)
+
+			local = setHSVAChannel(local, props.axes[0], values[0])
+			local = setHSVAChannel(local, props.axes[1], values[1])
+
+			emit('update:modelValue', local)
+		}
 	},
-	onDrag({xy, initial, right, left, bottom, top, width, height}) {
-		let chs: vec2.Mutable
+	onDrag({xy, initial, width, height}) {
+		let newLocal = {...local}
 
-		if (isRelative) {
-			const deltaChs = vec2.div(vec2.sub(xy, initial), [width, -height])
-			chs = [...vec2.add(initialChannels, deltaChs)]
-		} else {
-			chs = [...vec2.invlerp([left, bottom], [right, top], xy)]
-		}
+		const delta = vec2.div(vec2.sub(xy, initial), [width, -height])
 
-		for (let i = 0; i < 2; i++) {
-			if (props.axes[i] === 'h') {
-				chs[i] = unsignedMod(chs[i], 1)
-			} else {
-				chs[i] = scalar.clamp(chs[i], 0, 1)
-			}
-		}
+		newLocal = tweakHSVAChannel(newLocal, props.axes[0], delta[0])
+		newLocal = tweakHSVAChannel(newLocal, props.axes[1], delta[1])
 
-		const newChannel: Partial<Channels> = {
-			[props.axes[0]]: chs[0],
-			[props.axes[1]]: chs[1],
-		}
-
-		emit('updateChannels', newChannel)
+		emit('update:modelValue', newLocal)
 	},
 })
 
@@ -78,7 +75,7 @@ const tweakingInside = computed(() => {
 })
 
 const uniforms = computed(() => {
-	const {h, s, v, a} = props.channels
+	const {h, s, v, a} = props.modelValue
 	return {
 		hsva: [h, s, v, a],
 		axes: props.axes.map(colorChannelToIndex),
@@ -86,16 +83,13 @@ const uniforms = computed(() => {
 })
 
 const circleStyle = computed(() => {
-	const x = props.channels[props.axes[0]]
-	const y = props.channels[props.axes[1]]
-	const {r, g, b} = props.channels
-
-	const background = `rgba(${r * 255}, ${g * 255}, ${b * 255})`
+	const x = getHSVAChannel(props.modelValue, props.axes[0])
+	const y = getHSVAChannel(props.modelValue, props.axes[1])
 
 	return {
 		left: `${x * 100}%`,
 		bottom: `${y * 100}%`,
-		background,
+		background: hsva2hex(props.modelValue),
 	}
 })
 </script>

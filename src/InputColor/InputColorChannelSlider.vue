@@ -1,28 +1,33 @@
 <script lang="ts" setup>
+import {Rect} from '@baku89/pave'
 import {scalar} from 'linearly'
 import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {useDrag} from '../useDrag'
-import {unsignedMod} from '../util'
 import SliderFragmentString from './slider.frag'
-import {type Channels, type ColorChannel, colorChannelToIndex} from './types'
+import {type ColorChannel, colorChannelToIndex, type HSVA} from './types'
+import {
+	getHSVAChannel,
+	hsva2hex,
+	setHSVAChannel,
+	tweakHSVAChannel,
+} from './utils'
 
 interface Props {
+	modelValue: HSVA
 	axis: ColorChannel
-	channels: Channels
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-	updateChannels: [Partial<Channels>]
+	'update:modelValue': [HSVA]
 }>()
 
 const $root = useTemplateRef('$root')
 
-let initialChannel: number
-let isRelative = false
+let local: HSVA
 
 const {
 	dragging: sliderTweaking,
@@ -33,42 +38,40 @@ const {
 	xy,
 } = useDrag($root, {
 	disableClick: true,
-	onDragStart(_, event) {
-		isRelative = event.target !== $root.value
-		initialChannel = props.channels[props.axis]
+	onDragStart({xy: [x], left, right}, event) {
+		local = props.modelValue
+
+		const isAbsolute = event.target === $root.value
+
+		if (isAbsolute) {
+			const value = scalar.invlerp(left, right, x)
+
+			local = setHSVAChannel(local, props.axis, value)
+			emit('update:modelValue', local)
+		}
 	},
-	onDrag({xy: [x], initial: [ix], right, left, width}) {
-		let ch: number
+	onDrag({xy: [x], initial: [ix], width}) {
+		let newLocal = {...local}
 
-		if (isRelative) {
-			const deltaCh = (x - ix) / width
-			ch = initialChannel + deltaCh
-		} else {
-			ch = scalar.invlerp(left, right, x)
-		}
+		const delta = (x - ix) / width
 
-		if (props.axis === 'h') {
-			ch = unsignedMod(ch, 1)
-		} else {
-			ch = scalar.clamp(ch, 0, 1)
-		}
+		newLocal = tweakHSVAChannel(newLocal, props.axis, delta)
 
-		emit('updateChannels', {[props.axis]: ch})
+		emit('update:modelValue', newLocal)
 	},
 })
 
 const tweakingInside = computed(() => {
-	return (
-		sliderTweaking.value &&
-		left.value <= xy.value[0] &&
-		right.value >= xy.value[0] &&
-		top.value <= xy.value[1] &&
-		bottom.value >= xy.value[1]
-	)
+	const bound: Rect = [
+		[left.value, top.value],
+		[right.value, bottom.value],
+	]
+
+	return sliderTweaking.value && Rect.containsPoint(bound, xy.value)
 })
 
 const uniforms = computed(() => {
-	const {a, h, s, v} = props.channels
+	const {a, h, s, v} = props.modelValue
 	return {
 		hsva: [h, s, v, a],
 		axis: colorChannelToIndex(props.axis),
@@ -77,14 +80,11 @@ const uniforms = computed(() => {
 })
 
 const circleStyle = computed(() => {
-	const t = props.channels[props.axis]
-	const {r, g, b} = props.channels
-
-	const background = `rgba(${r * 255}, ${g * 255}, ${b * 255})`
+	const t = getHSVAChannel(props.modelValue, props.axis)
 
 	return {
 		left: `${t * 100}%`,
-		background,
+		background: hsva2hex(props.modelValue),
 	}
 })
 </script>

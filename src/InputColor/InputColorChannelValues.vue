@@ -6,47 +6,31 @@ import {InputDropdown} from '../InputDropdown'
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
-import {type Channels, type ColorChannel, type ColorSpace} from './types'
+import {type ColorChannel, type ColorSpace, HSVA} from './types'
+import {hsv2rgb, setHSVAChannel} from './utils'
 
 interface Props {
-	modelValue: string
-	channels: Channels
+	colorCode: string
+	hsva: HSVA
 	alpha?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {alpha: true})
 
 const emit = defineEmits<{
-	'update:modelValue': [string]
-	updateChannels: [Partial<Channels>]
+	'update:colorCode': [string]
+	'update:hsva': [HSVA]
 }>()
 
 const colorSpace = ref<ColorSpace>('hsv')
 
-const r = computed(() => props.channels.r * 255)
-const g = computed(() => props.channels.g * 255)
-const b = computed(() => props.channels.b * 255)
-const a = computed(() => props.channels.a * 100)
-
-const h = computed(() => props.channels.h * 360)
-const s = computed(() => props.channels.s * 100)
-const v = computed(() => props.channels.v * 100)
+const rgb = computed(() => hsv2rgb(props.hsva))
 
 function onUpdateChannel(channel: ColorChannel, value: number) {
-	let max = 255
+	const newColor = setHSVAChannel(props.hsva, channel, value)
 
-	if (channel === 'h') {
-		max = 360
-	} else if (channel === 'a' || channel === 's' || channel === 'v') {
-		max = 100
-	}
-
-	emit('updateChannels', {[channel]: value / max})
+	emit('update:hsva', newColor)
 }
-
-const colorCode = computed(() => {
-	return props.modelValue
-})
 
 function colorCodeValidator(value: string) {
 	if (value.startsWith('0x')) {
@@ -75,85 +59,85 @@ function colorCodeValidator(value: string) {
 		/>
 		<InputGroup v-if="colorSpace === 'rgb'" class="channel">
 			<InputNumber
-				:modelValue="r"
+				:modelValue="rgb.r * 255"
 				:min="0"
 				:max="255"
 				:precision="0"
 				:bar="false"
 				horizontal-position="left"
-				@update:modelValue="onUpdateChannel('r', $event)"
+				@update:modelValue="onUpdateChannel('r', $event / 255)"
 			/>
 			<InputNumber
-				:modelValue="g"
+				:modelValue="rgb.g * 255"
 				:min="0"
 				:max="255"
 				:precision="0"
 				:bar="false"
 				horizontal-position="middle"
-				@update:modelValue="onUpdateChannel('g', $event)"
+				@update:modelValue="onUpdateChannel('g', $event / 255)"
 			/>
 			<InputNumber
-				:modelValue="b"
+				:modelValue="rgb.b * 255"
 				:min="0"
 				:max="255"
 				:precision="0"
 				:bar="false"
 				:horizontal-position="props.alpha ? 'middle' : 'right'"
-				@update:modelValue="onUpdateChannel('b', $event)"
+				@update:modelValue="onUpdateChannel('b', $event / 255)"
 			/>
 			<InputNumber
 				v-if="props.alpha"
-				:modelValue="a"
+				:modelValue="hsva.a * 100"
 				:min="0"
 				:max="100"
 				:precision="0"
 				:bar="false"
 				suffix="%"
 				horizontal-position="right"
-				@update:modelValue="onUpdateChannel('a', $event)"
+				@update:modelValue="onUpdateChannel('a', $event / 100)"
 			/>
 		</InputGroup>
 		<InputGroup v-else-if="colorSpace === 'hsv'" class="channel">
 			<InputNumber
-				:modelValue="h"
+				:modelValue="hsva.h * 360"
 				:min="0"
 				:max="360"
 				:precision="0"
 				:bar="false"
 				suffix="°"
 				horizontal-position="left"
-				@update:modelValue="onUpdateChannel('h', $event)"
+				@update:modelValue="onUpdateChannel('h', $event / 360)"
 			/>
 			<InputNumber
-				:modelValue="s"
+				:modelValue="hsva.s * 100"
 				:min="0"
 				:max="100"
 				:precision="0"
 				:bar="false"
 				suffix="%"
 				horizontal-position="middle"
-				@update:modelValue="onUpdateChannel('s', $event)"
+				@update:modelValue="onUpdateChannel('s', $event / 100)"
 			/>
 			<InputNumber
-				:modelValue="v"
+				:modelValue="hsva.v * 100"
 				:min="0"
 				:max="100"
 				:precision="0"
 				:bar="false"
 				suffix="%"
 				:horizontal-position="props.alpha ? 'middle' : 'right'"
-				@update:modelValue="onUpdateChannel('v', $event)"
+				@update:modelValue="onUpdateChannel('v', $event / 100)"
 			/>
 			<InputNumber
 				v-if="props.alpha"
-				:modelValue="a"
+				:modelValue="hsva.a * 100"
 				:min="0"
 				:max="100"
 				:precision="0"
 				:bar="false"
 				suffix="%"
 				horizontal-position="right"
-				@update:modelValue="onUpdateChannel('a', $event)"
+				@update:modelValue="onUpdateChannel('a', $event / 100)"
 			/>
 		</InputGroup>
 		<InputString
@@ -162,7 +146,7 @@ function colorCodeValidator(value: string) {
 			class="channel"
 			:modelValue="colorCode"
 			:validator="colorCodeValidator"
-			@update:modelValue="emit('update:modelValue', $event)"
+			@update:modelValue="emit('update:colorCode', $event)"
 		/>
 	</InputGroup>
 </template>

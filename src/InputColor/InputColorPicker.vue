@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import {computedWithControl} from '@vueuse/core'
-import chroma from 'chroma-js'
+import {ref, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputEmits} from '../types'
@@ -8,13 +7,8 @@ import InputColorChannelPad from './InputColorChannelPad.vue'
 import InputColorChannelSlider from './InputColorChannelSlider.vue'
 import InputColorChannelValues from './InputColorChannelValues.vue'
 import InputColorPresets from './InputColorPresets.vue'
-import {
-	type Channels,
-	DefaultColorPickers,
-	hsv2rgb,
-	type InputColorProps,
-	rgb2hsv,
-} from './types'
+import {DefaultColorPickers, HSVA, type InputColorProps} from './types'
+import {hex2hsva, hsva2hex} from './utils'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
@@ -23,70 +17,23 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 
 const emit = defineEmits<InputEmits<string>>()
 
-let prevChannels: Channels = {r: 1, g: 1, b: 1, a: 1, h: 0, s: 0, v: 1}
-let prevValue = ''
+const local = ref<HSVA>(hex2hsva(props.modelValue))
+let emittedModel: string | null = null
 
-const channels = computedWithControl(
+watch(
 	() => props.modelValue,
-	() => {
-		if (prevValue === props.modelValue || !chroma.valid(props.modelValue)) {
-			return prevChannels
+	model => {
+		if (model !== emittedModel) {
+			local.value = hex2hsva(model)
 		}
-
-		const rgba = chroma(props.modelValue).rgba()
-
-		const r = rgba[0] / 255
-		const g = rgba[1] / 255
-		const b = rgba[2] / 255
-		const a = rgba[3]
-
-		const hsv = rgb2hsv([r, g, b])
-		let [h, s] = hsv
-		const v = hsv[2]
-
-		if (isNaN(h)) {
-			h = prevChannels.h
-		}
-		if (isNaN(s)) {
-			s = prevChannels.s
-		}
-
-		prevChannels = {r, g, b, a, h, s, v}
-
-		return prevChannels
-	}
+	},
+	{flush: 'sync'}
 )
 
-function updateChannels(updated: Partial<Channels>) {
-	let newChannels = {...channels.value, ...updated}
-
-	const isHSV = 'h' in updated || 's' in updated || 'v' in updated
-	const isRGB = 'r' in updated || 'g' in updated || 'b' in updated
-
-	const [r, g, b] = hsv2rgb([newChannels.h, newChannels.s, newChannels.v])
-	const [h, s, v] = rgb2hsv([newChannels.r, newChannels.g, newChannels.b])
-
-	if (isHSV) {
-		newChannels = {...newChannels, r, g, b}
-	}
-
-	if (isRGB) {
-		newChannels = {...newChannels, h, s, v}
-	}
-
-	const newValue = chroma(
-		newChannels.r * 255,
-		newChannels.g * 255,
-		newChannels.b * 255,
-		newChannels.a
-	).hex()
-
-	prevValue = newValue
-	prevChannels = newChannels
-
-	channels.trigger()
-
-	emit('update:modelValue', newValue)
+function onUpdateLocal(value: HSVA) {
+	local.value = value
+	emittedModel = hsva2hex(value)
+	emit('update:modelValue', emittedModel)
 }
 
 // EyeDropper
@@ -106,25 +53,25 @@ async function pickColor() {
 			<InputColorChannelPad
 				v-if="type === 'pad'"
 				:key="i"
-				:channels="channels"
+				:modelValue="local"
 				:axes="ch"
-				@updateChannels="updateChannels"
+				@update:modelValue="onUpdateLocal"
 			/>
 			<InputColorChannelSlider
 				v-if="type === 'slider' && !(!alpha && ch === 'a')"
 				:key="i"
-				:channels="channels"
+				:modelValue="local"
 				:axis="ch"
-				@updateChannels="updateChannels"
+				@update:modelValue="onUpdateLocal"
 			/>
 			<InputColorChannelValues
 				v-if="type === 'values'"
 				:key="i"
-				:modelValue="modelValue"
-				:channels="channels"
+				:colorCode="modelValue"
+				:hsva="local"
 				:alpha="alpha"
-				@update:modelValue="emit('update:modelValue', $event)"
-				@updateChannels="updateChannels"
+				@update:colorCode="emit('update:modelValue', $event)"
+				@update:hsva="onUpdateLocal"
 			/>
 		</template>
 		<InputColorPresets

@@ -263,7 +263,6 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	backdrop-filter blur(6px)
 	border 1px solid var(--tq-color-border)
 	border-radius var(--tq-input-border-radius)
-	opacity .1
 
 	use-input-align()
 	use-input-font()

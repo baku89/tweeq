@@ -3,8 +3,7 @@ import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import Color from 'colorjs.io'
 import {vec2} from 'linearly'
-import {clamp} from 'lodash-es'
-import {computed, ref, useTemplateRef} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
@@ -12,17 +11,16 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
-import {unsignedMod} from '../util'
 import InputColorPicker from './InputColorPicker.vue'
 import PadFragmentString from './pad.frag'
 import SliderFragmentString from './slider.frag'
 import {
-	ColorChannel,
+	type ColorChannel,
 	colorChannelToIndex,
-	hsv2rgb,
+	type HSVA,
 	type InputColorProps,
-	rgb2hsv,
 } from './types'
+import {hex2hsva, hsv2rgb, hsva2hex, tweakHSVAChannel} from './utils'
 import WheelFragmentString from './wheel.frag'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
@@ -61,38 +59,22 @@ const tweakMode = computed(() => {
 	return 'pad'
 })
 
-const tweakChannels = ref({h: 0, s: 0, v: 0, a: 0, r: 0, g: 0, b: 0})
+const local = ref<HSVA>({h: 0, s: 0, v: 0, a: 0})
+const decompose = hex2hsva
+
+// Update local value when model value changes externally
+watch(
+	() => props.modelValue,
+	modelValue => {
+		if (tweaking.value) return
+
+		local.value = decompose(modelValue)
+	}
+)
 
 const tweakWidth = 300
 
-function decomposeChannels() {
-	if (!chroma.valid(props.modelValue)) {
-		return {h: 0, s: 0, v: 0, r: 0, g: 0, b: 0, a: 1}
-	}
-
-	const rgba = chroma(props.modelValue).rgba()
-	const [r, g, b, a] = rgba
-	const hsv = rgb2hsv([r / 255, g / 255, b / 255])
-	let [h, s] = hsv
-	const v = hsv[2]
-
-	if (isNaN(h)) {
-		h = 0
-	}
-	if (isNaN(s)) {
-		s = 0
-	}
-
-	return {
-		h,
-		s,
-		v,
-		r: r / 255,
-		g: g / 255,
-		b: b / 255,
-		a,
-	}
-}
+const compose = hsva2hex
 
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
@@ -101,55 +83,21 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		open.value = !open.value
 	},
 	onDragStart() {
-		tweakChannels.value = decomposeChannels()
+		local.value = decompose(props.modelValue)
 	},
 	onDrag({delta}) {
 		const [dx, dy] = vec2.div(delta, [tweakWidth, -tweakWidth])
 
-		let {h, s, v, a, r, g, b} = tweakChannels.value
-
 		const mode = tweakMode.value
 
-		if (mode === 'pad' || mode === 'h' || mode === 's' || mode === 'v') {
-			if (mode === 'pad') {
-				s = clamp(s - dx, 0, 1)
-				v = clamp(v - dy, 0, 1)
-			} else if (mode === 'h') {
-				h = unsignedMod(h - dx, 1)
-			} else if (mode === 's') {
-				s = clamp(s - dx, 0, 1)
-			} else if (mode === 'v') {
-				v = clamp(v - dx, 0, 1)
-			}
-
-			;[r, g, b] = hsv2rgb([h, s, v])
+		if (mode === 'pad') {
+			local.value = tweakHSVAChannel(local.value, 's', -dx)
+			local.value = tweakHSVAChannel(local.value, 'v', -dy)
+		} else {
+			local.value = tweakHSVAChannel(local.value, mode, -dx)
 		}
 
-		if (mode === 'r' || mode === 'g' || mode === 'b') {
-			if (mode === 'r') {
-				r = clamp(r - dx, 0, 1)
-			} else if (mode === 'g') {
-				g = clamp(g - dx, 0, 1)
-			} else if (mode === 'b') {
-				b = clamp(b - dx, 0, 1)
-			}
-
-			const [_h, _s, _v] = rgb2hsv([r, g, b])
-
-			h = isNaN(_h) ? h : 0
-			s = _s
-			v = _v
-		}
-
-		if (mode === 'a') {
-			a = clamp(a + -dx, 0, 1)
-		}
-
-		tweakChannels.value = {r, g, b, h, s, v, a}
-
-		const newValue = chroma(r * 255, g * 255, b * 255, a).hex()
-
-		emit('update:modelValue', newValue)
+		emit('update:modelValue', compose(local.value))
 	},
 	onDragEnd() {
 		emit('confirm')
@@ -163,19 +111,20 @@ whenever(tweaking, () => {
 const overlayLabel = computed<[string, string, boolean?][]>(() => {
 	const mode = tweakMode.value
 	if (mode === 'h') {
-		const h = (tweakChannels.value.h * 360).toFixed(1)
+		const h = (local.value.h * 360).toFixed(1)
 		return [['Hue', h + '°']]
 	} else if (mode === 's' || mode === 'v' || mode === 'a') {
 		const label = mode === 's' ? 'Sat' : mode === 'v' ? 'Val' : 'α'
-		const value = (tweakChannels.value[mode] * 100).toFixed(1)
+		const value = (local.value[mode] * 100).toFixed(1)
 		return [[label, value + '%']]
 	} else if (mode === 'r' || mode === 'g' || mode === 'b') {
 		const label = mode.toUpperCase()
-		const value = (tweakChannels.value[mode] * 255).toFixed(0)
+		const rgb = hsv2rgb(local.value)
+		const value = (rgb[mode] * 255).toFixed(0)
 		return [[label, value, true]]
 	} else {
-		const s = (tweakChannels.value.s * 100).toFixed(1)
-		const v = (tweakChannels.value.v * 100).toFixed(1)
+		const s = (local.value.s * 100).toFixed(1)
+		const v = (local.value.v * 100).toFixed(1)
 		return [
 			['Sat', s + '%'],
 			['Val', v + '%'],
@@ -217,13 +166,13 @@ const tweakPreviewStyle = computed(() => {
 
 const padStyle = computed(() => {
 	return {
-		left: `${origin.value[0] - tweakChannels.value.s * tweakWidth}px`,
-		top: `${origin.value[1] - (1 - tweakChannels.value.v) * tweakWidth}px`,
+		left: `${origin.value[0] - local.value.s * tweakWidth}px`,
+		top: `${origin.value[1] - (1 - local.value.v) * tweakWidth}px`,
 	}
 })
 
 const padUniforms = computed(() => {
-	const {h, s, v, a} = tweakChannels.value
+	const {h, s, v, a} = local.value
 	return {
 		hsva: [h, s, v, a],
 		axes: [colorChannelToIndex('s'), colorChannelToIndex('v')],
@@ -231,7 +180,7 @@ const padUniforms = computed(() => {
 })
 
 const wheelUniforms = computed(() => {
-	const {h, s, v, a} = tweakChannels.value
+	const {h, s, v, a} = local.value
 	return {
 		hsva: [h, s, v, a],
 	}
@@ -240,14 +189,25 @@ const wheelUniforms = computed(() => {
 const wheelStyle = computed(() => {
 	return {
 		...tweakUIOffset.value,
-		rotate: `${tweakChannels.value.h * -360}deg`,
+		rotate: `${local.value.h * -360}deg`,
 	}
 })
 
 const sliderStyle = computed(() => {
 	if (tweakMode.value === 'pad') return {}
 
-	const value = tweakChannels.value[tweakMode.value]
+	let value: number
+
+	if (
+		tweakMode.value === 'r' ||
+		tweakMode.value === 'g' ||
+		tweakMode.value === 'b'
+	) {
+		const rgb = hsv2rgb(local.value)
+		value = rgb[tweakMode.value]
+	} else {
+		value = local.value[tweakMode.value]
+	}
 
 	return {
 		left: `${origin.value[0] - (value - 0.5) * tweakWidth}px`,
@@ -256,7 +216,7 @@ const sliderStyle = computed(() => {
 })
 
 const sliderUniforms = computed(() => {
-	const {h, s, v, a} = tweakChannels.value
+	const {h, s, v, a} = local.value
 	return {
 		hsva: [h, s, v, a],
 		axis: colorChannelToIndex(tweakMode.value as ColorChannel),
