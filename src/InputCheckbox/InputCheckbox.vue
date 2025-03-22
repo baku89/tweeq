@@ -78,6 +78,7 @@ const {tweakingValue} = useInputSwitch({
 	height var(--tq-input-height)
 	margin 0 !important
 	opacity 0
+	pointer-events none
 
 .mark
 	position absolute
