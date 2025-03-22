@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import {type MaybeElementRef} from '@vueuse/core'
-import {ref, ref as shallowRef, watch} from 'vue'
+import {ref, watch} from 'vue'
 
 import {InputEmits} from '../types'
 import {type InputStringProps} from './types'
@@ -8,8 +7,6 @@ import {type InputStringProps} from './types'
 const props = defineProps<InputStringProps>()
 
 const display = ref(props.modelValue)
-
-const $input: MaybeElementRef = shallowRef(null)
 
 watch(
 	() => props.modelValue,
@@ -21,8 +18,7 @@ watch(
 
 const emit = defineEmits<InputEmits<string>>()
 
-function onFocus(e: Event) {
-	;(e.target as HTMLInputElement).select()
+function onFocus() {
 	emit('focus')
 }
 
@@ -40,33 +36,34 @@ function onBlur() {
 </script>
 
 <template>
-	<div
+	<input
 		class="InputString"
-		:class="[theme]"
+		type="text"
+		:value="display"
+		:theme="theme"
 		:font="font"
 		:align="align"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
-		:disabled="!!disabled"
-	>
-		<input
-			ref="$input"
-			class="input"
-			type="text"
-			:value="display"
-			:disabled="disabled"
-			:invalid="invalid || undefined"
-			@focus="onFocus"
-			@blur="onBlur"
-			@input.stop="onInput"
-			@keydown.enter="emit('confirm')"
-		/>
-	</div>
+		:disabled="disabled || undefined"
+		:invalid="invalid || undefined"
+		@focus="onFocus"
+		@blur="onBlur"
+		@input.stop="onInput"
+		@keydown.enter="emit('confirm')"
+	/>
 </template>
 
 <style lang="stylus">
 @import '../common.styl'
 
 .InputString
-	input-style()
+	input-box-style()
+	input-element-style()
+
+	&:disabled
+		input-box-disabled()
+
+	&[invalid]
+		input-box-invalid()
 </style>

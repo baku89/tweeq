@@ -91,55 +91,58 @@ use-input-position()
 		border-top-left-radius 0
 		border-top-right-radius 0
 
-input-style()
-	position relative
-	width 100%
-	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
-	background var(--tq-color-input)
-	font-size var(--tq-rem)
-	hover-transition(background, box-shadow)
-	overflow hidden
-	container-type inline-size
-
-	&:hover
-		background var(--tq-color-input-hover)
-
-	&:has(:focus-visible), &:has(input.focus), &.tweaking
-		z-index 1
-		box-shadow 0 0 0 1px var(--tq-color-accent)
-
-	&:has(input[invalid])
-		--tq-color-text var(--tq-color-error)
-
-	input
-		padding-inline .5em
-		width 100%
-		height 100%
-
-		@container (max-width: 80px)
-			&
-				padding-inline 4px
-
-	&.minimal
+use-input-theme()
+	&[theme=minimal]
 		background transparent
 
 		&:hover
 			box-shadow 0 0 0 1px var(--tq-color-border)
 
-		&:focus-within, &.tweaking
+		&:focus-within
 			box-shadow 0 0 0 1px var(--tq-color-accent)
 
-	&:has([disabled])
-		background transparent
-		--tq-color-accent var(--tq-color-text-border)
-		--tq-color-accent-soft var(--tq-color-border-subtle)
-		--tq-color-text var(--tq-color-text-mute)
-		box-shadow inset 0 0 0 1px var(--tq-color-border)
+input-box-style()
+	position relative
+	width 100%
+	height var(--tq-input-height)
+	border-radius var(--tq-input-border-radius)
+	background var(--tq-color-input)
+	color var(--tq-color-text)
+	container-type inline-size
+	hover-transition(background, box-shadow)
+	overflow hidden
+
+	&:hover
+		background var(--tq-color-input-hover)
 
 	use-input-font()
 	use-input-align()
 	use-input-position()
+	use-input-theme()
+
+input-element-style()
+	position relative
+	width 100%
+	height var(--tq-input-height)
+	padding-inline .5em
+
+	@container (max-width: 80px)
+			&
+				padding-inline 4px
+
+input-box-focus()
+	z-index 1
+	box-shadow 0 0 0 1px var(--tq-color-accent)
+
+input-box-invalid()
+	--tq-color-text var(--tq-color-error)
+
+input-box-disabled()
+	background transparent
+	--tq-color-accent var(--tq-color-text-border)
+	--tq-color-accent-soft var(--tq-color-border-subtle)
+	--tq-color-text var(--tq-color-text-mute)
+	box-shadow inset 0 0 0 1px var(--tq-color-border)
 
 input-overlay()
 	position fixed

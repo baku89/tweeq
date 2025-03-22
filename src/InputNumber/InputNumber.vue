@@ -262,7 +262,7 @@ watch(
 	{flush: 'sync'}
 )
 
-const isInvalid = computed(() => {
+const invalid = computed(() => {
 	if (props.invalid) return true
 
 	return validateResult.value.log.length > 0
@@ -504,7 +504,7 @@ const barStyle = computed<StyleValue>(() => {
 	<div
 		ref="$root"
 		class="InputNumber"
-		:class="valueRangeStateClasses"
+		:class="{...valueRangeStateClasses, tweaking}"
 		:data-tweaking-mode="tweakMode"
 		:horizontal-position="horizontalPosition"
 		:vertical-position="verticalPosition"
@@ -522,7 +522,7 @@ const barStyle = computed<StyleValue>(() => {
 			inputmode="numeric"
 			pattern="d*"
 			:value="focusing ? display : prefix + display + suffix"
-			:invalid="isInvalid"
+			:invalid="invalid || undefined"
 			:disabled="disabled || undefined"
 			@input="onInput"
 			@focus="onFocus"
@@ -546,7 +546,7 @@ const barStyle = computed<StyleValue>(() => {
 @import '../common.styl'
 
 .InputNumber
-	input-style()
+	input-box-style()
 
 	$arrow-size = 4px
 
@@ -577,23 +577,27 @@ const barStyle = computed<StyleValue>(() => {
 	&.tweaking.below-range:before, &.tweaking.above-range:before
 		opacity 1
 
-	&:has(input[disabled])
-		.bar
-			background var(--tq-color-accent-soft)
+	&:has(input:disabled)
+		input-box-disabled()
 
-		.tip
-			pointer-events none
+		.bar
+			background var(--tq-color-input)
+
+
+	&:has(input[invalid])
+		input-box-invalid()
+
+	&:has(input:focus),
+	&:has(input.focus)
+		input-box-focus()
 
 .input
-	text-align center
-	position relative
+	input-element-style()
 	font-numeric()
-	pointer-events none
-	padding-left 0
-	padding-right 0
+	text-align center
 
-	&:focus
-		pointer-events auto
+	&:not(:focus)
+		pointer-events none
 
 .bar, .tip
 	position absolute
@@ -613,15 +617,13 @@ const barStyle = computed<StyleValue>(() => {
 	opacity .3
 
 	.InputNumber:hover &,
-	.tweaking &
+	.InputNumber.tweaking &
+		transform scaleX(3)
 		opacity 1
 
-
-	.below-range &, .above-range &
+	.below-range &,
+	.above-range &
 		pointer-events none
-
-	.tweaking &, &:hover
-		transform scaleX(3)
 
 	&:before
 		content ''
