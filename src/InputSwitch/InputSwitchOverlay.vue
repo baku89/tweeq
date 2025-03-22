@@ -41,6 +41,8 @@ defineProps<{
 	height var(--tq-input-height)
 	color var(--tq-color-border)
 	active-transition(color)
+	background var(--tq-color-background)
+	border-radius 50%
 
 	&.active
 		color var(--tq-color-accent)

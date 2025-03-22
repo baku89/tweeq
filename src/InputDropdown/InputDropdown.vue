@@ -185,7 +185,6 @@ onBeforeUnmount(() => {
 			@keydown.enter.prevent="open = !open"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
-			@keydown="onInputStringInput"
 		/>
 		<Icon class="chevron" icon="mdi:unfold-more-horizontal" />
 		<Popover

@@ -28,6 +28,7 @@ function onUpdate(value: vec2, index: number) {
 
 function recordValueOnEdit() {
 	valueOnEdit = props.modelValue
+	emit('focus')
 }
 </script>
 
@@ -39,6 +40,7 @@ function recordValueOnEdit() {
 			@update:modelValue="onUpdate"
 			@focus="recordValueOnEdit"
 			@confirm="recordValueOnEdit"
+			@blur="emit('blur')"
 		/>
 		<Icon
 			class="chain"

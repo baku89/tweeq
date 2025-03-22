@@ -1,5 +1,5 @@
 import {useEventListener} from '@vueuse/core'
-import {computed, Ref} from 'vue'
+import {computed, Ref, watch} from 'vue'
 
 import {InputCheckboxProps} from '../InputCheckbox/types'
 import {useDrag} from '../useDrag'
@@ -15,6 +15,7 @@ export function useInputSwitch({
 	emit: any
 }) {
 	const tweakThreshold = 3
+	let valueOnTweak: boolean | null = null
 
 	const {dragging, initial, xy} = useDrag(track, {
 		dragDelaySeconds: 0.2,
@@ -25,17 +26,7 @@ export function useInputSwitch({
 		},
 		onDragStart() {
 			emit('focus')
-
-			emit('update:modelValue', !props.modelValue)
-		},
-		onDrag({initial: [ix], xy: [x]}) {
-			const dx = x - ix
-
-			const newValue = dx > 0
-
-			if (newValue !== props.modelValue) {
-				emit('update:modelValue', newValue)
-			}
+			valueOnTweak = props.modelValue
 		},
 		onDragEnd() {
 			emit('confirm')
@@ -49,10 +40,15 @@ export function useInputSwitch({
 		const dx = xy.value[0] - initial.value[0]
 
 		if (Math.abs(dx) <= tweakThreshold) {
-			return !props.modelValue
+			return !valueOnTweak
 		} else {
 			return dx > 0
 		}
+	})
+
+	watch(tweakingValue, value => {
+		if (value === null) return
+		emit('update:modelValue', value)
 	})
 
 	useEventListener(input, 'keydown', (e: KeyboardEvent) => {
@@ -81,7 +77,9 @@ export function useInputSwitch({
 
 	useEventListener(input, 'focus', (e: FocusEvent) => {
 		// Only emit focus event when the focus is triggered by the keyboard
-		if (e.relatedTarget !== null) emit('focus')
+		if (e.relatedTarget !== null) {
+			emit('focus')
+		}
 	})
 
 	useEventListener(input, 'blur', () => emit('blur'))

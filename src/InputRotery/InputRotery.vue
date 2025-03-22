@@ -262,6 +262,8 @@ const multi = useMultiSelectStore().register({
 		:class="{tweaking, subfocus: multi.subfocus}"
 		:tweak-mode="tweakMode"
 		v-bind="$attrs"
+		@focus="emit('focus')"
+		@blur="emit('blur')"
 	>
 		<SvgIcon mode="block" class="rotery">
 			<circle class="circle" cx="16" cy="16" r="16" />
