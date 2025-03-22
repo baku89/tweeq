@@ -171,6 +171,7 @@ function colorCodeValidator(value: string) {
 
 .color-space
 	width 5em
+	flex-shrink 0
 
 .channel
 	flex-grow 1

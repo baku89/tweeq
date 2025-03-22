@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import {ref, useTemplateRef, watch} from 'vue'
 
 import {InputEmits} from '../types'
 import {type InputStringProps} from './types'
@@ -7,6 +7,8 @@ import {type InputStringProps} from './types'
 const props = defineProps<InputStringProps>()
 
 const display = ref(props.modelValue)
+
+const $input = useTemplateRef('$input')
 
 watch(
 	() => props.modelValue,
@@ -16,10 +18,12 @@ watch(
 	{immediate: true}
 )
 
-const emit = defineEmits<InputEmits<string>>()
+const emit = defineEmits<
+	Omit<InputEmits<string>, 'focus'> & {focus: [e: FocusEvent]}
+>()
 
-function onFocus() {
-	emit('focus')
+function onFocus(e: FocusEvent) {
+	emit('focus', e)
 }
 
 function onInput(e: Event) {
@@ -33,10 +37,17 @@ function onBlur() {
 	emit('confirm')
 	emit('blur')
 }
+
+defineExpose({
+	select: () => {
+		$input.value?.select()
+	},
+})
 </script>
 
 <template>
 	<input
+		ref="$input"
 		class="InputString"
 		type="text"
 		:value="display"

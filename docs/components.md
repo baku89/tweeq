@@ -126,13 +126,20 @@
 <DemoComponent
 	name="InputDropdown"
 	initialValue="apple"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, listeners}"
+	:scheme="{
+		disabled: {type: 'boolean'},
+		invalid: {type: 'boolean'},
+	}"
+	:options="{
+		disabled: false,
+		invalid: false,
+	}"
+	v-slot="{modelValue, options, listeners}"
 >
 	<InputDropdown
 		:modelValue="modelValue"
 		:options="['apple', 'banana', 'cherry']"
+		v-bind="options"
 		@update:modelValue="listeners.update"
 		@focus="listeners.focus"
 		@blur="listeners.blur"

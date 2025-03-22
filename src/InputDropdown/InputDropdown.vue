@@ -2,7 +2,14 @@
 import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
-import {computed, type Ref, ref, useTemplateRef, watch} from 'vue'
+import {
+	computed,
+	onBeforeUnmount,
+	type Ref,
+	ref,
+	useTemplateRef,
+	watch,
+} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputString} from '../InputString'
@@ -27,6 +34,7 @@ defineOptions({
 
 const open = ref(false)
 const $root = useTemplateRef('$root')
+const $input = useTemplateRef('$input')
 
 const rootBound = useElementBounding($root)
 
@@ -42,7 +50,7 @@ watch(
 	}
 )
 
-const startValue = ref(props.modelValue) as Ref<T>
+const valueAtStart = ref(props.modelValue) as Ref<T>
 
 const filteredOptions = computed(() => {
 	if (display.value === '' || !displayEdited.value) return props.options
@@ -62,7 +70,7 @@ const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 	if (displayEdited.value) {
 		return [rootBound.left.value - 2, rootBound.bottom.value]
 	} else {
-		let index = props.options.indexOf(startValue.value)
+		let index = props.options.indexOf(valueAtStart.value)
 
 		if (index === -1) index = 0
 
@@ -82,18 +90,26 @@ watch(filteredOptions, filteredOptions => {
 let timeAtOpen: number | null = null
 
 whenever(open, () => {
-	startValue.value = props.modelValue
+	valueAtStart.value = props.modelValue
 	timeAtOpen = new Date().getTime()
+	window.addEventListener('pointerup', onPointerupWhileOpen)
 })
 
-function onSelect(option: T, e: PointerEvent) {
+function onSelect(option: T) {
+	emit('update:modelValue', option)
+}
+
+function onPointerupWhileOpen() {
 	const elapsedFromOpen = new Date().getTime() - (timeAtOpen ?? 0)
 
-	// Drag and release to close the dropdown
-	if (e.type === 'pointerup' && e.isPrimary && elapsedFromOpen > 500) {
+	if (elapsedFromOpen > 500) {
 		open.value = false
+		emit('confirm')
+		emit('blur')
+		window.removeEventListener('pointerup', onPointerupWhileOpen)
+	} else {
+		$input.value?.select()
 	}
-	emit('update:modelValue', option)
 }
 
 function onPressArrow(isUp: boolean) {
@@ -123,9 +139,23 @@ function onInputStringUpdate(value: string) {
 }
 
 function onInputStringBlur() {
-	open.value = false
-	emit('blur')
+	if (!open.value) {
+		emit('blur')
+	}
 }
+
+// When the popover is closed by pressing Esc, revert to the value at the start
+function onPopoverUpdateOpen(_open: boolean) {
+	if (!_open) {
+		open.value = false
+		window.removeEventListener('pointerup', onPointerupWhileOpen)
+		emit('update:modelValue', valueAtStart.value)
+	}
+}
+
+onBeforeUnmount(() => {
+	window.removeEventListener('pointerup', onPointerupWhileOpen)
+})
 </script>
 
 <template>
@@ -138,6 +168,7 @@ function onInputStringBlur() {
 		:disabled="disabled"
 	>
 		<InputString
+			ref="$input"
 			:modelValue="display"
 			class="input"
 			:theme="theme"
@@ -145,6 +176,8 @@ function onInputStringBlur() {
 			:align="align"
 			:horizontal-position="horizontalPosition"
 			:vertical-position="verticalPosition"
+			:disabled="disabled"
+			:invalid="invalid"
 			@update:modelValue="onInputStringUpdate"
 			@pointerdown="onInputPointerdown"
 			@focus="onInputStringFocus"
@@ -152,13 +185,15 @@ function onInputStringBlur() {
 			@keydown.enter.prevent="open = !open"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
+			@keydown="onInputStringInput"
 		/>
 		<Icon class="chevron" icon="mdi:unfold-more-horizontal" />
 		<Popover
-			v-model:open="open"
+			:open="open"
 			:reference="$root"
 			:placement="popoverPlacement"
 			:lightDismiss="false"
+			@update:open="onPopoverUpdateOpen"
 		>
 			<ul
 				class="select"
@@ -172,10 +207,9 @@ function onInputStringBlur() {
 					class="option"
 					:class="{
 						active: item === modelValue,
-						startValue: item === startValue,
+						current: item === valueAtStart,
 					}"
-					@pointerup="onSelect(item, $event)"
-					@pointerenter="onSelect(item, $event)"
+					@pointerenter="onSelect(item)"
 				>
 					<slot name="option" :item="item">
 						<Icon
@@ -195,6 +229,7 @@ function onInputStringBlur() {
 @import '../common.styl'
 
 $right-arrow-width = 1em
+$chevron-width = calc(.7 * var(--tq-input-height))
 
 .InputDropdown
 	position relative
@@ -204,13 +239,14 @@ $right-arrow-width = 1em
 
 .input
 	cursor default
+	padding-right $chevron-width
 
 .chevron
 	position absolute
 	top 0
 	z-index 10
 	right 2px
-	width calc(.8 * var(--tq-input-height))
+	width $chevron-width
 	height 100%
 	pointer-events none
 	color var(--tq-color-text-subtle)
@@ -228,13 +264,13 @@ $right-arrow-width = 1em
 	backdrop-filter blur(6px)
 	border 1px solid var(--tq-color-border)
 	border-radius var(--tq-input-border-radius)
-	overflow hidden
+	opacity .1
 
 	use-input-align()
 	use-input-font()
 
 .option
-	padding 0 12px
+	padding 0 $chevron-width 0 .5em
 	height var(--tq-input-height)
 	line-height var(--tq-input-height)
 	display flex
@@ -245,7 +281,7 @@ $right-arrow-width = 1em
 	color var(--tq-color-text)
 	border-radius var(--tq-input-border-radius)
 
-	&.startValue
+	&.current
 		background var(--tq-color-accent-soft)
 
 	&.active

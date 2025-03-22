@@ -108,7 +108,6 @@ input-box-style()
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
 	color var(--tq-color-text)
-	container-type inline-size
 	hover-transition(background, box-shadow)
 	overflow hidden
 
@@ -125,10 +124,6 @@ input-element-style()
 	width 100%
 	height var(--tq-input-height)
 	padding-inline .5em
-
-	@container (max-width: 80px)
-			&
-				padding-inline 4px
 
 input-box-focus()
 	z-index 1
