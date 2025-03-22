@@ -1,8 +1,9 @@
+import {Rect} from '@baku89/pave'
 import {
 	onKeyStroke,
 	reactiveComputed,
 	useEventListener,
-	useKeyModifier,
+	useMagicKeys,
 } from '@vueuse/core'
 import {defineStore} from 'pinia'
 import {
@@ -36,7 +37,7 @@ interface MultiSelectInput extends MultiSelectSource {
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
-	const meta = useKeyModifier('Meta')
+	const {meta, shift} = useMagicKeys()
 
 	let popupEl: HTMLElement | null
 
@@ -90,23 +91,52 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		inputs.push(store)
 
 		const readyToBeSelected = computed(() => {
-			return meta.value && !selectedInputs.value.some(input => input.id === id)
+			return (
+				(meta.value || shift.value) &&
+				!selectedInputs.value.some(input => input.id === id)
+			)
 		})
 
-		watch(source.focusing, () => {
-			if (!source.focusing.value && meta.value) {
-				store.subfocus = true
-			}
-
-			if (source.focusing.value) {
-				if (meta.value) {
+		watch(
+			source.focusing,
+			focus => {
+				if (meta.value || shift.value) {
 					store.subfocus = true
-					focusedElement.value = source.el.value
-				} else {
-					defocusAll()
 				}
-			}
-		})
+
+				if (focus) {
+					// If shift is pressed, select the input inbetween
+					// the focused input and the newly focused input
+					if (shift.value && focusedElement.value && source.el.value) {
+						const lastRect = Rect.fromDOMRect(
+							focusedElement.value.getBoundingClientRect()
+						)
+						const newRect = Rect.fromDOMRect(
+							source.el.value.getBoundingClientRect()
+						)
+
+						const selectionRect = Rect.unite(lastRect, newRect)
+
+						inputs.forEach(input => {
+							if (!input.el) return
+
+							const rect = Rect.fromDOMRect(input.el.getBoundingClientRect())
+
+							if (Rect.intersects(selectionRect, rect)) {
+								input.subfocus = true
+							}
+						})
+					}
+
+					if (!meta.value && !shift.value) {
+						defocusAll()
+					}
+
+					focusedElement.value = source.el.value
+				}
+			},
+			{flush: 'sync'}
+		)
 
 		// Automatically remove the input when unmounted
 		onBeforeUnmount(() => {
