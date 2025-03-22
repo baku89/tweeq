@@ -15,11 +15,12 @@ import {
 	watch,
 } from 'vue'
 
+import {HSVA} from '../InputColor/types'
 import {nodeContains} from '../util'
 
 export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
 
-type MultiSelectValue = number | string | boolean
+type MultiSelectValue = number | string | boolean | HSVA
 
 export interface MultiSelectSource {
 	type: MultiSelectType

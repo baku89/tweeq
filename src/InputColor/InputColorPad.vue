@@ -20,7 +20,14 @@ import {
 	type HSVA,
 	type InputColorProps,
 } from './types'
-import {css2hsva, hsv2rgb, hsva2hex, tweakHSVAChannel} from './utils'
+import {
+	css2hsva,
+	getHSVAChannel,
+	hsv2rgb,
+	hsva2hex,
+	setHSVAChannel,
+	tweakHSVAChannel,
+} from './utils'
 import WheelFragmentString from './wheel.frag'
 
 const props = withDefaults(defineProps<InputColorProps>(), {
@@ -70,17 +77,9 @@ const temporarilyHidePopup = computed(() => {
 	return !floatingFocused.value && (shift.value || meta.value)
 })
 
-// Update local value when model value changes externally
-watch(
-	() => props.modelValue,
-	modelValue => {
-		if (tweaking.value) return
-
-		local.value = decompose(modelValue)
-	}
-)
-
 const tweakWidth = 300
+
+let localOnTweak: HSVA | null = null
 
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
@@ -89,7 +88,8 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		open.value = !open.value
 	},
 	onDragStart() {
-		local.value = decompose(props.modelValue)
+		local.value = localOnTweak = decompose(props.modelValue)
+		multi.capture()
 	},
 	onDrag({delta}) {
 		const [dx, dy] = vec2.div(delta, [tweakWidth, -tweakWidth])
@@ -99,16 +99,51 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		if (mode === 'pad') {
 			local.value = tweakHSVAChannel(local.value, 's', -dx)
 			local.value = tweakHSVAChannel(local.value, 'v', -dy)
+
+			const sd = local.value.s - localOnTweak!.s
+			const vd = local.value.v - localOnTweak!.v
+
+			multi.update(hsva => {
+				hsva = tweakHSVAChannel(hsva, 's', sd)
+				hsva = tweakHSVAChannel(hsva, 'v', vd)
+				return hsva
+			})
 		} else {
 			local.value = tweakHSVAChannel(local.value, mode, -dx)
+
+			const current = getHSVAChannel(local.value, mode)
+			const initial = getHSVAChannel(localOnTweak!, mode)
+
+			if (mode === 'h' || initial === 0) {
+				const delta = current - initial
+				multi.update(hsva => tweakHSVAChannel(hsva, 'h', delta))
+			} else {
+				const scale = current / initial
+				multi.update(hsva => {
+					const v = getHSVAChannel(hsva, mode)
+					return setHSVAChannel(hsva, mode, v * scale)
+				})
+			}
 		}
 
 		emit('update:modelValue', compose(local.value))
 	},
 	onDragEnd() {
 		emit('confirm')
+		multi.confirm()
 	},
 })
+
+// Update local value when model value changes externally
+watch(
+	() => props.modelValue,
+	modelValue => {
+		if (tweaking.value) return
+
+		local.value = decompose(modelValue)
+	},
+	{immediate: true, flush: 'sync'}
+)
 
 whenever(tweaking, () => {
 	open.value = false
@@ -237,9 +272,13 @@ const multi = useMultiSelectStore().register({
 	type: 'color',
 	el: $button,
 	focusing: useFocus($button).focused,
-	getValue: () => props.modelValue,
-	setValue(value: string) {
-		emit('update:modelValue', value)
+	getValue: () => {
+		console.log('getValue', local.value)
+		return local.value
+	},
+	setValue(value: HSVA) {
+		local.value = value
+		emit('update:modelValue', compose(value))
 	},
 	confirm() {
 		emit('confirm')
