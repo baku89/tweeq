@@ -47,7 +47,8 @@
 		"monaco-themes": "^0.4.4",
 		"p-queue": "^8.0.1",
 		"pinia": "^3.0.1",
-		"regl": "^2.1.1"
+		"regl": "^2.1.1",
+		"validate-color": "^2.2.4"
 	},
 	"devDependencies": {
 		"@baku89/pave": "^0.6.2",

@@ -1,4 +1,5 @@
 import {scalar} from 'linearly'
+import validateColor from 'validate-color'
 
 export type ValidateResult<T> = {value: T | undefined; log: string[]}
 
@@ -29,6 +30,16 @@ export function quantize(step: number): Validator<number> {
 		return {value, log: []}
 	}
 }
+
+export const colorCode: Validator<string> = (value: string) => {
+	if (validateColor(value)) {
+		return {value, log: []}
+	}
+
+	return {value: undefined, log: ['Invalid color code']}
+}
+
+export const identity: Validator<any> = value => ({value, log: []})
 
 export function compose<T>(
 	...validators: (Validator<T> | null | undefined)[]

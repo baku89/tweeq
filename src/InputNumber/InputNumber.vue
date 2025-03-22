@@ -258,6 +258,7 @@ watch(
 		if (result.value === undefined) return
 
 		validLocal.value = result.value
+		emit('update:modelValue', validLocal.value)
 	},
 	{flush: 'sync'}
 )
@@ -268,14 +269,6 @@ const invalid = computed(() => {
 
 	return validateResult.value.log.length > 0
 })
-
-watch(
-	validLocal,
-	() => {
-		emit('update:modelValue', validLocal.value)
-	},
-	{flush: 'sync'}
-)
 
 function confirm() {
 	local.value = validLocal.value

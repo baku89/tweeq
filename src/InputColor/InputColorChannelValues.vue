@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import chroma from 'chroma-js'
 import {computed, ref} from 'vue'
 
 import {InputDropdown} from '../InputDropdown'
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
+import * as V from '../validator'
 import {type ColorChannel, type ColorSpace, HSVA} from './types'
 import {hsv2rgb, setHSVAChannel} from './utils'
 
@@ -30,21 +30,6 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 	const newColor = setHSVAChannel(props.hsva, channel, value)
 
 	emit('update:hsva', newColor)
-}
-
-function colorCodeValidator(value: string) {
-	if (value.startsWith('0x')) {
-		value = value.slice(2)
-	}
-
-	if (chroma.valid(value)) {
-		return value
-	} else if (chroma.valid(`#${value}`)) {
-		return `#${value}`
-	} else if (/^[0-9a-f]$/.test(value)) {
-		return `#${value.repeat(6)}`
-	}
-	return undefined
 }
 </script>
 
@@ -145,7 +130,7 @@ function colorCodeValidator(value: string) {
 			font="monospace"
 			class="channel"
 			:modelValue="colorCode"
-			:validator="colorCodeValidator"
+			:validator="V.colorCode"
 			@update:modelValue="emit('update:colorCode', $event)"
 		/>
 	</InputGroup>

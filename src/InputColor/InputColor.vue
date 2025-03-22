@@ -6,9 +6,9 @@ import {InputGroup} from '../InputGroup'
 import {InputString} from '../InputString'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
+import * as V from '../validator'
 import InputColorPad from './InputColorPad.vue'
 import type {InputColorProps} from './types'
-
 const props = defineProps<InputColorProps>()
 const emit = defineEmits<InputEmits<string>>()
 
@@ -35,6 +35,7 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 			v-if="showColorCode"
 			font="monospace"
 			:modelValue="modelValue"
+			:validator="V.colorCode"
 			horizontalPosition="right"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"

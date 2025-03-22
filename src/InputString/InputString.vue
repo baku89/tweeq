@@ -1,26 +1,50 @@
 <script lang="ts" setup>
-import {ref, useTemplateRef, watch} from 'vue'
+import {useFocus} from '@vueuse/core'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {InputEmits} from '../types'
+import * as V from '../validator'
 import {type InputStringProps} from './types'
 
-const props = defineProps<InputStringProps>()
-
-const display = ref(props.modelValue)
-
-const $input = useTemplateRef('$input')
-
-watch(
-	() => props.modelValue,
-	value => {
-		display.value = value
-	},
-	{immediate: true}
-)
+const props = withDefaults(defineProps<InputStringProps>(), {
+	validator: () => V.identity,
+})
 
 const emit = defineEmits<
 	Omit<InputEmits<string>, 'focus'> & {focus: [e: FocusEvent]}
 >()
+
+const local = ref(props.modelValue)
+const validateResult = computed(() => props.validator(local.value))
+const validLocal = ref(props.modelValue)
+
+watch(
+	validateResult,
+	result => {
+		if (result.value === undefined) return
+
+		validLocal.value = result.value
+		emit('update:modelValue', validLocal.value)
+	},
+	{flush: 'sync'}
+)
+
+const invalid = computed(
+	() => props.invalid || validateResult.value.log.length > 0
+)
+
+const $input = useTemplateRef('$input')
+const {focused} = useFocus($input)
+
+watch(
+	() => props.modelValue,
+	value => {
+		if (focused.value) return
+
+		local.value = value
+	},
+	{immediate: true, flush: 'sync'}
+)
 
 function onFocus(e: FocusEvent) {
 	emit('focus', e)
@@ -28,13 +52,17 @@ function onFocus(e: FocusEvent) {
 
 function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
-	display.value = newValue
+	local.value = newValue
+}
 
-	emit('update:modelValue', newValue)
+function confirm() {
+	local.value = validLocal.value
+
+	emit('confirm')
 }
 
 function onBlur() {
-	emit('confirm')
+	confirm()
 	emit('blur')
 }
 
@@ -50,7 +78,7 @@ defineExpose({
 		ref="$input"
 		class="InputString"
 		type="text"
-		:value="display"
+		:value="local"
 		:theme="theme"
 		:font="font"
 		:align="align"
@@ -61,7 +89,7 @@ defineExpose({
 		@focus="onFocus"
 		@blur="onBlur"
 		@input.stop="onInput"
-		@keydown.enter="emit('confirm')"
+		@keydown.enter="confirm"
 	/>
 </template>
 
