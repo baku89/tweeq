@@ -6,10 +6,10 @@ export type Validator<T> = (value: T) => ValidateResult<T>
 
 export function clamp(min: number, max: number): Validator<number> {
 	return value => {
-		if (value <= min) {
+		if (value < min) {
 			return {value: Math.max(value, min), log: [`should be >= ${min}`]}
 		}
-		if (value >= max) {
+		if (value > max) {
 			return {value: Math.min(value, max), log: [`should be <= ${max}`]}
 		}
 		return {value, log: []}
