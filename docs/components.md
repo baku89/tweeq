@@ -201,6 +201,27 @@
 	/>
 </DemoComponent>
 
+### InputPosition
+
+<DemoComponent
+	name="InputPosition"
+	:initialValue="[0, 0]"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputPosition
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+		:min="0"
+		:max="100"
+	/>
+</DemoComponent>
+
 ### InputRadio
 
 <DemoComponent

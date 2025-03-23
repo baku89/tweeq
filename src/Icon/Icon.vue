@@ -51,7 +51,7 @@ const icon = computed(() => {
 
 .TqIcon.char
 	line-height 100%
-	font-size 1.4em
+	font-size 1.2em
 	text-align center
 	display flex
 	align-items center
