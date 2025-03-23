@@ -10,6 +10,7 @@ import {Popover} from '../Popover'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
+import {useCopyPaste} from '../use/useCopyPaste'
 import {useDrag} from '../useDrag'
 import InputColorPicker from './InputColorPicker.vue'
 import PadFragmentString from './pad.frag'
@@ -294,35 +295,26 @@ whenever(
 //------------------------------------------------------------------------------
 // Copy and paste
 
-const {Meta_C, Meta_V} = useMagicKeys()
+useCopyPaste({
+	target: $button,
+	onCopy() {
+		navigator.clipboard.writeText(props.modelValue)
+	},
+	onPaste: async () => {
+		const text = await navigator.clipboard.readText()
+		if (!text) return
+		emit('update:modelValue', text)
 
-whenever(Meta_C, () => {
-	if (focusing.value) copy()
+		const hsva = decompose(text)
+
+		multi.update(() => hsva)
+		multi.confirm()
+	},
 })
-
-whenever(Meta_V, () => {
-	if (focusing.value) paste()
-})
-
-function copy() {
-	navigator.clipboard.writeText(props.modelValue)
-}
-
-async function paste() {
-	const text = await navigator.clipboard.readText()
-	if (!text) return
-	emit('update:modelValue', text)
-
-	const hsva = decompose(text)
-
-	multi.update(() => hsva)
-	multi.confirm()
-}
 </script>
 
 <template>
 	<button
-		v-bind="$attrs"
 		ref="$button"
 		class="InputColorPad"
 		:class="{focus: (open && temporarilyHidePopup) || multi.subfocus}"
