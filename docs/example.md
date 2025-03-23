@@ -58,3 +58,21 @@
 		switch_10: {type: 'boolean', ui: 'switch', icon: 'mdi-toggle-switch'},
 	}"
 />
+
+## List of Text Inputs
+
+<ExampleContainer
+	:initialValue="{
+		text1: 'Hello',
+		text2: 'World',
+		text3: '!',
+		text4: 'This is a long text input',
+		text5: 'Another long text input',
+	}"
+	:scheme="{
+		text1: {type: 'string'},
+		text2: {type: 'string'},
+		text3: {type: 'string'},
+		text4: {type: 'string'},
+	}"
+/>
