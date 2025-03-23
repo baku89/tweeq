@@ -4,8 +4,8 @@ import {ref} from 'vue'
 import ExampleContainer from './ExampleContainer.vue'
 
 const model = ref({
-	offset: [0.25, 0.25],
-	blur: 1,
+	offset: [2.5, 2.5],
+	blur: 10,
 	spread: 0,
 	color: '#00000030',
 })
@@ -14,19 +14,19 @@ const scheme = {
 	offset: {
 		type: 'vec2',
 		ui: 'position',
-		min: -10,
-		max: 10,
+		min: -100,
+		max: 100,
 	},
 	blur: {
 		type: 'number',
 		min: 0,
-		max: 10,
+		max: 100,
 		precision: 2,
 	},
 	spread: {
 		type: 'number',
-		min: -5,
-		max: 5,
+		min: -100,
+		max: 100,
 		precision: 2,
 	},
 	color: {
@@ -57,7 +57,7 @@ const scheme = {
 				<div
 					class="round-rect"
 					:style="{
-						boxShadow: `${x}em ${y}em ${blur}em ${spread}em ${color}`,
+						boxShadow: `${x / 10}em ${y / 10}em ${blur / 10}em ${spread / 10}em ${color}`,
 					}"
 				/>
 			</div>

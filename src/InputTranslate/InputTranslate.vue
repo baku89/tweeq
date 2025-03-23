@@ -26,9 +26,9 @@ const speed = computed(() => {
 })
 
 const gridScale = computed(() => {
-	if (shift.value) return 0.2
-	if (alt.value) return 2
-	return 1
+	if (shift.value) return 0.5
+	if (alt.value) return 4
+	return 2
 })
 
 const gridScaleAnimated = ref(1)
@@ -55,7 +55,7 @@ const {dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	dragDelaySeconds: 0,
 	onDrag({delta}) {
-		const modelDelta = vec2.scale(vec2.neg(delta), speed.value) as vec2.Mutable
+		const modelDelta = vec2.scale(delta, speed.value) as vec2.Mutable
 
 		if (x.value) {
 			modelDelta[1] = 0
@@ -80,7 +80,7 @@ const overlayStyles = computed(() => {
 	const center: vec2 = [150, 150]
 	const scale = gridScaleAnimated.value
 
-	const size = 50 * scale
+	const size = 10 * scale
 	const offset = vec2.add(center, vec2.scale(props.modelValue, -scale))
 
 	return {
@@ -95,18 +95,18 @@ const zeroStyle = computed(() => {
 
 	const start = vec2.add(
 		center,
-		vec2.scale(vec2.add(props.modelValue, max.value ?? [9999, 9999]), -scale)
+		vec2.scale(vec2.sub(props.modelValue, min.value ?? [-9999, -9999]), -scale)
 	)
 	const end = vec2.add(
 		center,
-		vec2.scale(vec2.add(props.modelValue, min.value ?? [-9999, -9999]), -scale)
+		vec2.scale(vec2.sub(props.modelValue, max.value ?? [9999, 9999]), -scale)
 	)
 
 	const size = vec2.sub(end, start)
 
 	return {
-		left: `${end[0]}px`,
-		top: `${end[1]}px`,
+		left: `${start[0]}px`,
+		top: `${start[1]}px`,
 		width: `${size[0]}px`,
 		height: `${size[1]}px`,
 	}
@@ -153,6 +153,9 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	align-items center
 	justify-content center
 
+	&:focus-visible
+		button-focus-style()
+
 	&:hover
 		background var(--tq-color-accent-hover)
 
@@ -165,13 +168,13 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	z-index 1
 
 .overlay
+	pointer-events none
 	transition-duration var(--tq-hover-transition-duration)
 
 .overlay-grid
 	position absolute
-	pointer-events none
 	inset calc(-150px + var(--tq-input-height) / 2)
-	pointer-events none
+
 	background-image radial-gradient(circle at 1px 1px, var(--tq-color-accent) 1px, transparent 1px)
 	background-repeat repeat
 	mask radial-gradient(closest-side, black 50%, transparent 100%)
@@ -220,6 +223,4 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	position absolute
 	border 1px solid var(--tq-color-accent)
 	outline 1px solid var(--tq-color-accent)
-	width 10px
-	height 10px
 </style>

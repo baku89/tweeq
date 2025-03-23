@@ -217,7 +217,7 @@
 		@focus="listeners.focus"
 		@blur="listeners.blur"
 		@confirm="listeners.confirm"
-		:min="0"
+		:min="-100"
 		:max="100"
 	/>
 </DemoComponent>
