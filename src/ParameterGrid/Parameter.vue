@@ -12,7 +12,7 @@ defineSlots<{
 	<li class="Parameter">
 		<div class="label">
 			<slot name="label">
-				<Icon v-if="icon" :icon="icon" />
+				<Icon v-if="icon" class="icon" :icon="icon" />
 				<template v-if="label">{{ label }}</template>
 			</slot>
 		</div>
@@ -40,6 +40,9 @@ defineSlots<{
 .label
 	height var(--tq-input-height)
 
+.icon
+	width calc(var(--tq-input-height) - 4px)
+	height calc(var(--tq-input-height) - 4px)
 .input
 	display grid
 	gap 6px
