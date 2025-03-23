@@ -268,14 +268,13 @@ const sliderUniforms = computed(() => {
 //------------------------------------------------------------------------------
 // Multi Select
 
+const focusing = useFocus($button).focused
+
 const multi = useMultiSelectStore().register({
 	type: 'color',
 	el: $button,
-	focusing: useFocus($button).focused,
-	getValue: () => {
-		console.log('getValue', local.value)
-		return local.value
-	},
+	focusing,
+	getValue: () => local.value,
 	setValue(value: HSVA) {
 		local.value = value
 		emit('update:modelValue', compose(value))
@@ -291,6 +290,34 @@ whenever(
 		open.value = false
 	}
 )
+
+//------------------------------------------------------------------------------
+// Copy and paste
+
+const {Meta_C, Meta_V} = useMagicKeys()
+
+whenever(Meta_C, () => {
+	if (focusing.value) copy()
+})
+
+whenever(Meta_V, () => {
+	if (focusing.value) paste()
+})
+
+function copy() {
+	navigator.clipboard.writeText(props.modelValue)
+}
+
+async function paste() {
+	const text = await navigator.clipboard.readText()
+	if (!text) return
+	emit('update:modelValue', text)
+
+	const hsva = decompose(text)
+
+	multi.update(() => hsva)
+	multi.confirm()
+}
 </script>
 
 <template>
