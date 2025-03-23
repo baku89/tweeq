@@ -9,6 +9,7 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {SvgIcon} from '../SvgIcon'
 import type {InputEmits} from '../types'
+import {useCopyPaste} from '../use/useCopyPaste'
 import {useCursorStyle} from '../use/useCursorStyle'
 import {useElementCenter} from '../use/useElementCenter'
 import {useDrag} from '../useDrag'
@@ -251,6 +252,29 @@ const multi = useMultiSelectStore().register({
 	},
 	confirm() {
 		emit('confirm')
+	},
+})
+
+//------------------------------------------------------------------------------
+// Copy and paste
+
+useCopyPaste({
+	target: $root,
+	onCopy() {
+		navigator.clipboard.writeText(props.modelValue.toString())
+	},
+	onPaste: async () => {
+		const text = await navigator.clipboard.readText()
+		if (!text) return
+
+		const value = parseFloat(text)
+
+		if (isNaN(value)) return
+
+		emit('update:modelValue', value)
+
+		multi.update(() => value)
+		multi.confirm()
 	},
 })
 </script>
