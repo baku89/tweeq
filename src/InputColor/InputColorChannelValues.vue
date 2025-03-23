@@ -49,7 +49,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				horizontal-position="left"
+				inline-position="start"
 				@update:modelValue="onUpdateChannel('r', $event / 255)"
 			/>
 			<InputNumber
@@ -58,7 +58,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				horizontal-position="middle"
+				inline-position="middle"
 				@update:modelValue="onUpdateChannel('g', $event / 255)"
 			/>
 			<InputNumber
@@ -67,7 +67,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:max="255"
 				:precision="0"
 				:bar="false"
-				:horizontal-position="props.alpha ? 'middle' : 'right'"
+				:inline-position="props.alpha ? 'middle' : 'end'"
 				@update:modelValue="onUpdateChannel('b', $event / 255)"
 			/>
 			<InputNumber
@@ -78,7 +78,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontal-position="right"
+				inline-position="end"
 				@update:modelValue="onUpdateChannel('a', $event / 100)"
 			/>
 		</InputGroup>
@@ -90,7 +90,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:precision="0"
 				:bar="false"
 				suffix="°"
-				horizontal-position="left"
+				inline-position="start"
 				@update:modelValue="onUpdateChannel('h', $event / 360)"
 			/>
 			<InputNumber
@@ -100,7 +100,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontal-position="middle"
+				inline-position="middle"
 				@update:modelValue="onUpdateChannel('s', $event / 100)"
 			/>
 			<InputNumber
@@ -110,7 +110,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				:horizontal-position="props.alpha ? 'middle' : 'right'"
+				:inline-position="props.alpha ? 'middle' : 'end'"
 				@update:modelValue="onUpdateChannel('v', $event / 100)"
 			/>
 			<InputNumber
@@ -121,7 +121,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 				:precision="0"
 				:bar="false"
 				suffix="%"
-				horizontal-position="right"
+				inline-position="end"
 				@update:modelValue="onUpdateChannel('a', $event / 100)"
 			/>
 		</InputGroup>

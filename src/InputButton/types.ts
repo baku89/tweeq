@@ -1,10 +1,10 @@
-import type {InputHorizontalPosition, InputVerticalPosition} from '../types'
+import type {InputPosition} from '../types'
 
 export interface InputButtonProps {
 	invalid?: boolean
 	disabled?: boolean
-	horizontalPosition?: InputHorizontalPosition
-	verticalPosition?: InputVerticalPosition
+	inlinePosition?: InputPosition
+	blockPosition?: InputPosition
 	icon?: string
 	label?: string
 	tooltip?: string

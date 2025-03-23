@@ -31,11 +31,11 @@ function leftIconAt(i: number) {
 	return Array.isArray(props.icon) ? props.icon[i] : props.icon
 }
 
-function horizontalPositionAt(i: number): 'left' | 'right' | 'middle' {
+function inlinePositionAt(i: number) {
 	return i === 0
-		? 'left'
+		? 'start'
 		: i === props.modelValue.length - 1
-			? 'right'
+			? 'end'
 			: 'middle'
 }
 </script>
@@ -50,7 +50,7 @@ function horizontalPositionAt(i: number): 'left' | 'right' | 'middle' {
 			:step="stepAt(i)"
 			:leftIcon="leftIconAt(i)"
 			:modelValue="v"
-			:horizontal-position="horizontalPositionAt(i)"
+			:inline-position="inlinePositionAt(i)"
 			@update:modelValue="updateValue(i, $event)"
 			@focus="emit('focus', i)"
 			@blur="emit('blur', i)"

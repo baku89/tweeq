@@ -25,7 +25,7 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 		<InputColorPad
 			v-bind="props"
 			:class="{'only-pad': !showColorCode}"
-			:horizontalPosition="showColorCode ? 'left' : undefined"
+			:inlinePsition="showColorCode ? 'start' : undefined"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
@@ -36,7 +36,7 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 			font="monospace"
 			:modelValue="modelValue"
 			:validator="V.colorCode"
-			horizontalPosition="right"
+			inlinePosition="end"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"

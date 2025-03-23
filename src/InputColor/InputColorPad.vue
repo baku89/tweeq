@@ -324,8 +324,8 @@ useCopyPaste({
 				class="default-button"
 				:class="{open, tweaking}"
 				:style="defaultButtonStyle"
-				:horizontal-position="horizontalPosition"
-				:vertical-position="verticalPosition"
+				:inline-position="inlinePosition"
+				:block-position="blockPosition"
 			/>
 		</slot>
 	</button>

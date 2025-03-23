@@ -71,22 +71,22 @@ use-input-align()
 		text-align right
 
 use-input-position()
-	&[horizontal-position=middle], &[vertical-position=middle]
+	&[inline-position=middle], &[block-position=middle]
 		border-radius 0
 
-	&[horizontal-position=left]
+	&[inline-position=left]
 		border-top-right-radius 0
 		border-bottom-right-radius 0
 
-	&[horizontal-position=right]
+	&[inline-position=right]
 		border-top-left-radius 0
 		border-bottom-left-radius 0
 
-	&[vertical-position=top]
+	&[block-position=top]
 		border-bottom-right-radius 0
 		border-bottom-left-radius 0
 
-	&[vertical-position=bottom]
+	&[block-position=bottom]
 		border-top-left-radius 0
 		border-top-right-radius 0
 

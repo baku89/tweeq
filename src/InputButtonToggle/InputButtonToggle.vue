@@ -13,8 +13,8 @@ defineEmits<{
 	<button
 		class="InputButtonToggle"
 		:class="{checked: modelValue}"
-		:horizontal-position="horizontalPosition"
-		:vertical-position="verticalPosition"
+		:inline-position="inlinePosition"
+		:block-position="blockPosition"
 		:disabled="!!disabled"
 		@click="$emit('update:modelValue', !modelValue)"
 	>

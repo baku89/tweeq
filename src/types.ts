@@ -9,8 +9,7 @@ export type InputFont = 'numeric' | 'monospace'
 
 export type InputAlign = 'left' | 'center' | 'right'
 
-export type InputHorizontalPosition = 'left' | 'middle' | 'right'
-export type InputVerticalPosition = 'top' | 'middle' | 'bottom'
+export type InputPosition = 'start' | 'middle' | 'end'
 
 export interface InputProps<T> {
 	modelValue: T
@@ -26,8 +25,8 @@ export interface InputEmits<T, Args extends unknown[] = []> {
 }
 
 export interface InputBoxProps<T> extends InputProps<T> {
-	horizontalPosition?: InputHorizontalPosition
-	verticalPosition?: InputVerticalPosition
+	inlinePosition?: InputPosition
+	blockPosition?: InputPosition
 }
 
 export interface LabelizerProps<T> {

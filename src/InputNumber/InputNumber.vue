@@ -512,8 +512,8 @@ const barStyle = computed<StyleValue>(() => {
 		class="InputNumber"
 		:class="{...valueRangeStateClasses, tweaking}"
 		:data-tweaking-mode="tweakMode"
-		:horizontal-position="horizontalPosition"
-		:vertical-position="verticalPosition"
+		:inline-position="inlinePosition"
+		:block-position="blockPosition"
 		v-bind="$attrs"
 	>
 		<div class="bar" :style="barStyle" />

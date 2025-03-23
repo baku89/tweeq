@@ -18,8 +18,8 @@
 |------|---------|-------------|
 | `disabled` | `boolean` | Whether the input is disabled |
 | `invalid` | `boolean` | Whether the input is invalid |
-| `horizontal-position` | `'left' \| 'center' \| 'right'` | The horizontal position of the input |
-| `vertical-position` | `'top' \| 'center' \| 'bottom'` | The vertical position of the input |
+| `inline-position` | `'start' \| 'middle' \| 'end'` | The inline (normally horizontal) position of the input |
+| `block-position` | `'start' \| 'middle' \| 'end'` | The block (normally vertical) position of the input |
 
 
 ### Events

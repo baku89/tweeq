@@ -9,8 +9,8 @@ defineProps<InputButtonProps>()
 	<button
 		class="InputButton"
 		:class="{blink, subtle}"
-		:horizontal-position="horizontalPosition"
-		:vertical-position="verticalPosition"
+		:inline-position="inlinePosition"
+		:block-position="blockPosition"
 		:disabled="disabled"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
