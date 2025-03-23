@@ -2,6 +2,7 @@
 import {useFocus} from '@vueuse/core'
 import {computed, ref, useTemplateRef, watch} from 'vue'
 
+import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import * as V from '../validator'
 import {type InputStringProps} from './types'
@@ -15,6 +16,7 @@ const emit = defineEmits<
 >()
 
 const local = ref(props.modelValue)
+const display = ref(props.modelValue)
 const validateResult = computed(() => props.validator(local.value))
 const validLocal = ref(props.modelValue)
 
@@ -29,34 +31,75 @@ watch(
 	{flush: 'sync'}
 )
 
-const invalid = computed(
-	() => props.invalid || validateResult.value.log.length > 0
-)
-
 const $input = useTemplateRef('$input')
-const {focused} = useFocus($input)
+const focusing = useFocus($input).focused
+
+const enableExpression = ref(false)
+const expressionError = ref<string | undefined>(undefined)
+
+const invalid = computed(
+	() =>
+		props.invalid ||
+		validateResult.value.log.length > 0 ||
+		expressionError.value
+)
 
 watch(
 	() => props.modelValue,
 	value => {
-		if (focused.value) return
+		if (focusing.value) return
 
-		local.value = value
+		local.value = display.value = value
 	},
 	{immediate: true, flush: 'sync'}
 )
 
 function onFocus(e: FocusEvent) {
+	multi.capture()
 	emit('focus', e)
+}
+
+function onKeyDown(e: KeyboardEvent) {
+	if (e.metaKey && e.key === '=') {
+		e.preventDefault()
+		enableExpression.value = true
+		display.value = `"${local.value}"`
+	}
 }
 
 function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
-	local.value = newValue
+	display.value = newValue
+
+	if (enableExpression.value) {
+		try {
+			const fn = eval(`(x, {i}) => {
+				const result = (${newValue});
+				if (typeof result === 'string') {
+					return result
+				} else if (typeof result === 'number') {
+					return result.toString()
+				}
+				return x
+			}`)
+			local.value = fn(local.value, {i: multi.index})
+			expressionError.value = undefined
+			multi.update(fn)
+		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.error('[InputString] Error evaluating expression', e)
+			expressionError.value = (e as Error).message
+		}
+	} else {
+		local.value = newValue
+		multi.update(() => newValue)
+	}
 }
 
 function confirm() {
-	local.value = validLocal.value
+	display.value = local.value = validLocal.value
+	enableExpression.value = false
+	expressionError.value = undefined
 
 	emit('confirm')
 }
@@ -71,14 +114,42 @@ defineExpose({
 		$input.value?.select()
 	},
 })
+
+//------------------------------------------------------------------------------
+// Styles
+
+const font = computed(() => {
+	if (props.font) return props.font
+
+	if (enableExpression.value) return 'monospace'
+
+	return undefined
+})
+
+//------------------------------------------------------------------------------
+// Multi Select
+
+const multi = useMultiSelectStore().register({
+	type: 'string',
+	el: $input,
+	focusing,
+	getValue: () => local.value,
+	setValue(value) {
+		local.value = value
+	},
+	confirm() {
+		emit('confirm')
+	},
+})
 </script>
 
 <template>
 	<input
 		ref="$input"
 		class="InputString"
+		:class="{subfocus: multi.subfocus}"
 		type="text"
-		:value="local"
+		:value="display"
 		:theme="theme"
 		:font="font"
 		:align="align"
@@ -88,7 +159,8 @@ defineExpose({
 		:invalid="invalid || undefined"
 		@focus="onFocus"
 		@blur="onBlur"
-		@input.stop="onInput"
+		@input="onInput"
+		@keydown="onKeyDown"
 		@keydown.enter="confirm"
 	/>
 </template>
@@ -100,7 +172,7 @@ defineExpose({
 	input-box-style()
 	input-element-style()
 
-	&:focus
+	&:focus, &.subfocus
 		input-box-focus()
 
 	&:disabled
