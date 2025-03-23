@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {autoUpdate, useFloating} from '@floating-ui/vue'
+import {vec2} from 'linearly'
 import {computed, onMounted, toRef, useTemplateRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
 import MultiSelectButton from './MultiSelectButton.vue'
-import MultiSelectHorizontalSlider from './MultiSelectHorizontalSlider.vue'
+import MultiSelectPad from './MultiSelectPad.vue'
 
 const multiSelect = useMultiSelectStore()
 
@@ -35,6 +36,10 @@ type MultiSelectAction = {
 			updator: (px: number) => (values: any[]) => any[]
 	  }
 	| {
+			type: 'pad'
+			updator: (delta: vec2) => (values: any[]) => any[]
+	  }
+	| {
 			type: 'button'
 			updator: (values: any[]) => any[]
 	  }
@@ -53,6 +58,16 @@ const actions: MultiSelectAction[] = [
 		updator: (px: number) => (values: number[]) =>
 			values.map(v => v * (px / 100 + 1)),
 		icon: 'mdi:multiply',
+	},
+	{
+		type: 'pad',
+		enabled: types => types.length === 2 && types.every(t => t === 'number'),
+		updator: (delta: vec2) => (values: number[]) =>
+			vec2.add(
+				values as unknown as vec2,
+				vec2.scale(delta, 0.1)
+			) as unknown as number[],
+		icon: 'mdi:dots-grid',
 	},
 	{
 		type: 'button',
@@ -88,8 +103,9 @@ watchEffect(() => {
 	>
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
 		<template v-for="action in enabledActions" :key="action.icon">
-			<MultiSelectHorizontalSlider
-				v-if="action.type === 'slider'"
+			<MultiSelectPad
+				v-if="action.type === 'slider' || action.type === 'pad'"
+				:type="action.type"
 				:updator="action.updator"
 				:icon="action.icon"
 			/>

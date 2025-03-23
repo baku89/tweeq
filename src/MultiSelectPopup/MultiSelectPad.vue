@@ -7,7 +7,10 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {useDrag} from '../useDrag'
 
 const props = defineProps<{
-	updator: (px: number) => (values: number[]) => number[]
+	type: 'slider' | 'pad'
+	updator:
+		| ((delta: number) => (values: number[]) => number[])
+		| ((delta: vec2) => (values: number[]) => number[])
 	icon: string
 }>()
 
@@ -22,8 +25,13 @@ const {dragging} = useDrag($root, {
 	},
 	onDrag({xy, initial}) {
 		const delta = vec2.sub(xy, initial)
-		const f = props.updator(delta[0])
-		multiSelect.updateValues(f)
+		if (props.type === 'slider') {
+			const f = props.updator(delta[0] as any)
+			multiSelect.updateValues(f)
+		} else {
+			const f = props.updator(delta as any)
+			multiSelect.updateValues(f)
+		}
 	},
 	onDragEnd() {
 		multiSelect.confirmValues()
@@ -32,7 +40,7 @@ const {dragging} = useDrag($root, {
 </script>
 
 <template>
-	<div ref="$root" class="MultiSelectHorizontalSlider">
+	<div ref="$root" class="MultiSelectPad" :class="{[type]: true}">
 		<IconIndicator :icon="icon" :active="dragging" />
 	</div>
 </template>
@@ -40,6 +48,10 @@ const {dragging} = useDrag($root, {
 <style lang="stylus">
 @import '../common.styl'
 
-.MultiSelectHorizontalSlider
-	cursor ew-resize
+.MultiSelectPad
+	&.slider
+		cursor ew-resize
+
+	&.pad
+		cursor move
 </style>
