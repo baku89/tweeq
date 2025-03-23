@@ -411,7 +411,6 @@ useCopyPaste({
 	popup-style()
 
 .overlay
-	--tq-hover-transition-duration 0.1s
 	input-overlay()
 	transition-duration var(--tq-hover-transition-duration)
 
