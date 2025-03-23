@@ -299,7 +299,6 @@ function onInput(e: Event) {
 		const fn = eval(`(x, {i}) => ${el.value}`)
 		local.value = fn(local.value, {i: multi.index})
 		multi.update(fn)
-		return
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.error('[InputNumber] Error evaluating expression', e)
