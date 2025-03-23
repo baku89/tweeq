@@ -59,20 +59,31 @@
 	}"
 />
 
-## List of Text Inputs
+## List of File Names
 
 <ExampleContainer
 	:initialValue="{
-		text1: 'Hello',
-		text2: 'World',
-		text3: '!',
-		text4: 'This is a long text input',
-		text5: 'Another long text input',
+		file_1: 'icon42.svg',
+		file_2: 'logo17.svg',
+		file_3: 'graphic3.svg',
+		file_4: 'illustration89.svg',
+		file_5: 'diagram25.svg',
+		file_6: 'chart64.svg',
+		file_7: 'banner31.svg',
+		file_8: 'avatar12.svg',
+		file_9: 'background76.svg',
+		file_10: 'pattern58.svg',
 	}"
 	:scheme="{
-		text1: {type: 'string'},
-		text2: {type: 'string'},
-		text3: {type: 'string'},
-		text4: {type: 'string'},
+		file_1: {type: 'string', icon: 'mdi:file'},
+		file_2: {type: 'string', icon: 'mdi:file'},
+		file_3: {type: 'string', icon: 'mdi:file'},
+		file_4: {type: 'string', icon: 'mdi:file'},
+		file_5: {type: 'string', icon: 'mdi:file'},
+		file_6: {type: 'string', icon: 'mdi:file'},
+		file_7: {type: 'string', icon: 'mdi:file'},
+		file_8: {type: 'string', icon: 'mdi:file'},
+		file_9: {type: 'string', icon: 'mdi:file'},
+		file_10: {type: 'string', icon: 'mdi:file'},
 	}"
 />
