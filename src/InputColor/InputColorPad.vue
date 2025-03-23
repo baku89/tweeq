@@ -3,7 +3,7 @@ import {useFocus, useFocusWithin, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import Color from 'colorjs.io'
 import {vec2} from 'linearly'
-import {computed, ref, useTemplateRef, watch} from 'vue'
+import {computed, ref, shallowRef, useTemplateRef, watch} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
@@ -67,7 +67,7 @@ const tweakMode = computed(() => {
 	return 'pad'
 })
 
-const local = ref<HSVA>({h: 0, s: 0, v: 0, a: 0})
+const local = shallowRef<HSVA>({h: 0, s: 0, v: 0, a: 0})
 const decompose = css2hsva
 const compose = hsva2hex
 

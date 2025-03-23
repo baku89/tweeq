@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import {shallowRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputEmits} from '../types'
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<InputColorProps>(), {
 
 const emit = defineEmits<InputEmits<string>>()
 
-const local = ref<HSVA>(css2hsva(props.modelValue))
+const local = shallowRef<HSVA>(css2hsva(props.modelValue))
 let emittedModel: string | null = null
 
 watch(
