@@ -25,7 +25,7 @@ const scheme = {
 		max: 1,
 		clampMin: true,
 		clampMax: true,
-		icon: 'mdi:lightbulb',
+		icon: 'jam:rubber',
 	},
 }
 

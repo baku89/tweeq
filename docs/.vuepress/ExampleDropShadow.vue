@@ -4,41 +4,30 @@ import {ref} from 'vue'
 import ExampleContainer from './ExampleContainer.vue'
 
 const model = ref({
-	x: 0.25,
-	y: 0.25,
+	offset: [0.25, 0.25],
 	blur: 1,
 	spread: 0,
 	color: '#00000030',
 })
 
 const scheme = {
-	x: {
-		type: 'number',
+	offset: {
+		type: 'vec2',
+		ui: 'position',
 		min: -10,
 		max: 10,
-		precision: 1,
-		suffix: 'px',
-	},
-	y: {
-		type: 'number',
-		min: -10,
-		max: 10,
-		precision: 1,
-		suffix: 'px',
 	},
 	blur: {
 		type: 'number',
 		min: 0,
 		max: 10,
 		precision: 2,
-		suffix: 'px',
 	},
 	spread: {
 		type: 'number',
 		min: -5,
 		max: 5,
 		precision: 2,
-		suffix: 'px',
 	},
 	color: {
 		type: 'string',
@@ -54,7 +43,16 @@ const scheme = {
 		:scheme="scheme"
 		@update:modelValue="model = $event"
 	>
-		<template #default="{modelValue: {x, y, blur, spread, color}}">
+		<template
+			#default="{
+				modelValue: {
+					offset: [x, y],
+					blur,
+					spread,
+					color,
+				},
+			}"
+		>
 			<div class="preview">
 				<div
 					class="round-rect"
