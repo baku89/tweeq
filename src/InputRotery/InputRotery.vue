@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import {Path} from '@baku89/pave'
-import {useFocus, useMagicKeys} from '@vueuse/core'
-import {checkIntersection} from 'line-intersect'
+import {Path, Rect} from '@baku89/pave'
+import {useFocus, useMagicKeys, useWindowSize} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {partial, range} from 'lodash-es'
-import {computed, ref, useTemplateRef} from 'vue'
+import {range} from 'lodash-es'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
@@ -14,7 +13,9 @@ import {useCursorStyle} from '../use/useCursorStyle'
 import {useElementCenter} from '../use/useElementCenter'
 import {useDrag} from '../useDrag'
 import {unsignedMod} from '../util'
+import * as V from '../validator'
 import type {InputRoteryProps} from './types'
+import {clampPosWithinRect} from './utils'
 
 const props = withDefaults(defineProps<InputRoteryProps>(), {
 	quantizeStep: 45,
@@ -25,16 +26,10 @@ const theme = useThemeStore()
 
 const emit = defineEmits<InputEmits<number>>()
 
-defineOptions({
-	inheritAttrs: false,
-})
-
 function signedAngleBetween(target: number, source: number) {
 	const ret = target - source
 	return unsignedMod(ret + 180, 360) - 180
 }
-
-const local = ref(props.modelValue)
 
 const display = computed(() => {
 	const revs = Math.trunc(props.modelValue / 360)
@@ -43,18 +38,14 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const $root = useTemplateRef('$root')
-
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
-const valueOnTweak = ref(props.modelValue)
-
-const center = useElementCenter($root)
+const initialValueOnTweak = ref(props.modelValue)
 
 const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
-// Local value before quantize
-let localRaw = props.modelValue
+const $root = useTemplateRef('$root')
+const center = useElementCenter($root)
 
 const {
 	dragging: tweaking,
@@ -64,37 +55,24 @@ const {
 } = useDrag($root, {
 	dragDelaySeconds: 0,
 	onDragStart({xy}) {
-		valueOnTweak.value = localRaw = props.modelValue
+		initialValueOnTweak.value = local.value = props.modelValue
 
 		if (tweakMode.value === 'absolute') {
 			const p = vec2.sub(xy, center.value)
 			const angle = vec2.angle(p) - props.angleOffset
-			const diff = signedAngleBetween(angle, localRaw)
+			const diff = signedAngleBetween(angle, local.value)
 
-			localRaw += diff
+			local.value += diff
 		}
+
+		multi.capture()
 	},
 	onDrag({xy, previous}) {
 		const p = vec2.sub(xy, center.value)
 		const pp = vec2.sub(previous, center.value)
 
 		const delta = vec2.angle(pp, p)
-		localRaw += delta
-
-		local.value = localRaw
-
-		if (doQuantize.value) {
-			local.value = scalar.quantize(local.value, props.quantizeStep)
-		}
-
-		emit('update:modelValue', local.value)
-
-		if (tweakMode.value === 'relative') {
-			multi.capture()
-			multi.update((v: number) => v + delta)
-		} else {
-			multi.update(() => local.value)
-		}
+		local.value += delta
 	},
 	onDragEnd() {
 		tweakMode.value = 'relative'
@@ -114,39 +92,47 @@ const doQuantize = computed(() => {
 	)
 })
 
+// Local value before quantize
+const local = ref(props.modelValue)
+
+const validate = computed(() => {
+	return doQuantize.value ? V.quantize(props.quantizeStep) : V.identity
+})
+
+const validateResult = computed(() => validate.value(local.value))
+
+watch(
+	() =>
+		[
+			validateResult.value,
+			tweaking.value,
+			tweakMode.value,
+			doQuantize.value,
+			props.quantizeStep,
+		] as const,
+	([result]) => {
+		if (result.value === undefined) return
+
+		emit('update:modelValue', result.value)
+
+		if (tweaking.value) {
+			if (tweakMode.value === 'absolute') {
+				multi.update(() => result.value)
+			} else {
+				const delta = result.value - initialValueOnTweak.value
+
+				multi.update(x => {
+					const newX = x + delta
+					return doQuantize.value
+						? scalar.quantize(newX, props.quantizeStep)
+						: newX
+				})
+			}
+		}
+	}
+)
+
 useCursorStyle(() => (tweaking.value ? 'none' : null))
-
-function clampPos(p: vec2): vec2 {
-	const [ox, oy] = initial.value
-	const [x, y] = p
-	const margin = 40
-	const left = margin,
-		top = margin,
-		right = window.innerWidth - margin,
-		bottom = window.innerHeight - margin
-
-	let ret: ReturnType<typeof checkIntersection>
-
-	const check = partial(checkIntersection, x, y, ox, oy)
-
-	if ((ret = check(left, top, right, top)).type === 'intersecting') {
-		return [ret.point.x, ret.point.y]
-	}
-
-	if ((ret = check(right, top, right, bottom)).type === 'intersecting') {
-		return [ret.point.x, ret.point.y]
-	}
-
-	if ((ret = check(right, bottom, left, bottom)).type === 'intersecting') {
-		return [ret.point.x, ret.point.y]
-	}
-
-	if ((ret = check(left, bottom, left, top)).type === 'intersecting') {
-		return [ret.point.x, ret.point.y]
-	}
-
-	return [x, y]
-}
 
 const roteryStyles = computed(() => {
 	const rotation = props.modelValue + props.angleOffset
@@ -155,8 +141,23 @@ const roteryStyles = computed(() => {
 	}
 })
 
+const windowSize = useWindowSize()
+
+const overlayBounds = computed<Rect>(() => {
+	const margin = 40
+	const left = margin,
+		top = margin,
+		right = windowSize.width.value - margin,
+		bottom = windowSize.height.value - margin
+
+	return [
+		[left, top],
+		[right, bottom],
+	]
+})
+
 const overlayLabelPos = computed(() => {
-	return clampPos(xy.value)
+	return clampPosWithinRect(initial.value, xy.value, overlayBounds.value)
 })
 
 const overlayArrowStyles = computed(() => {
@@ -188,8 +189,8 @@ const metersPath = computed(() =>
 
 const activeMeterPath = computed(() => {
 	return Path.toSVGString(
-		doQuantize.value && local.value % props.quantizeStep === 0
-			? radialLine(local.value, ...quantizeMeterRadii)
+		doQuantize.value && props.modelValue % props.quantizeStep === 0
+			? radialLine(props.modelValue, ...quantizeMeterRadii)
 			: Path.empty
 	)
 })
@@ -209,7 +210,7 @@ const overlayPath = computed(() => {
 		const baseRadius = theme.inputHeight * 4
 		const radiusStep = theme.inputHeight * 0.25
 
-		const start = valueOnTweak.value + props.angleOffset
+		const start = initialValueOnTweak.value + props.angleOffset
 		const end = props.modelValue + props.angleOffset
 
 		const turns =
@@ -244,10 +245,9 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
 	focusing: useFocus($root).focused,
-	getValue: () => props.modelValue,
+	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
-		emit('update:modelValue', value)
 	},
 	confirm() {
 		emit('confirm')
@@ -261,7 +261,6 @@ const multi = useMultiSelectStore().register({
 		class="InputRotery"
 		:class="{tweaking, subfocus: multi.subfocus}"
 		:tweak-mode="tweakMode"
-		v-bind="$attrs"
 		@focus="emit('focus')"
 		@blur="emit('blur')"
 	>
