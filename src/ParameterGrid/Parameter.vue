@@ -43,6 +43,8 @@ defineSlots<{
 .icon
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
+	color var(--tq-color-text-subtle)
+
 .input
 	display grid
 	gap 6px

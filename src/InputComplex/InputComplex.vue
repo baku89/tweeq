@@ -6,8 +6,10 @@ import {InputAngle} from '../InputAngle'
 import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
 import {InputNumber} from '../InputNumber'
+import {InputPosition} from '../InputPosition'
 import {InputString} from '../InputString'
 import {InputSwitch} from '../InputSwitch'
+import {InputVec} from '../InputVec'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
 import type {InputComplexProps, Scheme} from './types'
 
@@ -86,6 +88,20 @@ function getModelValue<K extends keyof T>(name: K) {
 				v-bind="param"
 				@update:modelValue="updateModelValue(name, $event)"
 			/>
+			<template v-else-if="param.type === 'vec2'">
+				<InputPosition
+					v-if="param.ui === 'position'"
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+				<InputVec
+					v-else
+					:modelValue="getModelValue(name)"
+					v-bind="param"
+					@update:modelValue="updateModelValue(name, $event)"
+				/>
+			</template>
 		</Parameter>
 	</ParameterGrid>
 </template>
