@@ -194,7 +194,7 @@ export function useDrag(
 		} else if (!disableClick) {
 			// Determine whether dragging has started
 			const d = vec2.dist(state.initial, state.xy)
-			const minDragDistance = event.pointerType === 'mouse' ? 3 : 7
+			const minDragDistance = event.pointerType === 'mouse' ? 1 : 5
 			if (d >= minDragDistance) {
 				clearTimeout(dragDelayTimer)
 				fireDragStart(event)
