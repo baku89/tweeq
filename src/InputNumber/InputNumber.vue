@@ -236,6 +236,7 @@ const {dragging: tweaking} = useDrag($root, {
 	},
 	onDragEnd() {
 		emit('confirm')
+		multi.confirm()
 		emit('blur')
 	},
 })
@@ -279,15 +280,14 @@ function confirm() {
 	expressionError.value = undefined
 
 	emit('confirm')
-	multi.confirm()
 }
 
 //------------------------------------------------------------------------------
 // Input Events
 
 function onEnter() {
-	multi.confirm()
 	confirm()
+	multi.confirm()
 }
 
 function onFocus() {
