@@ -13,7 +13,9 @@ const emit = defineEmits<InputEmits<vec2>>()
 
 let valueOnEdit = props.modelValue
 
-function onUpdate(value: vec2, index: number) {
+function onUpdate(value: vec2) {
+	const index = props.modelValue[0] !== value[0] ? 0 : 1
+
 	if (keepRatio.value) {
 		let ds = value[index] / valueOnEdit[index]
 		if (!isFinite(ds)) ds = 1

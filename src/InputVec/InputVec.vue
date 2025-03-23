@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends readonly number[]">
+import {nextTick} from 'vue'
+
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 import {InputEmits} from '../types'
@@ -6,14 +8,7 @@ import {InputVecProps} from './types'
 
 const props = defineProps<InputVecProps<T>>()
 
-const emit = defineEmits<InputEmits<T, [index: number]>>()
-
-function updateValue(index: number, value: number) {
-	const newValue = [...props.modelValue]
-	newValue[index] = value
-
-	emit('update:modelValue', newValue as unknown as T, index)
-}
+const emit = defineEmits<InputEmits<T>>()
 
 function minAt(i: number): number | undefined {
 	return Array.isArray(props.min) ? props.min[i] : props.min
@@ -38,6 +33,21 @@ function inlinePositionAt(i: number) {
 			? 'end'
 			: 'middle'
 }
+
+let changedModel: number[] | undefined
+
+function commitChange(index: number, value: number) {
+	if (!changedModel) {
+		nextTick(() => {
+			emit('update:modelValue', changedModel as unknown as T)
+			changedModel = undefined
+		})
+
+		changedModel = [...props.modelValue]
+	}
+
+	changedModel[index] = value
+}
 </script>
 
 <template>
@@ -51,10 +61,10 @@ function inlinePositionAt(i: number) {
 			:leftIcon="leftIconAt(i)"
 			:modelValue="v"
 			:inline-position="inlinePositionAt(i)"
-			@update:modelValue="updateValue(i, $event)"
-			@focus="emit('focus', i)"
-			@blur="emit('blur', i)"
-			@confirm="emit('confirm', i)"
+			@update:modelValue="commitChange(i, $event)"
+			@focus="emit('focus')"
+			@blur="emit('blur')"
+			@confirm="emit('confirm')"
 		/>
 	</InputGroup>
 </template>
