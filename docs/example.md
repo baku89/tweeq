@@ -17,6 +17,10 @@
 	}"
 />
 
+## Spring
+
+<ExampleSpring />
+
 ## Color Palettes
 
 <ExampleContainer
