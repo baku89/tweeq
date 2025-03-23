@@ -433,6 +433,7 @@ const multi = useMultiSelectStore().register({
 	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
+		local.value = validLocal.value
 	},
 	confirm() {
 		emit('confirm')
