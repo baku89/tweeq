@@ -53,6 +53,8 @@ const $input = useTemplateRef('$input')
 const {left, top, width, height, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused
+const enableExpression = ref(false)
+const expressionError = ref<string | undefined>(undefined)
 
 const local = ref(props.modelValue)
 const display = ref('')
@@ -267,14 +269,17 @@ const invalid = computed(() => {
 	if (props.invalid) return true
 	if (tweaking.value) return false
 
-	return validateResult.value.log.length > 0
+	return validateResult.value.log.length > 0 || expressionError.value
 })
 
 function confirm() {
 	local.value = validLocal.value
 	display.value = toFixed(local.value, precision.value)
+	enableExpression.value = false
+	expressionError.value = undefined
 
 	emit('confirm')
+	multi.confirm()
 }
 
 //------------------------------------------------------------------------------
@@ -291,17 +296,25 @@ function onFocus() {
 }
 
 function onInput(e: Event) {
-	const el = e.target as HTMLInputElement
+	const value = (e.target as HTMLInputElement).value
+	display.value = value
 
-	display.value = el.value
+	if (!/^[0-9.]*$/.test(value)) {
+		enableExpression.value = true
+	}
 
 	try {
-		const fn = eval(`(x, {i}) => ${el.value}`)
+		const fn = eval(`(x, {i}) => {
+			const result = (${value})
+			if (typeof result === 'number') {
+				return result
+			}
+			throw new Error('Value is not a number')
+		}`)
 		local.value = fn(local.value, {i: multi.index})
 		multi.update(fn)
 	} catch (e) {
-		// eslint-disable-next-line no-console
-		console.error('[InputNumber] Error evaluating expression', e)
+		expressionError.value = (e as Error).message
 	}
 }
 
@@ -515,6 +528,7 @@ const barStyle = computed<StyleValue>(() => {
 			inputmode="numeric"
 			pattern="d*"
 			:value="focusing ? display : prefix + display + suffix"
+			:font="enableExpression ? 'monospace' : undefined"
 			:invalid="invalid || undefined"
 			:disabled="disabled || undefined"
 			@input="onInput"
@@ -588,6 +602,9 @@ const barStyle = computed<StyleValue>(() => {
 	input-element-style()
 	font-numeric()
 	text-align center
+
+	&[font=monospace]
+		font-family var(--tq-font-code)
 
 	&:not(:focus)
 		pointer-events none

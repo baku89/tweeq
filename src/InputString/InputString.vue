@@ -80,7 +80,7 @@ function onInput(e: Event) {
 				} else if (typeof result === 'number') {
 					return result.toString()
 				}
-				return x
+				throw new Error('Value is not a string or number')
 			}`)
 			local.value = fn(local.value, {i: multi.index})
 			expressionError.value = undefined
@@ -102,6 +102,8 @@ function confirm() {
 	expressionError.value = undefined
 
 	emit('confirm')
+	multi.confirm()
+	multi.capture()
 }
 
 function onBlur() {
