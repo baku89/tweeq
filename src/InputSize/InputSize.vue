@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {vec2} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {ref} from 'vue'
 
 import {Icon} from '../Icon'
@@ -14,6 +14,18 @@ const emit = defineEmits<InputEmits<vec2>>()
 let valueOnEdit = props.modelValue
 
 function onUpdate(value: vec2) {
+	const bothChanged =
+		props.modelValue[0] !== value[0] && props.modelValue[1] !== value[1]
+
+	if (bothChanged) {
+		const prevRatio = props.modelValue[0] / props.modelValue[1]
+		const newRatio = value[0] / value[1]
+
+		if (!scalar.approx(prevRatio, newRatio)) {
+			keepRatio.value = false
+		}
+	}
+
 	const index = props.modelValue[0] !== value[0] ? 0 : 1
 
 	if (keepRatio.value) {
@@ -38,10 +50,10 @@ function recordValueOnEdit() {
 	<div class="TqInputSize">
 		<InputVec
 			:modelValue="modelValue"
-			:icon-old="['mdi:arrow-left-right', 'mdi:arrow-up-down']"
+			:icon="['mdi:arrow-left-right', 'mdi:arrow-up-down']"
 			@update:modelValue="onUpdate"
 			@focus="recordValueOnEdit"
-			@confirm="recordValueOnEdit"
+			@confirm="emit('confirm')"
 			@blur="emit('blur')"
 		/>
 		<Icon

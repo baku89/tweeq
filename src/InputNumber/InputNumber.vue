@@ -280,15 +280,11 @@ function confirm() {
 	expressionError.value = undefined
 
 	emit('confirm')
+	multi.confirm()
 }
 
 //------------------------------------------------------------------------------
 // Input Events
-
-function onEnter() {
-	confirm()
-	multi.confirm()
-}
 
 function onFocus() {
 	multi.capture()
@@ -320,7 +316,6 @@ function onInput(e: Event) {
 
 function onBlur() {
 	confirm()
-	multi.confirm()
 	emit('blur')
 }
 
@@ -439,7 +434,9 @@ const multi = useMultiSelectStore().register({
 	setValue(value) {
 		local.value = value
 	},
-	confirm,
+	confirm() {
+		emit('confirm')
+	},
 })
 
 //------------------------------------------------------------------------------
@@ -536,7 +533,7 @@ const barStyle = computed<StyleValue>(() => {
 			@blur="onBlur"
 			@keydown.up.prevent="onIncrementByKey(1)"
 			@keydown.down.prevent="onIncrementByKey(-1)"
-			@keydown.enter.prevent="onEnter"
+			@keydown.enter.prevent="confirm"
 		/>
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
@@ -649,8 +646,9 @@ const barStyle = computed<StyleValue>(() => {
 
 
 .icon
-	width var(--tq-input-height)
-	height var(--tq-input-height)
+	width calc(var(--tq-input-height) - 6px)
+	height calc(var(--tq-input-height) - 6px)
+	margin 3px
 	color var(--tq-color-text-mute)
 	transform scale(0.8)
 	opacity .7
