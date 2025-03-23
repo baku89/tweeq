@@ -6,16 +6,9 @@
 
 <ExampleThreePointLighting />
 
-## 3-Band EQ
+## Drop Shadow
 
-<ExampleContainer
-	:initialValue="{low: 0, mid: 0, high: 0}"
-	:scheme="{
-		low: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
-		mid: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
-		high: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
-	}"
-/>
+<ExampleDropShadow />
 
 ## Spring
 
@@ -31,6 +24,17 @@
 		color3: {type: 'string', ui: 'color', icon: 'mdi-palette'},
 		color4: {type: 'string', ui: 'color', icon: 'mdi-palette'},
 		color5: {type: 'string', ui: 'color', icon: 'mdi-palette'},
+	}"
+/>
+
+## 3-Band EQ
+
+<ExampleContainer
+	:initialValue="{low: 0, mid: 0, high: 0}"
+	:scheme="{
+		low: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
+		mid: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
+		high: {type: 'number', ui: 'angle', min: -100, max: 100, icon: 'mdi-equalizer'},
 	}"
 />
 

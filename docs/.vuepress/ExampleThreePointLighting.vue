@@ -2,9 +2,9 @@
 import ExampleContainer from './ExampleContainer.vue'
 
 const initialValue = {
-	keyIntensity: 255,
+	keyIntensity: 100,
 	keyColor: '#dcd7f5',
-	fillIntensity: 255,
+	fillIntensity: 100,
 	fillColor: '#f19999',
 	backIntensity: 0,
 	backColor: '#ffffff',
@@ -14,9 +14,9 @@ const scheme = {
 	keyIntensity: {
 		type: 'number',
 		min: 0,
-		max: 255,
-		clampMin: true,
-		clampMax: true,
+		max: 200,
+		clampMax: false,
+		suffix: '%',
 		icon: 'mdi:lightbulb',
 	},
 	keyColor: {
@@ -27,9 +27,9 @@ const scheme = {
 	fillIntensity: {
 		type: 'number',
 		min: 0,
-		max: 255,
-		clampMin: true,
-		clampMax: true,
+		max: 200,
+		clampMax: false,
+		suffix: '%',
 		icon: 'mdi:lightbulb',
 	},
 	fillColor: {
@@ -40,9 +40,9 @@ const scheme = {
 	backIntensity: {
 		type: 'number',
 		min: 0,
-		max: 255,
-		clampMin: true,
-		clampMax: true,
+		max: 200,
+		clampMax: false,
+		suffix: '%',
 		icon: 'mdi:lightbulb',
 	},
 	backColor: {
@@ -61,7 +61,7 @@ const scheme = {
 					class="pass"
 					:style="{
 						color: modelValue.keyColor,
-						opacity: modelValue.keyIntensity / 255,
+						filter: `brightness(${modelValue.keyIntensity / 100})`,
 					}"
 				>
 					<img src="/assets/three-point-lighting_key.png" />
@@ -70,7 +70,7 @@ const scheme = {
 					class="pass"
 					:style="{
 						color: modelValue.fillColor,
-						opacity: modelValue.fillIntensity / 255,
+						filter: `brightness(${modelValue.fillIntensity / 100})`,
 					}"
 				>
 					<img src="/assets/three-point-lighting_fill.png" />
@@ -79,7 +79,7 @@ const scheme = {
 					class="pass"
 					:style="{
 						color: modelValue.backColor,
-						opacity: modelValue.backIntensity / 255,
+						filter: `brightness(${modelValue.backIntensity / 100})`,
 					}"
 				>
 					<img src="/assets/three-point-lighting_back.png" />

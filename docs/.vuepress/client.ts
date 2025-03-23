@@ -10,6 +10,7 @@ const registerComponents = async (app: App) => {
 		'./ExampleThreePointLighting.vue'
 	)
 	const ExampleSpring = await import('./ExampleSpring.vue')
+	const ExampleDropShadow = await import('./ExampleDropShadow.vue')
 	// Tweeqコンポーネントを登録
 	for (const [key, value] of Object.entries(Tq)) {
 		if (typeof value === 'function') continue
@@ -21,6 +22,7 @@ const registerComponents = async (app: App) => {
 	app.component('ExampleContainer', ExampleContainer.default)
 	app.component('ExampleThreePointLighting', ExampleThreePointLighting.default)
 	app.component('ExampleSpring', ExampleSpring.default)
+	app.component('ExampleDropShadow', ExampleDropShadow.default)
 }
 
 export default defineClientConfig({

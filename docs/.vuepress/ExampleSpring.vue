@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import {useRafFn} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, ref} from 'vue'
+import {ref} from 'vue'
 
 import ExampleContainer from './ExampleContainer.vue'
 
-const model = reactive({
+const model = ref({
 	stiffness: 500,
 	damping: 0.5,
 })
-
-function update(value: typeof model) {
-	model.stiffness = value.stiffness
-	model.damping = value.damping
-}
 
 const scheme = {
 	stiffness: {
@@ -53,8 +48,8 @@ useRafFn(({delta}) => {
 	const dp = vec2.sub(target.value, pos.value)
 
 	const accel = vec2.sub(
-		vec2.scale(dp, model.stiffness),
-		vec2.scale(vel, model.damping * Math.sqrt(model.stiffness) * 2)
+		vec2.scale(dp, model.value.stiffness),
+		vec2.scale(vel, model.value.damping * Math.sqrt(model.value.stiffness) * 2)
 	)
 
 	vel = vec2.add(vel, vec2.scale(accel, dt))
@@ -67,7 +62,7 @@ useRafFn(({delta}) => {
 	<ExampleContainer
 		:initialValue="model"
 		:scheme="scheme"
-		@update:modelValue="update"
+		@update:modelValue="model = $event"
 	>
 		<svg class="preview" viewBox="0 0 1 1">
 			<circle :cx="pos[0]" :cy="pos[1]" r="0.1" fill="tomato" />
