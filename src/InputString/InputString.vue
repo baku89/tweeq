@@ -89,6 +89,7 @@ function onInput(e: Event) {
 			// eslint-disable-next-line no-console
 			console.error('[InputString] Error evaluating expression', e)
 			expressionError.value = (e as Error).message
+			multi.update(x => x)
 		}
 	} else {
 		local.value = newValue
@@ -109,6 +110,10 @@ function confirm() {
 function onBlur() {
 	confirm()
 	emit('blur')
+}
+
+function forceFocus() {
+	$input.value?.select()
 }
 
 defineExpose({
@@ -159,6 +164,8 @@ const multi = useMultiSelectStore().register({
 		:vertical-position="verticalPosition"
 		:disabled="disabled || undefined"
 		:invalid="invalid || undefined"
+		@click.shift="forceFocus"
+		@click.meta="forceFocus"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
