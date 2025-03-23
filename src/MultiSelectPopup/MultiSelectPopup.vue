@@ -71,7 +71,8 @@ const actions: MultiSelectAction[] = [
 	},
 	{
 		type: 'button',
-		enabled: types => types.length === 2 && types[0] === types[1],
+		enabled: types =>
+			types.length === 2 && types[0] !== 'boolean' && types[0] === types[1],
 		updator: values => values.reverse(),
 		icon: 'material-symbols:swap-vert',
 	},
