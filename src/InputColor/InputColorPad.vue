@@ -98,8 +98,8 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		const mode = tweakMode.value
 
 		if (mode === 'pad') {
-			local.value = tweakHSVAChannel(local.value, 's', -dx)
-			local.value = tweakHSVAChannel(local.value, 'v', -dy)
+			local.value = tweakHSVAChannel(local.value, 's', dx)
+			local.value = tweakHSVAChannel(local.value, 'v', dy)
 
 			const sd = local.value.s - localOnTweak!.s
 			const vd = local.value.v - localOnTweak!.v
@@ -110,7 +110,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 				return hsva
 			})
 		} else {
-			local.value = tweakHSVAChannel(local.value, mode, -dx)
+			local.value = tweakHSVAChannel(local.value, mode, dx)
 
 			const current = getHSVAChannel(local.value, mode)
 			const initial = getHSVAChannel(localOnTweak!, mode)
