@@ -46,7 +46,9 @@ function update(value: T) {
 	align-items start
 
 .sandbox.fullscreen
-	width 960px
+	width 640px
+	height 480px
+	align-items center
 
 .parameters
 	flex-grow 1
