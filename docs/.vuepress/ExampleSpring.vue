@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {useRafFn} from '@vueuse/core'
 import {vec2} from 'linearly'
-import {ref} from 'vue'
+import {shallowRef} from 'vue'
 
 import ExampleContainer from './ExampleContainer.vue'
 
-const model = ref({
+const model = shallowRef({
 	stiffness: 500,
 	damping: 0.5,
 })
@@ -29,9 +29,9 @@ const scheme = {
 	},
 }
 
-const target = ref<vec2>([0.5, 0.5])
+const target = shallowRef<vec2>([0.5, 0.5])
 
-const pos = ref(target.value)
+const pos = shallowRef(target.value)
 let vel = vec2.zero
 
 setInterval(() => {
@@ -44,12 +44,13 @@ setInterval(() => {
 
 useRafFn(({delta}) => {
 	const dt = delta / 1000
+	const {stiffness, damping} = model.value
 
 	const dp = vec2.sub(target.value, pos.value)
 
 	const accel = vec2.sub(
-		vec2.scale(dp, model.value.stiffness),
-		vec2.scale(vel, model.value.damping * Math.sqrt(model.value.stiffness) * 2)
+		vec2.scale(dp, stiffness),
+		vec2.scale(vel, damping * Math.sqrt(stiffness) * 2)
 	)
 
 	vel = vec2.add(vel, vec2.scale(accel, dt))
