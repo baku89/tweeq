@@ -69,6 +69,7 @@ const allUserDatas: ControlUserData[] = []
 
 function update(value: T) {
 	modelValue.value = value
+	console.log(value)
 	controlHistory.push([new Date().getTime() - startTime, value])
 }
 
@@ -160,7 +161,7 @@ const hasNext = computed(() => {
 						Complete<Icon :icon="hasNext ? 'mdi:arrow-right' : 'mdi:check'" />
 					</button>
 					<span class="progress"
-						>({{ typeof currentTask === 'number' ? currentTask : 0 }}/{{
+						>({{ typeof currentTask === 'number' ? currentTask + 1 : 0 }}/{{
 							props.targets.length
 						}})</span
 					>
