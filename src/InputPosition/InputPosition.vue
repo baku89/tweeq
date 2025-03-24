@@ -2,11 +2,12 @@
 import {vec2} from 'linearly'
 
 import {InputGroup} from '../InputGroup'
-import {InputTranslate, InputTranslateProps} from '../InputTranslate'
+import {InputTranslate} from '../InputTranslate'
 import {InputVec} from '../InputVec'
 import {InputEmits} from '../types'
+import {InputPositionProps} from './types'
 
-const props = defineProps<InputTranslateProps>()
+const props = defineProps<InputPositionProps>()
 
 const emit = defineEmits<InputEmits<vec2>>()
 </script>
@@ -15,6 +16,7 @@ const emit = defineEmits<InputEmits<vec2>>()
 	<InputGroup class="TqInputPosition">
 		<InputTranslate
 			v-bind="props"
+			:showOverlayLabel="false"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"

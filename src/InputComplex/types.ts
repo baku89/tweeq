@@ -3,9 +3,9 @@ import {vec2} from 'linearly'
 import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
 import {type InputNumberProps} from '../InputNumber'
+import {type InputPositionProps} from '../InputPosition'
 import {type InputRoteryProps} from '../InputRotery'
 import {type InputStringProps} from '../InputString'
-import {InputTranslateProps} from '../InputTranslate'
 import {InputProps} from '../types'
 
 type ParameterBase = {label?: string; icon?: string}
@@ -42,7 +42,7 @@ type ParameterDescForType<T> = T extends number
 type ParameterDescVec2 = Desc<{type: 'vec2'; ui?: undefined}, InputProps<vec2>>
 type ParameterDescPosition = Desc<
 	{type: 'vec2'; ui: 'position'},
-	InputTranslateProps
+	InputPositionProps
 >
 
 export type Scheme<T extends Record<string, unknown>> = {

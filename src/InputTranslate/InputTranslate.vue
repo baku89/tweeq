@@ -4,12 +4,17 @@ import {scalar, vec2} from 'linearly'
 import {computed, ref, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
+import {InputPositionProps} from '../InputPosition'
 import {InputEmits} from '../types'
 import {useDrag} from '../useDrag'
 import {precisionOf} from '../util'
-import {InputTranslateProps} from './types'
 
-const props = defineProps<InputTranslateProps>()
+const props = withDefaults(
+	defineProps<InputPositionProps & {showOverlayLabel?: boolean}>(),
+	{
+		showOverlayLabel: true,
+	}
+)
 const emit = defineEmits<InputEmits<vec2>>()
 
 const $button = useTemplateRef('$button')
@@ -133,7 +138,7 @@ function decompose(value?: number | vec2): vec2 | undefined {
 					<div v-if="y" class="axis y" />
 					<div class="zero" :style="zeroStyle" />
 				</div>
-				<div class="overlay-label" v-html="display"></div>
+				<div v-if="showOverlayLabel" class="overlay-label" v-html="display" />
 			</div>
 		</Transition>
 	</button>
