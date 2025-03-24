@@ -4,6 +4,8 @@ import {kebab} from 'case'
 import {Icon, InputComplex, Viewport} from 'tweeq'
 import {computed, ref, shallowRef, watch} from 'vue'
 
+import {usePersonalInfo} from './usePersonalInfo'
+
 interface Props {
 	title: string
 	initialValue: T
@@ -18,8 +20,7 @@ defineSlots<{
 	spectrum(props: {modelValue: T; update: (value: T) => void}): any
 }>()
 
-const name = ref('')
-const occupation = ref('')
+const personalInfo = usePersonalInfo()
 
 const searchParams = useUrlSearchParams()
 
@@ -85,8 +86,7 @@ const userDataJSON = computed(() => {
 	return JSON.stringify({
 		ui: spectrum.value ? 'spectrum' : 'tweeq',
 		title: props.title,
-		name,
-		occupation,
+		...personalInfo,
 		allUserDatas,
 	})
 })
@@ -99,7 +99,7 @@ function downloadUserData() {
 
 	const a = document.createElement('a')
 	a.href = url
-	a.download = `Tweeq_Evaluation_${props.title}&name=${name.value}&date=${timestamp}.json`
+	a.download = `Tweeq_Evaluation_${props.title}&name=${personalInfo.name}&occupation=${personalInfo.occupation}&date=${timestamp}.json`
 	a.click()
 }
 
@@ -198,11 +198,17 @@ const hasNext = computed(() => {
 						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、可能な範囲でお名前やハンドルネーム（<em>Name</em>）とご職業（<em>Occupation</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
 					</p>
 					<p style="text-align: right">
-						<input v-model="name" placeholder="Name" type="text" />
-						<input v-model="occupation" placeholder="Occupation" type="text" />
+						<input v-model="personalInfo.name" placeholder="Name" type="text" />
+						<input
+							v-model="personalInfo.occupation"
+							placeholder="Occupation"
+							type="text"
+						/>
 						<button
 							class="complete"
-							:disabled="name === '' || occupation === ''"
+							:disabled="
+								personalInfo.name === '' || personalInfo.occupation === ''
+							"
 							@click="currentTask = 0"
 						>
 							Start<Icon icon="mdi:arrow-right" />
