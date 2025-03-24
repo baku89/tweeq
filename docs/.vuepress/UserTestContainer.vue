@@ -83,7 +83,7 @@ function downloadUserData() {
 
 	const a = document.createElement('a')
 	a.href = url
-	a.download = `Tweeq_Evaluation_${props.title}_${timestamp}.json`
+	a.download = `Tweeq_Evaluation_${props.title}&name=${name.value}&date=${timestamp}.json`
 	a.click()
 }
 
@@ -195,6 +195,9 @@ const hasNext = computed(() => {
 					<p>
 						Thank you for your participation. Please hit the download button
 						below and send the text file to the experimenter.
+					</p>
+					<p lang="ja">
+						ご協力ありがとうございました。以下のボタンを押して、テキストファイルをダウンロードし、実験者に送信してください。
 					</p>
 					<button class="download" @click="downloadUserData">
 						Download<Icon icon="mdi:arrow-down" />
