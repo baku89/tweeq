@@ -84,7 +84,7 @@ const circleStyle = computed(() => {
 
 	return {
 		left: `${t * 100}%`,
-		background: hsva2hex(props.modelValue),
+		background: hsva2hex({...props.modelValue, a: 1}),
 	}
 })
 </script>
