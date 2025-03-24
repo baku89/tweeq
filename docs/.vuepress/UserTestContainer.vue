@@ -15,6 +15,9 @@ defineSlots<{
 	default: (props: {modelValue: T}) => any
 }>()
 
+const name = ref('')
+const occupation = ref('')
+
 const currentTask = ref<'introduction' | number | 'result'>('introduction')
 
 let startTime = 0
@@ -64,7 +67,12 @@ function nextTask() {
 }
 
 const userDataJSON = computed(() => {
-	return JSON.stringify(allUserDatas)
+	return JSON.stringify({
+		title: props.title,
+		name,
+		occupation,
+		allUserDatas,
+	})
 })
 
 function downloadUserData() {
@@ -148,8 +156,9 @@ const hasNext = computed(() => {
 					<p>
 						During the test, all of your changes on the parameters are recorded
 						and used to evaluate the performance of the library. If you agree
-						with the conditions, please hit the <em>Start</em> button to proceed
-						the test.
+						with the conditions, please fill in your <em>Name</em> and
+						<em>Occupation</em> and hit the <em>Start</em> button to proceed the
+						test.
 					</p>
 					<p lang="ja">
 						<strong>タスク</strong>:
@@ -162,11 +171,16 @@ const hasNext = computed(() => {
 					</p>
 					<p lang="ja">
 						このユーザーテスト中におけるあなたのパラメーターの変更履歴は記録され、
-						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、
-						<em>Start</em>ボタンを押してテストを開始してください。
+						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、可能な範囲でお名前やハンドルネーム（<em>Name</em>）とご職業（<em>Occupation</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
 					</p>
 					<p style="text-align: right">
-						<button class="complete" @click="currentTask = 0">
+						<input v-model="name" placeholder="Name" type="text" />
+						<input v-model="occupation" placeholder="Occupation" type="text" />
+						<button
+							class="complete"
+							:disabled="name === '' || occupation === ''"
+							@click="currentTask = 0"
+						>
 							Start<Icon icon="mdi:arrow-right" />
 						</button>
 					</p>
@@ -190,7 +204,7 @@ const hasNext = computed(() => {
 <style lang="stylus" scoped>
 .UserTestContainer
 	position relative
-	margin 2rem 0
+	margin 2rem 0 2rem
 
 .sandbox
 	position relative
@@ -254,16 +268,33 @@ em
 	top 58%
 	transform translate(-50%, -50%)
 
-button
+input, button
 	margin-top 1rem
+	height 3.2rem
 	font-size 1.2rem
 	border 2px solid #000
 	padding 0.5rem 1rem
 	border-radius 0.5rem
 
+input
+	background #fff
+	width 10rem
+	text-align left
+	margin-right 1rem
+	border-width 1px
+	font-size 1rem
+
+	&::placeholder
+		color #000s
+
+button
 	&:hover
 		background #000
 		color #fff
+
+	&:disabled
+		border-style dotted
+		opacity .5
 
 	svg
 		display inline-block
