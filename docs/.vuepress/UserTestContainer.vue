@@ -148,12 +148,17 @@ const hasNext = computed(() => {
 			</div>
 			<div v-if="currentTask === 'introduction'" class="introduction">
 				<div class="introduction-content">
+					<img
+						class="instruction-animation"
+						src="./public/assets/instruction.webp"
+						alt="User Test"
+					/>
 					<p>
-						<strong>Task</strong>: Adjust the <em>Parameters</em> to match the
-						<em>Preview</em> with the <em>Target</em> as closely as possible.
-						When you're satisfied, press the <em>Complete</em> button.
-					</p>
-					<p>
+						<strong
+							>Task: Adjust the <em>Parameters</em> to match the
+							<em>Preview</em> with the <em>Target</em> as closely as possible.
+							When you're satisfied, press the <em>Complete</em> button.</strong
+						>
 						During the test, all of your changes on the parameters are recorded
 						and used to evaluate the performance of the library. If you agree
 						with the conditions, please fill in your <em>Name</em> and
@@ -161,15 +166,14 @@ const hasNext = computed(() => {
 						test.
 					</p>
 					<p lang="ja">
-						<strong>タスク</strong>:
-						<em>Parameters</em>を調整して、<em>Preview</em>を
-						<em>Target</em
-						>に近づけてください。あなたの感覚で十分だと思ったら、<em
-							>Complete</em
+						<strong
+							>タスク: <em>Parameters</em>を調整して、<em>Preview</em>を
+							<em>Target</em
+							>に近づけてください。あなたの感覚で十分だと思ったら、<em
+								>Complete</em
+							>
+							ボタンを押してください。</strong
 						>
-						ボタンを押してください。
-					</p>
-					<p lang="ja">
 						このユーザーテスト中におけるあなたのパラメーターの変更履歴は記録され、
 						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、可能な範囲でお名前やハンドルネーム（<em>Name</em>）とご職業（<em>Occupation</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
 					</p>
@@ -215,6 +219,13 @@ const hasNext = computed(() => {
 	&.hidden
 		opacity 0
 
+.instruction-animation
+	mix-blend-mode multiply
+	display block
+	margin 0 10rem 1rem
+	width calc(100% - 20rem)
+
+
 .introduction
 	position absolute
 	top 0
@@ -246,11 +257,11 @@ h3
 
 p
 	margin-bottom 1em
-	font-size .9rem
+	font-size .85rem
 	text-align justify
 
 	&[lang="ja"]
-		font-size .8rem
+		font-size .75rem
 
 em
 	font-family var(--tq-font-code)
