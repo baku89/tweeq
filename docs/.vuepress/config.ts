@@ -23,6 +23,14 @@ export default defineUserConfig({
 				crossorigin: 'anonymous',
 			},
 		],
+		[
+			'script',
+			{
+				src: 'https://jspm.dev/@spectrum-web-components/bundle/elements.js',
+				type: 'module',
+				async: true,
+			},
+		],
 	],
 	theme: defaultTheme({
 		navbar: [
