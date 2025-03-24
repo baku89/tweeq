@@ -11,10 +11,6 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
-	'update:modelValue': [value: T]
-}>()
-
 defineSlots<{
 	default: (props: {modelValue: T}) => any
 }>()
@@ -23,7 +19,6 @@ const modelValue = shallowRef(props.initialValue)
 
 function update(value: T) {
 	modelValue.value = value
-	emit('update:modelValue', value)
 }
 </script>
 

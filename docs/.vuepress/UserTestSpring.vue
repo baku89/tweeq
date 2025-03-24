@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import {shallowRef} from 'vue'
 
-import ExampleContainer from './ExampleContainer.vue'
 import PreviewSpring from './PreviewSpring.vue'
+import UserTestContainer from './UserTestContainer.vue'
+
 const model = shallowRef({
 	stiffness: 500,
 	damping: 0.5,
 })
+
+const targets = [
+	{stiffness: 100, damping: 0.1},
+	{stiffness: 1000, damping: 0.5},
+]
 
 const scheme = {
 	stiffness: {
@@ -29,7 +35,9 @@ const scheme = {
 </script>
 
 <template>
-	<ExampleContainer
+	<UserTestContainer
+		title="Spring"
+		:targets="targets"
 		:initialValue="model"
 		:scheme="scheme"
 		@update:modelValue="model = $event"
@@ -37,7 +45,7 @@ const scheme = {
 		<template #default="{modelValue}">
 			<PreviewSpring :modelValue="modelValue" />
 		</template>
-	</ExampleContainer>
+	</UserTestContainer>
 </template>
 
 <style lang="stylus" scoped>

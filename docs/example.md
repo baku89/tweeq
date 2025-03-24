@@ -2,18 +2,6 @@
 
 # Examples
 
-## Three-Point Lighting
-
-<ExampleThreePointLighting />
-
-## Drop Shadow
-
-<ExampleDropShadow />
-
-## Spring
-
-<ExampleSpring />
-
 ## Color Palettes
 
 <ExampleContainer

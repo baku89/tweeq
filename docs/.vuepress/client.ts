@@ -6,11 +6,11 @@ const registerComponents = async (app: App) => {
 	const Tq = await import('tweeq')
 	const DemoComponent = await import('./DemoComponent.vue')
 	const ExampleContainer = await import('./ExampleContainer.vue')
-	const ExampleThreePointLighting = await import(
-		'./ExampleThreePointLighting.vue'
+	const UserTestThreePointLighting = await import(
+		'./UserTestThreePointLighting.vue'
 	)
-	const ExampleSpring = await import('./ExampleSpring.vue')
-	const ExampleDropShadow = await import('./ExampleDropShadow.vue')
+	const UserTestSpring = await import('./UserTestSpring.vue')
+	const UserTestDropShadow = await import('./UserTestDropShadow.vue')
 	// Tweeqコンポーネントを登録
 	for (const [key, value] of Object.entries(Tq)) {
 		if (typeof value === 'function') continue
@@ -20,9 +20,12 @@ const registerComponents = async (app: App) => {
 	// ドキュメント用のカスタムコンポーネントを登録
 	app.component('DemoComponent', DemoComponent.default)
 	app.component('ExampleContainer', ExampleContainer.default)
-	app.component('ExampleThreePointLighting', ExampleThreePointLighting.default)
-	app.component('ExampleSpring', ExampleSpring.default)
-	app.component('ExampleDropShadow', ExampleDropShadow.default)
+	app.component(
+		'UserTestThreePointLighting',
+		UserTestThreePointLighting.default
+	)
+	app.component('UserTestSpring', UserTestSpring.default)
+	app.component('UserTestDropShadow', UserTestDropShadow.default)
 }
 
 export default defineClientConfig({

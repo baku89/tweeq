@@ -48,7 +48,6 @@ defineProps<{
 .preview
 	border-radius var(--tq-popup-border-radius)
 	overflow hidden
-	width 30em
 	aspect-ratio 1
 	position relative
 	background black

@@ -2,15 +2,24 @@
 import {vec2} from 'linearly'
 import {ref} from 'vue'
 
-import ExampleContainer from './ExampleContainer.vue'
 import PreviewDropShadow from './PreviewDropShadow.vue'
+import UserTestContainer from './UserTestContainer.vue'
 
 const model = ref({
-	offset: [2.5, 2.5] as vec2,
+	offset: [0, 0] as vec2,
 	blur: 10,
 	spread: 0,
 	color: '#00000030',
 })
+
+const targets = [
+	{
+		offset: [2.5, 2.5],
+		blur: 10,
+		spread: 0,
+		color: '#1e387d36',
+	},
+]
 
 const scheme = {
 	offset: {
@@ -40,9 +49,14 @@ const scheme = {
 </script>
 
 <template>
-	<ExampleContainer :initialValue="model" :scheme="scheme">
+	<UserTestContainer
+		title="Drop Shadow"
+		:initialValue="model"
+		:targets="targets"
+		:scheme="scheme"
+	>
 		<template #default="{modelValue}">
 			<PreviewDropShadow :modelValue="modelValue" />
 		</template>
-	</ExampleContainer>
+	</UserTestContainer>
 </template>

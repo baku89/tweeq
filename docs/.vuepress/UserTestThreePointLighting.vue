@@ -1,14 +1,33 @@
 <script setup lang="ts">
-import ExampleContainer from './ExampleContainer.vue'
 import PreviewThreePointLighting from './PreviewThreePointLighting.vue'
+import UserTestContainer from './UserTestContainer.vue'
 const initialValue = {
 	keyIntensity: 100,
-	keyColor: '#dcd7f5',
+	keyColor: '#ffffff',
 	fillIntensity: 100,
-	fillColor: '#f19999',
-	backIntensity: 0,
+	fillColor: '#ffffff',
+	backIntensity: 100,
 	backColor: '#ffffff',
 }
+
+const targets: (typeof initialValue)[] = [
+	{
+		keyIntensity: 63,
+		keyColor: '#dcd7f5',
+		fillIntensity: 28,
+		fillColor: '#f65436',
+		backIntensity: 110,
+		backColor: '#ffffff',
+	},
+	{
+		keyIntensity: 140,
+		keyColor: '#fed9a8',
+		fillIntensity: 130,
+		fillColor: '#8a83f9',
+		backIntensity: 70,
+		backColor: '#f1dd44',
+	},
+]
 
 const scheme = {
 	keyIntensity: {
@@ -54,11 +73,16 @@ const scheme = {
 </script>
 
 <template>
-	<ExampleContainer :initialValue="initialValue" :scheme="scheme">
+	<UserTestContainer
+		title="Three Point Lighting"
+		:initialValue="initialValue"
+		:targets="targets"
+		:scheme="scheme"
+	>
 		<template #default="{modelValue}">
 			<div class="preview">
 				<PreviewThreePointLighting :modelValue="modelValue" />
 			</div>
 		</template>
-	</ExampleContainer>
+	</UserTestContainer>
 </template>
