@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import {vec2} from 'linearly'
 import {ref} from 'vue'
 
 import ExampleContainer from './ExampleContainer.vue'
+import PreviewDropShadow from './PreviewDropShadow.vue'
 
 const model = ref({
-	offset: [2.5, 2.5],
+	offset: [2.5, 2.5] as vec2,
 	blur: 10,
 	spread: 0,
 	color: '#00000030',
@@ -43,45 +45,8 @@ const scheme = {
 		:scheme="scheme"
 		@update:modelValue="model = $event"
 	>
-		<template
-			#default="{
-				modelValue: {
-					offset: [x, y],
-					blur,
-					spread,
-					color,
-				},
-			}"
-		>
-			<div class="preview">
-				<div
-					class="round-rect"
-					:style="{
-						boxShadow: `${x / 10}em ${y / 10}em ${blur / 10}em ${spread / 10}em ${color}`,
-					}"
-				/>
-			</div>
+		<template #default="{modelValue}">
+			<PreviewDropShadow :modelValue="modelValue" />
 		</template>
 	</ExampleContainer>
 </template>
-
-<style lang="stylus" scoped>
-
-.preview
-	border-radius var(--tq-popup-border-radius)
-	overflow hidden
-	width 30em
-	aspect-ratio 1
-	position relative
-	background var(--tq-color-input)
-	display flex
-	align-items center
-	justify-content center
-
-.round-rect
-	width 10em
-	height 10em
-	border-radius 1em
-	background white
-	border 1px solid rgba(0, 0, 0, 0.2)
-</style>
