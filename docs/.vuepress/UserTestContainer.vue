@@ -33,7 +33,7 @@ const spectrum = computed(() => {
 	return value.includes(kebab(props.title))
 })
 
-const currentTask = ref<'introduction' | number | 'result'>(0) //'introduction')
+const currentTask = ref<'introduction' | number | 'result'>('introduction')
 
 let startTime = 0
 

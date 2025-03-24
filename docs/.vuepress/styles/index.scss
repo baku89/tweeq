@@ -240,3 +240,8 @@ td code {
 	font-family: var(--code-font-family);
 	width: min-content;
 }
+
+// For user testing
+.user-test .vp-navbar {
+	display: none;
+}
