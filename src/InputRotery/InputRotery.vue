@@ -114,7 +114,9 @@ watch(
 	([result]) => {
 		if (result.value === undefined) return
 
-		emit('update:modelValue', result.value)
+		if (tweaking.value) {
+			emit('update:modelValue', result.value)
+		}
 
 		if (tweaking.value) {
 			if (tweakMode.value === 'absolute') {
@@ -130,7 +132,8 @@ watch(
 				})
 			}
 		}
-	}
+	},
+	{flush: 'sync'}
 )
 
 useCursorStyle(() => (tweaking.value ? 'none' : null))
