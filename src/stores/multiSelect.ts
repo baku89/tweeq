@@ -101,10 +101,6 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		watch(
 			source.focusing,
 			focus => {
-				if (meta.value || shift.value) {
-					store.subfocus = true
-				}
-
 				if (focus) {
 					// If shift is pressed, select the input inbetween
 					// the focused input and the newly focused input
@@ -129,7 +125,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 						})
 					}
 
-					if (!meta.value && !shift.value) {
+					if (!store.subfocus && !meta.value && !shift.value) {
 						defocusAll()
 					}
 
