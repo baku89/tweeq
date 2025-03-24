@@ -40,11 +40,7 @@ const scheme = {
 </script>
 
 <template>
-	<ExampleContainer
-		:initialValue="model"
-		:scheme="scheme"
-		@update:modelValue="model = $event"
-	>
+	<ExampleContainer :initialValue="model" :scheme="scheme">
 		<template #default="{modelValue}">
 			<PreviewDropShadow :modelValue="modelValue" />
 		</template>
