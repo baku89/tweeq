@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import Case from 'case'
-import {computed, shallowRef, toRaw, watchEffect} from 'vue'
+import {computed, nextTick} from 'vue'
 
 import {InputAngle} from '../InputAngle'
 import {InputCode} from '../InputCode'
@@ -15,12 +15,6 @@ import type {InputComplexProps, Scheme} from './types'
 
 const props = defineProps<InputComplexProps<T>>()
 
-const currentValue = shallowRef<T>(toRaw(props.modelValue))
-
-watchEffect(() => {
-	currentValue.value = toRaw(props.modelValue)
-})
-
 const emit = defineEmits<{
 	'update:modelValue': [T]
 }>()
@@ -30,12 +24,27 @@ const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
 })
 
 function updateModelValue(name: keyof T, value: any) {
-	currentValue.value = {...currentValue.value, [name]: value}
-	emit('update:modelValue', currentValue.value)
+	commitChange(name, value)
 }
 
 function getModelValue<K extends keyof T>(name: K) {
-	return currentValue.value[name] as any
+	return props.modelValue[name] as any
+}
+
+let changedModel: T | undefined
+
+function commitChange(name: keyof T, value: any) {
+	if (!changedModel) {
+		nextTick(() => {
+			emit('update:modelValue', changedModel as T)
+			changedModel = undefined
+		})
+
+		changedModel = {...props.modelValue}
+		changedModel = {...props.modelValue}
+	}
+
+	changedModel[name] = value
 }
 </script>
 
