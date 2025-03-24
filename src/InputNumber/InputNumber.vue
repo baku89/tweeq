@@ -429,7 +429,7 @@ whenever(focusing, () => nextTick(() => $input.value?.select()))
 const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $root,
-	focusing,
+	focusing: computed(() => focusing.value || tweaking.value),
 	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
