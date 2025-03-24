@@ -11,24 +11,39 @@ import {InputString} from '../InputString'
 import {InputSwitch} from '../InputSwitch'
 import {InputVec} from '../InputVec'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
+import {InputEmits} from '../types'
 import type {InputComplexProps, Scheme} from './types'
 
 const props = defineProps<InputComplexProps<T>>()
 
-const emit = defineEmits<{
-	'update:modelValue': [T]
-}>()
+const emit = defineEmits<InputEmits<T>>()
 
 const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
 	return Object.entries(props.scheme)
 })
 
-function updateModelValue(name: keyof T, value: any) {
-	commitChange(name, value)
+function getComponentName(param: Scheme<T>[keyof T]) {
+	if (param.type === 'number') {
+		if (param.ui === 'angle') return InputAngle
+		return InputNumber
+	} else if (param.type === 'string') {
+		if (param.ui === 'code') return InputCode
+		if (param.ui === 'color') return InputColor
+		return InputString
+	} else if (param.type === 'boolean') {
+		return InputSwitch
+	} else if (param.type === 'vec2') {
+		if (param.ui === 'position') return InputPosition
+		return InputVec
+	}
 }
 
 function getModelValue<K extends keyof T>(name: K) {
 	return props.modelValue[name] as any
+}
+
+function updateModelValue(name: keyof T, value: any) {
+	commitChange(name, value)
 }
 
 let changedModel: T | undefined
@@ -57,60 +72,15 @@ function commitChange(name: keyof T, value: any) {
 			:label="param.label ?? Case.capital(name as any)"
 			:icon="param.icon"
 		>
-			<template v-if="param.type === 'number'">
-				<InputAngle
-					v-if="param.ui === 'angle'"
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-				<InputNumber
-					v-else
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-			</template>
-			<template v-else-if="param.type === 'string'">
-				<InputCode
-					v-if="param.ui === 'code'"
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-				<InputColor
-					v-else-if="param.ui === 'color'"
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-				<InputString
-					v-else
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-			</template>
-			<InputSwitch
-				v-else-if="param.type === 'boolean'"
+			<component
+				:is="getComponentName(param)"
 				:modelValue="getModelValue(name)"
 				v-bind="param"
 				@update:modelValue="updateModelValue(name, $event)"
+				@focus="emit('focus')"
+				@blur="emit('blur')"
+				@confirm="emit('confirm')"
 			/>
-			<template v-else-if="param.type === 'vec2'">
-				<InputPosition
-					v-if="param.ui === 'position'"
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-				<InputVec
-					v-else
-					:modelValue="getModelValue(name)"
-					v-bind="param"
-					@update:modelValue="updateModelValue(name, $event)"
-				/>
-			</template>
 		</Parameter>
 	</ParameterGrid>
 </template>
