@@ -9,7 +9,8 @@ import {InputEmits} from '../types'
 import * as V from '../validator'
 import InputColorPad from './InputColorPad.vue'
 import type {InputColorProps} from './types'
-const props = defineProps<InputColorProps>()
+
+const props = defineProps<InputColorProps & {label: string}>()
 const emit = defineEmits<InputEmits<string>>()
 
 const theme = useThemeStore()

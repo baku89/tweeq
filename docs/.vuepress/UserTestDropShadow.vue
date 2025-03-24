@@ -2,17 +2,25 @@
 import {vec2} from 'linearly'
 import {ref} from 'vue'
 
+import SpInputDropShadow from './components/SpInputDropShadow.vue'
 import PreviewDropShadow from './PreviewDropShadow.vue'
 import UserTestContainer from './UserTestContainer.vue'
 
-const model = ref({
+type Model = {
+	offset: vec2
+	blur: number
+	spread: number
+	color: string
+}
+
+const model = ref<Model>({
 	offset: [0, 0] as vec2,
 	blur: 10,
 	spread: 0,
 	color: '#00000030',
 })
 
-const targets = [
+const targets: Model[] = [
 	{
 		offset: [2.5, 2.5],
 		blur: 10,
@@ -57,6 +65,9 @@ const scheme = {
 	>
 		<template #default="{modelValue}">
 			<PreviewDropShadow :modelValue="modelValue" />
+		</template>
+		<template #spectrum="{modelValue, update}">
+			<SpInputDropShadow :modelValue="modelValue" @update:modelValue="update" />
 		</template>
 	</UserTestContainer>
 </template>

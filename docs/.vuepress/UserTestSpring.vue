@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {shallowRef} from 'vue'
 
+import SpInputSpring from './components/SpInputSpring.vue'
 import PreviewSpring from './PreviewSpring.vue'
 import UserTestContainer from './UserTestContainer.vue'
 
@@ -21,7 +22,7 @@ const scheme = {
 		max: 1000,
 		clampMin: true,
 		clampMax: true,
-		icon: 'simple-icons:teespring',
+		// icon: 'simple-icons:teespring',
 	},
 	damping: {
 		type: 'number',
@@ -29,7 +30,7 @@ const scheme = {
 		max: 1,
 		clampMin: true,
 		clampMax: true,
-		icon: 'jam:rubber',
+		// icon: 'jam:rubber',
 	},
 }
 </script>
@@ -44,6 +45,9 @@ const scheme = {
 	>
 		<template #default="{modelValue}">
 			<PreviewSpring :modelValue="modelValue" />
+		</template>
+		<template #spectrum="{modelValue, update}">
+			<SpInputSpring :modelValue="modelValue" @update:modelValue="update" />
 		</template>
 	</UserTestContainer>
 </template>

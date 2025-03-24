@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
+import {useUrlSearchParams} from '@vueuse/core'
+import {kebab} from 'case'
 import {Icon, InputComplex, Viewport} from 'tweeq'
 import {computed, ref, shallowRef, watch} from 'vue'
 
@@ -12,13 +14,26 @@ interface Props {
 const props = defineProps<Props>()
 
 defineSlots<{
-	default: (props: {modelValue: T}) => any
+	default(props: {modelValue: T}): any
+	spectrum(props: {modelValue: T; update: (value: T) => void}): any
 }>()
 
 const name = ref('')
 const occupation = ref('')
 
-const currentTask = ref<'introduction' | number | 'result'>('introduction')
+const searchParams = useUrlSearchParams()
+
+const spectrum = computed(() => {
+	const value = searchParams.sp
+
+	if (value === kebab(props.title)) return true
+
+	if (!value || typeof value !== 'object') return false
+
+	return value.includes(kebab(props.title))
+})
+
+const currentTask = ref<'introduction' | number | 'result'>(0) //'introduction')
 
 let startTime = 0
 
@@ -68,6 +83,7 @@ function nextTask() {
 
 const userDataJSON = computed(() => {
 	return JSON.stringify({
+		ui: spectrum.value ? 'spectrum' : 'tweeq',
 		title: props.title,
 		name,
 		occupation,
@@ -115,7 +131,11 @@ const hasNext = computed(() => {
 				</div>
 				<div class="parameters">
 					<h3>Parameters</h3>
+					<template v-if="spectrum">
+						<slot name="spectrum" :modelValue="modelValue" :update="update" />
+					</template>
 					<InputComplex
+						v-else
 						:modelValue="modelValue"
 						:scheme="scheme"
 						@update:modelValue="update"

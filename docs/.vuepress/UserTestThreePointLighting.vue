@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpInputThreePointLighting from './components/SpInputThreePointLighting.vue'
 import PreviewThreePointLighting from './PreviewThreePointLighting.vue'
 import UserTestContainer from './UserTestContainer.vue'
 const initialValue = {
@@ -36,12 +37,12 @@ const scheme = {
 		max: 200,
 		clampMax: false,
 		suffix: '%',
-		icon: 'mdi:lightbulb',
+		// icon: 'mdi:lightbulb',
 	},
 	keyColor: {
 		type: 'string',
 		ui: 'color',
-		icon: 'mdi:color',
+		// icon: 'mdi:color',
 	},
 	fillIntensity: {
 		type: 'number',
@@ -49,12 +50,12 @@ const scheme = {
 		max: 200,
 		clampMax: false,
 		suffix: '%',
-		icon: 'mdi:lightbulb',
+		// icon: 'mdi:lightbulb',
 	},
 	fillColor: {
 		type: 'string',
 		ui: 'color',
-		icon: 'mdi:color',
+		// icon: 'mdi:color',
 	},
 	backIntensity: {
 		type: 'number',
@@ -62,12 +63,12 @@ const scheme = {
 		max: 200,
 		clampMax: false,
 		suffix: '%',
-		icon: 'mdi:lightbulb',
+		// icon: 'mdi:lightbulb',
 	},
 	backColor: {
 		type: 'string',
 		ui: 'color',
-		icon: 'mdi:color',
+		// icon: 'mdi:color',
 	},
 }
 </script>
@@ -83,6 +84,12 @@ const scheme = {
 			<div class="preview">
 				<PreviewThreePointLighting :modelValue="modelValue" />
 			</div>
+		</template>
+		<template #spectrum="{modelValue, update}">
+			<SpInputThreePointLighting
+				:modelValue="modelValue"
+				@update:modelValue="update"
+			/>
 		</template>
 	</UserTestContainer>
 </template>

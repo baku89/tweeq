@@ -13,6 +13,8 @@ function onInput(e: any) {
 <template>
 	<sp-theme system="spectrum" color="light" scale="medium">
 		<sp-slider
+			class="slider"
+			hide-stepper
 			:label="label"
 			:min="min"
 			:max="max"

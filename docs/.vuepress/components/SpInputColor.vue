@@ -55,6 +55,7 @@ const $button = useTemplateRef('$button')
 <template>
 	<div class="SpInputColor">
 		<sp-theme system="spectrum" color="light" scale="medium">
+			<sp-field-label>{{ label }}</sp-field-label>
 			<div class="input">
 				<button
 					ref="$button"
@@ -63,6 +64,7 @@ const $button = useTemplateRef('$button')
 					@click="open = !open"
 				/>
 				<sp-textfield
+					class="textfield"
 					:label="label"
 					:value="modelValue"
 					editable
@@ -81,6 +83,7 @@ const $button = useTemplateRef('$button')
 				<sp-color-area :color="withoutAlpha" @input="onInputColor" />
 				<sp-color-slider :color="withoutAlpha" @input="onInputColor" />
 				<sp-slider
+					v-if="props.alpha"
 					:value="alpha"
 					:step="0.01"
 					:min="0"
@@ -97,9 +100,12 @@ const $button = useTemplateRef('$button')
 <style lang="stylus" scoped>
 @import '../../../src/InputColor/common.styl'
 
+.SpInputColor
+	margin 8px 0
+
 .input
 	display flex
-	gap 6px
+	gap 4px
 
 .button
 	aspect-ratio 1
@@ -107,6 +113,9 @@ const $button = useTemplateRef('$button')
 	border 1px solid rgb(105, 105, 105)
 	border-radius 5px
 	background-checkerboard()
+
+.textfield
+	flex-grow 1
 
 .popover
 	border 1px solid rgb(105, 105, 105)
