@@ -56,10 +56,20 @@ function commitChange(name: keyof T, value: any) {
 		})
 
 		changedModel = {...props.modelValue}
-		changedModel = {...props.modelValue}
 	}
 
 	changedModel[name] = value
+}
+
+let willConfirm = false
+function commitConfirm() {
+	if (!willConfirm) {
+		nextTick(() => {
+			emit('confirm')
+			willConfirm = false
+		})
+	}
+	willConfirm = true
 }
 </script>
 
@@ -79,7 +89,7 @@ function commitChange(name: keyof T, value: any) {
 				@update:modelValue="updateModelValue(name, $event)"
 				@focus="emit('focus')"
 				@blur="emit('blur')"
-				@confirm="emit('confirm')"
+				@confirm="commitConfirm()"
 			/>
 		</Parameter>
 	</ParameterGrid>

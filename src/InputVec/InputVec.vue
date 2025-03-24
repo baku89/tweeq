@@ -48,6 +48,17 @@ function commitChange(index: number, value: number) {
 
 	changedModel[index] = value
 }
+
+let willConfirm = false
+function commitConfirm() {
+	if (!willConfirm) {
+		nextTick(() => {
+			emit('confirm')
+			willConfirm = false
+		})
+	}
+	willConfirm = true
+}
 </script>
 
 <template>
@@ -64,7 +75,7 @@ function commitChange(index: number, value: number) {
 			@update:modelValue="commitChange(i, $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
-			@confirm="emit('confirm')"
+			@confirm="commitConfirm()"
 		/>
 	</InputGroup>
 </template>
