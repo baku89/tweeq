@@ -80,11 +80,8 @@ useDrag($input, {
 	onClick() {
 		$input.value?.select()
 	},
-	onDragStart() {
-		console.log('drag start')
-	},
+	onDragStart() {},
 	onDrag({delta: [dx]}) {
-		console.log('dragging')
 		emit('update:modelValue', props.modelValue + dx)
 	},
 })
@@ -94,7 +91,7 @@ watchSyncEffect(() => {
 	else emit('blur')
 })
 
-function onPointerDown(event: PointerEvent) {
+function ignorePointerdownUnlessFocusing(event: PointerEvent) {
 	if (!focused.value) {
 		event.preventDefault()
 	}
@@ -113,7 +110,7 @@ function onPointerDown(event: PointerEvent) {
 		@blur="focused = false"
 		@confirm="confirm"
 		@click.middle="toggleTimeFormat"
-		@pointerdown="onPointerDown"
+		@pointerdown="ignorePointerdownUnlessFocusing"
 	/>
 </template>
 
