@@ -330,7 +330,6 @@ watch(
 	() => props.modelValue,
 	value => {
 		if (value !== validLocal.value) {
-			console.log('InputNumber::SetLocal', value, validLocal.value)
 			local.value = value
 		}
 	},
@@ -356,9 +355,16 @@ watch(
 	{immediate: true, flush: 'sync'}
 )
 
+let emittedModel: number | undefined
+
 watchSyncEffect(() => {
-	if (validLocal.value !== undefined && validLocal.value !== props.modelValue) {
-		emit('update:modelValue', validLocal.value)
+	if (
+		validLocal.value !== undefined &&
+		validLocal.value !== props.modelValue &&
+		validLocal.value !== emittedModel
+	) {
+		emittedModel = validLocal.value
+		emit('update:modelValue', emittedModel)
 	}
 })
 
