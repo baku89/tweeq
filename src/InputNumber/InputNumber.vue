@@ -15,7 +15,7 @@ import {
 	unref,
 	useTemplateRef,
 	watch,
-	watchEffect,
+	watchSyncEffect,
 } from 'vue'
 
 import {Icon} from '../Icon'
@@ -255,12 +255,6 @@ const validate = computed(() =>
 
 const {validateResult, validLocal} = useValidator(local, validate)
 
-watchEffect(() => {
-	if (validLocal.value !== undefined && validLocal.value !== props.modelValue) {
-		emit('update:modelValue', validLocal.value)
-	}
-})
-
 const invalid = computed(() => {
 	if (props.invalid) return true
 	if (tweaking.value) return false
@@ -416,6 +410,12 @@ watch(
 	},
 	{immediate: true, flush: 'sync'}
 )
+
+watchSyncEffect(() => {
+	if (validLocal.value !== undefined && validLocal.value !== props.modelValue) {
+		emit('update:modelValue', validLocal.value)
+	}
+})
 
 // Click to select all
 whenever(focusing, () => nextTick(() => $input.value?.select()))
