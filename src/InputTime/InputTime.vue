@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import {computed, ref, watch, watchEffect} from 'vue'
+import {
+	computed,
+	ref,
+	useTemplateRef,
+	watch,
+	watchEffect,
+	watchSyncEffect,
+} from 'vue'
 
 import {InputString} from '../InputString'
 import {InputEmits} from '../types'
+import {useDrag} from '../useDrag'
 import {InputTimeProps, TimeFormat} from './types'
 import {formatTimecode, parseTimecode, useInputTimeContext} from './utils'
 
 const props = withDefaults(defineProps<InputTimeProps>(), {
 	frameRate: 24,
+	min: -Infinity,
+	max: Infinity,
 })
 
 const emit = defineEmits<InputEmits<number>>()
@@ -61,15 +71,40 @@ function toggleTimeFormat() {
 	display.value = print(props.modelValue, context.format)
 }
 
-watchEffect(() => {
+//------------------------------------------------------------------------------
+// Tweak
+
+const $input = useTemplateRef('$input')
+
+useDrag($input, {
+	onClick() {
+		$input.value?.select()
+	},
+	onDragStart() {
+		console.log('drag start')
+	},
+	onDrag({delta: [dx]}) {
+		console.log('dragging')
+		emit('update:modelValue', props.modelValue + dx)
+	},
+})
+
+watchSyncEffect(() => {
 	if (focused.value) emit('focus')
 	else emit('blur')
 })
+
+function onPointerDown(event: PointerEvent) {
+	if (!focused.value) {
+		event.preventDefault()
+	}
+}
 </script>
 
 <template>
 	<InputString
 		ref="$input"
+		class="TqInputTime"
 		:modelValue="display"
 		font="numeric"
 		align="center"
@@ -78,5 +113,15 @@ watchEffect(() => {
 		@blur="focused = false"
 		@confirm="confirm"
 		@click.middle="toggleTimeFormat"
+		@pointerdown="onPointerDown"
 	/>
 </template>
+
+<style lang="stylus" scoped>
+
+.TqInputTime
+	cursor: col-resize
+
+	&:focus
+		cursor inherit
+</style>
