@@ -106,8 +106,8 @@ export function useDrag(
 	let dragDelayTimer: ReturnType<typeof setTimeout> | undefined
 	let pointerdown = false
 
-	const targetEl = computed<HTMLElement | SVGElement | null>(() =>
-		unrefElement(target.value)
+	const targetEl = computed<HTMLElement | SVGElement | null>(
+		() => unrefElement(target.value) ?? null
 	)
 
 	const bound = useElementBounding(targetEl)
