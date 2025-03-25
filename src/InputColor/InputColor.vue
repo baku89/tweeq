@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
+import chroma from 'chroma-js'
 import {computed, useTemplateRef} from 'vue'
 
 import {InputGroup} from '../InputGroup'
+import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
@@ -19,6 +21,32 @@ const $root = useTemplateRef('$root')
 const {width} = useElementSize($root)
 
 const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
+
+const color = computed(() => {
+	if (chroma.valid(props.modelValue)) {
+		return chroma(props.modelValue)
+	}
+
+	return chroma('black')
+})
+
+const opaqueColor = computed(() => color.value.alpha(1).hex())
+
+const alpha = computed(() => color.value.alpha() * 100)
+
+function onInputOpaqueColor(value: string) {
+	const color = chroma(value)
+
+	if (color.alpha() * 100 !== alpha.value) {
+		emit('update:modelValue', value)
+	} else {
+		emit('update:modelValue', color.alpha(alpha.value / 100).hex())
+	}
+}
+
+function onUpdateAlpha(value: number) {
+	emit('update:modelValue', color.value.alpha(value / 100).hex())
+}
 </script>
 
 <template>
@@ -35,13 +63,24 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 		<InputString
 			v-if="showColorCode"
 			font="monospace"
-			:modelValue="modelValue"
+			:modelValue="opaqueColor"
 			:validator="V.colorCode"
 			inlinePosition="end"
-			@update:modelValue="emit('update:modelValue', $event)"
+			@update:modelValue="onInputOpaqueColor"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"
+		/>
+		<InputNumber
+			v-if="props.alpha && showColorCode"
+			class="alpha"
+			:modelValue="alpha"
+			:validator="V.colorCode"
+			suffix="%"
+			:min="0"
+			:max="100"
+			inlinePosition="end"
+			@update:modelValue="onUpdateAlpha"
 		/>
 	</InputGroup>
 </template>
@@ -53,4 +92,7 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 
 	.default-button
 		width 100%
+
+.alpha
+	width calc(var(--tq-input-height) * 4)
 </style>
