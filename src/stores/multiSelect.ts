@@ -84,6 +84,32 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		return selectedInputs.value.length > 1
 	})
 
+	function selectInbetween(start: Rect, end: Rect) {
+		const startCenter = Rect.center(start)
+		const endCenter = Rect.center(end)
+		const direction = vec2.sub(endCenter, startCenter)
+
+		const selectionRect = Rect.unite(start, end)
+
+		const inbetweenIds: {id: symbol; order: number}[] = []
+
+		inputs.forEach(({el, id}) => {
+			if (!el) return
+
+			const rect = Rect.fromDOMRect(el.getBoundingClientRect())
+
+			if (Rect.intersects(selectionRect, rect)) {
+				const center = Rect.center(rect)
+				const order = vec2.dot(vec2.sub(center, startCenter), direction)
+
+				inbetweenIds.push({id, order})
+			}
+		})
+
+		inbetweenIds.sort((a, b) => a.order - b.order)
+		inbetweenIds.forEach(({id}) => selectId(id))
+	}
+
 	// Entry point for multi select for each input component
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
@@ -115,29 +141,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 							source.el.value.getBoundingClientRect()
 						)
 
-						const lastCenter = Rect.center(lastRect)
-						const newCenter = Rect.center(newRect)
-						const direction = vec2.sub(newCenter, lastCenter)
-
-						const selectionRect = Rect.unite(lastRect, newRect)
-
-						const inbetweenIds: {id: symbol; order: number}[] = []
-
-						inputs.forEach(({el, id}) => {
-							if (!el) return
-
-							const rect = Rect.fromDOMRect(el.getBoundingClientRect())
-
-							if (Rect.intersects(selectionRect, rect)) {
-								const center = Rect.center(rect)
-								const order = vec2.dot(vec2.sub(center, lastCenter), direction)
-
-								inbetweenIds.push({id, order})
-							}
-						})
-
-						inbetweenIds.sort((a, b) => a.order - b.order)
-						inbetweenIds.forEach(({id}) => selectId(id))
+						selectInbetween(lastRect, newRect)
 					}
 
 					if (!subfocus.value && !meta.value && !shift.value) {
@@ -146,6 +150,10 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 					if (!subfocus.value) {
 						selectId(id)
+					}
+				} else {
+					if (!meta.value && !shift.value) {
+						defocusAll()
 					}
 				}
 			},
