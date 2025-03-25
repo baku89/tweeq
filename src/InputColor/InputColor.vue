@@ -26,7 +26,7 @@ const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 		<InputColorPad
 			v-bind="props"
 			:class="{'only-pad': !showColorCode}"
-			:inlinePsition="showColorCode ? 'start' : undefined"
+			:inlinePosition="showColorCode ? 'start' : undefined"
 			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"

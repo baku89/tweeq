@@ -311,11 +311,19 @@ useCopyPaste({
 		multi.confirm()
 	},
 })
+
+//------------------------------------------------------------------------------
+// Component settings
+
+defineOptions({
+	inheritAttrs: false,
+})
 </script>
 
 <template>
 	<button
 		ref="$button"
+		v-bind="$attrs"
 		class="InputColorPad"
 		:class="{focus: (open && temporarilyHidePopup) || multi.subfocus}"
 	>
