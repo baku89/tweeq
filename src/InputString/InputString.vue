@@ -20,16 +20,10 @@ const local = ref(props.modelValue)
 const display = ref(props.modelValue)
 const {validLocal, validateResult} = useValidator(local, props.validator)
 
-watch(validLocal, validLocal => {
-	if (validLocal !== undefined && validLocal !== props.modelValue) {
-		emit('update:modelValue', validLocal)
-	}
-})
-
 const $input = useTemplateRef('$input')
 const focusing = useFocus($input).focused
 
-const enableExpression = ref(false)
+const expressionEnabled = ref(false)
 const expressionError = ref<string | undefined>(undefined)
 
 const invalid = computed(
@@ -40,13 +34,23 @@ const invalid = computed(
 )
 
 watch(
-	() => props.modelValue,
-	value => {
-		if (value === validLocal.value) return
+	() => [props.modelValue, focusing.value] as const,
+	([value, focusing]) => {
+		if (value === validLocal.value || focusing) return
 
 		local.value = display.value = value
 	},
 	{immediate: true, flush: 'sync'}
+)
+
+watch(
+	validLocal,
+	validLocal => {
+		if (validLocal !== undefined && validLocal !== props.modelValue) {
+			emit('update:modelValue', validLocal)
+		}
+	},
+	{flush: 'sync'}
 )
 
 function onFocus(e: FocusEvent) {
@@ -57,19 +61,23 @@ function onFocus(e: FocusEvent) {
 function onKeyDown(e: KeyboardEvent) {
 	if (e.metaKey && e.key === '=') {
 		e.preventDefault()
-		enableExpression.value = true
-		display.value = `"${local.value}"`
-		localAtFocus = local.value
+		enableExpression()
 	}
 }
 
 let localAtFocus = ''
 
+function enableExpression() {
+	expressionEnabled.value = true
+	display.value = `"${local.value}"`
+	localAtFocus = local.value
+}
+
 function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
 	display.value = newValue
 
-	if (enableExpression.value) {
+	if (expressionEnabled.value) {
 		try {
 			const fn = eval(`(x, {i}) => {
 				const result = (${newValue});
@@ -98,8 +106,8 @@ function onInput(e: Event) {
 function confirm() {
 	if (validLocal.value === undefined) return
 
-	display.value = local.value = validLocal.value
-	enableExpression.value = false
+	display.value = local.value = props.modelValue
+	expressionEnabled.value = false
 	expressionError.value = undefined
 
 	emit('confirm')
@@ -124,7 +132,7 @@ defineExpose({
 const font = computed(() => {
 	if (props.font) return props.font
 
-	if (enableExpression.value) return 'monospace'
+	if (expressionEnabled.value) return 'monospace'
 
 	return undefined
 })

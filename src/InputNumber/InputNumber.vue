@@ -55,7 +55,7 @@ const $input = useTemplateRef('$input')
 const {left, width, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused
-const enableExpression = ref(false)
+const expressionEnabled = ref(false)
 const expressionError = ref<string | undefined>(undefined)
 
 const local = ref(props.modelValue)
@@ -232,6 +232,8 @@ const {dragging: tweaking} = useDrag($root, {
 	},
 })
 
+const editing = computed(() => focusing.value || tweaking.value)
+
 //------------------------------------------------------------------------------
 // Emit update:modelValue when the local value is changed
 
@@ -256,7 +258,7 @@ function confirm() {
 
 	local.value = validLocal.value
 	display.value = toFixed(local.value, precision.value)
-	enableExpression.value = false
+	expressionEnabled.value = false
 	expressionError.value = undefined
 
 	emit('confirm')
@@ -279,7 +281,7 @@ function onInput(e: Event) {
 	display.value = value
 
 	if (!/^[0-9.]*$/.test(value)) {
-		enableExpression.value = true
+		expressionEnabled.value = true
 	}
 
 	try {
@@ -476,7 +478,7 @@ const barStyle = computed<StyleValue>(() => {
 			inputmode="numeric"
 			pattern="d*"
 			:value="focusing ? display : prefix + display + suffix"
-			:font="enableExpression ? 'monospace' : undefined"
+			:font="expressionEnabled ? 'monospace' : undefined"
 			:invalid="invalid || undefined"
 			:disabled="disabled || undefined"
 			@input="onInput"
