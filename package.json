@@ -9,7 +9,8 @@
 		"build:stylus": "stylus src/global.styl src/common.styl src/setup.styl --out lib",
 		"build:doc": "vuepress build docs",
 		"build": "rm -rf lib && npm run build:vite && npm run build:stylus",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"test": "vitest"
 	},
 	"files": [
 		"lib"
@@ -73,6 +74,7 @@
 		"vite": "^5.4.3",
 		"vite-plugin-dts": "^4.2.1",
 		"vite-plugin-glsl": "^1.3.3",
+		"vitest": "^3.0.9",
 		"vue-eslint-parser": "^9.4.3",
 		"vuepress": "^2.0.0-rc.20"
 	}
