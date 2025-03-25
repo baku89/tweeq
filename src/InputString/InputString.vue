@@ -36,9 +36,9 @@ const invalid = computed(
 watch(
 	() => props.modelValue,
 	value => {
-		if (value === validLocal.value) return
-
-		local.value = value
+		if (value !== validLocal.value) {
+			local.value = value
+		}
 	},
 	{flush: 'sync'}
 )
@@ -46,8 +46,9 @@ watch(
 watch(
 	() => [local.value, focusing.value] as const,
 	([local, focusing]) => {
-		if (focusing) return
-		display.value = local
+		if (!focusing) {
+			display.value = local
+		}
 	},
 	{flush: 'sync'}
 )

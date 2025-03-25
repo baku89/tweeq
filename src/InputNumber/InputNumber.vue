@@ -232,8 +232,6 @@ const {dragging: tweaking} = useDrag($root, {
 	},
 })
 
-const editing = computed(() => focusing.value || tweaking.value)
-
 //------------------------------------------------------------------------------
 // Emit update:modelValue when the local value is changed
 
@@ -254,10 +252,8 @@ const invalid = computed(() => {
 })
 
 function confirm() {
-	if (validLocal.value === undefined) return
-
-	local.value = validLocal.value
-	display.value = toFixed(local.value, precision.value)
+	local.value = props.modelValue
+	display.value = print.value(local.value)
 	expressionEnabled.value = false
 	expressionError.value = undefined
 
@@ -305,6 +301,15 @@ function onBlur() {
 	emit('blur')
 }
 
+const print = computed(() => {
+	const _tweaking = tweaking.value
+	const _precision = precision.value
+
+	return (local: number) => {
+		return _tweaking ? local.toFixed(_precision) : toFixed(local, _precision)
+	}
+})
+
 //------------------------------------------------------------------------------
 // Hotkeys
 
@@ -340,19 +345,11 @@ watch(
 // When the model value is changed from outside while the input is not focused,
 // update the display value properly
 watch(
-	() =>
-		[
-			props.modelValue,
-			tweaking.value,
-			focusing.value,
-			precision.value,
-		] as const,
-	([model, tweaking, focusing, precision]) => {
+	() => [props.modelValue, focusing.value, print.value] as const,
+	([model, focusing, print]) => {
 		if (focusing) return
 
-		display.value = tweaking
-			? model.toFixed(precision)
-			: toFixed(model, precision)
+		display.value = print(model)
 	},
 	{immediate: true, flush: 'sync'}
 )
