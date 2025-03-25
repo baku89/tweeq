@@ -266,9 +266,12 @@ function confirm() {
 //------------------------------------------------------------------------------
 // Input Events
 
+let localAtFocus = 0
+
 function onFocus() {
 	multi.capture()
 	emit('focus')
+	localAtFocus = local.value
 }
 
 function onInput(e: Event) {
@@ -287,7 +290,8 @@ function onInput(e: Event) {
 			}
 			throw new Error('Value is not a number')
 		}`)
-		local.value = fn(local.value, {i: multi.index})
+		local.value = fn(localAtFocus, {i: multi.index})
+		expressionError.value = undefined
 		multi.update(fn)
 	} catch (e) {
 		expressionError.value = (e as Error).message
@@ -326,6 +330,7 @@ watch(
 	() => props.modelValue,
 	value => {
 		if (value !== validLocal.value) {
+			console.log('InputNumber::SetLocal', value, validLocal.value)
 			local.value = value
 		}
 	},

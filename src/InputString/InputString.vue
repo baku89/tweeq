@@ -59,8 +59,11 @@ function onKeyDown(e: KeyboardEvent) {
 		e.preventDefault()
 		enableExpression.value = true
 		display.value = `"${local.value}"`
+		localAtFocus = local.value
 	}
 }
+
+let localAtFocus = ''
 
 function onInput(e: Event) {
 	const newValue = (e.target as HTMLInputElement).value
@@ -77,7 +80,7 @@ function onInput(e: Event) {
 				}
 				throw new Error('Value is not a string or number')
 			}`)
-			local.value = fn(local.value, {i: multi.index})
+			local.value = fn(localAtFocus, {i: multi.index})
 			expressionError.value = undefined
 			multi.update(fn)
 		} catch (e) {
