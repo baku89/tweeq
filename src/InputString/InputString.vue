@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import {useFocus} from '@vueuse/core'
-import {computed, ref, useTemplateRef, watch} from 'vue'
+import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
+import {useValidator} from '../use/useValidator'
 import * as V from '../validator'
 import {type InputStringProps} from './types'
 
@@ -17,19 +18,12 @@ const emit = defineEmits<
 
 const local = ref(props.modelValue)
 const display = ref(props.modelValue)
-const validateResult = computed(() => props.validator(local.value))
-const validLocal = ref(props.modelValue)
+const {validLocal, validateResult} = useValidator(local, props.validator)
 
-watch(
-	validateResult,
-	result => {
-		if (result.value === undefined) return
-
-		validLocal.value = result.value
-		emit('update:modelValue', validLocal.value)
-	},
-	{flush: 'sync'}
-)
+watchEffect(() => {
+	if (validLocal.value === undefined) return
+	emit('update:modelValue', validLocal.value)
+})
 
 const $input = useTemplateRef('$input')
 const focusing = useFocus($input).focused
@@ -47,7 +41,7 @@ const invalid = computed(
 watch(
 	() => props.modelValue,
 	value => {
-		if (focusing.value) return
+		if (value === validLocal.value) return
 
 		local.value = display.value = value
 	},
@@ -98,6 +92,8 @@ function onInput(e: Event) {
 }
 
 function confirm() {
+	if (validLocal.value === undefined) return
+
 	display.value = local.value = validLocal.value
 	enableExpression.value = false
 	expressionError.value = undefined
