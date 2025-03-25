@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import {useFocus} from '@vueuse/core'
 import {computed, nextTick, ref, useTemplateRef, watch} from 'vue'
 
 import {InputTextBase} from '../InputTextBase'
@@ -22,7 +21,7 @@ const display = ref(props.modelValue)
 const {validLocal, validateResult} = useValidator(local, props.validator)
 
 const $input = useTemplateRef('$input')
-const focusing = useFocus($input).focused
+const focused = ref(false)
 
 const expressionEnabled = ref(false)
 const expressionError = ref<string | undefined>(undefined)
@@ -45,7 +44,7 @@ watch(
 )
 
 watch(
-	() => [local.value, focusing.value] as const,
+	() => [local.value, focused.value] as const,
 	([local, focusing]) => {
 		if (!focusing) {
 			display.value = local
@@ -155,7 +154,7 @@ const font = computed(() => {
 const multi = useMultiSelectStore().register({
 	type: 'string',
 	el: $input,
-	focusing,
+	focusing: focused,
 	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
@@ -169,17 +168,17 @@ const multi = useMultiSelectStore().register({
 <template>
 	<InputTextBase
 		ref="$input"
-		class="InputString"
-		:class="{subfocus: multi.subfocus}"
-		type="text"
-		:value="display"
+		v-model:focused="focused"
+		class="TqInputString"
+		:active="multi.subfocus"
+		:modelValue="display"
 		:theme="theme"
 		:font="font"
 		:align="align"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
-		:disabled="disabled || undefined"
-		:invalid="invalid || undefined"
+		:disabled="disabled"
+		:invalid="invalid"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
@@ -187,20 +186,3 @@ const multi = useMultiSelectStore().register({
 		@keydown.enter="confirm"
 	/>
 </template>
-
-<style lang="stylus">
-@import '../common.styl'
-
-.InputString
-	input-box-style()
-	input-element-style()
-
-	&:focus, &.subfocus
-		input-box-focus()
-
-	&:disabled
-		input-box-disabled()
-
-	&[invalid]
-		input-box-invalid()
-</style>
