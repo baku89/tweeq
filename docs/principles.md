@@ -33,10 +33,10 @@ _Users should be able to manipulate parameters both relatively and absolutely._
 
 _Users should be able to control parameters both through continuous gestural inputs and discrete digital inputs._
 
- - Draggin on a corner of bounding box to rotate a shape continuously, while dragging with pressing `Shift` key constrains it to 45 degree increments.
+ - Dragging on a corner of bounding box to rotate a shape continuously, while dragging with pressing `Shift` key constrains it to 45 degree increments.
  - Using a MIDI controller to control volume continuously vs. setting exact dB values in a numerical input field.
 
-### Maximizing Screen Real Estate Efficiency
+### Screen Space Efficiency
 
 _UI should prioritize parameter visibility and density rather visual simplicity._
 
