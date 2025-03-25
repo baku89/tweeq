@@ -100,44 +100,6 @@ use-input-theme()
 		&:focus-within
 			box-shadow 0 0 0 1px var(--tq-color-accent)
 
-input-box-style()
-	position relative
-	width 100%
-	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
-	background var(--tq-color-input)
-	color var(--tq-color-text)
-	hover-transition(background, box-shadow)
-	overflow hidden
-
-	&:hover
-		background var(--tq-color-input-hover)
-
-	use-input-font()
-	use-input-align()
-	use-input-position()
-	use-input-theme()
-
-input-element-style()
-	position relative
-	width 100%
-	height var(--tq-input-height)
-	padding-inline .5em
-
-input-box-focused()
-	z-index 1
-	box-shadow 0 0 0 1px var(--tq-color-accent)
-
-input-box-invalid()
-	--tq-color-text var(--tq-color-error)
-
-input-box-disabled()
-	background transparent
-	--tq-color-accent var(--tq-color-text-border)
-	--tq-color-accent-soft var(--tq-color-border-subtle)
-	--tq-color-text var(--tq-color-text-mute)
-	box-shadow inset 0 0 0 1px var(--tq-color-border)
-
 input-overlay()
 	position fixed
 	inset 0
