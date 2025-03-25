@@ -22,7 +22,7 @@ import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useValidator} from '../use/useValidator'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import {
 	getNumberPresition,
 	precisionOf,

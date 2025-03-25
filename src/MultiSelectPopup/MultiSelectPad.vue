@@ -4,7 +4,7 @@ import {useTemplateRef} from 'vue'
 
 import {IconIndicator} from '../IconIndicator'
 import {useMultiSelectStore} from '../stores/multiSelect'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 
 const props = defineProps<{
 	type: 'slider' | 'pad'

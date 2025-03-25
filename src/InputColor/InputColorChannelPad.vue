@@ -3,7 +3,7 @@ import {vec2} from 'linearly'
 import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import FragmentString from './pad.frag'
 import {type ColorChannel, colorChannelToIndex, HSVA} from './types'
 import {

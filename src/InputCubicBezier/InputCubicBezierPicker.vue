@@ -3,7 +3,7 @@ import {type CubicBezierPoints} from '@vueuse/core'
 import {vec2} from 'linearly'
 import {computed, ref, useTemplateRef} from 'vue'
 
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import type {InputCubicBezierProps} from './types'
 import {type CubicBezierValue} from './util'
 

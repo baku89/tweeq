@@ -4,7 +4,7 @@ import {scalar} from 'linearly'
 import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import SliderFragmentString from './slider.frag'
 import {type ColorChannel, colorChannelToIndex, type HSVA} from './types'
 import {

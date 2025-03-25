@@ -6,7 +6,7 @@ import {computed, ref, useTemplateRef} from 'vue'
 import {Icon} from '../Icon'
 import {InputPositionProps} from '../InputPosition'
 import {InputEmits} from '../types'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import {precisionOf} from '../util'
 
 const props = withDefaults(

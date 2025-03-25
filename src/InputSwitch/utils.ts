@@ -3,7 +3,7 @@ import {computed, Ref, toRef, watch} from 'vue'
 
 import {InputCheckboxProps} from '../InputCheckbox/types'
 import {useMultiSelectStore} from '../stores/multiSelect'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 export function useInputSwitch({
 	track,
 	input,

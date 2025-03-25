@@ -10,7 +10,7 @@ import {
 
 import {InputString} from '../InputString'
 import {InputEmits} from '../types'
-import {useDrag} from '../useDrag'
+import {useDrag} from '../use/useDrag'
 import {InputTimeProps, TimeFormat} from './types'
 import {formatTimecode, parseTimecode, useInputTimeContext} from './utils'
 
