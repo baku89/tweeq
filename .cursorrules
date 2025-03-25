@@ -3,3 +3,11 @@ You are an expert in Vue.js 3.
 Always write comments, commit messages in English.
 
 For linear algebra, use https://github.com/baku89/linearly.
+
+The stack technology is:
+
+ - Stylus
+ - Vue 3
+ - VueUse
+
+Always use scoped CSS, and <script lang="ts" setup> as well.
