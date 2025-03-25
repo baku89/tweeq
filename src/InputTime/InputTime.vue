@@ -44,7 +44,6 @@ const validLocal = ref<number>()
 watchEffect(() => {
 	if (parseResult.value !== null) {
 		validLocal.value = parseResult.value
-		console.log('set validLocal', validLocal.value)
 		if (focused.value) {
 			emit('update:modelValue', validLocal.value)
 		}
@@ -57,6 +56,11 @@ function confirm() {
 	emit('confirm')
 }
 
+function toggleTimeFormat() {
+	context.format = context.format === 'frames' ? 'timecode' : 'frames'
+	display.value = print(props.modelValue, context.format)
+}
+
 watchEffect(() => {
 	if (focused.value) emit('focus')
 	else emit('blur')
@@ -65,11 +69,14 @@ watchEffect(() => {
 
 <template>
 	<InputString
+		ref="$input"
 		:modelValue="display"
 		font="numeric"
+		align="center"
 		@update:modelValue="display = $event"
 		@focus="focused = true"
 		@blur="focused = false"
 		@confirm="confirm"
+		@click.middle="toggleTimeFormat"
 	/>
 </template>
