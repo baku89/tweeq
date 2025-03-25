@@ -306,6 +306,26 @@
 	/>
 </DemoComponent>
 
+### InputTime
+
+<DemoComponent
+	name="InputTime"
+	:initialValue="0"
+	:scheme="{frameRate: {type: 'number', min: 1, max: 60, step: 1}}"
+	:options="{frameRate: 24}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputTime
+		:modelValue="modelValue"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</DemoComponent>
+
+
 ### InputTranslate
 
 <DemoComponent
