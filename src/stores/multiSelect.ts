@@ -2,12 +2,20 @@ import {Rect} from '@baku89/pave'
 import {
 	onKeyStroke,
 	reactiveComputed,
+	unrefElement,
 	useEventListener,
 	useMagicKeys,
 } from '@vueuse/core'
 import {vec2} from 'linearly'
 import {defineStore} from 'pinia'
-import {computed, onBeforeUnmount, reactive, type Ref, watch} from 'vue'
+import {
+	Component,
+	computed,
+	onBeforeUnmount,
+	reactive,
+	type Ref,
+	watch,
+} from 'vue'
 
 import {HSVA} from '../InputColor/types'
 import {nodeContains} from '../util'
@@ -18,7 +26,7 @@ type MultiSelectValue = number | string | boolean | HSVA
 
 export interface MultiSelectSource {
 	type: MultiSelectType
-	el: Ref<HTMLElement | null>
+	el: Ref<HTMLElement | Component | null>
 	focusing: Readonly<Ref<boolean>>
 	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
@@ -51,7 +59,11 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 	const focusedElement = computed<HTMLElement | null>(() => {
 		const id = [...selectedIds.values()].at(-1)
 
-		return (id && inputs.get(id)?.el) ?? null
+		if (!id) return null
+
+		const el = unrefElement(inputs.get(id)!.el)
+
+		return el ?? null
 	})
 
 	// Defocus logics
@@ -67,7 +79,8 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		const target = e.target as Node
 
 		const clickedOutside = !selectedInputs.value.some(({el}) => {
-			return el && nodeContains(el, target)
+			const _el = unrefElement(el)
+			return _el && nodeContains(_el, target)
 		})
 
 		const clickedPopup = popupEl && nodeContains(popupEl, target)
@@ -98,7 +111,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		inputs.forEach(({el, id}) => {
 			if (!el) return
 
-			const rect = Rect.fromDOMRect(el.getBoundingClientRect())
+			const rect = Rect.fromDOMRect(unrefElement(el).getBoundingClientRect())
 
 			if (Rect.intersects(selectionRect, rect)) {
 				const center = Rect.center(rect)
@@ -140,7 +153,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 							focusedElement.value.getBoundingClientRect()
 						)
 						const newRect = Rect.fromDOMRect(
-							source.el.value.getBoundingClientRect()
+							unrefElement(source.el.value).getBoundingClientRect()
 						)
 
 						selectInbetween(lastRect, newRect)
