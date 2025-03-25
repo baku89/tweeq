@@ -252,13 +252,17 @@ const invalid = computed(() => {
 })
 
 function confirm() {
-	local.value = props.modelValue
-	display.value = print.value(local.value)
+	emit('confirm')
+	multi.confirm()
+	multi.capture()
+
 	expressionEnabled.value = false
 	expressionError.value = undefined
 
-	emit('confirm')
-	multi.confirm()
+	nextTick(() => {
+		local.value = props.modelValue
+		display.value = print.value(local.value)
+	})
 }
 
 //------------------------------------------------------------------------------

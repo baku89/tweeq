@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useFocus} from '@vueuse/core'
-import {computed, ref, useTemplateRef, watch} from 'vue'
+import {computed, nextTick, ref, useTemplateRef, watch} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
@@ -114,15 +114,16 @@ function onInput(e: Event) {
 }
 
 function confirm() {
-	if (validLocal.value === undefined) return
+	emit('confirm')
+	multi.capture()
+	multi.confirm()
 
-	display.value = local.value = props.modelValue
 	expressionEnabled.value = false
 	expressionError.value = undefined
 
-	emit('confirm')
-	multi.confirm()
-	multi.capture()
+	nextTick(() => {
+		display.value = local.value = props.modelValue
+	})
 }
 
 function onBlur() {

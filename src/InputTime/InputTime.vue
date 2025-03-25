@@ -41,9 +41,9 @@ const display = ref('')
 // Model -> Display
 watch(
 	() => [props.modelValue, context.format, focused.value] as const,
-	([module, format, focused]) => {
+	([model, format, focused]) => {
 		if (focused) return
-		display.value = print(module, format)
+		display.value = print(model, format)
 	},
 	{immediate: true, flush: 'sync'}
 )
@@ -61,8 +61,7 @@ watchEffect(() => {
 })
 
 function confirm() {
-	if (!validLocal.value) return
-	display.value = print(validLocal.value, context.format)
+	display.value = print(props.modelValue, context.format)
 	emit('confirm')
 }
 
