@@ -109,10 +109,6 @@ function onBlur() {
 	emit('blur')
 }
 
-function forceFocus() {
-	$input.value?.select()
-}
-
 defineExpose({
 	select: () => {
 		$input.value?.select()
@@ -161,8 +157,6 @@ const multi = useMultiSelectStore().register({
 		:block-position="blockPosition"
 		:disabled="disabled || undefined"
 		:invalid="invalid || undefined"
-		@click.shift="forceFocus"
-		@click.meta="forceFocus"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
