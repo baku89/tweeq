@@ -151,10 +151,6 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 					if (!subfocus.value) {
 						selectId(id)
 					}
-				} else {
-					if (!meta.value && !shift.value) {
-						defocusAll()
-					}
 				}
 			},
 			{flush: 'sync'}
