@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import {
+	unrefElement,
 	useElementBounding,
-	useFocus,
 	useMagicKeys,
 	whenever,
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
 import {
+	Component,
 	computed,
 	nextTick,
 	ref,
@@ -18,6 +19,7 @@ import {
 } from 'vue'
 
 import {Icon} from '../Icon'
+import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
@@ -50,11 +52,11 @@ defineOptions({
 
 const emit = defineEmits<InputEmits<number>>()
 
-const $root = useTemplateRef('$root')
 const $input = useTemplateRef('$input')
-const {left, width, right} = useElementBounding($root)
+const $inputEl = computed(() => unrefElement($input.value as Component))
+const {left, width, right} = useElementBounding($inputEl)
 
-const focusing = useFocus($input).focused
+const focused = ref(false)
 const expressionEnabled = ref(false)
 const expressionError = ref<string | undefined>(undefined)
 
@@ -153,11 +155,11 @@ const maxSpeed = computed(() => {
 
 let deltaAccumulated = 0
 
-const {dragging: tweaking} = useDrag($root, {
+const {dragging: tweaking} = useDrag($input, {
 	lockPointer: computed(() => !barVisible.value),
-	disabled: computed(() => props.disabled || focusing.value),
+	disabled: computed(() => props.disabled || focused.value),
 	onClick() {
-		$input.value?.focus()
+		$input.value?.select()
 	},
 	onDragStart(state, event) {
 		const isTipDragged = (event.target as Element).classList.contains('tip')
@@ -248,7 +250,7 @@ const invalid = computed(() => {
 	if (props.invalid) return true
 	if (tweaking.value) return false
 
-	return validateResult.value.log.length > 0 || expressionError.value
+	return validateResult.value.log.length > 0 || !!expressionError.value
 })
 
 function confirm() {
@@ -349,7 +351,7 @@ watch(
 // When the model value is changed from outside while the input is not focused,
 // update the display value properly
 watch(
-	() => [props.modelValue, focusing.value, print.value] as const,
+	() => [props.modelValue, focused.value, print.value] as const,
 	([model, focusing, print]) => {
 		if (focusing) return
 
@@ -372,15 +374,15 @@ watchSyncEffect(() => {
 })
 
 // Click to select all
-whenever(focusing, () => nextTick(() => $input.value?.select()))
+whenever(focused, () => nextTick(() => $input.value?.select()))
 
 //------------------------------------------------------------------------------
 // Multi Select
 
 const multi = useMultiSelectStore().register({
 	type: 'number',
-	el: $root,
-	focusing: computed(() => focusing.value || tweaking.value),
+	el: $input,
+	focusing: computed(() => focused.value || tweaking.value),
 	getValue: () => local.value,
 	setValue(value) {
 		const result = unref(validate)(value)
@@ -458,54 +460,49 @@ const barStyle = computed<StyleValue>(() => {
 </script>
 
 <template>
-	<div
-		ref="$root"
-		class="InputNumber"
+	<InputTextBase
+		ref="$input"
+		v-model:focused="focused"
+		class="TqInputNumber"
 		:class="{...valueRangeStateClasses, tweaking}"
-		:data-tweaking-mode="tweakMode"
+		:ignoreInput="!focused"
+		:modelValue="display"
+		:active="multi.subfocus"
+		:font="expressionEnabled ? 'monospace' : 'numeric'"
+		align="center"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
-		v-bind="$attrs"
+		:disabled="disabled"
+		:invalid="invalid"
+		@focus="onFocus"
+		@blur="onBlur"
+		@input="onInput"
+		@keydown.up.prevent="onIncrementByKey(1)"
+		@keydown.down.prevent="onIncrementByKey(-1)"
+		@keydown.enter.prevent="confirm"
 	>
-		<div class="bar" :style="barStyle" />
-		<InputNumberScales :min="min" :max="max" :step="step" />
-		<div class="tip" :style="tipStyle" />
+		<template #back>
+			<div class="bar" :style="barStyle" />
+			<InputNumberScales :min="min" :max="max" :step="step" />
+			<div class="tip" :style="tipStyle" />
 
-		<input
-			ref="$input"
-			class="input"
-			:class="{focus: tweaking || multi.subfocus}"
-			type="text"
-			inputmode="numeric"
-			pattern="d*"
-			:value="focusing ? display : prefix + display + suffix"
-			:font="expressionEnabled ? 'monospace' : undefined"
-			:invalid="invalid || undefined"
-			:disabled="disabled || undefined"
-			@input="onInput"
-			@focus="onFocus"
-			@blur="onBlur"
-			@keydown.up.prevent="onIncrementByKey(1)"
-			@keydown.down.prevent="onIncrementByKey(-1)"
-			@keydown.enter.prevent="confirm"
-		/>
-		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
-		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
+			<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
+			<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
 
-		<svg v-if="tweakMode === 'speed'" class="overlay">
-			<line class="scale" v-bind="scaleAttrs(0)"></line>
-			<line class="scale" v-bind="scaleAttrs(1)"></line>
-			<line class="scale" v-bind="scaleAttrs(2)"></line>
-		</svg>
-	</div>
+			<svg v-if="tweakMode === 'speed'" class="overlay">
+				<line class="scale" v-bind="scaleAttrs(0)"></line>
+				<line class="scale" v-bind="scaleAttrs(1)"></line>
+				<line class="scale" v-bind="scaleAttrs(2)"></line>
+			</svg>
+		</template>
+	</InputTextBase>
 </template>
 
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputNumber
-	input-box-style()
-
+.TqInputNumber
+	position relative
 	$arrow-size = 4px
 
 	&:before
@@ -535,30 +532,8 @@ const barStyle = computed<StyleValue>(() => {
 	&.tweaking.below-range:before, &.tweaking.above-range:before
 		opacity 1
 
-	&:has(input:disabled)
-		input-box-disabled()
-
-		.bar
+	&:has(:disabled) .bar
 			background var(--tq-color-input)
-
-
-	&:has(input[invalid])
-		input-box-invalid()
-
-	&:has(input:focus),
-	&:has(input.focus)
-		input-box-focused()
-
-.input
-	input-element-style()
-	font-numeric()
-	text-align center
-
-	&[font=monospace]
-		font-family var(--tq-font-code)
-
-	&:not(:focus)
-		pointer-events none
 
 .bar, .tip
 	position absolute
@@ -578,12 +553,12 @@ const barStyle = computed<StyleValue>(() => {
 	opacity .3
 
 	&:hover,
-	.InputNumber.tweaking &
+	.TqInputNumber.tweaking &
 		width 3px
 		margin-left -1px
 
-	.InputNumber:hover &,
-	.InputNumber.tweaking &
+	.TqInputNumber:hover &,
+	.TqInputNumber.tweaking &
 		opacity 1
 
 	.below-range &,
@@ -597,7 +572,6 @@ const barStyle = computed<StyleValue>(() => {
 		height 100%
 		left calc(var(--tq-input-height) / -2)
 		right @left
-
 
 .icon
 	width calc(var(--tq-input-height) - 6px)

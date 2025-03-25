@@ -9,6 +9,7 @@ import {
 } from '../types'
 
 export interface InputTextBaseProps extends InputBoxProps<string> {
+	ignoreInput?: boolean
 	active?: boolean
 	theme?: InputTheme
 	font?: InputFont
@@ -50,20 +51,23 @@ function onBlur(e: FocusEvent) {
 </script>
 
 <template>
-	<div class="TqInputTextBase" :class="{active, invalid}">
+	<div
+		class="TqInputTextBase"
+		:class="{active, invalid}"
+		:theme="theme"
+		:font="font"
+		:align="align"
+	>
 		<slot name="back" />
 		<input
 			ref="$input"
 			class="input"
 			type="text"
+			:class="{ignore: ignoreInput}"
 			:value="modelValue"
-			:theme="theme"
-			:font="font"
-			:align="align"
 			:inline-position="inlinePosition"
 			:block-position="blockPosition"
 			:disabled="disabled || undefined"
-			:invalid="invalid || undefined"
 			@focus="onFocus"
 			@blur="onBlur"
 			@input="onInput"
@@ -91,4 +95,7 @@ function onBlur(e: FocusEvent) {
 
 .input
 	input-element-style()
+
+	&.ignore
+		pointer-events none
 </style>
