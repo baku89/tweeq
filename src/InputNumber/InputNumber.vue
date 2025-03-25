@@ -110,18 +110,23 @@ const sliderPrecision = computed(() => {
 })
 
 const tweakPrecision = computed(() =>
-	tweaking.value ? precisionOf(speed.value) : 0
+	tweaking.value ? precisionOf(speed.value) : null
 )
 
 const precision = computed(() => {
-	return (
-		stepPrecision.value ??
-		Math.max(
-			props.precision,
+	if (stepPrecision.value !== null) return stepPrecision.value
+
+	if (tweakPrecision.value !== null) {
+		return Math.max(
 			displayPrecision.value,
 			sliderPrecision.value,
 			tweakPrecision.value
 		)
+	}
+
+	return Math.min(
+		props.precision,
+		Math.max(displayPrecision.value, sliderPrecision.value)
 	)
 })
 
