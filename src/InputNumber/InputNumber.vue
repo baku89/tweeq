@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {
 	useElementBounding,
-	useEventListener,
 	useFocus,
 	useMagicKeys,
 	whenever,
@@ -53,7 +52,7 @@ const emit = defineEmits<InputEmits<number>>()
 
 const $root = useTemplateRef('$root')
 const $input = useTemplateRef('$input')
-const {left, top, width, height, right} = useElementBounding($root)
+const {left, width, right} = useElementBounding($root)
 
 const focusing = useFocus($input).focused
 const enableExpression = ref(false)
@@ -130,8 +129,6 @@ const precision = computed(() => {
 	)
 })
 
-const pointerSize = ref(0)
-
 let resetTweakModeTimer: ReturnType<typeof setTimeout>
 
 /** When the value is vec2, it means the origin point to determine the drag mode */
@@ -187,22 +184,11 @@ const {dragging: tweaking} = useDrag($root, {
 		emit('focus')
 		multi.capture()
 	},
-	onDrag(state, event) {
+	onDrag(state) {
 		const [dx, dy] = state.delta
 
-		const isMouse = event.pointerType === 'mouse' || event.pointerType === 'pen'
-
-		pointerSize.value =
-			event.width *
-			0.75 *
-			scalar.smoothstep(
-				(event.width * 0.7) / 2,
-				(event.width * 0.5) / 2,
-				Math.abs(state.xy[1] - (top.value + height.value / 2))
-			)
-
 		if (typeof tweakMode.value !== 'string') {
-			const doDetectMode = isMouse && minSpeed.value !== maxSpeed.value
+			const doDetectMode = minSpeed.value !== maxSpeed.value
 
 			if (doDetectMode) {
 				const [ox, oy] = vec2.sub(tweakMode.value, state.xy)
@@ -235,12 +221,10 @@ const {dragging: tweaking} = useDrag($root, {
 			)
 		}
 
-		if (isMouse) {
-			clearTimeout(resetTweakModeTimer)
-			resetTweakModeTimer = setTimeout(() => {
-				tweakMode.value = state.xy
-			}, 200)
-		}
+		clearTimeout(resetTweakModeTimer)
+		resetTweakModeTimer = setTimeout(() => {
+			tweakMode.value = state.xy
+		}, 200)
 	},
 	onDragEnd() {
 		confirm()
@@ -333,55 +317,6 @@ function onIncrementByKey(delta: number) {
 		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
 	}
 }
-
-//------------------------------------------------------------------------------
-// For iPad. Swiping with second finger to change the drag speed
-
-useEventListener('touchstart', (e: TouchEvent) => {
-	if (!tweaking.value) return
-
-	const secondTouch = e.touches.item(1)
-	if (!secondTouch) return
-
-	const ox = secondTouch.clientX
-	const initialSpeedMultiplierGesture = speedMultiplierGesture.value
-
-	const stop = watch(tweaking, () => {
-		window.removeEventListener('touchmove', onSecondTouchMove)
-		window.removeEventListener('touchend', onSecondTouchEnd)
-		stop()
-	})
-
-	window.addEventListener('touchmove', onSecondTouchMove)
-	window.addEventListener('touchend', onSecondTouchEnd)
-
-	function onSecondTouchMove(e: TouchEvent) {
-		const firstTouch = e.touches.item(0)
-		const secondTouch = e.touches.item(1)
-		if (!firstTouch || !secondTouch) return
-
-		const cx = firstTouch.clientX
-		const x = secondTouch.clientX
-
-		tweakMode.value = 'speed'
-
-		const mul = Math.abs((ox - cx) / (x - cx))
-		speedMultiplierGesture.value = scalar.clamp(
-			initialSpeedMultiplierGesture * mul,
-			10 ** -props.precision,
-			1000
-		)
-	}
-
-	function onSecondTouchEnd() {
-		if (!e.touches.item(1)) return
-
-		tweakMode.value = 'value'
-
-		window.removeEventListener('touchmove', onSecondTouchMove)
-		window.removeEventListener('touchend', onSecondTouchEnd)
-	}
-})
 
 //------------------------------------------------------------------------------
 // Watchers
