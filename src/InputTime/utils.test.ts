@@ -41,4 +41,12 @@ describe('parseTimecode', () => {
 		expect(parseTimecode('10  m', 30)).toBe(30 * 60 * 10)
 		expect(parseTimecode('10  h', 30)).toBe(1080000)
 	})
+
+	it('should parse negative timecode', () => {
+		expect(parseTimecode('-00:01:12', 24)).toBe(-36)
+
+		expect(parseTimecode('-100f', 24)).toBe(-100)
+		expect(parseTimecode('-100F', 24)).toBe(-100)
+		expect(parseTimecode('-100Frames', 24)).toBe(-100)
+	})
 })
