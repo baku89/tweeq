@@ -547,7 +547,7 @@ const barStyle = computed<StyleValue>(() => {
 
 	&:has(input:focus),
 	&:has(input.focus)
-		input-box-focus()
+		input-box-focused()
 
 .input
 	input-element-style()

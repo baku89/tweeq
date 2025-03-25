@@ -2,6 +2,7 @@
 import {useFocus} from '@vueuse/core'
 import {computed, nextTick, ref, useTemplateRef, watch} from 'vue'
 
+import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useValidator} from '../use/useValidator'
@@ -30,7 +31,7 @@ const invalid = computed(
 	() =>
 		props.invalid ||
 		validateResult.value.log.length > 0 ||
-		expressionError.value
+		!!expressionError.value
 )
 
 watch(
@@ -166,7 +167,7 @@ const multi = useMultiSelectStore().register({
 </script>
 
 <template>
-	<input
+	<InputTextBase
 		ref="$input"
 		class="InputString"
 		:class="{subfocus: multi.subfocus}"
