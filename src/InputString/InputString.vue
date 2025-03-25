@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useFocus} from '@vueuse/core'
-import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
@@ -20,9 +20,10 @@ const local = ref(props.modelValue)
 const display = ref(props.modelValue)
 const {validLocal, validateResult} = useValidator(local, props.validator)
 
-watchEffect(() => {
-	if (validLocal.value === undefined) return
-	emit('update:modelValue', validLocal.value)
+watch(validLocal, validLocal => {
+	if (validLocal !== undefined && validLocal !== props.modelValue) {
+		emit('update:modelValue', validLocal)
+	}
 })
 
 const $input = useTemplateRef('$input')

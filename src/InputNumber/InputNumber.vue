@@ -12,13 +12,16 @@ import {
 	nextTick,
 	ref,
 	type StyleValue,
+	unref,
 	useTemplateRef,
 	watch,
+	watchSyncEffect,
 } from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
+import {useValidator} from '../use/useValidator'
 import {useDrag} from '../useDrag'
 import {
 	getNumberPresition,
@@ -235,8 +238,7 @@ const {dragging: tweaking} = useDrag($root, {
 		}
 	},
 	onDragEnd() {
-		emit('confirm')
-		multi.confirm()
+		confirm()
 		emit('blur')
 	},
 })
@@ -251,20 +253,13 @@ const validate = computed(() =>
 	)
 )
 
-const validateResult = computed(() => validate.value(local.value))
+const {validateResult, validLocal} = useValidator(local, validate)
 
-const validLocal = ref(props.modelValue)
-
-watch(
-	validateResult,
-	result => {
-		if (result.value === undefined) return
-
-		validLocal.value = result.value
+watchSyncEffect(() => {
+	if (validLocal.value !== undefined && validLocal.value !== props.modelValue) {
 		emit('update:modelValue', validLocal.value)
-	},
-	{flush: 'sync'}
-)
+	}
+})
 
 const invalid = computed(() => {
 	if (props.invalid) return true
@@ -274,6 +269,8 @@ const invalid = computed(() => {
 })
 
 function confirm() {
+	if (validLocal.value === undefined) return
+
 	local.value = validLocal.value
 	display.value = toFixed(local.value, precision.value)
 	enableExpression.value = false
@@ -392,14 +389,14 @@ useEventListener('touchstart', (e: TouchEvent) => {
 
 // When the model value is changed from outside, update the local value
 watch(
-	() => [props.modelValue, focusing.value, tweaking.value] as const,
-	([value, focusing, tweaking]) => {
-		if (!focusing && !tweaking) {
+	() => props.modelValue,
+	value => {
+		if (value !== validLocal.value) {
 			local.value = value
 		}
-	}
+	},
+	{immediate: true, flush: 'sync'}
 )
-
 // When the model value is changed from outside while the input is not focused,
 // update the display value properly
 watch(
@@ -410,12 +407,12 @@ watch(
 			focusing.value,
 			precision.value,
 		] as const,
-	([modelValue, tweaking, focusing, precision]) => {
+	([model, tweaking, focusing, precision]) => {
 		if (focusing) return
 
 		display.value = tweaking
-			? modelValue.toFixed(precision)
-			: toFixed(modelValue, precision)
+			? model.toFixed(precision)
+			: toFixed(model, precision)
 	},
 	{immediate: true, flush: 'sync'}
 )
@@ -432,8 +429,10 @@ const multi = useMultiSelectStore().register({
 	focusing: computed(() => focusing.value || tweaking.value),
 	getValue: () => local.value,
 	setValue(value) {
-		local.value = value
-		local.value = validLocal.value
+		const result = unref(validate)(value)
+		if (result.value === undefined) return false
+
+		local.value = result.value
 	},
 	confirm() {
 		emit('confirm')

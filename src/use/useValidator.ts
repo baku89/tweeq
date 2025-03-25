@@ -1,12 +1,20 @@
-import {computed, readonly, Ref, ref, watchSyncEffect} from 'vue'
+import {
+	computed,
+	MaybeRef,
+	readonly,
+	Ref,
+	ref,
+	unref,
+	watchSyncEffect,
+} from 'vue'
 
 import {Validator} from '../validator'
 
 export function useValidator<T>(
 	local: Readonly<Ref<T>>,
-	validator: Validator<T>
+	validator: MaybeRef<Validator<T>>
 ) {
-	const validateResult = computed(() => validator(local.value))
+	const validateResult = computed(() => unref(validator)(local.value))
 	const validLocal = ref<T>()
 
 	watchSyncEffect(() => {
