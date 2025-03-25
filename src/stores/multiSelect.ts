@@ -66,13 +66,15 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		const target = e.target as Node
 
-		const clickedOutside = ![...inputs.values()].some(({el}) => {
+		const clickedOutside = !selectedInputs.value.some(({el}) => {
 			return el && nodeContains(el, target)
 		})
 
 		const clickedPopup = popupEl && nodeContains(popupEl, target)
 
-		if (clickedOutside && !clickedPopup) {
+		const modifierPressed = meta.value || shift.value
+
+		if (clickedOutside && !clickedPopup && !modifierPressed) {
 			defocusAll()
 		}
 	})
