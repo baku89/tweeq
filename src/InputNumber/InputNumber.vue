@@ -15,14 +15,14 @@ import {
 	unref,
 	useTemplateRef,
 	watch,
-	watchSyncEffect,
+	watchEffect,
 } from 'vue'
 
 import {Icon} from '../Icon'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
-import {useValidator} from '../use/useValidator'
 import {useDrag} from '../use/useDrag'
+import {useValidator} from '../use/useValidator'
 import {
 	getNumberPresition,
 	precisionOf,
@@ -255,7 +255,7 @@ const validate = computed(() =>
 
 const {validateResult, validLocal} = useValidator(local, validate)
 
-watchSyncEffect(() => {
+watchEffect(() => {
 	if (validLocal.value !== undefined && validLocal.value !== props.modelValue) {
 		emit('update:modelValue', validLocal.value)
 	}

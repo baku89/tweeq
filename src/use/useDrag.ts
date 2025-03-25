@@ -60,12 +60,6 @@ interface UseDragOptions {
 	 */
 	dragDelaySeconds?: number
 
-	/**
-	 * Whether to disable click event and start dragging immediately
-	 * @default false
-	 */
-	disableClick?: boolean
-
 	onClick?: (state: DragState, event: PointerEvent) => void
 	onDrag?: (state: DragState, event: PointerEvent) => void
 	onDragStart?: (state: DragState, event: PointerEvent) => void
@@ -79,7 +73,6 @@ export function useDrag(
 		lockPointer = false,
 		pointerType = ['mouse', 'pen', 'touch'],
 		dragDelaySeconds = 0.5,
-		disableClick = false,
 		onClick,
 		onDrag,
 		onDragStart,
@@ -155,10 +148,6 @@ export function useDrag(
 		state.dragging = true
 		state.initial = state.previous
 		onDragStart?.(state, event)
-
-		if (disableClick) {
-			onDrag?.(state, event)
-		}
 	}
 
 	function onPointerDown(event: PointerEvent) {
@@ -175,8 +164,8 @@ export function useDrag(
 		state.xy = state.previous = state.initial = [event.clientX, event.clientY]
 		bound.update()
 
-		// Start drag immediately if disableClick is true or dragDelaySeconds is 0
-		if (disableClick || dragDelaySeconds === 0) {
+		if (dragDelaySeconds === 0) {
+			// Start drag immediately
 			fireDragStart(event)
 		} else {
 			dragDelayTimer = setTimeout(
@@ -202,9 +191,7 @@ export function useDrag(
 
 		if (vec2.squaredLength(state.delta) === 0) return
 
-		if (state.dragging) {
-			onDrag?.(state, event)
-		} else if (!disableClick) {
+		if (!state.dragging) {
 			// Determine whether dragging has started
 			const d = vec2.dist(state.initial, state.xy)
 			const minDragDistance = event.pointerType === 'mouse' ? 1 : 5
@@ -212,6 +199,10 @@ export function useDrag(
 				clearTimeout(dragDelayTimer)
 				fireDragStart(event)
 			}
+		}
+
+		if (state.dragging) {
+			onDrag?.(state, event)
 		}
 
 		state.previous = state.xy

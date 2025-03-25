@@ -37,7 +37,7 @@ const {
 	bottom,
 	xy,
 } = useDrag($root, {
-	disableClick: true,
+	dragDelaySeconds: 0,
 	onDragStart({xy: [x], left, right}, event) {
 		local = props.modelValue
 
