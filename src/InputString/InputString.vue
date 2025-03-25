@@ -34,13 +34,22 @@ const invalid = computed(
 )
 
 watch(
-	() => [props.modelValue, focusing.value] as const,
-	([value, focusing]) => {
-		if (value === validLocal.value || focusing) return
+	() => props.modelValue,
+	value => {
+		if (value === validLocal.value) return
 
-		local.value = display.value = value
+		local.value = value
 	},
-	{immediate: true, flush: 'sync'}
+	{flush: 'sync'}
+)
+
+watch(
+	() => [local.value, focusing.value] as const,
+	([local, focusing]) => {
+		if (focusing) return
+		display.value = local
+	},
+	{flush: 'sync'}
 )
 
 watch(
