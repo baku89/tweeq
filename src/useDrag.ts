@@ -1,11 +1,20 @@
 import {
 	type MaybeRef,
+	unrefElement,
 	useElementBounding,
 	useEventListener,
 	usePointerLock,
 } from '@vueuse/core'
 import {vec2} from 'linearly'
-import {reactive, type Ref, toRefs, unref, watchEffect} from 'vue'
+import {
+	Component,
+	computed,
+	reactive,
+	type Ref,
+	toRefs,
+	unref,
+	watchEffect,
+} from 'vue'
 
 interface DragState {
 	xy: vec2
@@ -64,7 +73,7 @@ interface UseDragOptions {
 }
 
 export function useDrag(
-	target: Ref<HTMLElement | SVGElement | null>,
+	target: Ref<HTMLElement | SVGElement | Component | null>,
 	{
 		disabled,
 		lockPointer = false,
@@ -97,9 +106,13 @@ export function useDrag(
 	let dragDelayTimer: ReturnType<typeof setTimeout> | undefined
 	let pointerdown = false
 
-	const bound = useElementBounding(target)
+	const targetEl = computed<HTMLElement | SVGElement | null>(() =>
+		unrefElement(target.value)
+	)
 
-	const {lock, unlock} = usePointerLock(target as any)
+	const bound = useElementBounding(targetEl)
+
+	const {lock, unlock} = usePointerLock(targetEl as any)
 
 	watchEffect(
 		() => {
@@ -123,11 +136,11 @@ export function useDrag(
 		)
 	})
 
-	useEventListener(target, 'pointerdown', onPointerDown)
-	useEventListener(target, 'pointermove', onPointerMove)
-	useEventListener(target, 'pointerup', onPointerUp)
-	useEventListener(target, 'pointercancel', onPointerUp)
-	useEventListener(target, 'pointerleave', onPointerUp)
+	useEventListener(targetEl, 'pointerdown', onPointerDown)
+	useEventListener(targetEl, 'pointermove', onPointerMove)
+	useEventListener(targetEl, 'pointerup', onPointerUp)
+	useEventListener(targetEl, 'pointercancel', onPointerUp)
+	useEventListener(targetEl, 'pointerleave', onPointerUp)
 
 	function fireDragStart(event: PointerEvent) {
 		if (
