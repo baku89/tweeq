@@ -2,14 +2,16 @@
 import {uniqueId} from 'lodash-es'
 import {ref, useTemplateRef} from 'vue'
 
+import Icon from '../Icon/Icon.vue'
 import InputSwitchOverlay from '../InputSwitch/InputSwitchOverlay.vue'
 import {useInputSwitch} from '../InputSwitch/utils'
-import {SvgIcon} from '../SvgIcon'
 import {InputEmits} from '../types'
 import {InputCheckboxProps} from './types'
 
 const model = defineModel<boolean>({required: true})
+
 const props = defineProps<InputCheckboxProps>()
+
 const emit = defineEmits<InputEmits>()
 
 const id = ref(uniqueId('InputCheckbox_'))
@@ -17,7 +19,7 @@ const id = ref(uniqueId('InputCheckbox_'))
 const track = useTemplateRef('track')
 const input = useTemplateRef('input')
 
-const {tweakingValue} = useInputSwitch({
+const {tweakingValue, subfocus} = useInputSwitch({
 	track,
 	input,
 	props,
@@ -27,7 +29,7 @@ const {tweakingValue} = useInputSwitch({
 
 <template>
 	<div class="InputCheckbox">
-		<div ref="track" class="checkbox">
+		<div ref="track" class="checkbox" :class="{subfocus}">
 			<input
 				:id="id"
 				ref="input"
@@ -35,9 +37,7 @@ const {tweakingValue} = useInputSwitch({
 				class="input"
 				type="checkbox"
 			/>
-			<SvgIcon mode="block" class="mark">
-				<path class="subtle" d="M5,19l8,6L27,9" />
-			</SvgIcon>
+			<Icon :icon="props.icon || 'mdi:check-bold'" class="mark" />
 			<InputSwitchOverlay :modelValue="tweakingValue" />
 		</div>
 		<label v-if="label" :for="id">
@@ -87,15 +87,9 @@ const {tweakingValue} = useInputSwitch({
 	left 0
 	width 100%
 	height 100%
-	color var(--tq-color-accent)
+	color set-alpha(--tq-color-text-subtle, .3)
 	pointer-events none
-	text-align center
-	line-height var(--tq-input-height)
-	stroke-width 4px
-	stroke-linecap round
-	stroke-linejoin round
-	stroke var(--tq-color-border)
 
 	input:checked + &
-		stroke var(--tq-color-background)
+		color var(--tq-color-background)
 </style>

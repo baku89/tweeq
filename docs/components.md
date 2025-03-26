@@ -86,8 +86,9 @@
 	:initialValue="false"
 	:scheme="{
 		label: {type: 'string'},
+		icon: {type: 'string'},
 	}"
-	:options="{label: ''}"
+	:options="{label: '', icon: ''}"
 	v-slot="{modelValue, options, listeners}"
 >
 	<InputCheckbox
