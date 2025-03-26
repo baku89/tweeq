@@ -339,6 +339,10 @@ function onIncrementByKey(delta: number) {
 		local.value += delta * multiplier
 		local.value = scalar.clamp(local.value, validMin.value, validMax.value)
 	}
+
+	nextTick(() => {
+		display.value = print.value(model.value)
+	})
 }
 
 //------------------------------------------------------------------------------
