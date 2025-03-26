@@ -3270,7 +3270,7 @@ line-intersect@^3.0.0:
   resolved "https://registry.yarnpkg.com/line-intersect/-/line-intersect-3.0.0.tgz#7e0808c80edda012586e125374af2db4dd62c987"
   integrity sha512-MAkwgBwwpyJhTWZ9EppTTFD6JxzYgh3BZxgI41CA2vSlANu4s5CXyTEJxKU3LRHitcF2vObHvE/s/lHxvKl2Kw==
 
-linearly@0.32.0, linearly@^0.32.0:
+linearly@0.32.0:
   version "0.32.0"
   resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.32.0.tgz#f41d1feb6f518aa38e39e555395c22990c5c9750"
   integrity sha512-m8pBLZWmcAj3zUcRt9ZBaBa1lcA3sqGJGK248n3wPtdBlAfD2K993ESMcREHDFZofcN/gUW0bAbZu/s7BWVx7g==
@@ -3279,6 +3279,11 @@ linearly@^0.20.3:
   version "0.20.3"
   resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.20.3.tgz#b2a938100118422aee7429da88716d7ea826a7b1"
   integrity sha512-i8+X2PfDKaq3VgpMSp3iej2rwc91ngZY4ecFQTeLPt6LNf/QyAsNVAwny7j7hBPUaue5Gt7SBCFshxhvWsOlOQ==
+
+linearly@^0.33.0:
+  version "0.33.0"
+  resolved "https://registry.yarnpkg.com/linearly/-/linearly-0.33.0.tgz#6b4abce512b4d3193dafa8626827cf6efb82a772"
+  integrity sha512-3BG18pL9rynrPnQSFO/YPbJIWGDlBETQtfNmK1ybee/ivGSnakR8KFcg+rGRpS8imXe7Lhn1bfnEsha2IKYwYg==
 
 linkify-it@^5.0.0:
   version "5.0.0"

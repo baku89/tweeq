@@ -105,6 +105,10 @@ export function useDrag(
 
 	const bound = useElementBounding(targetEl)
 
+	watchEffect(() => {
+		console.log(targetEl.value, 'desuyo!!')
+	})
+
 	const {lock, unlock} = usePointerLock(targetEl as any)
 
 	watchEffect(

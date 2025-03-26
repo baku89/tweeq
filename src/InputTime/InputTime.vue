@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {useMagicKeys} from '@vueuse/core'
+import {scalar} from 'linearly'
 import {
 	computed,
 	ref,
@@ -8,7 +10,7 @@ import {
 	watchSyncEffect,
 } from 'vue'
 
-import {InputString} from '../InputString'
+import {InputTextBase} from '../InputTextBase'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {InputTimeProps, TimeFormat} from './types'
@@ -73,53 +75,151 @@ function toggleTimeFormat() {
 }
 
 //------------------------------------------------------------------------------
+// Display
+
+const digits = computed(() => {
+	if (context.format === 'frames') {
+		return null
+	}
+	return display.value.split(':').reverse()
+})
+
+//------------------------------------------------------------------------------
 // Tweak
 
 const $input = useTemplateRef('$input')
+const $digits = useTemplateRef('$digits')
 
-useDrag($input, {
+const {
+	q: doQuantize,
+	shift: increaseTweakScale,
+	alt: decreaseTweakScale,
+} = useMagicKeys()
+
+const tweakScaleByHover = ref<number>(0)
+const tweakScaleOffset = computed(() => {
+	if (increaseTweakScale.value) return 1
+	if (decreaseTweakScale.value) return -1
+	return 0
+})
+const tweakScale = computed(() => {
+	return scalar.clamp(tweakScaleByHover.value + tweakScaleOffset.value, 0, 3)
+})
+
+const tweakSpeed = computed(() => {
+	const scale = tweakScale.value
+	const fps = props.frameRate
+
+	if (scale <= 0) return 1 / 4 // frames
+	if (scale === 1) return fps / 10 // seconds
+	if (scale === 2) return (fps * 60) / 100 // minutes
+	return (fps * 60 * 60) / 100 // hours
+})
+
+const tweakQuantizeParams = computed<[step: number, offset: number]>(() => {
+	const scale = tweakScale.value
+	const fps = props.frameRate
+
+	if (!doQuantize.value) return [1, 0]
+
+	if (scale === 0) return [1, 0]
+	if (scale === 1) return [fps, model.value % fps]
+	if (scale === 2) return [fps * 60, model.value % (fps * 60)]
+	return [fps * 60 * 60, model.value % (fps * 60 * 60)]
+})
+
+const tweakLocal = ref(0)
+
+useDrag($digits, {
+	lockPointer: true,
 	onClick() {
-		$input.value?.select()
+		$input.value!.select()
 	},
-	onDragStart() {},
+	onDragStart() {
+		tweakLocal.value = model.value
+	},
 	onDrag({delta: [dx]}) {
-		model.value += dx
+		console.log(dx)
+		tweakLocal.value += dx * tweakSpeed.value
 	},
+})
+
+watch(
+	doQuantize,
+	(curt, prev) => {
+		if (!curt && prev) {
+			tweakLocal.value = model.value
+		}
+	},
+	{flush: 'sync'}
+)
+
+watchSyncEffect(() => {
+	model.value = scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value)
 })
 
 watchSyncEffect(() => {
 	if (focused.value) emit('focus')
 	else emit('blur')
 })
-
-function ignorePointerdownUnlessFocusing(event: PointerEvent) {
-	if (!focused.value) {
-		event.preventDefault()
-	}
-}
 </script>
 
 <template>
-	<InputString
+	<InputTextBase
 		ref="$input"
+		v-model:focused="focused"
+		v-model="display"
 		class="TqInputTime"
-		:modelValue="display"
+		:ignoreInput="!focused"
 		font="numeric"
 		align="center"
-		@update:modelValue="display = $event"
-		@focus="focused = true"
-		@blur="focused = false"
 		@confirm="confirm"
-		@click.middle="toggleTimeFormat"
-		@pointerdown="ignorePointerdownUnlessFocusing"
-	/>
+		@pointerenter="tweakScaleByHover = 0"
+		@pointerdown.middle="toggleTimeFormat"
+	>
+		<template #inactiveContent>
+			<div ref="$digits" class="digits">
+				<template v-if="digits">
+					<template v-for="(digit, i) in digits" :key="i">
+						<div
+							class="digit"
+							:class="{tweak: tweakScale === i}"
+							@pointerenter="tweakScaleByHover = i"
+						>
+							{{ digit }}
+						</div>
+						<div v-if="i !== digits.length - 1" class="separator">:</div>
+					</template>
+				</template>
+				<div v-else>
+					{{ display }}
+				</div>
+			</div>
+		</template>
+	</InputTextBase>
 </template>
 
 <style lang="stylus" scoped>
+@import '../common.styl'
 
-.TqInputTime
-	cursor: col-resize
+.digits
+	position absolute
+	inset 0
+	display flex
+	align-items center
+	justify-content center
+	flex-direction row-reverse
 
-	&:focus
-		cursor inherit
+.digit
+	padding .1em .2em
+	border-radius var(--tq-input-border-radius)
+
+	.TqInputTime:hover &.tweak
+		background set-alpha(--tq-color-text-subtle, .3)
+
+
+.separator
+	padding .1em 0
+	font-weight bold
+	color var(--tq-color-text-subtle)
 </style>

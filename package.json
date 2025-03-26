@@ -38,7 +38,7 @@
 		"floating-vue": "^5.2.2",
 		"fp-ts": "^2.16.8",
 		"line-intersect": "^3.0.0",
-		"linearly": "^0.32.0",
+		"linearly": "^0.33.0",
 		"lodash-es": "^4.17.21",
 		"markdown-it": "^14.0.0",
 		"markdown-it-anchor": "^9.0.1",
