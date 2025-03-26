@@ -122,6 +122,8 @@ watchEffect(() => {
 <style lang="stylus">
 @import '../common.styl'
 
+reset-viewport('.TqMultiSelectPopup')
+
 .TqMultiSelectPopup
 	position fixed
 	popup-style()
