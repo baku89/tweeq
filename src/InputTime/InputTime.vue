@@ -84,6 +84,13 @@ const digits = computed(() => {
 	return display.value.split(':').reverse()
 })
 
+function getDigitLabel(i: number) {
+	if (i === 0) return 'F'
+	if (i === 1) return 'Secs'
+	if (i === 2) return 'Mins'
+	return 'Hrs'
+}
+
 //------------------------------------------------------------------------------
 // Tweak
 
@@ -152,7 +159,11 @@ useDrag($digits, {
 		tweakLocal.value = model.value
 	},
 	onDrag({delta: [dx]}) {
-		tweakLocal.value += dx * tweakSpeed.value
+		tweakLocal.value = scalar.clamp(
+			tweakLocal.value + dx * tweakSpeed.value,
+			props.min,
+			props.max
+		)
 	},
 })
 
@@ -199,6 +210,9 @@ watchSyncEffect(() => {
 							@pointerenter="tweakScaleByHover = i"
 						>
 							{{ digit }}
+							<div v-if="tweakScale === i" class="digit-label">
+								{{ getDigitLabel(i) }}
+							</div>
 						</div>
 						<div v-if="i !== digits.length - 1" class="separator">:</div>
 					</template>
@@ -214,6 +228,9 @@ watchSyncEffect(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
+.TqInputTime
+	overflow visible
+
 .digits
 	position absolute
 	inset 0
@@ -223,12 +240,24 @@ watchSyncEffect(() => {
 	flex-direction row-reverse
 
 .digit
+	position relative
 	padding .1em .2em
 	border-radius var(--tq-input-border-radius)
 
 	.TqInputTime:hover &.tweak
 		background set-alpha(--tq-color-text-subtle, .3)
 
+.digit-label
+	position absolute
+	bottom calc(100% + .6em)
+	left 50%
+	transform translate(-50%, 0)
+	tooltip-style()
+	display none
+	color var(--tq-color-text-mute)
+
+	.TqInputTime:hover &
+		display block
 
 .separator
 	padding .1em 0
