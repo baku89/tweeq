@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
+import {useMagicKeys} from '@vueuse/core'
 import {cloneDeep} from 'lodash-es'
-import {InputComplex} from 'tweeq'
+import {Icon, InputComplex} from 'tweeq'
 import {ref, shallowRef} from 'vue'
 
 import DemoContainer from './DemoContainer.vue'
@@ -37,17 +38,36 @@ const listeners = {
 		console.info(`[${props.name}] confirm\t`, ...args)
 	},
 }
+
+const {current} = useMagicKeys()
 </script>
 
 <template>
 	<DemoContainer class="DemoComponent">
 		<template #default="{isFullscreen}">
-			<div class="input">
+			<div class="input" :class="{fullscreen: isFullscreen}">
 				<slot
 					:modelValue="modelValue"
 					:options="options"
 					:listeners="listeners"
 				/>
+				<div v-if="current" class="pressed-keys">
+					<div v-for="key in current" :key="key">
+						<Icon
+							v-if="key === 'meta'"
+							icon="material-symbols:keyboard-command-key"
+						/>
+						<Icon
+							v-else-if="key === 'shift'"
+							icon="material-symbols:shift-outline"
+						/>
+						<Icon
+							v-else-if="key === 'alt'"
+							icon="material-symbols:keyboard-option-key"
+						/>
+						<span v-else>{{ key.toUpperCase() }}</span>
+					</div>
+				</div>
 			</div>
 
 			<div v-if="!isFullscreen" class="options">
@@ -64,6 +84,44 @@ const listeners = {
 
 .input
 	width 15rem
+
+	&.fullscreen
+		position relative
+		width 720px
+		height 720px
+		display flex
+		flex-direction column
+		justify-content center
+		align-items center
+		border 1px solid var(--tq-color-border)
+
+.pressed-keys
+	position absolute
+	bottom 2em
+	display flex
+	box-sizing border-box
+	gap .5em
+	font-family var(--tq-font-code)
+
+	div
+		height 36px
+		font-size 24px
+		font-size 24px
+		background-color var(--tq-color-text-subtle)
+		color var(--tq-color-background)
+		border-radius var(--tq-popup-border-radius)
+		padding 0 .4em 3px
+		text-box trim-both cap alphabetic
+		display flex
+		align-items center
+
+		span, svg
+			display block
+			vertical-align middle
+
+
+			margin-top 3px
+
 
 .options
 	border-left 1px solid black
