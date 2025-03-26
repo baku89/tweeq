@@ -35,7 +35,11 @@ const model = defineModel<string>({required: true})
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
 })
-const emit = defineEmits<InputEmits>()
+const emit = defineEmits<
+	InputEmits & {
+		'update:tweaking': [boolean]
+	}
+>()
 
 const theme = useThemeStore()
 
@@ -91,6 +95,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	onDragStart() {
 		local.value = localOnTweak = decompose(model.value)
 		multi.capture()
+		emit('update:tweaking', true)
 	},
 	onDrag({delta}) {
 		const [dx, dy] = vec2.div(delta, [tweakWidth, -tweakWidth])
@@ -132,6 +137,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	onDragEnd() {
 		emit('confirm')
 		multi.confirm()
+		emit('update:tweaking', false)
 	},
 })
 

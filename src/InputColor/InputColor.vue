@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useElementSize} from '@vueuse/core'
 import chroma from 'chroma-js'
-import {computed, useTemplateRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
@@ -22,6 +22,8 @@ const $root = useTemplateRef('$root')
 const {width} = useElementSize($root)
 
 const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
+
+const padTweaking = ref(false)
 
 const color = computed(() => {
 	if (chroma.valid(model.value)) {
@@ -55,6 +57,7 @@ function onUpdateAlpha(value: number) {
 		<InputColorPad
 			v-bind="props"
 			v-model="model"
+			v-model:tweaking="padTweaking"
 			:class="{'only-pad': !showColorCode}"
 			:inlinePosition="showColorCode ? 'start' : undefined"
 			@focus="emit('focus')"
@@ -63,6 +66,8 @@ function onUpdateAlpha(value: number) {
 		/>
 		<InputString
 			v-if="showColorCode"
+			class="color-code"
+			:class="{'pad-tweaking': padTweaking}"
 			font="monospace"
 			:modelValue="opaqueColor"
 			:validator="V.colorCode"
@@ -87,12 +92,22 @@ function onUpdateAlpha(value: number) {
 </template>
 
 <style lang="stylus" scoped>
+@import './common.styl'
+
 :deep(.only-pad)
 	flex-grow 1
 	width 100%
 
 	.default-button
 		width 100%
+
+.color-code
+	&:deep(input.input)
+		active-transition(padding-left)
+
+	&.pad-tweaking
+		&:deep(input.input)
+			padding-left calc(var(--tq-input-height) + .5em)
 
 .alpha
 	width calc(var(--tq-input-height) * 4)
