@@ -23,7 +23,7 @@ function update(value: T) {
 </script>
 
 <template>
-	<DemoContainer class="Sandbox">
+	<DemoContainer class="ExampleContainer">
 		<template #default="{isFullscreen}">
 			<div class="sandbox" :class="{fullscreen: isFullscreen}">
 				<InputComplex
@@ -39,11 +39,17 @@ function update(value: T) {
 </template>
 
 <style lang="stylus" scoped>
+.ExampleContainer
+	display flex
+	align-items center
+	justify-content center
 
 .sandbox
 	display flex
 	gap 2rem
 	align-items start
+	min-width 18rem
+	max-width 18rem
 
 .sandbox.fullscreen
 	width 640px
