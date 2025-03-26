@@ -4,6 +4,7 @@ import {computed, useTemplateRef} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
 import {useDrag} from '../use/useDrag'
+import {toPercent} from '../util'
 import FragmentString from './pad.frag'
 import {type ColorChannel, colorChannelToIndex, HSVA} from './types'
 import {
@@ -87,8 +88,8 @@ const circleStyle = computed(() => {
 	const y = getHSVAChannel(props.modelValue, props.axes[1])
 
 	return {
-		left: `${x * 100}%`,
-		bottom: `${y * 100}%`,
+		left: toPercent(x),
+		bottom: toPercent(y),
 		background: hsva2hex({...props.modelValue, a: 1}),
 	}
 })
