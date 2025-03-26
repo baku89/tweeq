@@ -191,6 +191,12 @@ const defaultButtonStyle = computed(() => {
 	}
 })
 
+const overlayStyle = computed(() => {
+	return {
+		transformOrigin: `${origin.value[0]}px ${origin.value[1]}px`,
+	}
+})
+
 const tweakPreviewStyle = computed(() => {
 	let color = chroma(chroma.valid(model.value) ? model.value : 'black')
 
@@ -206,6 +212,7 @@ const tweakPreviewStyle = computed(() => {
 
 const padStyle = computed(() => {
 	return {
+		opacity: tweakMode.value === 'pad' ? 1 : 0.1,
 		left: `${origin.value[0] - local.value.s * tweakWidth}px`,
 		top: `${origin.value[1] - (1 - local.value.v) * tweakWidth}px`,
 	}
@@ -229,6 +236,7 @@ const wheelUniforms = computed(() => {
 const wheelStyle = computed(() => {
 	return {
 		...tweakUIOffset.value,
+		opacity: tweakMode.value === 'h' ? 1 : 0.1,
 		rotate: `${local.value.h * -360}deg`,
 	}
 })
@@ -352,21 +360,21 @@ defineOptions({
 		</div>
 	</Popover>
 	<Transition>
-		<div v-if="tweaking" class="overlay">
-			<GlslCanvas
-				v-if="tweakMode === 'pad'"
-				class="pad"
-				:fragmentString="PadFragmentString"
-				:uniforms="padUniforms"
-				:style="padStyle"
-			/>
-			<GlslCanvas
-				v-else-if="tweakMode === 'h'"
-				class="wheel"
-				:fragmentString="WheelFragmentString"
-				:uniforms="wheelUniforms"
-				:style="wheelStyle"
-			/>
+		<div v-if="tweaking" class="overlay" :style="overlayStyle">
+			<template v-if="tweakMode === 'pad' || tweakMode === 'h'">
+				<GlslCanvas
+					class="pad"
+					:fragmentString="PadFragmentString"
+					:uniforms="padUniforms"
+					:style="padStyle"
+				/>
+				<GlslCanvas
+					class="wheel"
+					:fragmentString="WheelFragmentString"
+					:uniforms="wheelUniforms"
+					:style="wheelStyle"
+				/>
+			</template>
 			<GlslCanvas
 				v-else
 				class="slider"
@@ -417,22 +425,20 @@ defineOptions({
 
 .overlay
 	input-overlay()
-	transition-duration var(--tq-hover-transition-duration)
+	active-transition(opacity, scale)
+	opacity 1
+
+	&.v-enter-from,
+	&.v-leave-to
+		opacity 0
+		scale .5
 
 :is(.pad, .wheel, .slider)
 	position fixed
 	border-radius var(--tq-input-border-radius)
 	width 300px
 	overflow hidden
-	opacity 1
-
-	.v-enter-active &,
-	.v-leave-active &
-		hover-transition(opacity)
-
-	.v-enter-from &,
-	.v-leave-to &
-		opacity 0
+	active-transition(opacity)
 
 .pad
 	position absolute
@@ -466,24 +472,13 @@ defineOptions({
 	background-checkerboard()
 	box-shadow 0 0 1px 0px var(--tq-color-shadow)
 
-	.v-enter-from &,
-	.v-leave-to &
-		transform scale(1)
-		border-radius var(--tq-input-border-radius)
-
 .overlay-label
 	position absolute
 	tooltip-style()
 	font-numeric()
 	transform translate(-50%, calc(-100% - var(--tq-input-height) * 1.7))
-	active-transition(transform, opacity)
 	display flex
 	gap .2em
-
-	.v-enter-from &,
-	.v-leave-to &
-		opacity 0
-		transform translate(-50%, calc(-100% - var(--tq-input-height) * 0.2)) scale(.5)
 
 	.label
 		color var(--tq-color-text-mute)
