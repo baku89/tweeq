@@ -118,6 +118,7 @@ function onBlur(e: FocusEvent) {
 	background var(--tq-color-input)
 	color var(--tq-color-text)
 	hover-transition(background, box-shadow)
+	flex-grow 1
 	overflow hidden
 
 	use-input-font()

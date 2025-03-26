@@ -46,7 +46,6 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 
 <style lang="stylus" scoped>
 .InputAngle
-	display grid
-	grid-template-columns min-content 1fr
+	display flex
 	gap var(--tq-input-gap)
 </style>
