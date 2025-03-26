@@ -28,6 +28,7 @@ export interface MultiSelectSource {
 	type: MultiSelectType
 	el: Ref<HTMLElement | Component | null>
 	focusing: Readonly<Ref<boolean>>
+	speed?: Readonly<Ref<number>>
 	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
 	confirm: () => void

@@ -399,6 +399,10 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $input,
 	focusing: computed(() => focused.value || tweaking.value),
+	speed: computed(() => {
+		if (!barVisible.value) return 1
+		return (props.max - props.min) / width.value
+	}),
 	getValue: () => local.value,
 	setValue(value) {
 		const result = unref(validate)(value)
