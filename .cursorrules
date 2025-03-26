@@ -11,3 +11,5 @@ The stack technology is:
  - VueUse
 
 Always use scoped CSS, and <script lang="ts" setup> as well.
+
+As for commit messages, you don't need to explain the intention of the changes, just write what you did.
