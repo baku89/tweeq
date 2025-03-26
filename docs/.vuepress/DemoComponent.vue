@@ -51,7 +51,7 @@ const {current} = useMagicKeys()
 					:options="options"
 					:listeners="listeners"
 				/>
-				<div v-if="current" class="pressed-keys">
+				<div v-if="isFullscreen" class="pressed-keys">
 					<div v-for="key in current" :key="key">
 						<Icon
 							v-if="key === 'meta'"

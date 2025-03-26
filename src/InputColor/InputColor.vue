@@ -103,12 +103,11 @@ function onUpdateAlpha(value: number) {
 
 .color-code
 	&:deep(input.input)
-		active-transition(padding-left)
+		active-transition(text-indent)
 
 	&.pad-tweaking
 		&:deep(input.input)
-			padding-left calc(var(--tq-input-height) + .5em)
-
+			text-indent var(--tq-input-height)
 .alpha
 	width calc(var(--tq-input-height) * 4)
 </style>

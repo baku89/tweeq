@@ -271,7 +271,18 @@ let localAtFocus = 0
 function onFocus() {
 	multi.capture()
 	emit('focus')
+}
+
+function enableExpression() {
 	localAtFocus = local.value
+	expressionEnabled.value = true
+}
+
+function onKeydown(e: KeyboardEvent) {
+	if (e.metaKey && e.key === '=') {
+		e.preventDefault()
+		enableExpression()
+	}
 }
 
 function onInput(e: Event) {
@@ -279,7 +290,7 @@ function onInput(e: Event) {
 	display.value = value
 
 	if (!/^[0-9.]*$/.test(value)) {
-		expressionEnabled.value = true
+		enableExpression()
 	}
 
 	try {
@@ -490,6 +501,7 @@ const barStyle = computed<StyleValue>(() => {
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
+		@keydown="onKeydown"
 		@keydown.up.prevent="onIncrementByKey(1)"
 		@keydown.down.prevent="onIncrementByKey(-1)"
 		@keydown.enter.prevent="confirm"

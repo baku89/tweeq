@@ -3,12 +3,12 @@ import {
 	computed,
 	type MaybeRefOrGetter,
 	onBeforeUnmount,
-	shallowRef,
+	ref,
 	unref,
 	watchEffect,
 } from 'vue'
 
-const styles = shallowRef<Map<string, string | null>>(new Map())
+const styles = ref<Map<string, string | null>>(new Map())
 
 const currentStyle = computed(() => {
 	for (const style of styles.value.values()) {

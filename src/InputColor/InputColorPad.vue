@@ -477,8 +477,14 @@ defineOptions({
 	border-radius 50%
 	margin-left -150px
 	margin-top -4px
-	mask radial-gradient(circle, transparent calc(70.71% - 4.5px), black calc(70.71% - 4px))
 
+	dot(angle)
+		'radial-gradient(closest-side, black 80%, transparent 100%) calc(50% + sin(%s) * (50% - 6px)) calc(50% - cos(%s) * (50% - 6px)) / 4px 4px' % (angle angle)
+
+	mask \
+		radial-gradient(closest-side, transparent calc(100% - 4.5px), black calc(100% - 4px)),
+		dot(0deg), dot(60deg), dot(120deg), dot(180deg), dot(240deg), dot(300deg)
+	mask-repeat no-repeat
 .slider
 	height calc(0.5 * var(--tq-input-height))
 	transform translate(-50%, -50%)
