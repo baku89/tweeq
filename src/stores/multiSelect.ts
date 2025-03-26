@@ -61,14 +61,17 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		if (!id) return null
 
-		const el = unrefElement(inputs.get(id)!.el)
+		const input = inputs.get(id)
+
+		if (!input) return null
+
+		const el = unrefElement(input.el)
 
 		return el ?? null
 	})
 
 	// Defocus logics
 	function defocusAll() {
-		console.log('defocusAll')
 		selectedIds.clear()
 	}
 
