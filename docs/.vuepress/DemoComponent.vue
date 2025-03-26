@@ -45,12 +45,14 @@ const {current} = useMagicKeys()
 <template>
 	<DemoContainer class="DemoComponent">
 		<template #default="{isFullscreen}">
-			<div class="input" :class="{fullscreen: isFullscreen}">
-				<slot
-					:modelValue="modelValue"
-					:options="options"
-					:listeners="listeners"
-				/>
+			<div class="input-wrapper" :class="{fullscreen: isFullscreen}">
+				<div class="input">
+					<slot
+						:modelValue="modelValue"
+						:options="options"
+						:listeners="listeners"
+					/>
+				</div>
 				<div v-if="isFullscreen" class="pressed-keys">
 					<div v-for="key in current" :key="key">
 						<Icon
@@ -82,18 +84,18 @@ const {current} = useMagicKeys()
 	display grid
 	grid-template-columns min-content 1fr
 
-.input
+.input-wrapper
 	width 15rem
 
 	&.fullscreen
 		position relative
-		width 720px
-		height 720px
+		width 640px
+		height 480px
 		display flex
 		flex-direction column
 		justify-content center
 		align-items center
-		border 1px solid var(--tq-color-border)
+		outline 1px solid var(--tq-color-border)
 
 .pressed-keys
 	position absolute
