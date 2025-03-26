@@ -39,8 +39,13 @@ const slots = defineSlots<{
 }>()
 
 defineExpose({
-	select: () => {
-		$input.value?.select()
+	select: (start?: number, end?: number) => {
+		if (start === undefined) {
+			$input.value?.select()
+		} else {
+			$input.value?.setSelectionRange(start, end ?? start + 1)
+			$input.value?.focus()
+		}
 	},
 })
 
