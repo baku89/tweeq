@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {useTemplateRef} from 'vue'
+import {computed, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
 import {
@@ -32,13 +32,21 @@ const emit = defineEmits<{
 	'update:focused': [value: boolean]
 }>()
 
-const $input = useTemplateRef('$input')
+const slots = defineSlots<{
+	back: () => any
+	front: () => any
+	inactiveContent: () => any
+}>()
 
 defineExpose({
 	select: () => {
 		$input.value?.select()
 	},
 })
+
+const hasInactiveContent = computed(() => !!slots.inactiveContent)
+
+const $input = useTemplateRef('$input')
 
 function onInput(e: Event) {
 	model.value = (e.target as HTMLInputElement).value
@@ -58,20 +66,24 @@ function onBlur(e: FocusEvent) {
 <template>
 	<div
 		class="TqInputTextBase"
-		:class="{active, invalid, hover}"
+		:class="{
+			active,
+			invalid,
+			hover,
+		}"
 		:theme="theme"
 		:font="font"
 		:align="align"
+		:inline-position="inlinePosition"
+		:block-position="blockPosition"
 	>
 		<slot name="back" />
 		<input
 			ref="$input"
 			class="input"
 			type="text"
-			:class="{ignore: ignoreInput}"
+			:class="{ignore: ignoreInput, 'has-inactive-content': hasInactiveContent}"
 			:value="model"
-			:inline-position="inlinePosition"
-			:block-position="blockPosition"
 			:disabled="disabled || undefined"
 			@focus="onFocus"
 			@blur="onBlur"
@@ -79,6 +91,10 @@ function onBlur(e: FocusEvent) {
 			@keydown="emit('keydown', $event)"
 			@keydown.enter="emit('confirm')"
 		/>
+
+		<div v-if="hasInactiveContent" class="inactive-content">
+			<slot name="inactiveContent" />
+		</div>
 
 		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
@@ -132,8 +148,18 @@ function onBlur(e: FocusEvent) {
 	height var(--tq-input-height)
 	padding-inline .5em
 
+	&.has-inactive-content:not(:focus)
+		opacity 0
+
 	&.ignore
 		pointer-events none
+
+.inactive-content
+	position absolute
+	inset 0
+
+	:focus + &
+		display none
 
 
 .icon
