@@ -186,7 +186,7 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	position absolute
 	inset calc(-150px + var(--tq-input-height) / 2)
 
-	background-image radial-gradient(circle at 1px 1px, var(--tq-color-accent) 1px, transparent 1px)
+	background-image radial-gradient(circle at 1px 1px, var(--tq-color-text-subtle) 1px, transparent 1px)
 	background-repeat repeat
 	mask radial-gradient(closest-side, black 50%, transparent 100%)
 	hover-transition(transform)
