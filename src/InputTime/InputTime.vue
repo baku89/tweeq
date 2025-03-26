@@ -8,15 +8,20 @@ import {
 	ref,
 	useTemplateRef,
 	watch,
-	watchEffect,
 	watchSyncEffect,
 } from 'vue'
 
 import {InputTextBase} from '../InputTextBase'
+import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
+import {ValidateResult} from '../validator'
 import {InputTimeProps, TimeFormat} from './types'
-import {formatTimecode, parseTimecode, useInputTimeContext} from './utils'
+import {
+	formatTimecode,
+	replaceTimecodeWithFrames,
+	useInputTimeContext,
+} from './utils'
 
 const model = defineModel<number>({required: true})
 
@@ -32,86 +37,10 @@ const context = useInputTimeContext()
 
 const focused = ref(false)
 
-function print(model: number, format: TimeFormat) {
-	if (format === 'frames') {
-		return model + 'F'
-	}
-
-	return formatTimecode(model, props.frameRate)
-}
-
-const parse = parseTimecode
-
-const display = ref('')
-
-// Model -> Display
-watch(
-	() => [model.value, context.format, focused.value] as const,
-	([model, format, focused]) => {
-		if (focused) return
-		display.value = print(model, format)
-	},
-	{immediate: true, flush: 'sync'}
-)
-
-const parseResult = computed(() => parse(display.value, props.frameRate))
-const validLocal = ref<number>()
-
-watchEffect(() => {
-	if (parseResult.value !== null) {
-		validLocal.value = parseResult.value
-		if (focused.value) {
-			model.value = validLocal.value
-		}
-	}
-})
-
-watchSyncEffect(() => {
-	if (focused.value) emit('focus')
-	else emit('blur')
-})
-
-function confirm() {
-	emit('confirm')
-	nextTick(() => {
-		display.value = print(model.value, context.format)
-	})
-}
-
-function toggleTimeFormat() {
-	context.format = context.format === 'frames' ? 'timecode' : 'frames'
-	display.value = print(model.value, context.format)
-}
-
-//------------------------------------------------------------------------------
-// Display
-
-const digits = computed(() => {
-	if (context.format === 'frames') {
-		return null
-	}
-	return display.value.split(':').reverse()
-})
-
-function getDigitLabel(i: number) {
-	if (i === 0) return 'F'
-	if (i === 1) return 'Secs'
-	if (i === 2) return 'Mins'
-	return 'Hrs'
-}
-
-//------------------------------------------------------------------------------
-// Hotkeys
-
-function increment(inc: number) {
-	model.value = scalar.clamp(model.value + inc, props.min, props.max)
-	confirm()
-}
+const $input = useTemplateRef('$input')
 
 //------------------------------------------------------------------------------
 // Tweak
-
-const $input = useTemplateRef('$input')
 
 const {
 	q: doSnap,
@@ -161,6 +90,7 @@ const tweakSnapParams = computed<[step: number, offset: number]>(() => {
 })
 
 const tweakLocal = ref(0)
+let tweakAccumlated = 0
 
 const {dragging: tweaking} = useDrag($input, {
 	lockPointer: true,
@@ -182,6 +112,8 @@ const {dragging: tweaking} = useDrag($input, {
 	},
 	onDragStart() {
 		tweakLocal.value = model.value
+		tweakAccumlated = 0
+		multi.capture()
 	},
 	onDrag({delta: [dx]}) {
 		tweakLocal.value = scalar.clamp(
@@ -189,6 +121,11 @@ const {dragging: tweaking} = useDrag($input, {
 			props.min,
 			props.max
 		)
+		tweakAccumlated += dx
+		multi.update(x => x + tweakAccumlated)
+	},
+	onDragEnd() {
+		multi.confirm()
 	},
 })
 
@@ -213,6 +150,144 @@ watchSyncEffect(() => {
 		model.value = value
 	}
 })
+
+//------------------------------------------------------------------------------
+// Multi Select
+
+const multi = useMultiSelectStore().register({
+	type: 'number',
+	el: $input,
+	focusing: computed(() => focused.value || tweaking.value),
+	getValue: () => model.value,
+	setValue(value) {
+		model.value = scalar.clamp(value, props.min, props.max)
+	},
+	confirm() {
+		emit('confirm')
+	},
+})
+
+//------------------------------------------------------------------------------
+// State management
+
+function print(model: number, format: TimeFormat) {
+	if (format === 'frames') {
+		return model + 'F'
+	}
+
+	return formatTimecode(model, props.frameRate)
+}
+
+const display = ref('')
+
+// Model -> Display
+watch(
+	() => [model.value, context.format, focused.value] as const,
+	([model, format, focused]) => {
+		if (focused) return
+		display.value = print(model, format)
+	},
+	{immediate: true, flush: 'sync'}
+)
+
+let localAtFocus = 0
+
+type Parser = (
+	x: number,
+	context: {i: number; fps: number}
+) => ValidateResult<number>
+
+const parse = computed<Parser>(() => {
+	const code = replaceTimecodeWithFrames(display.value, props.frameRate)
+
+	try {
+		const fn = eval(`(x, {i, fps}) => {
+			try {
+				const value = (${code})
+				if (typeof value === 'number') {
+					return {value, log: []}
+				} else {
+					return {value, log: ['Value is not a number']}
+				}
+			} catch (e) {
+				return {log: [e.message]}
+			}
+		}`)
+		return fn
+	} catch (e) {
+		return () => ({value: undefined, log: [(e as Error).message]})
+	}
+})
+
+const parseResult = computed(() =>
+	parse.value(localAtFocus, {i: multi.index, fps: props.frameRate})
+)
+
+const validLocal = ref<number>()
+
+watchSyncEffect(() => {
+	if (parseResult.value.value === undefined) return
+
+	validLocal.value = parseResult.value.value
+
+	if (focused.value) {
+		model.value = validLocal.value
+	}
+})
+
+watchSyncEffect(() => {
+	if (focused.value) {
+		localAtFocus = model.value
+		emit('focus')
+	} else {
+		emit('blur')
+	}
+})
+
+watchSyncEffect(() => {
+	const _parse = parse.value
+	multi.update((x, ctx) => {
+		const result = _parse(x, {...ctx, fps: props.frameRate})
+		return result.value === undefined ? x : result.value
+	})
+})
+
+function confirm() {
+	emit('confirm')
+	nextTick(() => {
+		display.value = print(model.value, context.format)
+	})
+}
+
+function toggleTimeFormat() {
+	context.format = context.format === 'frames' ? 'timecode' : 'frames'
+	display.value = print(model.value, context.format)
+}
+
+//------------------------------------------------------------------------------
+// Display
+
+const digits = computed(() => {
+	if (context.format === 'frames') {
+		return null
+	}
+	return display.value.split(':').reverse()
+})
+
+function getDigitLabel(i: number) {
+	if (i === 0) return 'F'
+	if (i === 1) return 'Secs'
+	if (i === 2) return 'Mins'
+	return 'Hrs'
+}
+
+//------------------------------------------------------------------------------
+// Hotkeys
+
+function increment(inc: number) {
+	model.value = scalar.clamp(model.value + inc, props.min, props.max)
+	confirm()
+}
 
 //------------------------------------------------------------------------------
 // Overlay
@@ -256,6 +331,7 @@ const hourTick = computed(() => {
 		v-model="display"
 		class="TqInputTime"
 		:ignoreInput="!focused"
+		:active="multi.subfocus"
 		font="numeric"
 		leftIcon="mdi-clock"
 		align="center"
