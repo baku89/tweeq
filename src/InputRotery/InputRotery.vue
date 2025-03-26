@@ -85,7 +85,8 @@ const {
 	},
 })
 
-const doQuantizeKey = useMagicKeys()['shift']
+const {shift, q} = useMagicKeys()
+const doQuantizeKey = computed(() => shift.value || q.value)
 
 const doQuantize = computed(() => {
 	const radius = vec2.dist(center.value, xy.value)
