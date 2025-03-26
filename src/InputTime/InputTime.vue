@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {Path} from '@baku89/pave'
 import {useMagicKeys} from '@vueuse/core'
-import {scalar} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {
 	computed,
 	ref,
@@ -64,6 +65,10 @@ watchEffect(() => {
 	}
 })
 
+watchSyncEffect(() => {
+	if (focused.value) emit('focus')
+	else emit('blur')
+})
 function confirm() {
 	display.value = print(model.value, context.format)
 	emit('confirm')
@@ -137,7 +142,7 @@ const tweakQuantizeParams = computed<[step: number, offset: number]>(() => {
 
 const tweakLocal = ref(0)
 
-useDrag($digits, {
+const {dragging: tweaking} = useDrag($digits, {
 	lockPointer: true,
 	onClick(_, e) {
 		const target = e.target as HTMLElement
@@ -178,12 +183,47 @@ watch(
 )
 
 watchSyncEffect(() => {
-	model.value = scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value)
+	model.value = tweaking
+		? scalar.clamp(
+				scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value),
+				props.min,
+				props.max
+			)
+		: model.value
 })
 
-watchSyncEffect(() => {
-	if (focused.value) emit('focus')
-	else emit('blur')
+//------------------------------------------------------------------------------
+// Overlay
+
+function radialLine(t: number, innerRadius: number, outerRadius: number) {
+	const deg = t * 360 - 90
+	return Path.line(
+		vec2.dir(deg, innerRadius, [50, 50]),
+		vec2.dir(deg, outerRadius, [50, 50])
+	)
+}
+
+const frameTick = computed(() => {
+	const f = model.value % props.frameRate
+	return Path.toD(radialLine(f / props.frameRate, 48, 48))
+})
+
+const secondTick = computed(() => {
+	const s = Math.floor(model.value / props.frameRate) % 60
+	return Path.toD(radialLine(s / 60, -15, 45))
+})
+
+const minuteTick = computed(() => {
+	const m = Math.floor(model.value / (props.frameRate * 60)) % 60
+	return Path.toD(radialLine(m / 60, 0, 40))
+})
+
+const hourTick = computed(() => {
+	const h = Math.floor(model.value / (props.frameRate * 60 * 60)) % 24
+
+	if (h === 0) return Path.toD(Path.empty)
+
+	return Path.toD(radialLine(h / 12, 0, 20))
 })
 </script>
 
@@ -222,6 +262,19 @@ watchSyncEffect(() => {
 				</div>
 			</div>
 		</template>
+		<template #front>
+			<Transition>
+				<div v-if="tweaking" class="overlay">
+					<svg class="overlay-svg" viewBox="0 0 100 100">
+						<!-- <circle cx="50" cy="50" r="50" class="bold gray" /> -->
+						<path :d="frameTick" class="frame" :tweaking="tweakScale === 0" />
+						<path :d="secondTick" class="second" :tweaking="tweakScale === 1" />
+						<path :d="minuteTick" class="minute" :tweaking="tweakScale === 2" />
+						<path :d="hourTick" class="hour" :tweaking="tweakScale === 3" />
+					</svg>
+				</div>
+			</Transition>
+		</template>
 	</InputTextBase>
 </template>
 
@@ -229,9 +282,11 @@ watchSyncEffect(() => {
 @import '../common.styl'
 
 .TqInputTime
+	position relative
 	overflow visible
 
 .digits
+	z-index 100
 	position absolute
 	inset 0
 	display flex
@@ -249,10 +304,12 @@ watchSyncEffect(() => {
 
 .digit-label
 	position absolute
+	z-index 1
 	bottom calc(100% + .6em)
 	left 50%
 	transform translate(-50%, 0)
 	tooltip-style()
+	background white
 	display none
 	color var(--tq-color-text-mute)
 
@@ -262,5 +319,52 @@ watchSyncEffect(() => {
 .separator
 	padding .1em 0
 	font-weight bold
-	color var(--tq-color-text-subtle)
+	color var(--tq-color-text-mute)
+
+$size = 360px
+
+.overlay
+	input-overlay()
+	z-index 0
+	position absolute
+	pointer-events none
+	top 50%
+	left 50%
+	hover-transition(scale, opacity)
+	width $size
+	height $size
+	translate -50% -50%
+	mask radial-gradient(closest-side, transparent 0%, black 50%)
+
+
+	&.v-enter-from,
+	&.v-leave-to
+		opacity 0
+		scale .5
+
+
+.overlay-svg
+	overflow visible
+	width $size !important
+	height $size !important
+
+	path, circle
+		stroke var(--tq-color-text-subtle)
+		vector-effect non-scaling-stroke
+
+	.frame
+		stroke-width 10
+		stroke var(--tq-color-border)
+
+	.second
+		stroke-width 1
+
+	.minute
+		stroke-width 3
+
+	.hour
+		stroke-width 5
+
+	[tweaking=true]
+		stroke var(--tq-color-accent)
 </style>
