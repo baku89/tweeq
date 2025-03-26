@@ -1,6 +1,6 @@
+@use './custom';
+
 :root {
-	// accent colors
-	--vp-c-accent: blue;
 	--vp-c-accent-bg: var(--vp-c-accent);
 	--vp-c-accent-hover: color-mix(
 		in srgb,
@@ -27,9 +27,9 @@
 	--vp-c-gutter: var(--vp-c-border);
 
 	// font family
-	--font-family: aktiv-grotesk, 'Inter', a-otf-gothic-bbb-pr6n, 游ゴシック体,
-		'Yu Gothic', YuGothic, 'Hiragino Kaku Gothic ProN', Osaka, 'ＭＳ Ｐゴシック',
-		sans-serif;
+	--font-family:
+		aktiv-grotesk, 'Inter', a-otf-gothic-bbb-pr6n, 游ゴシック体, 'Yu Gothic',
+		YuGothic, 'Hiragino Kaku Gothic ProN', Osaka, 'ＭＳ Ｐゴシック', sans-serif;
 	--code-font-family: 'IBM Plex Mono', monospace !important;
 
 	// custom variables
@@ -37,9 +37,6 @@
 }
 
 [data-theme='dark'] {
-	// brand colors
-	--vp-c-accent: rgb(99, 99, 253);
-
 	// text colors
 	--vp-c-text: white;
 }
@@ -235,25 +232,4 @@ td code {
 
 .vp-sidebar-item:not(.vp-sidebar-heading) {
 	padding-left: 1.25rem;
-}
-
-.sandbox {
-	.page-meta {
-		display: none;
-	}
-
-	[vp-content] {
-		max-width: unset;
-	}
-}
-
-.sandbox-code {
-	font-size: 40px;
-	font-family: var(--code-font-family);
-	width: min-content;
-}
-
-// For user testing
-.user-test .vp-navbar {
-	display: none;
 }
