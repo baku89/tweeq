@@ -29,7 +29,7 @@
  - `Drag`
  	- On the line indicator: set the angle absolutely
  	- On the remaining part of the knob: rotate it relative to the current angle
-	 - `Shift` or `S`: snap to the times of `snap`
+ 	- `Shift` or `Q`: snap to the times of `snap`
 
 ### InputButton
 
@@ -199,7 +199,7 @@
  - `Drag`: tweak the number
 	- `Shift`: increase the scale of adjustment
 	- `Alt`: decrease the scale of adjustment
-	- `S`: snap to the times of `snap`
+	- `Q`: snap to the times of `snap`
 
 
 ### InputPosition
@@ -342,6 +342,7 @@
 	 - `Shift`: increase the scale of adjustment
 	 - `Alt`: decrease the scale of adjustment
 	 - `H` / `M` / `S` / `F`: adjust the hour / minute / second / frame
+	 - `Q`: only change the currently selected unit
 
 ### InputTranslate
 

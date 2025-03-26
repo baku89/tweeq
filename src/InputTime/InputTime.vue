@@ -114,7 +114,7 @@ function increment(inc: number) {
 const $input = useTemplateRef('$input')
 
 const {
-	s: doSnap,
+	q: doSnap,
 	shift: increaseTweakScale,
 	alt: decreaseTweakScale,
 	h: forceHourTweak,
@@ -257,6 +257,7 @@ const hourTick = computed(() => {
 		class="TqInputTime"
 		:ignoreInput="!focused"
 		font="numeric"
+		leftIcon="mdi-clock"
 		align="center"
 		@confirm="confirm"
 		@pointerenter="tweakScaleByHover = 0"

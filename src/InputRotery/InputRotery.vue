@@ -85,8 +85,8 @@ const {
 	},
 })
 
-const {shift, s} = useMagicKeys()
-const doSnapKey = computed(() => shift.value || s.value)
+const {shift, q} = useMagicKeys()
+const doSnapKey = computed(() => shift.value || q.value)
 
 const doSnap = computed(() => {
 	const radius = vec2.dist(center.value, xy.value)
