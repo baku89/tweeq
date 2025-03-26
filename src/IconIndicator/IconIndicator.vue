@@ -39,4 +39,6 @@ defineEmits<{
 
 	.icon
 		display block
+		height calc(var(--tq-input-height) * .8)
+		width calc(var(--tq-input-height) * .8)
 </style>

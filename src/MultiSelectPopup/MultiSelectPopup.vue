@@ -157,8 +157,6 @@ reset-viewport('.TqMultiSelectPopup')
 	opacity 1
 	pointer-events none
 
-	input
-
 	.TqMultiSelectPopup:hover &
 		opacity 0
 </style>
