@@ -110,7 +110,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 				return hsva
 			})
 		} else {
-			local.value = tweakHSVAChannel(local.value, mode, dx)
+			local.value = tweakHSVAChannel(local.value, mode, mode === 'v' ? dy : dx)
 
 			const current = getHSVAChannel(local.value, mode)
 			const initial = getHSVAChannel(localOnTweak!, mode)
@@ -257,9 +257,14 @@ const sliderStyle = computed(() => {
 		value = local.value[tweakMode.value]
 	}
 
+	const offsetAxis = -(value - 0.5) * tweakWidth
+
+	const offset: vec2 =
+		tweakMode.value === 'v' ? [0, offsetAxis] : [offsetAxis, 0]
+
 	return {
-		left: `${origin.value[0] - (value - 0.5) * tweakWidth}px`,
-		top: `${origin.value[1]}px`,
+		left: `${origin.value[0] + offset[0]}px`,
+		top: `${origin.value[1] - offset[1]}px`,
 	}
 })
 
@@ -361,7 +366,14 @@ defineOptions({
 	</Popover>
 	<Transition>
 		<div v-if="tweaking" class="overlay" :style="overlayStyle">
-			<template v-if="tweakMode === 'pad' || tweakMode === 'h'">
+			<template
+				v-if="
+					tweakMode === 'pad' ||
+					tweakMode === 'h' ||
+					tweakMode === 's' ||
+					tweakMode === 'v'
+				"
+			>
 				<GlslCanvas
 					class="pad"
 					:fragmentString="PadFragmentString"
@@ -376,8 +388,16 @@ defineOptions({
 				/>
 			</template>
 			<GlslCanvas
-				v-else
+				v-if="
+					tweakMode === 's' ||
+					tweakMode === 'v' ||
+					tweakMode === 'r' ||
+					tweakMode === 'g' ||
+					tweakMode === 'b' ||
+					tweakMode === 'a'
+				"
 				class="slider"
+				:class="{[tweakMode]: true}"
 				:fragmentString="SliderFragmentString"
 				:uniforms="sliderUniforms"
 				:style="sliderStyle"
@@ -454,10 +474,13 @@ defineOptions({
 	mask radial-gradient(circle, transparent calc(70.71% - 4.5px), black calc(70.71% - 4px))
 
 .slider
-	height calc(0.7 * var(--tq-input-height))
+	height calc(0.5 * var(--tq-input-height))
 	transform translate(-50%, -50%)
 	color transparent
 	background-checkerboard()
+
+	&.v
+		transform translate(-50%, -50%) rotate(-90deg)
 
 .tweak-preview
 	position absolute
