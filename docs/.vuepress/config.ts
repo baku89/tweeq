@@ -43,6 +43,10 @@ export default defineUserConfig({
 				link: '/principles',
 			},
 			{
+				text: 'Features',
+				link: '/features',
+			},
+			{
 				text: 'Components',
 				link: '/components',
 			},

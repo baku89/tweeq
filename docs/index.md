@@ -6,10 +6,21 @@ actionText: Get Started →
 actions:
   - text: Components
     link: /components
+  - text: Features
+    link: /features
     type: secondary
   - text: Example
     link: /example
     type: secondary
+features:
+  - title: Specialized Inputs for Creators
+    details: Tweeq offers a suite of specialized input components tailored for professional creative applications.
+  - title: Drag-to-tweak Interaction
+    details: Components support various types of micro-interactions, including direct drag gestures for precise and quick parameter adjustments.
+  - title: Simultaneous Editing
+    details: Select and edit multiple parameters parametrically at once.
+  - title: Expression Support
+    details: Control parameters dynamically through JavaScript expressions.
 ---
 
 <div class="badges">

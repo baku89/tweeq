@@ -197,6 +197,7 @@
 	- `Option + ↑` / `Option + ↓`: increase / decrease the number by 0.1
 	- `Command + =`: enable expression mode
  - `Drag`: tweak the number
+	- Drag vertically: increase and decrease the scale of adjustment
 	- `Shift`: increase the scale of adjustment
 	- `Alt`: decrease the scale of adjustment
 	- `Q`: snap to the times of `snap`
