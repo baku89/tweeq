@@ -57,19 +57,19 @@ export function parseTimecode(timecode: string, frameRate: number) {
 	}
 
 	// Matches with "s", "sec", "secs", "second", "seconds"
-	if (/^[0-9+\-.]+\s*s(ec(ond)?s?)?$/.test(timecode)) {
+	if (/[0-9+\-.]s(ec(ond)?s?)?$/.test(timecode)) {
 		const seconds = parseFloat(timecode)
 		return isNaN(seconds) ? null : sign * Math.round(seconds * frameRate)
 	}
 
 	// Matches with "m", "min", "mins", "minute", "minutes"
-	if (/^[0-9+\-.]+\s*m(in(ute)?s?)?$/.test(timecode)) {
+	if (/[0-9+\-.]m(in(ute)?s?)?$/.test(timecode)) {
 		const minutes = parseFloat(timecode)
 		return isNaN(minutes) ? null : sign * Math.round(minutes * frameRate * 60)
 	}
 
 	// Matches with "h", "hr", "hrs", "hour", "hours"
-	if (/^[0-9+\-.]+\s*h((ou)?r)?s?$/.test(timecode)) {
+	if (/[0-9+\-.]h((ou)?r)?s?$/.test(timecode)) {
 		const hours = parseFloat(timecode)
 		return isNaN(hours) ? null : sign * Math.round(hours * frameRate * 3600)
 	}

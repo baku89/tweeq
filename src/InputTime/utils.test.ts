@@ -35,13 +35,6 @@ describe('parseTimecode', () => {
 		expect(parseTimecode('10hours', 30)).toBe(1080000)
 	})
 
-	it('should parse digits with unit separated by whitespaces', () => {
-		expect(parseTimecode('10  f', 30)).toBe(10)
-		expect(parseTimecode('10  s', 30)).toBe(300)
-		expect(parseTimecode('10  m', 30)).toBe(30 * 60 * 10)
-		expect(parseTimecode('10  h', 30)).toBe(1080000)
-	})
-
 	it('should parse negative timecode', () => {
 		expect(parseTimecode('-00:01:12', 24)).toBe(-36)
 
