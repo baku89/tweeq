@@ -19,7 +19,7 @@ import type {InputRoteryProps} from './types'
 import {clampPosWithinRect} from './utils'
 
 const props = withDefaults(defineProps<InputRoteryProps>(), {
-	quantizeStep: 45,
+	snap: 45,
 	angleOffset: -90,
 })
 
@@ -45,7 +45,7 @@ const tweakMode = ref<'relative' | 'absolute'>('relative')
 
 const initialValueOnTweak = ref(model.value)
 
-const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
+const snapMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
 const $root = useTemplateRef('$root')
 const center = useElementCenter($root)
@@ -85,22 +85,22 @@ const {
 	},
 })
 
-const {shift, q} = useMagicKeys()
-const doQuantizeKey = computed(() => shift.value || q.value)
+const {shift, s} = useMagicKeys()
+const doSnapKey = computed(() => shift.value || s.value)
 
-const doQuantize = computed(() => {
+const doSnap = computed(() => {
 	const radius = vec2.dist(center.value, xy.value)
 	return (
-		doQuantizeKey.value ||
-		(quantizeMeterRadii[0] <= radius && radius <= quantizeMeterRadii[1])
+		doSnapKey.value ||
+		(snapMeterRadii[0] <= radius && radius <= snapMeterRadii[1])
 	)
 })
 
-// Local value before quantize
+// Local value before snap
 const local = ref(model.value)
 
 const validate = computed(() => {
-	return doQuantize.value ? V.quantize(props.quantizeStep) : V.identity
+	return doSnap.value ? V.quantize(props.snap) : V.identity
 })
 
 const validateResult = computed(() => validate.value(local.value))
@@ -111,8 +111,8 @@ watch(
 			validateResult.value,
 			tweaking.value,
 			tweakMode.value,
-			doQuantize.value,
-			props.quantizeStep,
+			doSnap.value,
+			props.snap,
 		] as const,
 	([result]) => {
 		if (result.value === undefined) return
@@ -129,9 +129,7 @@ watch(
 
 				multi.update(x => {
 					const newX = x + delta
-					return doQuantize.value
-						? scalar.quantize(newX, props.quantizeStep)
-						: newX
+					return doSnap.value ? scalar.quantize(newX, props.snap) : newX
 				})
 			}
 		}
@@ -187,17 +185,15 @@ function radialLine(angle: number, innerRadius: number, outerRadius: number) {
 const metersPath = computed(() =>
 	Path.toSVGString(
 		Path.merge(
-			range(0, 360, props.quantizeStep).map(a =>
-				radialLine(a, ...quantizeMeterRadii)
-			)
+			range(0, 360, props.snap).map(a => radialLine(a, ...snapMeterRadii))
 		)
 	)
 )
 
 const activeMeterPath = computed(() => {
 	return Path.toSVGString(
-		doQuantize.value && model.value % props.quantizeStep === 0
-			? radialLine(model.value, ...quantizeMeterRadii)
+		doSnap.value && model.value % props.snap === 0
+			? radialLine(model.value, ...snapMeterRadii)
 			: Path.empty
 	)
 })
@@ -326,7 +322,7 @@ useCopyPaste({
 					<path d="M 0 0 L 6 3 L 0 6 Z" />
 				</marker>
 			</defs>
-			<path class="thin gray" :class="{quantize: doQuantize}" :d="metersPath" />
+			<path class="thin gray" :class="{snap: doSnap}" :d="metersPath" />
 			<path
 				class="bold"
 				:d="overlayPath"
@@ -407,7 +403,7 @@ useCopyPaste({
 .overlay
 	input-overlay()
 
-	.quantize
+	.snap
 		stroke-width 2
 		stroke var(--tq-color-accent-soft-hover) !important
 

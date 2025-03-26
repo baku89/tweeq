@@ -114,9 +114,13 @@ function increment(inc: number) {
 const $input = useTemplateRef('$input')
 
 const {
-	q: doQuantize,
+	s: doSnap,
 	shift: increaseTweakScale,
 	alt: decreaseTweakScale,
+	h: forceHourTweak,
+	m: forceMinuteTweak,
+	s: forceSecondTweak,
+	t: forceFrameTweak,
 } = useMagicKeys()
 
 const tweakScaleByHover = ref<number>(0)
@@ -126,6 +130,11 @@ const tweakScaleOffset = computed(() => {
 	return 0
 })
 const tweakScale = computed(() => {
+	if (forceFrameTweak.value) return 0
+	if (forceSecondTweak.value) return 1
+	if (forceMinuteTweak.value) return 2
+	if (forceHourTweak.value) return 3
+
 	return scalar.clamp(tweakScaleByHover.value + tweakScaleOffset.value, 0, 3)
 })
 
@@ -139,11 +148,11 @@ const tweakSpeed = computed(() => {
 	return (fps * 60 * 60) / 100 // hours
 })
 
-const tweakQuantizeParams = computed<[step: number, offset: number]>(() => {
+const tweakSnapParams = computed<[step: number, offset: number]>(() => {
 	const scale = tweakScale.value
 	const fps = props.frameRate
 
-	if (!doQuantize.value) return [1, 0]
+	if (!doSnap.value) return [1, 0]
 
 	if (scale === 0) return [1, 0]
 	if (scale === 1) return [fps, model.value % fps]
@@ -184,7 +193,7 @@ const {dragging: tweaking} = useDrag($input, {
 })
 
 watch(
-	doQuantize,
+	doSnap,
 	(curt, prev) => {
 		if (!curt && prev) {
 			tweakLocal.value = model.value
@@ -195,7 +204,7 @@ watch(
 
 watchSyncEffect(() => {
 	const value = scalar.clamp(
-		scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value),
+		scalar.quantize(tweakLocal.value, ...tweakSnapParams.value),
 		props.min,
 		props.max
 	)
@@ -251,7 +260,7 @@ const hourTick = computed(() => {
 		align="center"
 		@confirm="confirm"
 		@pointerenter="tweakScaleByHover = 0"
-		@pointerdown.middle="toggleTimeFormat"
+		@click.right.stop.prevent="toggleTimeFormat"
 		@keydown.exact.up.prevent="increment(frameRate)"
 		@keydown.exact.down.prevent="increment(-frameRate)"
 		@keydown.exact.alt.up.prevent="increment(1)"
