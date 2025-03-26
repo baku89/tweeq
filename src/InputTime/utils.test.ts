@@ -1,6 +1,16 @@
 import {describe, expect, it} from 'vitest'
 
-import {parseTimecode} from './utils'
+import {parseTimecode, replaceTimecodeWithFrames} from './utils'
+
+describe('replaceTimecodeWithFrames', () => {
+	it('should replace timecode with frames', () => {
+		const f = replaceTimecodeWithFrames
+		expect(f('00:24 + 1:00', 24)).toBe('24 + 24')
+		expect(f('{10f}', 24)).toBe('{10}')
+		expect(f(' (20SEC) + 3min * 1:00 ', 24)).toBe(' (480) + 4320 * 24 ')
+		expect(f('hr(1.5h)\n10s', 24)).toBe('hr(129600)\n240')
+	})
+})
 
 describe('parseTimecode', () => {
 	it('should parse timecode split by colon', () => {
