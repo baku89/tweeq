@@ -4,6 +4,7 @@ import {useMagicKeys} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
 import {
 	computed,
+	nextTick,
 	ref,
 	useTemplateRef,
 	watch,
@@ -69,9 +70,12 @@ watchSyncEffect(() => {
 	if (focused.value) emit('focus')
 	else emit('blur')
 })
+
 function confirm() {
-	display.value = print(model.value, context.format)
 	emit('confirm')
+	nextTick(() => {
+		display.value = print(model.value, context.format)
+	})
 }
 
 function toggleTimeFormat() {
@@ -94,6 +98,14 @@ function getDigitLabel(i: number) {
 	if (i === 1) return 'Secs'
 	if (i === 2) return 'Mins'
 	return 'Hrs'
+}
+
+//------------------------------------------------------------------------------
+// Hotkeys
+
+function increment(inc: number) {
+	model.value = scalar.clamp(model.value + inc, props.min, props.max)
+	confirm()
 }
 
 //------------------------------------------------------------------------------
@@ -183,13 +195,15 @@ watch(
 )
 
 watchSyncEffect(() => {
-	model.value = tweaking
-		? scalar.clamp(
-				scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value),
-				props.min,
-				props.max
-			)
-		: model.value
+	const value = scalar.clamp(
+		scalar.quantize(tweakLocal.value, ...tweakQuantizeParams.value),
+		props.min,
+		props.max
+	)
+
+	if (tweaking.value) {
+		model.value = value
+	}
 })
 
 //------------------------------------------------------------------------------
@@ -239,6 +253,12 @@ const hourTick = computed(() => {
 		@confirm="confirm"
 		@pointerenter="tweakScaleByHover = 0"
 		@pointerdown.middle="toggleTimeFormat"
+		@keydown.exact.up.prevent="increment(frameRate)"
+		@keydown.exact.down.prevent="increment(-frameRate)"
+		@keydown.exact.alt.up.prevent="increment(1)"
+		@keydown.exact.alt.down.prevent="increment(-1)"
+		@keydown.exact.shift.up.prevent="increment(60 * frameRate)"
+		@keydown.exact.shift.down.prevent="increment(-60 * frameRate)"
 	>
 		<template #inactiveContent>
 			<div ref="$digits" class="digits">
