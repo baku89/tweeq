@@ -31,11 +31,11 @@ import {
 } from './utils'
 import WheelFragmentString from './wheel.frag'
 
+const model = defineModel<string>({required: true})
 const props = withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
 })
-
-const emit = defineEmits<InputEmits<string>>()
+const emit = defineEmits<InputEmits>()
 
 const theme = useThemeStore()
 
@@ -89,7 +89,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		open.value = !open.value
 	},
 	onDragStart() {
-		local.value = localOnTweak = decompose(props.modelValue)
+		local.value = localOnTweak = decompose(model.value)
 		multi.capture()
 	},
 	onDrag({delta}) {
@@ -127,7 +127,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 			}
 		}
 
-		emit('update:modelValue', compose(local.value))
+		model.value = compose(local.value)
 	},
 	onDragEnd() {
 		emit('confirm')
@@ -137,11 +137,11 @@ const {origin, dragging: tweaking} = useDrag($button, {
 
 // Update local value when model value changes externally
 watch(
-	() => props.modelValue,
-	modelValue => {
+	model,
+	model => {
 		if (tweaking.value) return
 
-		local.value = decompose(modelValue)
+		local.value = decompose(model)
 	},
 	{immediate: true, flush: 'sync'}
 )
@@ -183,18 +183,16 @@ const tweakUIOffset = computed(() => {
 })
 
 const defaultButtonStyle = computed(() => {
-	const contrast = Color.contrastWCAG21(props.modelValue, theme.backgroundColor)
+	const contrast = Color.contrastWCAG21(model.value, theme.backgroundColor)
 
 	return {
-		color: props.modelValue,
+		color: model.value,
 		'--outline': contrast > 1.1 ? 'transparent' : 'var(--tq-color-border)',
 	}
 })
 
 const tweakPreviewStyle = computed(() => {
-	let color = chroma.valid(props.modelValue)
-		? chroma(props.modelValue)
-		: chroma('black')
+	let color = chroma(chroma.valid(model.value) ? model.value : 'black')
 
 	if (tweakMode.value !== 'a') {
 		color = color.alpha(1)
@@ -278,7 +276,7 @@ const multi = useMultiSelectStore().register({
 	getValue: () => local.value,
 	setValue(value: HSVA) {
 		local.value = value
-		emit('update:modelValue', compose(value))
+		model.value = compose(value)
 	},
 	confirm() {
 		emit('confirm')
@@ -298,12 +296,12 @@ whenever(
 useCopyPaste({
 	target: $button,
 	onCopy() {
-		navigator.clipboard.writeText(props.modelValue)
+		navigator.clipboard.writeText(model.value)
 	},
 	onPaste: async () => {
 		const text = await navigator.clipboard.readText()
 		if (!text) return
-		emit('update:modelValue', text)
+		model.value = text
 
 		const hsva = decompose(text)
 
@@ -345,11 +343,10 @@ defineOptions({
 	>
 		<div ref="$floating" class="floating">
 			<InputColorPicker
-				:modelValue="modelValue"
+				v-model="model"
 				:alpha="alpha"
 				:pickers="pickers"
 				:presets="presets"
-				@update:modelValue="emit('update:modelValue', $event)"
 				@confirm="emit('confirm')"
 			/>
 		</div>

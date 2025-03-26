@@ -8,9 +8,9 @@ import {SvgIcon} from '../SvgIcon'
 import {InputEmits} from '../types'
 import {InputCheckboxProps} from './types'
 
+const model = defineModel<boolean>({required: true})
 const props = defineProps<InputCheckboxProps>()
-
-const emit = defineEmits<InputEmits<boolean>>()
+const emit = defineEmits<InputEmits>()
 
 const id = ref(uniqueId('InputCheckbox_'))
 
@@ -31,7 +31,7 @@ const {tweakingValue} = useInputSwitch({
 			<input
 				:id="id"
 				ref="input"
-				:checked="modelValue"
+				:checked="model"
 				class="input"
 				type="checkbox"
 			/>

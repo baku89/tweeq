@@ -14,13 +14,15 @@ import {useDrag} from '../use/useDrag'
 import {InputTimeProps, TimeFormat} from './types'
 import {formatTimecode, parseTimecode, useInputTimeContext} from './utils'
 
+const model = defineModel<number>({required: true})
+
 const props = withDefaults(defineProps<InputTimeProps>(), {
 	frameRate: 24,
 	min: -Infinity,
 	max: Infinity,
 })
 
-const emit = defineEmits<InputEmits<number>>()
+const emit = defineEmits<InputEmits>()
 
 const context = useInputTimeContext()
 
@@ -40,7 +42,7 @@ const display = ref('')
 
 // Model -> Display
 watch(
-	() => [props.modelValue, context.format, focused.value] as const,
+	() => [model.value, context.format, focused.value] as const,
 	([model, format, focused]) => {
 		if (focused) return
 		display.value = print(model, format)
@@ -55,19 +57,19 @@ watchEffect(() => {
 	if (parseResult.value !== null) {
 		validLocal.value = parseResult.value
 		if (focused.value) {
-			emit('update:modelValue', validLocal.value)
+			model.value = validLocal.value
 		}
 	}
 })
 
 function confirm() {
-	display.value = print(props.modelValue, context.format)
+	display.value = print(model.value, context.format)
 	emit('confirm')
 }
 
 function toggleTimeFormat() {
 	context.format = context.format === 'frames' ? 'timecode' : 'frames'
-	display.value = print(props.modelValue, context.format)
+	display.value = print(model.value, context.format)
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +83,7 @@ useDrag($input, {
 	},
 	onDragStart() {},
 	onDrag({delta: [dx]}) {
-		emit('update:modelValue', props.modelValue + dx)
+		model.value += dx
 	},
 })
 

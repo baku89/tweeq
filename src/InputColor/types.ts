@@ -53,7 +53,7 @@ export const DefaultColorPickers: ColorPickerComponent[] = [
 	['values'],
 ]
 
-export interface InputColorProps extends InputBoxProps<string> {
+export interface InputColorProps extends InputBoxProps {
 	alpha?: boolean
 	pickers?: ColorPickerComponent[]
 	presets?: string[]

@@ -11,20 +11,18 @@ export type InputAlign = 'left' | 'center' | 'right'
 
 export type InputPosition = 'start' | 'middle' | 'end'
 
-export interface InputProps<T> {
-	modelValue: T
+export interface InputProps {
 	invalid?: boolean
 	disabled?: boolean
 }
 
-export interface InputEmits<T> {
-	'update:modelValue': [value: T]
+export interface InputEmits {
 	focus: []
 	blur: []
 	confirm: []
 }
 
-export interface InputBoxProps<T> extends InputProps<T> {
+export interface InputBoxProps extends InputProps {
 	inlinePosition?: InputPosition
 	blockPosition?: InputPosition
 }

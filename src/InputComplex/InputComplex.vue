@@ -14,9 +14,11 @@ import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
 import {InputEmits} from '../types'
 import type {InputComplexProps, Scheme} from './types'
 
+const model = defineModel<T>({required: true})
+
 const props = defineProps<InputComplexProps<T>>()
 
-const emit = defineEmits<InputEmits<T>>()
+const emit = defineEmits<InputEmits>()
 
 const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
 	return Object.entries(props.scheme)
@@ -39,7 +41,7 @@ function getComponentName(param: Scheme<T>[keyof T]) {
 }
 
 function getModelValue<K extends keyof T>(name: K) {
-	return props.modelValue[name] as any
+	return model.value[name] as any
 }
 
 function updateModelValue(name: keyof T, value: any) {
@@ -51,11 +53,11 @@ let changedModel: T | undefined
 function commitChange(name: keyof T, value: any) {
 	if (!changedModel) {
 		nextTick(() => {
-			emit('update:modelValue', changedModel as T)
+			model.value = changedModel as T
 			changedModel = undefined
 		})
 
-		changedModel = {...props.modelValue}
+		changedModel = {...model.value}
 	}
 
 	changedModel[name] = value

@@ -2,21 +2,19 @@
 import {Icon} from '../Icon'
 import {InputButtonToggleProps} from './types'
 
-defineProps<InputButtonToggleProps>()
+const model = defineModel<boolean>({required: true})
 
-defineEmits<{
-	'update:modelValue': [boolean]
-}>()
+defineProps<InputButtonToggleProps>()
 </script>
 
 <template>
 	<button
 		class="InputButtonToggle"
-		:class="{checked: modelValue}"
+		:class="{checked: model}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="!!disabled"
-		@click="$emit('update:modelValue', !modelValue)"
+		@click="model = !model"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span v-if="label" class="label">{{ label }}</span>

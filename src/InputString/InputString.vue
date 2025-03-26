@@ -8,16 +8,16 @@ import {useValidator} from '../use/useValidator'
 import * as V from '../validator'
 import {type InputStringProps} from './types'
 
+const model = defineModel<string>({required: true})
+
 const props = withDefaults(defineProps<InputStringProps>(), {
 	validator: () => V.identity,
 })
 
-const emit = defineEmits<
-	Omit<InputEmits<string>, 'focus'> & {focus: [e: FocusEvent]}
->()
+const emit = defineEmits<InputEmits>()
 
-const local = ref(props.modelValue)
-const display = ref(props.modelValue)
+const local = ref(model.value)
+const display = ref(model.value)
 const {validLocal, validateResult} = useValidator(local, props.validator)
 
 const $input = useTemplateRef('$input')
@@ -34,7 +34,7 @@ const invalid = computed(
 )
 
 watch(
-	() => props.modelValue,
+	() => model.value,
 	value => {
 		if (value !== validLocal.value) {
 			local.value = value
@@ -56,16 +56,16 @@ watch(
 watch(
 	validLocal,
 	validLocal => {
-		if (validLocal !== undefined && validLocal !== props.modelValue) {
-			emit('update:modelValue', validLocal)
+		if (validLocal !== undefined && validLocal !== model.value) {
+			model.value = validLocal
 		}
 	},
 	{flush: 'sync'}
 )
 
-function onFocus(e: FocusEvent) {
+function onFocus() {
 	multi.capture()
-	emit('focus', e)
+	emit('focus')
 }
 
 function onKeyDown(e: KeyboardEvent) {
@@ -122,7 +122,7 @@ function confirm() {
 	expressionError.value = undefined
 
 	nextTick(() => {
-		display.value = local.value = props.modelValue
+		display.value = local.value = model.value
 	})
 }
 

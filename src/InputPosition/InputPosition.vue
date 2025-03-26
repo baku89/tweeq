@@ -7,25 +7,27 @@ import {InputVec} from '../InputVec'
 import {InputEmits} from '../types'
 import {InputPositionProps} from './types'
 
+const model = defineModel<vec2>({required: true})
+
 const props = defineProps<InputPositionProps>()
 
-const emit = defineEmits<InputEmits<vec2>>()
+const emit = defineEmits<InputEmits>()
 </script>
 
 <template>
 	<InputGroup class="TqInputPosition">
 		<InputTranslate
 			v-bind="props"
+			v-model="model"
 			:showOverlayLabel="false"
-			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"
 		/>
 		<InputVec
 			v-bind="props"
+			v-model="model"
 			:icon="['char:X', 'char:Y']"
-			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"

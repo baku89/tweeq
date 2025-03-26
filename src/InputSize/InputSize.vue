@@ -6,19 +6,20 @@ import {Icon} from '../Icon'
 import {InputVec} from '../InputVec'
 import {InputEmits, InputProps} from '../types'
 
+const model = defineModel<vec2>({required: true})
+
+defineProps<InputProps>()
+const emit = defineEmits<InputEmits>()
+
 const keepRatio = ref(true)
 
-const props = defineProps<InputProps<vec2>>()
-const emit = defineEmits<InputEmits<vec2>>()
-
-let valueOnEdit = props.modelValue
+let valueOnEdit = model.value
 
 function onUpdate(value: vec2) {
-	const bothChanged =
-		props.modelValue[0] !== value[0] && props.modelValue[1] !== value[1]
+	const bothChanged = model.value[0] !== value[0] && model.value[1] !== value[1]
 
 	if (bothChanged) {
-		const prevRatio = props.modelValue[0] / props.modelValue[1]
+		const prevRatio = model.value[0] / model.value[1]
 		const newRatio = value[0] / value[1]
 
 		if (!scalar.approx(prevRatio, newRatio)) {
@@ -26,7 +27,7 @@ function onUpdate(value: vec2) {
 		}
 	}
 
-	const index = props.modelValue[0] !== value[0] ? 0 : 1
+	const index = model.value[0] !== value[0] ? 0 : 1
 
 	if (keepRatio.value) {
 		let ds = value[index] / valueOnEdit[index]
@@ -37,11 +38,11 @@ function onUpdate(value: vec2) {
 		) as unknown as vec2
 	}
 
-	emit('update:modelValue', value)
+	model.value = value
 }
 
 function recordValueOnEdit() {
-	valueOnEdit = props.modelValue
+	valueOnEdit = model.value
 	emit('focus')
 }
 </script>
@@ -49,7 +50,7 @@ function recordValueOnEdit() {
 <template>
 	<div class="TqInputSize">
 		<InputVec
-			:modelValue="modelValue"
+			:modelValue="model"
 			:icon="['mdi:arrow-left-right', 'mdi:arrow-up-down']"
 			@update:modelValue="onUpdate"
 			@focus="recordValueOnEdit"
@@ -90,7 +91,7 @@ function recordValueOnEdit() {
 		&:hover
 			color var(--tq-color-accent-hover)
 
-:deep(.InputNumber:not(:first-child))
+:deep(.TqInputNumber:not(:first-child))
 	.icon.left
 		left calc(var(--tq-input-height) * .3)
 </style>

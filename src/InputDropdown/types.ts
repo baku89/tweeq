@@ -8,7 +8,7 @@ import {
 
 export interface InputDropdownProps<T>
 	extends LabelizerProps<T>,
-		InputBoxProps<T> {
+		InputBoxProps {
 	icons?: string[]
 	theme?: InputTheme
 	font?: InputFont

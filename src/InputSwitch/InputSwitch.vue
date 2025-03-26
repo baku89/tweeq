@@ -6,9 +6,11 @@ import {InputEmits} from '../types'
 import {InputSwitchProps} from './types'
 import {useInputSwitch} from './utils'
 
+const model = defineModel<boolean>({required: true})
+
 const props = defineProps<InputSwitchProps>()
 
-const emit = defineEmits<InputEmits<boolean>>()
+const emit = defineEmits<InputEmits>()
 
 const id = ref(uniqueId('InputSwitch_'))
 
@@ -29,7 +31,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 			<input
 				:id="id"
 				ref="input"
-				:checked="!!modelValue"
+				:checked="!!model"
 				class="input"
 				type="checkbox"
 			/>

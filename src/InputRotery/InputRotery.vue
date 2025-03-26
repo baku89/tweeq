@@ -25,7 +25,9 @@ const props = withDefaults(defineProps<InputRoteryProps>(), {
 
 const theme = useThemeStore()
 
-const emit = defineEmits<InputEmits<number>>()
+const model = defineModel<number>({required: true})
+
+const emit = defineEmits<InputEmits>()
 
 function signedAngleBetween(target: number, source: number) {
 	const ret = target - source
@@ -33,15 +35,15 @@ function signedAngleBetween(target: number, source: number) {
 }
 
 const display = computed(() => {
-	const revs = Math.trunc(props.modelValue / 360)
-	const rot = props.modelValue - revs * 360
+	const revs = Math.trunc(model.value / 360)
+	const rot = model.value - revs * 360
 
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
 const tweakMode = ref<'relative' | 'absolute'>('relative')
 
-const initialValueOnTweak = ref(props.modelValue)
+const initialValueOnTweak = ref(model.value)
 
 const quantizeMeterRadii: vec2 = [theme.inputHeight * 4, 160]
 
@@ -56,7 +58,7 @@ const {
 } = useDrag($root, {
 	dragDelaySeconds: 0,
 	onDragStart({xy}) {
-		initialValueOnTweak.value = local.value = props.modelValue
+		initialValueOnTweak.value = local.value = model.value
 
 		if (tweakMode.value === 'absolute') {
 			const p = vec2.sub(xy, center.value)
@@ -94,7 +96,7 @@ const doQuantize = computed(() => {
 })
 
 // Local value before quantize
-const local = ref(props.modelValue)
+const local = ref(model.value)
 
 const validate = computed(() => {
 	return doQuantize.value ? V.quantize(props.quantizeStep) : V.identity
@@ -115,7 +117,7 @@ watch(
 		if (result.value === undefined) return
 
 		if (tweaking.value) {
-			emit('update:modelValue', result.value)
+			model.value = result.value
 		}
 
 		if (tweaking.value) {
@@ -139,7 +141,7 @@ watch(
 useCursorStyle(() => (tweaking.value ? 'none' : null))
 
 const roteryStyles = computed(() => {
-	const rotation = props.modelValue + props.angleOffset
+	const rotation = model.value + props.angleOffset
 	return {
 		transform: `rotate(${rotation}deg)`,
 	}
@@ -193,8 +195,8 @@ const metersPath = computed(() =>
 
 const activeMeterPath = computed(() => {
 	return Path.toSVGString(
-		doQuantize.value && props.modelValue % props.quantizeStep === 0
-			? radialLine(props.modelValue, ...quantizeMeterRadii)
+		doQuantize.value && model.value % props.quantizeStep === 0
+			? radialLine(model.value, ...quantizeMeterRadii)
 			: Path.empty
 	)
 })
@@ -204,7 +206,7 @@ const overlayPath = computed(() => {
 
 	if (tweakMode.value === 'absolute') {
 		const dist = vec2.distance(center.value, xy.value)
-		const angle = props.modelValue
+		const angle = model.value
 
 		const innerRadius = theme.inputHeight
 		const outerRadius = dist
@@ -215,7 +217,7 @@ const overlayPath = computed(() => {
 		const radiusStep = theme.inputHeight * 0.25
 
 		const start = initialValueOnTweak.value + props.angleOffset
-		const end = props.modelValue + props.angleOffset
+		const end = model.value + props.angleOffset
 
 		const turns =
 			Math.floor(Math.abs(end - start) / 360) * Math.sign(end - start)
@@ -264,7 +266,7 @@ const multi = useMultiSelectStore().register({
 useCopyPaste({
 	target: $root,
 	onCopy() {
-		navigator.clipboard.writeText(props.modelValue.toString())
+		navigator.clipboard.writeText(model.value.toString())
 	},
 	onPaste: async () => {
 		const text = await navigator.clipboard.readText()
@@ -274,7 +276,7 @@ useCopyPaste({
 
 		if (isNaN(value)) return
 
-		emit('update:modelValue', value)
+		model.value = value
 
 		multi.update(() => value)
 		multi.confirm()

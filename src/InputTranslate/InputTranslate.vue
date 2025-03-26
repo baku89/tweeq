@@ -9,13 +9,15 @@ import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {precisionOf} from '../util'
 
+const model = defineModel<vec2>({required: true})
+
 const props = withDefaults(
 	defineProps<InputPositionProps & {showOverlayLabel?: boolean}>(),
 	{
 		showOverlayLabel: true,
 	}
 )
-const emit = defineEmits<InputEmits<vec2>>()
+const emit = defineEmits<InputEmits>()
 
 const $button = useTemplateRef('$button')
 
@@ -50,8 +52,8 @@ const precision = computed(() => {
 })
 
 const display = computed(() => {
-	const xd = props.modelValue[0].toFixed(precision.value)
-	const yd = props.modelValue[1].toFixed(precision.value)
+	const xd = model.value[0].toFixed(precision.value)
+	const yd = model.value[1].toFixed(precision.value)
 
 	return `<i>X</i> ${xd}   <i>Y</i> ${yd}`
 })
@@ -59,6 +61,9 @@ const display = computed(() => {
 const {dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	dragDelaySeconds: 0,
+	onDragStart() {
+		emit('focus')
+	},
 	onDrag({delta}) {
 		const modelDelta = vec2.scale(delta, speed.value) as vec2.Mutable
 
@@ -70,14 +75,15 @@ const {dragging: tweaking} = useDrag($button, {
 			modelDelta[0] = 0
 		}
 
-		emit(
-			'update:modelValue',
-			vec2.clamp(
-				vec2.add(props.modelValue, modelDelta),
-				min.value ?? [-Infinity, -Infinity],
-				max.value ?? [Infinity, Infinity]
-			)
+		model.value = vec2.clamp(
+			vec2.add(model.value, modelDelta),
+			min.value ?? [-Infinity, -Infinity],
+			max.value ?? [Infinity, Infinity]
 		)
+	},
+	onDragEnd() {
+		emit('confirm')
+		emit('blur')
 	},
 })
 
@@ -86,7 +92,7 @@ const overlayStyles = computed(() => {
 	const scale = gridScaleAnimated.value
 
 	const size = 10 * scale
-	const offset = vec2.add(center, vec2.scale(props.modelValue, -scale))
+	const offset = vec2.add(center, vec2.scale(model.value, -scale))
 
 	return {
 		backgroundSize: `${size}px ${size}px`,
@@ -100,11 +106,11 @@ const zeroStyle = computed(() => {
 
 	const start = vec2.add(
 		center,
-		vec2.scale(vec2.sub(props.modelValue, min.value ?? [-9999, -9999]), -scale)
+		vec2.scale(vec2.sub(model.value, min.value ?? [-9999, -9999]), -scale)
 	)
 	const end = vec2.add(
 		center,
-		vec2.scale(vec2.sub(props.modelValue, max.value ?? [9999, 9999]), -scale)
+		vec2.scale(vec2.sub(model.value, max.value ?? [9999, 9999]), -scale)
 	)
 
 	const size = vec2.sub(end, start)

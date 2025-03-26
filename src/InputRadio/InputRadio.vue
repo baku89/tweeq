@@ -13,9 +13,11 @@ type Props = LabelizerProps<T> & {
 	modelValue: T
 }
 
+const model = defineModel<T>({required: true})
+
 const props = defineProps<Props>()
 
-const emit = defineEmits<InputEmits<T>>()
+defineEmits<InputEmits>()
 
 defineSlots<{
 	option: {label: string; value: T; isActive: boolean}
@@ -32,7 +34,7 @@ const completeOptions = computed<CompleteOption[]>(() => {
 
 function onChange(index: number) {
 	const newValue = completeOptions.value[index].value
-	emit('update:modelValue', newValue)
+	model.value = newValue
 }
 </script>
 
@@ -47,15 +49,15 @@ function onChange(index: number) {
 				:id="id + value"
 				type="radio"
 				:name="id"
-				:checked="modelValue === value"
+				:checked="model === value"
 				@change="onChange(index)"
 			/>
-			<label :for="id + value" :class="{active: modelValue === value}">
+			<label :for="id + value" :class="{active: model === value}">
 				<slot
 					name="option"
 					:label="label"
 					:value="value"
-					:isActive="modelValue === value"
+					:isActive="model === value"
 				>
 					{{ label }}
 				</slot>

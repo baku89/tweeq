@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {useTemplateRef} from 'vue'
 
+import {Icon} from '../Icon'
 import {
 	type InputAlign,
 	type InputBoxProps,
@@ -8,14 +9,18 @@ import {
 	type InputTheme,
 } from '../types'
 
-export interface InputTextBaseProps extends InputBoxProps<string> {
+export interface InputTextBaseProps extends InputBoxProps {
 	ignoreInput?: boolean
 	hover?: boolean
 	active?: boolean
 	theme?: InputTheme
 	font?: InputFont
 	align?: InputAlign
+	leftIcon?: string
+	rightIcon?: string
 }
+
+const model = defineModel<string>({required: true})
 
 defineProps<InputTextBaseProps>()
 
@@ -37,7 +42,7 @@ defineExpose({
 })
 
 function onInput(e: Event) {
-	emit('update:modelValue', (e.target as HTMLInputElement).value)
+	model.value = (e.target as HTMLInputElement).value
 }
 
 function onFocus(e: FocusEvent) {
@@ -65,7 +70,7 @@ function onBlur(e: FocusEvent) {
 			class="input"
 			type="text"
 			:class="{ignore: ignoreInput}"
-			:value="modelValue"
+			:value="model"
 			:inline-position="inlinePosition"
 			:block-position="blockPosition"
 			:disabled="disabled || undefined"
@@ -75,11 +80,15 @@ function onBlur(e: FocusEvent) {
 			@keydown="emit('keydown', $event)"
 			@keydown.enter="emit('confirm')"
 		/>
+
+		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
+		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
+
 		<slot name="front" />
 	</div>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 .TqInputTextBase
@@ -126,4 +135,23 @@ function onBlur(e: FocusEvent) {
 
 	&.ignore
 		pointer-events none
+
+
+.icon
+	width calc(var(--tq-input-height) - 6px)
+	height calc(var(--tq-input-height) - 6px)
+	margin 3px
+	color var(--tq-color-text-mute)
+	transform scale(0.8)
+	opacity .7
+	position absolute
+	z-index 100
+	pointer-events none
+	top 0
+
+	&.left
+		left 3px
+
+	&.right
+		right 3px
 </style>

@@ -18,6 +18,8 @@ import {type InputEmits, useLabelizer} from '../types'
 import {unsignedMod} from '../util'
 import type {InputDropdownProps} from './types'
 
+const model = defineModel<T>({required: true})
+
 const props = withDefaults(defineProps<InputDropdownProps<T>>(), {
 	prefix: '',
 	suffix: '',
@@ -26,7 +28,7 @@ const props = withDefaults(defineProps<InputDropdownProps<T>>(), {
 
 const labelizer = useLabelizer(props)
 
-const emit = defineEmits<InputEmits<T>>()
+const emit = defineEmits<InputEmits>()
 
 defineOptions({
 	inheritAttrs: false,
@@ -38,11 +40,11 @@ const $input = useTemplateRef('$input')
 
 const rootBound = useElementBounding($root)
 
-const display = ref(labelizer.value(props.modelValue))
+const display = ref(labelizer.value(model.value))
 const displayEdited = ref(false)
 
 watch(
-	() => [open.value, props.modelValue] as const,
+	() => [open.value, model.value] as const,
 	([open, modelValue]) => {
 		if (open) return
 		display.value = labelizer.value(modelValue)
@@ -50,7 +52,7 @@ watch(
 	}
 )
 
-const valueAtStart = ref(props.modelValue) as Ref<T>
+const valueAtStart = ref(model.value) as Ref<T>
 
 const filteredOptions = computed(() => {
 	if (display.value === '' || !displayEdited.value) return props.options
@@ -82,21 +84,21 @@ const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 })
 
 watch(filteredOptions, filteredOptions => {
-	if (!filteredOptions.includes(props.modelValue)) {
-		emit('update:modelValue', filteredOptions[0])
+	if (!filteredOptions.includes(model.value)) {
+		model.value = filteredOptions[0]
 	}
 })
 
 let timeAtOpen: number | null = null
 
 whenever(open, () => {
-	valueAtStart.value = props.modelValue
+	valueAtStart.value = model.value
 	timeAtOpen = new Date().getTime()
 	window.addEventListener('pointerup', onPointerupWhileOpen)
 })
 
 function onSelect(option: T) {
-	emit('update:modelValue', option)
+	model.value = option
 }
 
 function onPointerupWhileOpen() {
@@ -114,10 +116,10 @@ function onPointerupWhileOpen() {
 
 function onPressArrow(isUp: boolean) {
 	const length = filteredOptions.value.length
-	const index = filteredOptions.value.indexOf(props.modelValue)
+	const index = filteredOptions.value.indexOf(model.value)
 	const newIndex = unsignedMod(index + (isUp ? -1 : 1), length)
 	const option = filteredOptions.value[newIndex]
-	emit('update:modelValue', option)
+	model.value = option
 }
 
 function onInputPointerdown(e: PointerEvent) {
@@ -149,7 +151,7 @@ function onPopoverUpdateOpen(_open: boolean) {
 	if (!_open) {
 		open.value = false
 		window.removeEventListener('pointerup', onPointerupWhileOpen)
-		emit('update:modelValue', valueAtStart.value)
+		model.value = valueAtStart.value
 	}
 }
 

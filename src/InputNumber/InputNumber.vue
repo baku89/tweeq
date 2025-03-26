@@ -18,7 +18,6 @@ import {
 	watchSyncEffect,
 } from 'vue'
 
-import {Icon} from '../Icon'
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
@@ -35,6 +34,8 @@ import * as V from '../validator'
 import InputNumberScales from './InputNumberScales.vue'
 import {type InputNumberProps} from './types'
 
+const model = defineModel<number>({required: true})
+
 const props = withDefaults(defineProps<InputNumberProps>(), {
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
@@ -46,11 +47,7 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
 	suffix: '',
 })
 
-defineOptions({
-	inheritAttrs: false,
-})
-
-const emit = defineEmits<InputEmits<number>>()
+const emit = defineEmits<InputEmits>()
 
 const $input = useTemplateRef('$input')
 const $inputEl = computed(() => unrefElement($input.value as Component))
@@ -60,7 +57,7 @@ const focused = ref(false)
 const expressionEnabled = ref(false)
 const expressionError = ref<string | undefined>(undefined)
 
-const local = ref(props.modelValue)
+const local = ref(model.value)
 const display = ref('')
 
 const barVisible = computed(() => {
@@ -163,8 +160,7 @@ const {dragging: tweaking} = useDrag($input, {
 	},
 	onDragStart(state, event) {
 		const isTipDragged = (event.target as Element).classList.contains('tip')
-		const insideRange =
-			props.min <= props.modelValue && props.modelValue <= props.max
+		const insideRange = props.min <= model.value && model.value <= props.max
 
 		if (barVisible.value && insideRange && !isTipDragged) {
 			// Absolute Mode
@@ -262,7 +258,7 @@ function confirm() {
 	expressionError.value = undefined
 
 	nextTick(() => {
-		local.value = props.modelValue
+		local.value = model.value
 		display.value = print.value(local.value)
 	})
 }
@@ -340,10 +336,10 @@ function onIncrementByKey(delta: number) {
 
 // When the model value is changed from outside, update the local value
 watch(
-	() => props.modelValue,
-	value => {
-		if (value !== validLocal.value) {
-			local.value = value
+	model,
+	model => {
+		if (model !== validLocal.value) {
+			local.value = model
 		}
 	},
 	{immediate: true, flush: 'sync'}
@@ -351,7 +347,7 @@ watch(
 // When the model value is changed from outside while the input is not focused,
 // update the display value properly
 watch(
-	() => [props.modelValue, focused.value, print.value] as const,
+	() => [model.value, focused.value, print.value] as const,
 	([model, focusing, print]) => {
 		if (focusing) return
 
@@ -365,11 +361,11 @@ let emittedModel: number | undefined
 watchSyncEffect(() => {
 	if (
 		validLocal.value !== undefined &&
-		validLocal.value !== props.modelValue &&
+		validLocal.value !== model.value &&
 		validLocal.value !== emittedModel
 	) {
 		emittedModel = validLocal.value
-		emit('update:modelValue', emittedModel)
+		model.value = emittedModel
 	}
 })
 
@@ -401,8 +397,8 @@ const multi = useMultiSelectStore().register({
 const valueRangeStateClasses = computed(() => {
 	if (!barVisible.value) return {}
 
-	if (props.modelValue < props.min) return {'below-range': true}
-	if (props.modelValue > props.max) return {'above-range': true}
+	if (model.value < props.min) return {'below-range': true}
+	if (model.value > props.max) return {'above-range': true}
 	return {}
 })
 
@@ -433,7 +429,7 @@ const scaleAttrs = (offset: number) => {
 const tipStyle = computed<StyleValue>(() => {
 	if (!barVisible.value) return {visibility: 'hidden'}
 
-	const tValue = scalar.invlerp(props.min, props.max, props.modelValue)
+	const tValue = scalar.invlerp(props.min, props.max, model.value)
 
 	return {
 		left: toPercent(tValue),
@@ -447,7 +443,7 @@ const barStyle = computed<StyleValue>(() => {
 
 	const origin = typeof props.bar === 'number' ? props.bar : 0
 	const tOrigin = scalar.invlerp(props.min, props.max, origin)
-	const tValue = scalar.invlerp(props.min, props.max, props.modelValue)
+	const tValue = scalar.invlerp(props.min, props.max, model.value)
 
 	const left = Math.min(tOrigin, tValue)
 	const right = 1 - Math.max(tOrigin, tValue)
@@ -474,6 +470,8 @@ const barStyle = computed<StyleValue>(() => {
 		:block-position="blockPosition"
 		:disabled="disabled"
 		:invalid="invalid"
+		:leftIcon="leftIcon"
+		:rightIcon="rightIcon"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
@@ -485,9 +483,6 @@ const barStyle = computed<StyleValue>(() => {
 			<div class="bar" :style="barStyle" />
 			<InputNumberScales :min="min" :max="max" :step="step" />
 			<div class="tip" :style="tipStyle" />
-
-			<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
-			<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
 
 			<svg v-if="tweakMode === 'speed'" class="overlay">
 				<line class="scale" v-bind="scaleAttrs(0)"></line>
@@ -572,24 +567,6 @@ const barStyle = computed<StyleValue>(() => {
 		height 100%
 		left calc(var(--tq-input-height) / -2)
 		right @left
-
-.icon
-	width calc(var(--tq-input-height) - 6px)
-	height calc(var(--tq-input-height) - 6px)
-	margin 3px
-	color var(--tq-color-text-mute)
-	transform scale(0.8)
-	opacity .7
-	position absolute
-	z-index 100
-	pointer-events none
-	top 0
-
-	&.left
-		left 3px
-
-	&.right
-		right 3px
 
 .overlay
 	position absolute

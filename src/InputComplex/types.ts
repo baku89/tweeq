@@ -6,11 +6,11 @@ import {type InputNumberProps} from '../InputNumber'
 import {type InputPositionProps} from '../InputPosition'
 import {type InputRoteryProps} from '../InputRotery'
 import {type InputStringProps} from '../InputString'
-import {InputProps} from '../types'
+import {InputVecProps} from '../InputVec'
 
 type ParameterBase = {label?: string; icon?: string}
 
-type Desc<T extends Record<string, unknown>, P> = T & Omit<P, 'modelValue'>
+type Desc<T extends Record<string, unknown>, P> = T & P
 
 type ParameterDescNumber = Desc<
 	{type: 'number'; ui?: undefined},
@@ -39,7 +39,10 @@ type ParameterDescForType<T> = T extends number
 				? ParameterDescVec2 | ParameterDescPosition
 				: never
 
-type ParameterDescVec2 = Desc<{type: 'vec2'; ui?: undefined}, InputProps<vec2>>
+type ParameterDescVec2 = Desc<
+	{type: 'vec2'; ui?: undefined},
+	InputVecProps<vec2>
+>
 type ParameterDescPosition = Desc<
 	{type: 'vec2'; ui: 'position'},
 	InputPositionProps
@@ -50,7 +53,6 @@ export type Scheme<T extends Record<string, unknown>> = {
 }
 
 export interface InputComplexProps<T extends Record<string, unknown>> {
-	modelValue: T
 	scheme: Scheme<T>
 	title?: string
 }

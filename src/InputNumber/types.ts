@@ -1,6 +1,6 @@
 import {type InputBoxProps} from '../types'
 
-export interface InputNumberProps extends InputBoxProps<number> {
+export interface InputNumberProps extends InputBoxProps {
 	min?: number
 	max?: number
 	step?: number

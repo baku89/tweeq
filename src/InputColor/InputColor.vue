@@ -12,8 +12,9 @@ import * as V from '../validator'
 import InputColorPad from './InputColorPad.vue'
 import type {InputColorProps} from './types'
 
-const props = defineProps<InputColorProps & {label: string}>()
-const emit = defineEmits<InputEmits<string>>()
+const model = defineModel<string>({required: true})
+const props = defineProps<InputColorProps>()
+const emit = defineEmits<InputEmits>()
 
 const theme = useThemeStore()
 
@@ -23,8 +24,8 @@ const {width} = useElementSize($root)
 const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
 
 const color = computed(() => {
-	if (chroma.valid(props.modelValue)) {
-		return chroma(props.modelValue)
+	if (chroma.valid(model.value)) {
+		return chroma(model.value)
 	}
 
 	return chroma('black')
@@ -38,14 +39,14 @@ function onInputOpaqueColor(value: string) {
 	const color = chroma(value)
 
 	if (color.alpha() * 100 !== alpha.value) {
-		emit('update:modelValue', value)
+		model.value = value
 	} else {
-		emit('update:modelValue', color.alpha(alpha.value / 100).hex())
+		model.value = color.alpha(alpha.value / 100).hex()
 	}
 }
 
 function onUpdateAlpha(value: number) {
-	emit('update:modelValue', color.value.alpha(value / 100).hex())
+	model.value = color.value.alpha(value / 100).hex()
 }
 </script>
 
@@ -53,9 +54,9 @@ function onUpdateAlpha(value: number) {
 	<InputGroup ref="$root" class="TqInputColor">
 		<InputColorPad
 			v-bind="props"
+			v-model="model"
 			:class="{'only-pad': !showColorCode}"
 			:inlinePosition="showColorCode ? 'start' : undefined"
-			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"

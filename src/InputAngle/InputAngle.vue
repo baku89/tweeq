@@ -8,9 +8,11 @@ import type {InputRoteryProps} from '../InputRotery/types'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
 
+const model = defineModel<number>({required: true})
+
 const props = defineProps<InputRoteryProps>()
 
-const emit = defineEmits<InputEmits<number>>()
+const emit = defineEmits<InputEmits>()
 
 const theme = useThemeStore()
 
@@ -24,17 +26,17 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 	<div ref="$root" class="InputAngle">
 		<InputRotery
 			v-bind="props"
-			@update:modelValue="emit('update:modelValue', $event)"
+			v-model="model"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"
 		/>
 		<InputNumber
 			v-if="showNumber"
-			class="number"
 			v-bind="props"
+			v-model="model"
+			class="number"
 			suffix="°"
-			@update:modelValue="emit('update:modelValue', $event)"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"

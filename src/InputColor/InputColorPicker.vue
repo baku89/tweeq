@@ -10,18 +10,20 @@ import InputColorPresets from './InputColorPresets.vue'
 import {DefaultColorPickers, HSVA, type InputColorProps} from './types'
 import {css2hsva, hsva2hex} from './utils'
 
-const props = withDefaults(defineProps<InputColorProps>(), {
+withDefaults(defineProps<InputColorProps>(), {
 	alpha: true,
 	pickers: () => DefaultColorPickers,
 })
 
-const emit = defineEmits<InputEmits<string>>()
+defineEmits<InputEmits>()
 
-const local = shallowRef<HSVA>(css2hsva(props.modelValue))
+const model = defineModel<string>({required: true})
+
+const local = shallowRef<HSVA>(css2hsva(model.value))
 let emittedModel: string | null = null
 
 watch(
-	() => props.modelValue,
+	model,
 	model => {
 		if (model !== emittedModel) {
 			local.value = css2hsva(model)
@@ -33,13 +35,13 @@ watch(
 function onUpdateLocal(value: HSVA) {
 	local.value = value
 	emittedModel = hsva2hex(value)
-	emit('update:modelValue', emittedModel)
+	model.value = emittedModel
 }
 
 function onUpdateColorCode(value: string) {
 	local.value = css2hsva(value)
 	emittedModel = value
-	emit('update:modelValue', value)
+	model.value = value
 }
 
 // EyeDropper
@@ -47,9 +49,7 @@ const isEyeDropperSupported = 'EyeDropper' in window
 
 async function pickColor() {
 	const eyeDropper = new (window as any)['EyeDropper']()
-	const newValue: string = (await eyeDropper.open()).sRGBHex
-
-	emit('update:modelValue', newValue)
+	model.value = (await eyeDropper.open()).sRGBHex
 }
 </script>
 
@@ -80,10 +80,7 @@ async function pickColor() {
 				@update:hsva="onUpdateLocal"
 			/>
 		</template>
-		<InputColorPresets
-			:presets="presets"
-			@update:modelValue="emit('update:modelValue', $event)"
-		/>
+		<InputColorPresets :presets="presets" @update:modelValue="model = $event" />
 		<button v-if="isEyeDropperSupported" class="eyeDropper" @click="pickColor">
 			<Icon icon="material-symbols:colorize" />
 		</button>

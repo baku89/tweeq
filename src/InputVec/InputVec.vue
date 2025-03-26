@@ -6,9 +6,11 @@ import {InputNumber} from '../InputNumber'
 import {InputEmits} from '../types'
 import {InputVecProps} from './types'
 
+const model = defineModel<T>({required: true})
+
 const props = defineProps<InputVecProps<T>>()
 
-const emit = defineEmits<InputEmits<T>>()
+const emit = defineEmits<InputEmits>()
 
 function minAt(i: number): number | undefined {
 	return Array.isArray(props.min) ? props.min[i] : props.min
@@ -27,11 +29,7 @@ function leftIconAt(i: number) {
 }
 
 function inlinePositionAt(i: number) {
-	return i === 0
-		? 'start'
-		: i === props.modelValue.length - 1
-			? 'end'
-			: 'middle'
+	return i === 0 ? 'start' : i === model.value.length - 1 ? 'end' : 'middle'
 }
 
 let changedModel: number[] | undefined
@@ -39,11 +37,11 @@ let changedModel: number[] | undefined
 function commitChange(index: number, value: number) {
 	if (!changedModel) {
 		nextTick(() => {
-			emit('update:modelValue', changedModel as unknown as T)
+			model.value = changedModel as unknown as T
 			changedModel = undefined
 		})
 
-		changedModel = [...props.modelValue]
+		changedModel = [...model.value]
 	}
 
 	changedModel[index] = value
@@ -64,7 +62,7 @@ function commitConfirm() {
 <template>
 	<InputGroup class="InputVec">
 		<InputNumber
-			v-for="(v, i) in modelValue"
+			v-for="(v, i) in model"
 			:key="i"
 			:min="minAt(i)"
 			:max="maxAt(i)"
