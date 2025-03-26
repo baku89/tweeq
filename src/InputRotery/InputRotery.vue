@@ -99,7 +99,7 @@ const doSnap = computed(() => {
 // Local value before snap
 const local = ref(model.value)
 
-const validate = computed(() => {
+const validate = computed<V.Validator<number>>(() => {
 	return doSnap.value ? V.quantize(props.snap) : V.identity
 })
 
@@ -251,6 +251,9 @@ const multi = useMultiSelectStore().register({
 	getValue: () => local.value,
 	setValue(value) {
 		local.value = value
+		if (validateResult.value.value) {
+			model.value = validateResult.value.value
+		}
 	},
 	confirm() {
 		emit('confirm')
