@@ -114,6 +114,7 @@ const {dragging: tweaking} = useDrag($input, {
 		tweakLocal.value = model.value
 		tweakAccumlated = 0
 		multi.capture()
+		emit('focus')
 	},
 	onDrag({delta: [dx]}) {
 		tweakLocal.value = scalar.clamp(
@@ -125,7 +126,9 @@ const {dragging: tweaking} = useDrag($input, {
 		multi.update(x => x + tweakAccumlated)
 	},
 	onDragEnd() {
+		emit('confirm')
 		multi.confirm()
+		emit('blur')
 	},
 })
 
@@ -246,6 +249,8 @@ watchSyncEffect(() => {
 
 watchSyncEffect(() => {
 	const _parse = parse.value
+	if (!tweaking.value && !focused.value) return
+
 	multi.update((x, ctx) => {
 		const result = _parse(x, {...ctx, fps: props.frameRate})
 		return result.value === undefined ? x : result.value
