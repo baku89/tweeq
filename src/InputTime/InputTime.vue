@@ -132,14 +132,26 @@ const tweakLocal = ref(0)
 
 useDrag($digits, {
 	lockPointer: true,
-	onClick() {
-		$input.value!.select()
+	onClick(_, e) {
+		const target = e.target as HTMLElement
+		if (!target.classList.contains('digit')) {
+			$input.value!.select()
+		} else {
+			const digitsInOrder = digits.value!.toReversed()
+			const len = digitsInOrder.length
+			const i = len - tweakScale.value - 1
+			const str = digitsInOrder.slice(0, i).join(':')
+
+			const start = str.length === 0 ? 0 : str.length + 1
+			const width = digitsInOrder[i].length
+
+			$input.value!.select(start, start + width)
+		}
 	},
 	onDragStart() {
 		tweakLocal.value = model.value
 	},
 	onDrag({delta: [dx]}) {
-		console.log(dx)
 		tweakLocal.value += dx * tweakSpeed.value
 	},
 })
