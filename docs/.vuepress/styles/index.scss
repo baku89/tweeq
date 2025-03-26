@@ -96,9 +96,8 @@
 
 @layer vp {
 	[vp-content] {
-		h2,
-		h3:not(:where(h2 + *)) {
-			margin-top: calc(1rem - var(--header-offset));
+		:is(h2, h3):not(:where(:is(h1, h2) + *)) {
+			margin-top: calc(3rem - var(--header-offset)) !important;
 		}
 
 		a:not(.header-anchor) {
@@ -146,6 +145,15 @@
 			:is(ul, ol, dl) {
 				margin: 0.5em 0;
 			}
+		}
+
+		li li:before {
+			content: '-';
+		}
+
+		svg.iconify {
+			vertical-align: middle;
+			margin: 0 0.2em 0.1em;
 		}
 	}
 }
