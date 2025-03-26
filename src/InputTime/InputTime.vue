@@ -112,7 +112,6 @@ function increment(inc: number) {
 // Tweak
 
 const $input = useTemplateRef('$input')
-const $digits = useTemplateRef('$digits')
 
 const {
 	q: doQuantize,
@@ -154,7 +153,7 @@ const tweakQuantizeParams = computed<[step: number, offset: number]>(() => {
 
 const tweakLocal = ref(0)
 
-const {dragging: tweaking} = useDrag($digits, {
+const {dragging: tweaking} = useDrag($input, {
 	lockPointer: true,
 	onClick(_, e) {
 		const target = e.target as HTMLElement
@@ -261,7 +260,7 @@ const hourTick = computed(() => {
 		@keydown.exact.shift.down.prevent="increment(-60 * frameRate)"
 	>
 		<template #inactiveContent>
-			<div ref="$digits" class="digits">
+			<div class="digits">
 				<template v-if="digits">
 					<template v-for="(digit, i) in digits" :key="i">
 						<div

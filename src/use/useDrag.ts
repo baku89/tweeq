@@ -139,7 +139,8 @@ export function useDrag(
 		if (
 			unref(lockPointer) &&
 			target.value &&
-			'requestPointerLock' in target.value
+			targetEl.value &&
+			'requestPointerLock' in targetEl.value
 		) {
 			lock(event)
 			state.pointerLocked = true
