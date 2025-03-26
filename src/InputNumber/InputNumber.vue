@@ -259,7 +259,7 @@ function confirm() {
 
 	nextTick(() => {
 		local.value = model.value
-		display.value = print.value(local.value)
+		display.value = print.value(model.value)
 	})
 }
 
@@ -306,9 +306,19 @@ function onBlur() {
 const print = computed(() => {
 	const _tweaking = tweaking.value
 	const _precision = precision.value
+	const _focused = focused.value
+	const {prefix, suffix} = props
 
 	return (local: number) => {
-		return _tweaking ? local.toFixed(_precision) : toFixed(local, _precision)
+		const num = _tweaking
+			? local.toFixed(_precision)
+			: toFixed(local, _precision)
+
+		if (_focused) {
+			return num
+		}
+
+		return prefix + num + suffix
 	}
 })
 
@@ -348,8 +358,9 @@ watch(
 // update the display value properly
 watch(
 	() => [model.value, focused.value, print.value] as const,
-	([model, focusing, print]) => {
-		if (focusing) return
+	([model, focused, print], prev) => {
+		// If the input has been focused, don't update the display value
+		if (focused && prev?.[1]) return
 
 		display.value = print(model)
 	},
