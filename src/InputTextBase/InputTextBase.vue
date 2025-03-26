@@ -113,7 +113,6 @@ function onBlur(e: FocusEvent) {
 
 .TqInputTextBase
 	position relative
-	width 100%
 	height var(--tq-input-height)
 	border-radius var(--tq-input-border-radius)
 	background var(--tq-color-input)
