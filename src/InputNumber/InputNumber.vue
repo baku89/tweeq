@@ -23,13 +23,7 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {useValidator} from '../use/useValidator'
-import {
-	getNumberPresition,
-	precisionOf,
-	toFixed,
-	toPercent,
-	unsignedMod,
-} from '../util'
+import {getNumberPresition, precisionOf, toFixed, toPercent} from '../util'
 import * as V from '../validator'
 import InputNumberScales from './InputNumberScales.vue'
 import {type InputNumberProps} from './types'
@@ -429,24 +423,29 @@ const valueRangeStateClasses = computed(() => {
 })
 
 const scaleAttrs = (offset: number) => {
-	const precision = unsignedMod(
+	const precision = scalar.mod(
 		-Math.log10(speedMultiplierGesture.value) + offset,
 		3
 	)
+
 	const halfWidth = width.value / 2
 
-	const opacity = scalar.smoothstep(1, 2, precision)
+	const opacityForBar = barVisible.value
+		? scalar.smoothstep(1, 0.1, speedMultiplierGesture.value)
+		: 1
+
+	const opacity = scalar.smoothstep(1, 2, precision) * opacityForBar
 
 	const dashoffset = barVisible.value
-		? scalar.invlerp(validMin.value, validMax.value, local.value) * width.value
-		: halfWidth
+		? scalar.fit(model.value, props.min, props.max, 0, width.value)
+		: halfWidth - model.value / speedMultiplierGesture.value
 
 	return {
 		x1: -halfWidth,
 		x2: halfWidth,
 		style: {
 			strokeDashoffset: -dashoffset,
-			strokeDasharray: `0 ${Math.pow(10, precision)}`,
+			strokeDasharray: `0 ${10 ** precision}`,
 			opacity,
 		},
 	}
@@ -509,13 +508,18 @@ const barStyle = computed<StyleValue>(() => {
 		<template #back>
 			<div class="bar" :style="barStyle" />
 			<InputNumberScales :min="min" :max="max" :step="step" />
-			<div class="tip" :style="tipStyle" />
 
-			<svg v-if="tweakMode === 'speed'" class="overlay">
+			<svg
+				v-if="tweaking"
+				class="overlay"
+				:class="{value: tweakMode === 'value', speed: tweakMode === 'speed'}"
+			>
 				<line class="scale" v-bind="scaleAttrs(0)"></line>
 				<line class="scale" v-bind="scaleAttrs(1)"></line>
 				<line class="scale" v-bind="scaleAttrs(2)"></line>
 			</svg>
+
+			<div class="tip" :style="tipStyle" />
 		</template>
 	</InputTextBase>
 </template>
@@ -604,8 +608,17 @@ const barStyle = computed<StyleValue>(() => {
 
 	.scale
 		fill none
-		stroke-width 4
+		stroke-width 2
 		stroke-linecap round
+		stroke var(--tq-color-text-subtle)
+		hover-transition(stroke-width)
+
+	&.value .scale
+		stroke-width 3
+		stroke set-alpha(--tq-color-accent, .7)
+
+	&.speed .scale
+		stroke-width 4
 		stroke var(--tq-color-accent)
 
 	.pointer
