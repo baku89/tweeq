@@ -4,9 +4,13 @@
 
 ## Specialized Inputs for Creative Software
 
+![](/assets/components_list.webp)
+
 Tweeq offers a suite of specialized input components tailored for professional creative applications. Beyond standard color pickers and numeric sliders, it includes rotary knobs, two-dimensional offset controls, and even timecode-specific interfaces. These components are designed to meet the nuanced needs of graphic design, digital audio workstations (DAWs), and video editing tools, providing precise and efficient parameter manipulation.
 
 ## “Drag-to-tweak” Interaction
+
+~
 
 Several input components within Tweeq support the “drag-to-tweak” interaction paradigm, allowing users to adjust values by dragging over pads, handles, and similar elements.
 
