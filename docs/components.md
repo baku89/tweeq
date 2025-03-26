@@ -312,8 +312,12 @@
 <DemoComponent
 	name="InputTime"
 	:initialValue="0"
-	:scheme="{frameRate: {type: 'number', min: 1, max: 60, step: 1}}"
-	:options="{frameRate: 24}"
+	:scheme="{
+		frameRate: {type: 'number', min: 1, max: 60, step: 1},
+		min: {type: 'number'},
+		max: {type: 'number'},
+	}"
+	:options="{frameRate: 24, min: 0, max: 100000}"
 	v-slot="{modelValue, options, listeners}"
 >
 	<InputTime
