@@ -2,35 +2,6 @@
 
 # Components
 
-
-## Common Properties
-
-### Props
-
-| Name | Type |  Description |
-|------|---------|-------------|
-| `modelValue` | `T`  | The model value |
-
-
-### Attributes
-
-| Name | Type |  Description |
-|------|---------|-------------|
-| `disabled` | `boolean` | Whether the input is disabled |
-| `invalid` | `boolean` | Whether the input is invalid |
-| `inline-position` | `'start' \| 'middle' \| 'end'` | The inline (normally horizontal) position of the input |
-| `block-position` | `'start' \| 'middle' \| 'end'` | The block (normally vertical) position of the input |
-
-
-### Events
-
-| Name | Payload | Description |
-|------|---------|-------------|
-| `focus` | | Emitted when the input is focused or started tweaking |
-| `update:modelValue` | `value: T` | Emitted when the model value is updated |
-| `confirm` | | Emitted when the editing or tweaking is finished |
-| `blur` | | Emitted when the input is blurred or finished tweaking |
-
 ## Input Components
 
 ### InputAngle
@@ -38,9 +9,9 @@
 <DemoComponent
 	name="InputAngle"
 	:initialValue="0"
-	:options="{quantizeStep: 30, angleOffset: 0}"
+	:options="{snap: 45, angleOffset: 0}"
 	:scheme="{
-		quantizeStep: {type: 'number', step: 1, min: 1, max: 360, suffix: '°'},
+		snap: {type: 'number', step: 1, min: 1, max: 360, suffix: '°'},
 		angleOffset: {type: 'number', ui: 'angle', step: 1, min: -180, max: 180},
 	}"
 	v-slot='{modelValue, options, listeners}'
@@ -54,6 +25,11 @@
 		v-bind='options'
 	/>
 </DemoComponent>
+
+ - `Drag`
+ 	- On the line indicator: set the angle absolutely
+ 	- On the remaining part of the knob: rotate it relative to the current angle
+	 - `Shift` or `S`: snap to the times of `snap`
 
 ### InputButton
 
@@ -101,6 +77,12 @@
 	/>
 </DemoComponent>
 
+ - `Click`: toggle the checkbox
+ - `Swipe Right`: turn on the checkbox
+ - `Swipe Left`: turn off the checkbox
+ - `T` or `Y` or `1` or `p`: turn on the checkbox
+ - `F` or `N` or `0` or `m`: turn off the checkbox
+
 ### InputColor
 
 <DemoComponent
@@ -122,6 +104,12 @@
 	/>
 </DemoComponent>
 
+ - `Click`: toggle the color picker popup
+ - `Drag`: tweak the color reatively
+	 - `Shift` or `H`: adjust the hue
+	 - `S` / `V`: adjust the saturation / brightness (value)
+	 - `Alt` or `A`: adjust the alpha
+	 - `R` / `G` / `B`: adjust the red / green / blue channel
 ### InputDropdown
 
 <DemoComponent
@@ -202,6 +190,18 @@
 	/>
 </DemoComponent>
 
+ - `Click`: edit the number
+ - While focusing
+	- `↑` / `↓`: increase / decrease the number by 1
+	- `Shift + ↑` / `Shift + ↓`: increase / decrease the number by `snap`
+	- `Option + ↑` / `Option + ↓`: increase / decrease the number by 0.1
+	- `Command + =`: enable expression mode
+ - `Drag`: tweak the number
+	- `Shift`: increase the scale of adjustment
+	- `Alt`: decrease the scale of adjustment
+	- `S`: snap to the times of `snap`
+
+
 ### InputPosition
 
 <DemoComponent
@@ -222,6 +222,8 @@
 		:max="100"
 	/>
 </DemoComponent>
+
+ - The gestures for the pad on the left are the same as [InputTranslate](#inputtranslate)
 
 ### InputRadio
 
@@ -260,6 +262,8 @@
 		@confirm="listeners.confirm"
 	/>
 </DemoComponent>
+
+ - `Click` on the chain icon<Icon icon="radix-icons:link-1" />: toggle the aspect ratio constraint
 
 ### InputString
 
@@ -307,6 +311,8 @@
 	/>
 </DemoComponent>
 
+ - The gestures are the same as [InputCheckbox](#inputcheckbox)
+
 ### InputTime
 
 <DemoComponent
@@ -330,6 +336,12 @@
 	/>
 </DemoComponent>
 
+ - `Click`: edit the time code
+ - `Right Click`: toggle the time unit between SMTPE and frames
+ - `Drag` on the time indicator: adjust the time
+	 - `Shift`: increase the scale of adjustment
+	 - `Alt`: decrease the scale of adjustment
+	 - `H` / `M` / `S` / `F`: adjust the hour / minute / second / frame
 
 ### InputTranslate
 
@@ -351,6 +363,12 @@
 	/>
 </DemoComponent>
 
+ - `Drag`: adjust the position
+	 - `Shift`: increase the scale of adjustment
+	 - `Alt`: decrease the scale of adjustment
+	 - `X` / `0`: constrain the tweak to the X axis
+	 - `Y` / `1`: constrain the tweak to the Y axis
+
 ### InputVec
 
 <DemoComponent
@@ -368,3 +386,31 @@
 		@confirm="listeners.confirm"
 	/>
 </DemoComponent>
+
+## Common Properties
+
+### Props
+
+| Name | Type |  Description |
+|------|---------|-------------|
+| `modelValue` | `T`  | The model value |
+
+
+### Attributes
+
+| Name | Type |  Description |
+|------|---------|-------------|
+| `disabled` | `boolean` | Whether the input is disabled |
+| `invalid` | `boolean` | Whether the input is invalid |
+| `inline-position` | `'start' \| 'middle' \| 'end'` | The inline (normally horizontal) position of the input |
+| `block-position` | `'start' \| 'middle' \| 'end'` | The block (normally vertical) position of the input |
+
+
+### Events
+
+| Name | Payload | Description |
+|------|---------|-------------|
+| `focus` | | Emitted when the input is focused or started tweaking |
+| `update:modelValue` | `value: T` | Emitted when the model value is updated |
+| `confirm` | | Emitted when the editing or tweaking is finished |
+| `blur` | | Emitted when the input is blurred or finished tweaking |
