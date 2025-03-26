@@ -29,7 +29,6 @@ const emit = defineEmits<{
 	blur: [e: FocusEvent]
 	keydown: [e: KeyboardEvent]
 	confirm: []
-	'update:modelValue': [value: string]
 	'update:focused': [value: boolean]
 }>()
 
