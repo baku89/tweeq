@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="T">
-import {useCssVar, useElementBounding, whenever} from '@vueuse/core'
+import {useElementBounding, whenever} from '@vueuse/core'
 import {search} from 'fast-fuzzy'
 import {type vec2} from 'linearly'
 import {
@@ -14,6 +14,7 @@ import {
 import {Icon} from '../Icon'
 import {InputString} from '../InputString'
 import {Popover} from '../Popover'
+import {useThemeStore} from '../stores/theme'
 import {type InputEmits, useLabelizer} from '../types'
 import {unsignedMod} from '../util'
 import type {InputDropdownProps} from './types'
@@ -64,7 +65,7 @@ const filteredOptions = computed(() => {
 	return ret
 })
 
-const inputHeight = useCssVar('--tq-input-height', $root)
+const theme = useThemeStore()
 
 const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 	// 2px === border width + focus outline
@@ -78,7 +79,7 @@ const popoverPlacement = computed<vec2 | 'bottom'>(() => {
 
 		return [
 			rootBound.left.value - 2,
-			rootBound.top.value + -index * parseFloat(inputHeight.value ?? '0') - 2,
+			rootBound.top.value + -index * theme.inputHeight - 2,
 		]
 	}
 })
