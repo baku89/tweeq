@@ -41,8 +41,6 @@ const display = computed(() => {
 	return (revs !== 0 ? revs + 'x ' : '') + rot.toFixed(1) + '°'
 })
 
-const tweakMode = ref<'relative' | 'absolute'>('relative')
-
 const initialValueOnTweak = ref(model.value)
 
 const snapMeterRadii: vec2 = [theme.inputHeight * 4, 160]
@@ -78,14 +76,12 @@ const {
 		local.value += delta
 	},
 	onDragEnd() {
-		tweakMode.value = 'relative'
-
 		emit('confirm')
 		multi.confirm()
 	},
 })
 
-const {shift, q} = useMagicKeys()
+const {shift, q, a: absoluteModeKey, r: relativeModeKey} = useMagicKeys()
 const doSnapKey = computed(() => shift.value || q.value)
 
 const doSnap = computed(() => {
@@ -94,6 +90,29 @@ const doSnap = computed(() => {
 		doSnapKey.value ||
 		(snapMeterRadii[0] <= radius && radius <= snapMeterRadii[1])
 	)
+})
+
+const tweakModeByPointer = ref<'absolute' | 'relative'>()
+const tweakModeByKey = ref<'absolute' | 'relative' | null>(null)
+const tweakMode = computed(
+	() => tweakModeByKey.value ?? tweakModeByPointer.value
+)
+
+watch(absoluteModeKey, () => {
+	if (absoluteModeKey.value && !tweaking.value) {
+		tweakModeByKey.value = 'absolute'
+	}
+})
+watch(relativeModeKey, () => {
+	if (relativeModeKey.value && !tweaking.value) {
+		tweakModeByKey.value = 'relative'
+	}
+})
+
+watch([absoluteModeKey, relativeModeKey], () => {
+	if (!absoluteModeKey.value && !relativeModeKey.value) {
+		tweakModeByKey.value = null
+	}
 })
 
 // Local value before snap
@@ -298,8 +317,8 @@ useCopyPaste({
 			<g
 				transform-origin="16 16"
 				:style="roteryStyles"
-				@pointerenter="tweakMode = 'absolute'"
-				@pointerleave="!tweaking && (tweakMode = 'relative')"
+				@pointerenter="tweakModeByPointer = 'absolute'"
+				@pointerleave="!tweaking && (tweakModeByPointer = 'relative')"
 			>
 				<path
 					class="absolute-mode-area"
@@ -384,10 +403,10 @@ useCopyPaste({
 
 	&:hover,
 	.InputRotery:focus-visible &,
-	.InputRotery[tweak-mode=relative] &
+	.InputRotery:hover[tweak-mode=relative] &
 		fill var(--tq-color-accent-hover)
 
-	.InputRotery[tweak-mode=absolute] &
+	.InputRotery:hover[tweak-mode=absolute] &
 		fill var(--tq-color-accent-soft)
 
 .absolute-mode-area
@@ -400,7 +419,7 @@ useCopyPaste({
 	stroke-width 3
 	stroke-linecap round
 
-	[tweak-mode=absolute] &
+	[tweak-mode=absolute]:hover &
 		stroke var(--tq-color-accent-hover)
 
 .overlay

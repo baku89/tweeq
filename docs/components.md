@@ -27,9 +27,9 @@
 </DemoComponent>
 
  - `Drag`
- 	- On the line indicator: set the angle absolutely
- 	- On the remaining part of the knob: rotate it relative to the current angle
- 	- `Shift` or `Q`: snap to the times of `snap`
+	- `A` / Drag on the line indicator: set the angle absolutely
+	- `R` / Drag the remaining part of the knob: rotate it relative to the current angle
+	- `Shift` or `Q`: snap to the times of `snap`
 
 ### InputButton
 
