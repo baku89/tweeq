@@ -10,8 +10,6 @@ Tweeq offers a suite of specialized input components tailored for professional c
 
 ## “Drag-to-tweak” Interaction
 
-~
-
 Several input components within Tweeq support the “drag-to-tweak” interaction paradigm, allowing users to adjust values by dragging over pads, handles, and similar elements.
 
 During a drag operation, you can modify the parameter being adjusted, change the adjustment scale, or constrain the adjustment to a specific axis by pressing designated keys.
@@ -21,6 +19,7 @@ While specific key functions may vary across components, the general semantics a
 - `Shift`: Increases the adjustment scale, enabling quicker value changes.
 - `Alt` (`Option` on Mac): Decreases the adjustment scale, allowing for finer, more precise adjustments.
 - `Q`: Activates value snapping, aligning adjustments to predefined increments for consistency.
+- `A` / `R`: Activates absolute/relative mode.
 
 Consistently, dragging to the right or upward increases parameter values. However, for parameters with geometric counterparts in the viewport, such as position or rotation, the drag direction aligns with the corresponding geometric interpretation (e.g., dragging downward increases the Y-axis value in [InputPosition](components#inputposition)).
 
