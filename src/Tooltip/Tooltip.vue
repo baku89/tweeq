@@ -1,0 +1,27 @@
+<script lang="ts" setup>
+defineSlots<{
+	default: () => any
+}>()
+</script>
+
+<template>
+	<div class="TqTooltip">
+		<slot />
+	</div>
+</template>
+
+<style lang="stylus" scoped>
+@import '../common.styl'
+
+.TqTooltip
+	padding .1em .5em
+	border-radius 9999px
+	border 1px solid var(--tq-color-border)
+	background var(--tq-color-surface)
+	color var(--tq-color-on-surface)
+	backdrop-filter blur(6px)
+	font-size .85em
+
+	:deep(label)
+		color var(--tq-color-text-mute)
+</style>
