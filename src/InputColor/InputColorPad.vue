@@ -502,7 +502,7 @@ defineOptions({
 	margin calc(var(--tq-input-height) / -2) 0 0 calc(var(--tq-input-height) / -2)
 	pointer-events none
 	active-transition(transform, border-radius)
-	transform scale(3)
+	transform scale(1.8)
 	border-radius calc(var(--tq-input-height) / 2)
 	background-checkerboard()
 	box-shadow 0 0 1px 0px var(--tq-color-shadow)
