@@ -19,7 +19,7 @@ const emit = defineEmits<InputEmits>()
 		<InputTranslate
 			v-bind="props"
 			v-model="model"
-			:showOverlayLabel="false"
+			:showOverlayLabel="true"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
 			@confirm="emit('confirm')"

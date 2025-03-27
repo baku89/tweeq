@@ -14,13 +14,14 @@ defineSlots<{
 @import '../common.styl'
 
 .TqTooltip
-	padding .1em .5em
+	padding .2em .5em
 	border-radius 9999px
 	border 1px solid var(--tq-color-border)
 	background var(--tq-color-surface)
 	color var(--tq-color-on-surface)
-	backdrop-filter blur(6px)
-	font-size .85em
+	backdrop-filter blur(3px)
+	font-size .9em
+	font-numeric()
 
 	:deep(label)
 		color var(--tq-color-text-mute)

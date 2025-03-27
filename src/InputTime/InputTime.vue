@@ -13,6 +13,7 @@ import {
 
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
+import {Tooltip} from '../Tooltip'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {ValidateResult} from '../validator'
@@ -360,9 +361,9 @@ const hourTick = computed(() => {
 							@pointerenter="tweakScaleByHover = i"
 						>
 							{{ digit }}
-							<div v-if="tweakScale === i" class="digit-label">
-								{{ getDigitLabel(i) }}
-							</div>
+							<Tooltip v-if="tweakScale === i" class="digit-label">
+								<label>{{ getDigitLabel(i) }}</label>
+							</Tooltip>
 						</div>
 						<div v-if="i !== digits.length - 1" class="separator">:</div>
 					</template>
@@ -418,10 +419,7 @@ const hourTick = computed(() => {
 	bottom calc(100% + .6em)
 	left 50%
 	transform translate(-50%, 0)
-	tooltip-style()
-	background white
 	display none
-	color var(--tq-color-text-mute)
 
 	.TqInputTime:hover &
 		display block

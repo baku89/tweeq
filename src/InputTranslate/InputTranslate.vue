@@ -5,6 +5,7 @@ import {computed, ref, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputPositionProps} from '../InputPosition'
+import {Tooltip} from '../Tooltip'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {precisionOf} from '../util'
@@ -51,11 +52,11 @@ const precision = computed(() => {
 	return precisionOf(speed.value)
 })
 
-const display = computed(() => {
+const overlayLabelValues = computed(() => {
 	const xd = model.value[0].toFixed(precision.value)
 	const yd = model.value[1].toFixed(precision.value)
 
-	return `<i>X</i> ${xd}   <i>Y</i> ${yd}`
+	return [xd, yd]
 })
 
 const {dragging: tweaking} = useDrag($button, {
@@ -144,7 +145,12 @@ function decompose(value?: number | vec2): vec2 | undefined {
 					<div v-if="y" class="axis y" />
 					<div class="zero" :style="zeroStyle" />
 				</div>
-				<div v-if="showOverlayLabel" class="overlay-label" v-html="display" />
+				<Tooltip v-if="showOverlayLabel" class="overlay-label">
+					<label>X</label>
+					{{ overlayLabelValues[0] }}
+					<label>Y</label>
+					{{ overlayLabelValues[1] }}
+				</Tooltip>
 			</div>
 		</Transition>
 	</button>
@@ -199,8 +205,6 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	position absolute
 	top 0
 	left 50%
-	tooltip-style()
-	font-numeric()
 	tab-size 4
 	white-space pre
 	transform translate(-50%, calc(-100% - var(--tq-input-height) * .2))

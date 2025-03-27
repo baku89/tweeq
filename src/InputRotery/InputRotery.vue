@@ -8,6 +8,7 @@ import {computed, ref, useTemplateRef, watch} from 'vue'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {SvgIcon} from '../SvgIcon'
+import {Tooltip} from '../Tooltip'
 import type {InputEmits} from '../types'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useCursorStyle} from '../use/useCursorStyle'
@@ -352,7 +353,7 @@ useCopyPaste({
 			/>
 			<path class="bold" :d="activeMeterPath" />
 		</svg>
-		<div
+		<Tooltip
 			ref="overlayLabel"
 			class="overlay-label"
 			:style="{
@@ -362,7 +363,7 @@ useCopyPaste({
 		>
 			{{ display }}
 			<span class="arrows" :style="overlayArrowStyles" />
-		</div>
+		</Tooltip>
 	</div>
 </template>
 
@@ -430,12 +431,9 @@ useCopyPaste({
 		stroke var(--tq-color-accent-soft-hover) !important
 
 .overlay-label
-	tooltip-style()
 	z-index 1001
 	position fixed
-	font-numeric()
 	transform translate(-50%, -50%)
-	white-space nowrap
 
 	.arrows
 		position absolute

@@ -9,6 +9,7 @@ import {GlslCanvas} from '../GlslCanvas'
 import {Popover} from '../Popover'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
+import {Tooltip} from '../Tooltip'
 import {InputEmits} from '../types'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useDrag} from '../use/useDrag'
@@ -409,12 +410,12 @@ defineOptions({
 				:style="sliderStyle"
 			/>
 			<div class="tweak-preview" :style="tweakPreviewStyle" />
-			<div class="overlay-label" :style="tweakUIOffset">
+			<Tooltip class="overlay-label" :style="tweakUIOffset">
 				<template v-for="([label, value, rgb], i) in overlayLabel" :key="i">
-					<span class="label">{{ label }}</span>
+					<label>{{ label }}</label>
 					<span class="value" :rgb="rgb">{{ value }}</span>
 				</template>
-			</div>
+			</Tooltip>
 		</div>
 	</Transition>
 </template>
@@ -509,14 +510,9 @@ defineOptions({
 
 .overlay-label
 	position absolute
-	tooltip-style()
-	font-numeric()
 	transform translate(-50%, calc(-100% - var(--tq-input-height) * 1.7))
 	display flex
 	gap .2em
-
-	.label
-		color var(--tq-color-text-mute)
 
 	.value
 		width 3.7em
