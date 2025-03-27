@@ -224,7 +224,11 @@
 	/>
 </DemoComponent>
 
- - The gestures for the pad on the left are the same as [InputTranslate](#inputtranslate)
+ - `Drag`: adjust the position
+	 - `Shift`: increase the scale of adjustment
+	 - `Alt`: decrease the scale of adjustment
+	 - `X` / `0`: constrain the tweak to the X axis
+	 - `Y` / `1`: constrain the tweak to the Y axis
 
 ### InputRadio
 
@@ -344,32 +348,6 @@
 	 - `Alt`: decrease the scale of adjustment
 	 - `H` / `M` / `S` / `F`: adjust the hour / minute / second / frame
 	 - `Q`: only change the currently selected unit
-
-### InputTranslate
-
-<DemoComponent
-	name="InputTranslate"
-	:initialValue="[0, 0]"
-	:scheme="{}"
-	:options="{}"
-	v-slot="{modelValue, options, listeners}">
-	<InputTranslate
-		:modelValue="modelValue"
-		v-bind="options"
-		@update:modelValue="listeners.update"
-		@focus="listeners.focus"
-		@blur="listeners.blur"
-		@confirm="listeners.confirm"
-		:min="0"
-		:max="100"
-	/>
-</DemoComponent>
-
- - `Drag`: adjust the position
-	 - `Shift`: increase the scale of adjustment
-	 - `Alt`: decrease the scale of adjustment
-	 - `X` / `0`: constrain the tweak to the X axis
-	 - `Y` / `1`: constrain the tweak to the Y axis
 
 ### InputVec
 
