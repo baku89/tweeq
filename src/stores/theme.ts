@@ -128,8 +128,8 @@ export const useThemeStore = defineStore('theme', () => {
 
 			fontCode: "'Geist Mono', monospace",
 			fontHeading: 'Geist, sans-serif',
-			fontUi: 'Inter, system-ui, sans-serif',
-			fontNumeric: 'Inter, system-ui, sans-serif',
+			fontUi: 'Geist, system-ui, sans-serif',
+			fontNumeric: 'Geist, system-ui, sans-serif',
 
 			rem: 12,
 
