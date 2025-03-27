@@ -11,7 +11,7 @@
 	:initialValue="0"
 	:options="{snap: 45, angleOffset: 0}"
 	:scheme="{
-		snap: {type: 'number', step: 1, min: 1, max: 360, suffix: '°'},
+		snap: {type: 'number', step: 1, min: 1, max: 360, snap: 5, suffix: '°'},
 		angleOffset: {type: 'number', ui: 'angle', step: 1, min: -180, max: 180},
 	}"
 	v-slot='{modelValue, options, listeners}'

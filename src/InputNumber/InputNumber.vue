@@ -34,6 +34,7 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
 	bar: 0,
+	snap: 10,
 	clampMin: true,
 	clampMax: true,
 	precision: 4,
@@ -70,9 +71,9 @@ const validMax = computed(() =>
 	props.clampMax ? props.max : Number.MAX_SAFE_INTEGER
 )
 
-const {alt, shift} = useMagicKeys()
+const {alt: lessSpeedKey, shift: moreSpeedKey, q: snapKey} = useMagicKeys()
 const speedMultiplierKey = computed(() => {
-	return (alt.value ? 0.1 : 1) * (shift.value ? 10 : 1)
+	return (lessSpeedKey.value ? 0.1 : 1) * (moreSpeedKey.value ? props.snap : 1)
 })
 const speedMultiplierGesture = ref(1)
 const speed = computed(() => {
@@ -217,6 +218,8 @@ const {dragging: tweaking} = useDrag($input, {
 		resetTweakModeTimer = setTimeout(() => {
 			tweakMode.value = state.xy
 		}, 200)
+
+		snapEnabled.value = snapKey.value
 	},
 	onDragEnd() {
 		confirm()
@@ -227,10 +230,17 @@ const {dragging: tweaking} = useDrag($input, {
 //------------------------------------------------------------------------------
 // Emit update:modelValue when the local value is changed
 
+const snapEnabled = ref(false)
+
+whenever(snapKey, () => {
+	snapEnabled.value = tweaking.value
+})
+
 const validate = computed(() =>
 	V.compose(
 		V.clamp(validMin.value, validMax.value),
-		V.quantize(props.step ?? 0)
+		V.quantize(props.step ?? 0),
+		V.quantize(snapEnabled.value ? props.snap : 0)
 	)
 )
 
