@@ -182,7 +182,15 @@ export function useDrag(
 		if (!pointerdown) return
 
 		if (event.movementX !== undefined && event.movementY !== undefined) {
-			state.xy = vec2.add(state.xy, [event.movementX, event.movementY])
+			// movement properties ignores the zoom level of browser,
+			// so we need to scale it by the zoom
+			const zoomLevel = window.outerWidth / window.innerWidth
+			const movement = vec2.scale(
+				[event.movementX, event.movementY],
+				1 / zoomLevel
+			)
+
+			state.xy = vec2.add(state.xy, movement)
 		} else {
 			state.xy = [event.clientX, event.clientY]
 		}
