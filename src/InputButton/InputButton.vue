@@ -22,6 +22,7 @@ defineProps<InputButtonProps>()
 @import '../common.styl'
 
 .InputButton
+	position relative
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
 	border-radius var(--tq-radius-input)

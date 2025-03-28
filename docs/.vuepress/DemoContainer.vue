@@ -43,7 +43,7 @@ function fullScreen() {
 		background-color var(--tq-color-background)
 
 .full-screen-button
-	position absolute
+	position absolute !important
 	top 1rem
 	right 0rem
 
