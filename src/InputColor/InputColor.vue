@@ -71,7 +71,7 @@ function onUpdateAlpha(value: number) {
 			font="monospace"
 			:modelValue="opaqueColor"
 			:validator="V.colorCode"
-			inlinePosition="end"
+			:inlinePosition="props.alpha ? 'middle' : 'end'"
 			@update:modelValue="onInputOpaqueColor"
 			@focus="emit('focus')"
 			@blur="emit('blur')"
@@ -108,6 +108,8 @@ function onUpdateAlpha(value: number) {
 	&.pad-tweaking
 		&:deep(input.input)
 			text-indent var(--tq-input-height)
+
 .alpha
-	width calc(var(--tq-input-height) * 4)
+	flex-grow 0
+	width calc(var(--tq-input-height) * 2)
 </style>

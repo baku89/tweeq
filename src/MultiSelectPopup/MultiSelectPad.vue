@@ -66,15 +66,24 @@ const {xy, dragging} = useDrag($root, {
 </script>
 
 <template>
-	<div ref="$root" class="MultiSelectPad" :class="{[type]: true}">
-		<IconIndicator :icon="icon" :active="dragging" />
-	</div>
+	<IconIndicator
+		ref="$root"
+		class="MultiSelectPad"
+		:class="{[type]: true}"
+		:icon="icon"
+		:active="dragging"
+	/>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 .MultiSelectPad
+	border-radius var(--tq-radius-input)
+
+	&:hover
+		background var(--tq-color-input-hover)
+
 	&.slider
 		cursor ew-resize
 

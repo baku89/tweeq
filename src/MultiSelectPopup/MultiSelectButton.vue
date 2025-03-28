@@ -16,5 +16,15 @@ function edit() {
 </script>
 
 <template>
-	<IconIndicator :icon="icon" @click="edit" />
+	<IconIndicator class="TqMultiSelectButton" :icon="icon" @click="edit" />
 </template>
+
+<style lang="stylus" scoped>
+@import '../common.styl'
+
+.MultiSelectButton
+	border-radius var(--tq-radius-input)
+
+	&:hover
+		background var(--tq-color-input-hover)
+</style>

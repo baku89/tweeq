@@ -83,7 +83,7 @@ const temporarilyHidePopup = computed(() => {
 	return !floatingFocused.value && (shift.value || meta.value)
 })
 
-const tweakWidth = 300
+const tweakWidth = theme.popupWidth
 
 let localOnTweak: HSVA | null = null
 
@@ -463,7 +463,7 @@ defineOptions({
 :is(.pad, .wheel, .slider)
 	position fixed
 	border-radius var(--tq-radius-input)
-	width 300px
+	width var(--tq-popup-width)
 	overflow hidden
 	active-transition(opacity)
 
@@ -476,7 +476,7 @@ defineOptions({
 .wheel
 	aspect-ratio 1
 	border-radius 50%
-	margin-left -150px
+	margin-left calc(var(--tq-popup-width) / -2)
 	margin-top -4px
 
 	dot(angle)

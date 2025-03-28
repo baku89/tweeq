@@ -97,6 +97,9 @@ const {current} = useMagicKeys()
 		align-items center
 		outline 1px solid var(--tq-color-border)
 
+.input
+	min-width 15em
+
 .pressed-keys
 	position absolute
 	bottom 2em

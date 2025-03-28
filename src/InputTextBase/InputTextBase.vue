@@ -120,6 +120,7 @@ function onBlur(e: FocusEvent) {
 	hover-transition(background, box-shadow)
 	flex-grow 1
 	overflow hidden
+	container-type inline-size
 
 	use-input-font()
 	use-input-align()
@@ -152,6 +153,10 @@ function onBlur(e: FocusEvent) {
 	width 100%
 	height var(--tq-input-height)
 	padding-inline .5em
+
+	@container (max-width: 100px)
+		&
+			padding-inline 0
 
 	&.has-inactive-content:not(:focus)
 		opacity 0

@@ -180,7 +180,6 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	color var(--tq-color-on-accent)
 	width calc(var(--tq-input-height) - 6px)
 	height calc(var(--tq-input-height) - 6px)
-	background var(--tq-color-accent)
 	margin 3px
 	z-index 1
 

@@ -86,7 +86,10 @@ export interface Theme {
 
 	// Input
 	inputHeight: number
-	inputGap: number
+	inputGap: number // Drag-to-t
+
+	// Popup
+	popupWidth: number
 
 	// Pane
 	panePadding: number
