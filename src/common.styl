@@ -131,8 +131,9 @@ input-overlay()
 set-alpha(name, opacity)
 	'color-mix(in srgb, var(%s) %d%, transparent)' % (name opacity * 100)
 
-
 reset-viewport(selector)
+	@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap')
+
 	:root
 		interpolate-size allow-keywords
 
@@ -176,5 +177,5 @@ reset-viewport(selector)
 				background transparent
 
 			::-webkit-scrollbar-thumb
-					border-radius 9999px
-					background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
+				border-radius 9999px
+				background 'color-mix(in srgb, var(--tq-color-text) 20%, transparent)' % ''
