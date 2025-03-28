@@ -81,7 +81,7 @@ function shuffle() {
 	padding 0
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	background-size 100% 100%
 	color var(--tq-color-accent)
 	text-align center

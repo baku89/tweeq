@@ -111,7 +111,7 @@ const {current} = useMagicKeys()
 		font-size 24px
 		background-color var(--tq-color-text-subtle)
 		color var(--tq-color-background)
-		border-radius var(--tq-popup-border-radius)
+		border-radius var(--tq-radius-popup)
 		padding 0 .4em 3px
 		text-box trim-both cap alphabetic
 		display flex

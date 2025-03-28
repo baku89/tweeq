@@ -75,7 +75,7 @@ function onChange(index: number) {
 	overflow hidden
 	background var(--tq-color-input)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	padding 0
 	gap 1px
 	hover-transition(background)
@@ -91,7 +91,7 @@ label
 	display flex
 	line-height var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	overflow hidden
 	text-align center
 	justify-content center

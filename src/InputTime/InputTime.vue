@@ -408,7 +408,7 @@ const hourTick = computed(() => {
 .digit
 	position relative
 	padding .1em .2em
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 
 	.TqInputTime:hover &.tweak
 		background set-alpha(--tq-color-text-subtle, .3)

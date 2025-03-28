@@ -24,7 +24,7 @@ defineProps<InputButtonProps>()
 .InputButton
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	background var(--tq-color-accent)
 	color var(--tq-color-on-accent)
 	display flex

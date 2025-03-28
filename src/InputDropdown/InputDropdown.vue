@@ -265,7 +265,7 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	background set-alpha(--tq-color-input, .8)
 	backdrop-filter blur(6px)
 	border 1px solid var(--tq-color-border)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 
 	use-input-align()
 	use-input-font()
@@ -280,7 +280,7 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	align-content center
 	justify-content center
 	color var(--tq-color-text)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 
 	&.current
 		background var(--tq-color-accent-soft)

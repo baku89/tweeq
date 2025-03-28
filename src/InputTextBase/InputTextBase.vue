@@ -114,7 +114,7 @@ function onBlur(e: FocusEvent) {
 .TqInputTextBase
 	position relative
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	background var(--tq-color-input)
 	color var(--tq-color-text)
 	hover-transition(background, box-shadow)

@@ -10,7 +10,7 @@ pane-style()
 popup-style()
 	pane-style()
 	padding var(--tq-popup-padding)
-	border-radius var(--tq-popup-border-radius)
+	border-radius var(--tq-radius-popup)
 	box-shadow 0 0 20px 0px var(--tq-color-shadow)
 	color var(--tq-color-text)
 
@@ -22,7 +22,7 @@ button-focus-style()
 		position absolute
 		inset -3px
 		border 1px solid var(--tq-color-accent)
-		border-radius calc(var(--tq-input-border-radius) + 2px)
+		border-radius calc(var(--tq-radius-input) + 2px)
 
 hover-transition(prop = all)
 	values = ()

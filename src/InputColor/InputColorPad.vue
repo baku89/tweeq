@@ -431,7 +431,7 @@ defineOptions({
 .default-button
 	position relative
 	overflow hidden
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	hover-transition(box-shadow)
@@ -462,7 +462,7 @@ defineOptions({
 
 :is(.pad, .wheel, .slider)
 	position fixed
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	width 300px
 	overflow hidden
 	active-transition(opacity)

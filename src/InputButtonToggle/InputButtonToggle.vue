@@ -25,7 +25,7 @@ defineProps<InputButtonToggleProps>()
 @import '../common.styl'
 
 .InputButtonToggle
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	background var(--tq-color-input)
 	color var(--tq-color-text)
 	height var(--tq-input-height)

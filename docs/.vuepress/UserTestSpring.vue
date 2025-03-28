@@ -57,7 +57,7 @@ const scheme = {
 <style lang="stylus" scoped>
 
 .preview
-	border-radius var(--tq-popup-border-radius)
+	border-radius var(--tq-radius-popup)
 	overflow hidden
 	width 30em
 	aspect-ratio 1

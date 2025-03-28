@@ -215,10 +215,10 @@ watch(position, position => emit('update:position', position))
 	--resize-width var(--tq-rem)
 	--border 5px
 
-	--br-top-left var(--tq-pane-border-radius)
-	--br-top-right var(--tq-pane-border-radius)
-	--br-bottom-right var(--tq-pane-border-radius)
-	--br-bottom-left var(--tq-pane-border-radius)
+	--br-top-left var(--tq-radius-pane)
+	--br-top-right var(--tq-radius-pane)
+	--br-bottom-right var(--tq-radius-pane)
+	--br-bottom-left var(--tq-radius-pane)
 
 	position fixed
 	border-width 1px

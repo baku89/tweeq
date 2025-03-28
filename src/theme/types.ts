@@ -79,19 +79,20 @@ export interface Theme {
 	// UI Metrics
 	rem: number
 
-	paneBorderRadius: number
+	// Border Radius
+	radiusInput: number
+	radiusPane: number
+	radiusPopup: number
 
-	popupWidth: number
-	popupPadding: number
-	popupBorderRadius: number
-
-	inputBorderRadius: number
+	// Input
 	inputHeight: number
 	inputGap: number
 
+	// Pane
 	panePadding: number
 	scrollbarWidth: number
 
+	// Transition
 	hoverTransitionDuration: string
 	activeTransitionDuration: string
 }

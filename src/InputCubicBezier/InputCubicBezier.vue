@@ -54,7 +54,7 @@ const easingPath = computed(() => {
 	position relative
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	overflow hidden
 	hover-transition(background)
 	background var(--tq-color-accent-hover)

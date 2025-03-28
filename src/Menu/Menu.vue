@@ -93,7 +93,7 @@ defineProps<Props>()
 	align-items center
 	align-content center
 	// justify-content center
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 
 	&:hover
 		background var(--tq-color-accent)

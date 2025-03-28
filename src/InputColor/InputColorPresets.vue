@@ -41,6 +41,6 @@ const presetsMerged = computedInject(InputColorPresetsKey, injectedPresets => {
 button
 	width var(--tq-input-height)
 	height var(--tq-input-height)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 </style>
 ./useInputColor

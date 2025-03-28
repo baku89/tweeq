@@ -57,7 +57,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 .checkbox
 	position relative
 	background var(--tq-color-input)
-	border-radius var(--tq-input-border-radius)
+	border-radius var(--tq-radius-input)
 	width var(--tq-input-height)
 	active-transition(background)
 

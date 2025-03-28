@@ -46,7 +46,7 @@ defineProps<{
 <style lang="stylus" scoped>
 
 .preview
-	border-radius var(--tq-popup-border-radius)
+	border-radius var(--tq-radius-popup)
 	overflow hidden
 	aspect-ratio 1
 	position relative
