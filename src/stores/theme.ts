@@ -137,7 +137,7 @@ export const useThemeStore = defineStore('theme', () => {
 			radiusPopup: 6,
 			radiusPane: 12,
 
-			popupWidth: 300,
+			popupWidth: 240,
 			popupPadding: 9,
 
 			inputHeight: 24,

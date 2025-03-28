@@ -13,5 +13,5 @@ defineSlots<{
 <style scoped lang="stylus">
 .TqInputGroup
 	display flex
-	gap 1px
+	gap 2px
 </style>

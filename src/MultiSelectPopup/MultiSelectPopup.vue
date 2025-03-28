@@ -153,7 +153,9 @@ reset-viewport('.TqMultiSelectPopup')
 
 .tune-icon
 	position absolute
-	inset 2px
+	top 2px
+	left 2px
+	outline 3px solid var(--tq-color-background)
 	width calc(100% - 4px)
 	height calc(100% - 4px)
 	background var(--tq-color-background)

@@ -83,7 +83,7 @@ const temporarilyHidePopup = computed(() => {
 	return !floatingFocused.value && (shift.value || meta.value)
 })
 
-const tweakWidth = 300
+const tweakWidth = theme.popupWidth
 
 let localOnTweak: HSVA | null = null
 
@@ -219,7 +219,7 @@ const tweakPreviewStyle = computed(() => {
 
 const padStyle = computed(() => {
 	return {
-		opacity: tweakMode.value === 'pad' ? 1 : 0.1,
+		opacity: tweakMode.value === 'pad' ? 1 : 0.5,
 		left: `${origin.value[0] - local.value.s * tweakWidth}px`,
 		top: `${origin.value[1] - (1 - local.value.v) * tweakWidth}px`,
 	}
@@ -243,7 +243,7 @@ const wheelUniforms = computed(() => {
 const wheelStyle = computed(() => {
 	return {
 		...tweakUIOffset.value,
-		opacity: tweakMode.value === 'h' ? 1 : 0.1,
+		opacity: tweakMode.value === 'h' ? 1 : 0.5,
 		rotate: `${local.value.h * -360}deg`,
 	}
 })
@@ -463,7 +463,7 @@ defineOptions({
 :is(.pad, .wheel, .slider)
 	position fixed
 	border-radius var(--tq-radius-input)
-	width 300px
+	width var(--tq-popup-width)
 	overflow hidden
 	active-transition(opacity)
 

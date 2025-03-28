@@ -143,7 +143,6 @@ function perform(action: ActionItemOptions) {
 
 .CommandPalette
 	width 400px
-	background red
 	top 20vh
 	margin 0 auto
 	border-radius 8px

@@ -139,7 +139,7 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 <style lang="stylus" scoped>
 
 .color-space
-	width 5em
+	width 4.5em
 	flex-shrink 0
 
 .channel

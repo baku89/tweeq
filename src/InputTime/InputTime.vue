@@ -2,6 +2,7 @@
 import {Path} from '@baku89/pave'
 import {useMagicKeys} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
+import {range} from 'lodash-es'
 import {
 	computed,
 	nextTick,
@@ -306,6 +307,22 @@ function radialLine(t: number, innerRadius: number, outerRadius: number) {
 	)
 }
 
+const meters = computed(() => {
+	const scale = tweakScale.value
+	const fps = props.frameRate
+
+	let angles
+	if (scale === 0) {
+		angles = range(0, 1, 1 / fps)
+	} else {
+		angles = range(0, 1, 1 / 12)
+	}
+
+	const lines = angles.map(a => radialLine(a, 48, 49))
+
+	return Path.toD(Path.merge(lines))
+})
+
 const frameTick = computed(() => {
 	const f = model.value % props.frameRate
 	return Path.toD(radialLine(f / props.frameRate, 48, 48))
@@ -378,6 +395,7 @@ const hourTick = computed(() => {
 				<div v-if="tweaking" class="overlay">
 					<svg class="overlay-svg" viewBox="0 0 100 100">
 						<!-- <circle cx="50" cy="50" r="50" class="bold gray" /> -->
+						<path :d="meters" class="meters" />
 						<path :d="frameTick" class="frame" :tweaking="tweakScale === 0" />
 						<path :d="secondTick" class="second" :tweaking="tweakScale === 1" />
 						<path :d="minuteTick" class="minute" :tweaking="tweakScale === 2" />

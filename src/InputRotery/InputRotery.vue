@@ -93,7 +93,7 @@ const doSnap = computed(() => {
 	)
 })
 
-const tweakModeByPointer = ref<'absolute' | 'relative'>()
+const tweakModeByPointer = ref<'absolute' | 'relative'>('relative')
 const tweakModeByKey = ref<'absolute' | 'relative' | null>(null)
 const tweakMode = computed(
 	() => tweakModeByKey.value ?? tweakModeByPointer.value
