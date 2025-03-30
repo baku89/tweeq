@@ -10,6 +10,7 @@ import {useThemeStore} from '../stores/theme'
 import {SvgIcon} from '../SvgIcon'
 import {Tooltip} from '../Tooltip'
 import type {InputEmits} from '../types'
+import {useLastActive} from '../use/use'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useCursorStyle} from '../use/useCursorStyle'
 import {useDrag} from '../use/useDrag'
@@ -94,27 +95,15 @@ const doSnap = computed(() => {
 })
 
 const tweakModeByPointer = ref<'absolute' | 'relative'>('relative')
-const tweakModeByKey = ref<'absolute' | 'relative' | null>(null)
+
+const tweakModeByKey = useLastActive({
+	absolute: absoluteModeKey,
+	relative: relativeModeKey,
+})
+
 const tweakMode = computed(
 	() => tweakModeByKey.value ?? tweakModeByPointer.value
 )
-
-watch(absoluteModeKey, () => {
-	if (absoluteModeKey.value && !tweaking.value) {
-		tweakModeByKey.value = 'absolute'
-	}
-})
-watch(relativeModeKey, () => {
-	if (relativeModeKey.value && !tweaking.value) {
-		tweakModeByKey.value = 'relative'
-	}
-})
-
-watch([absoluteModeKey, relativeModeKey], () => {
-	if (!absoluteModeKey.value && !relativeModeKey.value) {
-		tweakModeByKey.value = null
-	}
-})
 
 // Local value before snap
 const local = ref(model.value)
