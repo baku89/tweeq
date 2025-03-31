@@ -3,28 +3,30 @@ import chroma from 'chroma-js'
 import {InputColorProps, InputEmits, Popover} from 'tweeq'
 import {computed, ref, useTemplateRef} from 'vue'
 
+const model = defineModel<string>({required: true})
+
 const props = defineProps<InputColorProps & {label: string}>()
 
-const emit = defineEmits<InputEmits<string>>()
+defineEmits<InputEmits>()
 
 const withoutAlpha = computed(() => {
-	if (!chroma.valid(props.modelValue)) {
-		return props.modelValue
+	if (!chroma.valid(model.value)) {
+		return model.value
 	}
 
-	return chroma(props.modelValue).alpha(1).hex().replace('#', '')
+	return chroma(model.value).alpha(1).hex().replace('#', '')
 })
 
 const alpha = computed(() => {
-	if (!chroma.valid(props.modelValue)) {
+	if (!chroma.valid(model.value)) {
 		return 1
 	}
 
-	return chroma(props.modelValue).alpha()
+	return chroma(model.value).alpha()
 })
 
 function onInputText(e: any) {
-	emit('update:modelValue', e.target.value)
+	model.value = e.target.value
 }
 
 function onInputColor(e: any) {
@@ -32,19 +34,19 @@ function onInputColor(e: any) {
 
 	const newColor = chroma(newValue).alpha(alpha.value).hex()
 
-	emit('update:modelValue', newColor)
+	model.value = newColor
 }
 
 function onInputAlpha(e: any) {
 	const alpha = e.target.value as number
 
-	if (!chroma.valid(props.modelValue)) {
+	if (!chroma.valid(model.value)) {
 		return
 	}
 
-	const newColor = chroma(props.modelValue).alpha(alpha)
+	const newColor = chroma(model.value).alpha(alpha)
 
-	emit('update:modelValue', newColor.hex())
+	model.value = newColor.hex()
 }
 
 const open = ref(false)
@@ -60,16 +62,24 @@ const $button = useTemplateRef('$button')
 				<button
 					ref="$button"
 					class="button"
-					:style="{color: modelValue}"
+					:style="{color: model}"
 					@click="open = !open"
 				/>
 				<sp-textfield
 					class="textfield"
 					:label="label"
-					:value="modelValue"
+					:value="withoutAlpha"
 					editable
 					@input="onInputText"
 				/>
+				<template v-if="props.alpha">
+					<sp-number-field
+						:value="alpha"
+						format-options='{"style": "percent"}'
+						hide-stepper
+						@input="onInputAlpha"
+					/>
+				</template>
 			</div>
 		</sp-theme>
 		<Popover
@@ -88,7 +98,7 @@ const $button = useTemplateRef('$button')
 					:step="0.01"
 					:min="0"
 					:max="1"
-					:format-options="{style: 'unit', unit: '%'}"
+					:format-options="{style: 'percent', unit: '%'}"
 					@input="onInputAlpha"
 					>Alpha</sp-slider
 				>

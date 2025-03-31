@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {InputEmits, InputNumberProps} from 'tweeq'
 
+const model = defineModel<number>({required: true})
+
 defineProps<InputNumberProps & {label: string}>()
 
-const emit = defineEmits<InputEmits<number>>()
+defineEmits<InputEmits>()
 
 function onInput(e: any) {
-	emit('update:modelValue', e.target.__value)
+	model.value = e.target.value
 }
 </script>
 

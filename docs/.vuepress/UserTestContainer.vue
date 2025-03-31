@@ -69,7 +69,6 @@ const allUserDatas: ControlUserData[] = []
 
 function update(value: T) {
 	modelValue.value = value
-	console.log(value)
 	controlHistory.push([new Date().getTime() - startTime, value])
 }
 
