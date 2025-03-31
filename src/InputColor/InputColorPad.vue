@@ -2,7 +2,7 @@
 import {useFocus, useFocusWithin, useMagicKeys, whenever} from '@vueuse/core'
 import chroma from 'chroma-js'
 import Color from 'colorjs.io'
-import {vec2} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {computed, ref, shallowRef, useTemplateRef, watch} from 'vue'
 
 import {GlslCanvas} from '../GlslCanvas'
@@ -107,12 +107,24 @@ const {origin, dragging: tweaking} = useDrag($button, {
 			local.value = tweakHSVAChannel(local.value, 's', dx)
 			local.value = tweakHSVAChannel(local.value, 'v', dy)
 
-			const sd = local.value.s - localOnTweak!.s
-			const vd = local.value.v - localOnTweak!.v
+			const {s: is, v: iv} = localOnTweak!
+			const {s: cs, v: cv} = local.value
 
 			multi.update(hsva => {
-				hsva = tweakHSVAChannel(hsva, 's', sd)
-				hsva = tweakHSVAChannel(hsva, 'v', vd)
+				if (cs !== is) {
+					hsva = setHSVAChannel(hsva, 's', s =>
+						cs < is
+							? scalar.lerp(0, s, cs / is)
+							: scalar.lerp(1, s, (1 - cs) / (1 - is))
+					)
+				}
+				if (cv !== iv) {
+					hsva = setHSVAChannel(hsva, 'v', v =>
+						cv < iv
+							? scalar.lerp(0, v, cv / iv)
+							: scalar.lerp(1, v, (1 - cv) / (1 - iv))
+					)
+				}
 				return hsva
 			})
 		} else {
