@@ -9,64 +9,35 @@ export function tweakHSVAChannel(
 	channel: ColorChannel,
 	delta: number
 ) {
-	let newColor = {...color}
-
-	if (channel === 'h') {
-		newColor.h = unsignedMod(newColor.h + delta, 1)
-	} else if (channel === 's') {
-		newColor.s = clamp(newColor.s + delta, 0, 1)
-	} else if (channel === 'v') {
-		newColor.v = clamp(newColor.v + delta, 0, 1)
-	} else if (channel === 'a') {
-		newColor.a = clamp(newColor.a + delta, 0, 1)
-	} else {
-		const rgb = hsv2rgb(color)
-
-		if (channel === 'r') {
-			rgb.r = clamp(rgb.r + delta, 0, 1)
-		} else if (channel === 'g') {
-			rgb.g = clamp(rgb.g + delta, 0, 1)
-		} else if (channel === 'b') {
-			rgb.b = clamp(rgb.b + delta, 0, 1)
-		}
-
-		newColor = {...rgb2hsv(rgb), a: color.a}
-
-		if (isNaN(newColor.h)) {
-			newColor.h = color.h
-		}
-		if (isNaN(newColor.s)) {
-			newColor.s = color.s
-		}
-	}
-
-	return newColor
+	return setHSVAChannel(color, channel, value => value + delta)
 }
 
 export function setHSVAChannel(
 	color: HSVA,
 	channel: ColorChannel,
-	value: number
+	value: number | ((oldValue: number) => number)
 ) {
 	let newColor = {...color}
 
+	const f = typeof value === 'number' ? () => value : value
+
 	if (channel === 'h') {
-		newColor.h = unsignedMod(value, 1)
+		newColor.h = unsignedMod(f(newColor.h), 1)
 	} else if (channel === 's') {
-		newColor.s = clamp(value, 0, 1)
+		newColor.s = clamp(f(newColor.s), 0, 1)
 	} else if (channel === 'v') {
-		newColor.v = clamp(value, 0, 1)
+		newColor.v = clamp(f(newColor.v), 0, 1)
 	} else if (channel === 'a') {
-		newColor.a = clamp(value, 0, 1)
+		newColor.a = clamp(f(newColor.a), 0, 1)
 	} else {
 		const rgb = hsv2rgb(color)
 
 		if (channel === 'r') {
-			rgb.r = clamp(value, 0, 1)
+			rgb.r = clamp(f(rgb.r), 0, 1)
 		} else if (channel === 'g') {
-			rgb.g = clamp(value, 0, 1)
+			rgb.g = clamp(f(rgb.g), 0, 1)
 		} else if (channel === 'b') {
-			rgb.b = clamp(value, 0, 1)
+			rgb.b = clamp(f(rgb.b), 0, 1)
 		}
 
 		newColor = {...rgb2hsv(rgb), a: color.a}
