@@ -45,6 +45,7 @@ const $input = useTemplateRef('$input')
 // Tweak
 
 const {
+	a: absoluteMode,
 	q: doSnap,
 	shift: increaseTweakScale,
 	alt: decreaseTweakScale,
@@ -75,7 +76,7 @@ const tweakSpeed = computed(() => {
 
 	if (scale <= 0) return 1 / 4 // frames
 	if (scale === 1) return fps / 10 // seconds
-	if (scale === 2) return (fps * 60) / 100 // minutes
+	if (scale === 2) return (fps * 60) / 10 // minutes
 	return (fps * 60 * 60) / 100 // hours
 })
 
