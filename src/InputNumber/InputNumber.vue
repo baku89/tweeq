@@ -321,19 +321,9 @@ function onBlur() {
 const print = computed(() => {
 	const _tweaking = tweaking.value
 	const _precision = precision.value
-	const _focused = focused.value
-	const {prefix, suffix} = props
 
 	return (local: number) => {
-		const num = _tweaking
-			? local.toFixed(_precision)
-			: toFixed(local, _precision)
-
-		if (_focused) {
-			return num
-		}
-
-		return prefix + num + suffix
+		return _tweaking ? local.toFixed(_precision) : toFixed(local, _precision)
 	}
 })
 
@@ -519,6 +509,13 @@ const barStyle = computed<StyleValue>(() => {
 		@keydown.down.prevent="onIncrementByKey(-1)"
 		@keydown.enter.prevent="confirm"
 	>
+		<template #inactiveContent>
+			<div class="display-at-inactive">
+				<span v-if="prefix" class="prefix">{{ prefix }}</span>
+				{{ display }}
+				<span v-if="suffix" class="suffix">{{ suffix }}</span>
+			</div>
+		</template>
 		<template #back>
 			<div class="bar" :style="barStyle" />
 			<InputNumberScales :min="min" :max="max" :step="step" />
@@ -574,6 +571,22 @@ const barStyle = computed<StyleValue>(() => {
 
 	&:has(:disabled) .bar
 			background var(--tq-color-input)
+
+.display-at-inactive
+	position absolute
+	inset 0
+	display flex
+	align-items center
+	justify-content center
+
+	.prefix, .suffix
+		color var(--tq-color-text-mute)
+
+	.prefix
+		margin-right .1em
+
+	.suffix
+		margin-left .1em
 
 .bar, .tip
 	position absolute
