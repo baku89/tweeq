@@ -1,3 +1,4 @@
+export * from './App'
 export * from './ColorIcon'
 export * from './CommandPalette'
 export * from './Icon'
