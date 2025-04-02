@@ -20,7 +20,7 @@ export function useZUI(
 			capture: true,
 		})
 
-		const altPressed = keyboard.pressed('alt')
+		const altPressed = keyboard.pressed('option')
 
 		// Pan
 		const panByDrag = pointer.middle

@@ -29,7 +29,13 @@ const {tweakingValue, subfocus} = useInputSwitch({
 
 <template>
 	<div class="TqInputCheckbox">
-		<div ref="track" class="checkbox" :class="{subfocus}">
+		<div
+			ref="track"
+			class="checkbox"
+			:class="{subfocus}"
+			:block-position="props.blockPosition"
+			:inline-position="props.inlinePosition"
+		>
 			<input
 				:id="id"
 				ref="input"
@@ -60,6 +66,8 @@ const {tweakingValue, subfocus} = useInputSwitch({
 	border-radius var(--tq-radius-input)
 	width var(--tq-input-height)
 	active-transition(background)
+
+	use-input-position()
 
 	&:has(.input:focus-visible),
 	&.subfocus
