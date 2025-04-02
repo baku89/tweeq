@@ -203,7 +203,18 @@ const {dragging: tweaking} = useDrag($input, {
 
 			const delta = dx * baseSpeed * speed.value
 
-			local.value += delta
+			let newLocal = local.value + delta
+
+			if (!barVisible.value) {
+				if (props.min !== Number.MIN_SAFE_INTEGER) {
+					newLocal = scalar.max(newLocal, props.min)
+				}
+				if (props.max !== Number.MAX_SAFE_INTEGER) {
+					newLocal = scalar.min(newLocal, props.max)
+				}
+			}
+			local.value = newLocal
+
 			deltaAccumulated += delta
 			multi.update(v => v + deltaAccumulated)
 		} else if (tweakMode.value === 'speed') {
@@ -461,7 +472,7 @@ const handleStyles = computed<StyleValue>(() => {
 	const tValue = scalar.invlerp(props.min, props.max, model.value)
 
 	return {
-		left: toPercent(tValue),
+		left: `calc((100% - 1px) * ${tValue})`,
 	}
 })
 
