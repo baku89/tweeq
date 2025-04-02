@@ -65,24 +65,24 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 
 <style lang="stylus" scoped>
 .TqTitleBar
-	--titlebar-area-height: env(titlebar-area-height, 37px)
+	--titlebar-area-height: env(titlebar-area-height, 38px)
 
+	position fixed
 	display grid
 	grid-template-columns 1fr min-content 1fr
 	left env(titlebar-area-x, 0)
 	top env(titlebar-area-y, 0)
 	width env(titlebar-area-width, 100%)
 	height var(--titlebar-area-height)
+
 	z-index 100
 	user-select none
-	position fixed
 	background linear-gradient(to bottom, var(--tq-color-background), transparent)
 	backdrop-filter blur(2px)
 	gap var(--tq-input-gap)
 	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
 	-webkit-app-region: drag
 	app-region: drag
-	line-height var(--tq-input-height)
 
 	@media (display-mode: window-controls-overlay)
 		background \
@@ -113,5 +113,6 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 	font-family 500
 	font-family var(--tq-font-heading)
 	font-size calc(var(--titlebar-area-height) * .4)
-	margin-right 4px
+	margin-right .2em
+	line-height var(--tq-input-height)
 </style>
