@@ -148,11 +148,19 @@ function onBlur(e: FocusEvent) {
 	&.invalid
 		--tq-color-text var(--tq-color-error)
 
+.input, .inactive-content
+	position absolute
+	inset 0 .5em
+	overflow-x visible
+
+	.TqInputTextBase:has(.icon.left) &
+		left calc(var(--tq-icon-size))
+
+	.TqInputTextBase:has(.icon.right) &
+		right calc(var(--tq-icon-size))
+
 .input
-	position relative
-	width 100%
 	height var(--tq-input-height)
-	padding-inline .5em
 
 	@container (max-width: 100px)
 		&
@@ -165,9 +173,6 @@ function onBlur(e: FocusEvent) {
 		pointer-events none
 
 .inactive-content
-	position absolute
-	inset 0
-
 	:focus + &
 		display none
 
