@@ -48,11 +48,10 @@ defineProps<InputButtonProps>()
 		padding 0 .75em
 
 	&:has(.icon):has(.label)
-		padding 0 .75em 0 0.2em
+		padding 0 .75em 0 0.5em
 
 	.icon
 		display block
-		font-size var(--tq-input-height)
 
 	.label
 		line-height var(--tq-input-height)

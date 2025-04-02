@@ -29,7 +29,11 @@ const icon = computed(() => {
 </script>
 
 <template>
-	<Iconify v-if="icon.type === 'iconify'" :icon="icon.value" />
+	<Iconify
+		class="TqIcon iconify"
+		v-if="icon.type === 'iconify'"
+		:icon="icon.value"
+	/>
 	<div v-else-if="icon.type === 'char'" class="TqIcon char">
 		{{ icon.value }}
 	</div>
@@ -48,6 +52,9 @@ const icon = computed(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
+.TqIcon.iconify
+	width var(--tq-icon-size)
+	height var(--tq-icon-size)
 
 .TqIcon.char
 	line-height 100%

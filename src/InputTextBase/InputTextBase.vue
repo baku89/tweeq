@@ -173,9 +173,7 @@ function onBlur(e: FocusEvent) {
 
 
 .icon
-	width calc(var(--tq-input-height) - 6px)
-	height calc(var(--tq-input-height) - 6px)
-	margin 3px
+	margin calc((var(--tq-input-height) - var(--tq-icon-size)) / 2)
 	color var(--tq-color-text-mute)
 	transform scale(0.8)
 	opacity .7
@@ -185,8 +183,8 @@ function onBlur(e: FocusEvent) {
 	top 0
 
 	&.left
-		left 3px
+		left 2px
 
 	&.right
-		right 3px
+		right 2px
 </style>

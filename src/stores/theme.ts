@@ -140,6 +140,7 @@ export const useThemeStore = defineStore('theme', () => {
 			popupWidth: 240,
 			popupPadding: 9,
 
+			iconSize: 18,
 			inputHeight: 24,
 			inputGap: 9,
 

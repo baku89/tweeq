@@ -361,7 +361,7 @@ watch(position, position => emit('update:position', position))
 	transform translate(-50%, -50%)
 	pointer-events none
 	opacity 0
-	color var(--tq-color-on-accent-container)
+	color var(--tq-color-on-accent)
 	hover-transition(opacity)
 
 .wrapper

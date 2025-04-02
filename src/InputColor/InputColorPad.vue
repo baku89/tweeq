@@ -354,7 +354,7 @@ defineOptions({
 	<button
 		ref="$button"
 		v-bind="$attrs"
-		class="InputColorPad"
+		class="TqInputColorPad"
 		:class="{focus: (open && temporarilyHidePopup) || multi.subfocus}"
 	>
 		<slot>
@@ -435,7 +435,7 @@ defineOptions({
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputColorPad
+.TqInputColorPad
 	width fit-content
 	position relative
 	display flex
@@ -451,8 +451,8 @@ defineOptions({
 	use-input-position()
 	box-shadow inset 0 0 0 1px var(--outline)
 
-	.InputColorPad:focus &,
-	.InputColorPad.focus &,
+	.TqInputColorPad:focus &,
+	.TqInputColorPad.focus &,
 	&:hover, &.tweaking
 		--outline var(--tq-color-accent) !important
 		box-shadow 0 0 0 1px var(--outline)

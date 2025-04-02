@@ -10,3 +10,4 @@ export type {
 export * from './use/useBndr'
 export {type InputEmits} from './types'
 export {initTweeq, useTweeq} from './useTweeq'
+export * from './util'

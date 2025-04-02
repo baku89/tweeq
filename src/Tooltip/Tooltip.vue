@@ -18,7 +18,7 @@ defineSlots<{
 	border-radius 9999px
 	border 1px solid var(--tq-color-border)
 	background var(--tq-color-surface)
-	color var(--tq-color-on-surface)
+	color var(--tq-color-text)
 	backdrop-filter blur(3px)
 	font-size .9em
 	font-numeric()

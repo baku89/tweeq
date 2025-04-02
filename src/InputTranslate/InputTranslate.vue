@@ -178,9 +178,7 @@ function decompose(value?: number | vec2): vec2 | undefined {
 
 .grid-icon
 	color var(--tq-color-on-accent)
-	width calc(var(--tq-input-height) - 6px)
-	height calc(var(--tq-input-height) - 6px)
-	margin 3px
+	margin calc((var(--tq-input-height) - var(--tq-icon-size)) / 2)
 	z-index 1
 
 .overlay

@@ -84,6 +84,8 @@ export interface Theme {
 	radiusPane: number
 	radiusPopup: number
 
+	iconSize: number
+
 	// Input
 	inputHeight: number
 	inputGap: number // Drag-to-t

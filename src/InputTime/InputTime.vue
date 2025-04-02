@@ -45,7 +45,6 @@ const $input = useTemplateRef('$input')
 // Tweak
 
 const {
-	a: absoluteMode,
 	q: doSnap,
 	shift: increaseTweakScale,
 	alt: decreaseTweakScale,

@@ -99,9 +99,6 @@ defineProps<Props>()
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
 
-.icon
-	width calc(var(--tq-input-height) - 4px)
-
 .label
 	flex-grow 1
 	margin-right 1em

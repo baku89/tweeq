@@ -65,6 +65,8 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 
 <style lang="stylus" scoped>
 .TitleBar
+	--titlebar-area-height: env(titlebar-area-height, 37px)
+
 	display grid
 	grid-template-columns 1fr min-content 1fr
 	left env(titlebar-area-x, 0)
@@ -76,18 +78,23 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 	position fixed
 	background linear-gradient(to bottom, var(--tq-color-background), transparent)
 	backdrop-filter blur(2px)
-	gap 9px
+	gap var(--tq-input-gap)
 	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
 	-webkit-app-region: drag
 	app-region: drag
 	line-height var(--tq-input-height)
 
 	@media (display-mode: window-controls-overlay)
-		background linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
+		background \
+			linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), \
+			linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
 
 .left, .center, .right
 	display flex
-	gap 9px
+	gap var(--tq-input-gap)
+
+	& > *
+		flex-grow 0
 
 	& > :deep(*)
 		-webkit-app-region no-drag

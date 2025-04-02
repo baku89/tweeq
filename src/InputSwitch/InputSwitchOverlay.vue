@@ -37,8 +37,8 @@ defineProps<{
 
 .icon
 	position absolute
-	width var(--tq-input-height)
-	height var(--tq-input-height)
+	width var(--tq-icon-size)
+	height var(--tq-icon-size)
 	color var(--tq-color-border)
 	active-transition(color)
 	background var(--tq-color-background)

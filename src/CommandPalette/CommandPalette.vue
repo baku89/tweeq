@@ -100,9 +100,9 @@ function perform(action: ActionItemOptions) {
 </script>
 
 <template>
-	<div ref="$popover" class="CommandPalette" popover>
+	<div ref="$popover" class="TqCommandPalette" popover>
 		<div class="searchContainer">
-			<Icon class="searchIcon" icon="material-symbols:search-rounded" />
+			<Icon class="search-icon" icon="material-symbols:search-rounded" />
 			<input
 				v-model="searchWord"
 				class="search"
@@ -141,12 +141,11 @@ function perform(action: ActionItemOptions) {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.CommandPalette
+.TqCommandPalette
 	width 400px
 	top 20vh
 	margin 0 auto
 	border-radius 8px
-	color var(--tq-color-on-surface)
 	background var(--tq-color-surface)
 	border 1px solid var(--tq-color-border)
 	backdrop-filter blur(4px)
@@ -159,7 +158,7 @@ function perform(action: ActionItemOptions) {
 	gap 6px
 	padding-left 3px
 
-.searchIcon
+.search-icon
 	display block
 
 .search
@@ -171,7 +170,6 @@ function perform(action: ActionItemOptions) {
 
 	&::placeholder
 		font-size calc(1.2 * var(--tq-rem))
-		color var(--tq-color-on-surface)
 		opacity .3
 
 .recentActions
