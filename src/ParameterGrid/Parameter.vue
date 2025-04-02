@@ -49,4 +49,5 @@ defineSlots<{
 	display grid
 	gap 6px
 	align-items center
+	min-width 15rem
 </style>
