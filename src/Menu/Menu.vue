@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import type {IconSequence} from 'bndr-js'
-import {Menu as VMenu} from 'floating-vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
+import {computed, ref, useTemplateRef} from 'vue'
+import Popover from '../Popover/Popover.vue'
 
-export interface MenuCommand {
+interface BaseMenu {
 	icon?: string
 	label: string
 	shortLabel?: string
+	perform?: () => void
+	children?: MenuItem[]
+}
+
+export interface MenuCommand extends BaseMenu {
 	perform: () => void
 	bindIcon?: IconSequence
 }
 
-export interface MenuGroup {
-	icon?: string
-	label: string
+export interface MenuGroup extends BaseMenu {
 	children: (MenuGroup | MenuCommand)[]
 }
 
@@ -25,64 +29,65 @@ interface Props {
 	items: MenuItem[]
 }
 
-function perform(menu: MenuItem) {
-	if ('perform' in menu) {
-		menu.perform()
-	}
-}
+const props = defineProps<Props>()
 
-defineProps<Props>()
+const hoverIndex = ref(-1)
+
+const $lists = useTemplateRef('$lists')
+
+const $childReference = computed(() => {
+	if (hoverIndex.value === -1) return null
+
+	return $lists.value?.[hoverIndex.value] ?? null
+})
+
+const childItems = computed(() => {
+	return props.items[hoverIndex.value].children ?? null
+})
 </script>
 
 <template>
 	<ul class="TqMenu">
-		<template v-for="(menu, index) in items">
-			<li
-				v-if="'perform' in menu"
-				:key="index + '_item'"
-				v-close-popper.all
-				class="menu"
-				@click="perform(menu)"
-			>
-				<Icon class="icon" :icon="menu.icon ?? ''" />
-				<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
-				<BindIcon
-					v-if="'bindIcon' in menu && menu.bindIcon"
-					class="bind-icon"
-					:icon="menu.bindIcon"
-				/>
-			</li>
-			<VMenu
-				v-else
-				:key="index + '_group'"
-				placement="right-start"
-				:delay="0"
-				:distance="6"
-				:instantMove="true"
-			>
-				<li class="menu">
-					<Icon class="icon" :icon="menu.icon ?? ''" />
-					<span class="label">{{ menu.label }}</span>
-					<Icon
-						v-if="'children' in menu"
-						class="group-chevron"
-						icon="mdi:chevron-right"
-					/>
-				</li>
-				<template #popper>
-					<Menu :items="menu.children" />
-				</template>
-			</VMenu>
-		</template>
+		<li
+			ref="$lists"
+			v-for="(menu, index) in items"
+			:key="index + '_item'"
+			v-close-popper.all
+			class="menu"
+			@click="menu.perform?.()"
+			@pointerenter="hoverIndex = index"
+		>
+			<Icon class="icon" :icon="menu.icon ?? ''" />
+			<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
+			<BindIcon
+				v-if="'bindIcon' in menu && menu.bindIcon"
+				class="bind-icon"
+				:icon="menu.bindIcon"
+			/>
+			<Icon
+				v-if="'children' in menu"
+				class="group-chevron"
+				icon="mdi:chevron-right"
+			/>
+		</li>
 	</ul>
+	<Popover
+		v-if="$childReference && childItems"
+		:reference="$childReference"
+		placement="right-start"
+		:open="true"
+	>
+		<Menu :items="childItems" />
+	</Popover>
 </template>
 
 <style lang="stylus" scoped>
+@import '../common.styl'
 
 .TqMenu
 	display flex
 	flex-direction column
-	padding 6px
+	popup-style()
 
 .menu
 	padding 0 6px

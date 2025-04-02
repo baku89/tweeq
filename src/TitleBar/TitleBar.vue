@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {Menu as VMenu} from 'floating-vue'
-import {computed} from 'vue'
+import {computed, useTemplateRef} from 'vue'
 import {ref} from 'vue'
 
 import {ColorIcon} from '../ColorIcon'
 import {Menu, type MenuItem} from '../Menu'
 import {type Action, useActionsStore} from '../stores/actions'
 import type {TitleBarProps} from './types'
+import {Popover} from '../Popover'
 
 defineProps<TitleBarProps>()
 
@@ -17,6 +17,9 @@ defineSlots<{
 }>()
 
 const actions = useActionsStore()
+
+const appIcon = useTemplateRef<any>('appIcon')
+const appMenu = useTemplateRef<any>('appMenu')
 
 const isMenuShown = ref(false)
 
@@ -40,17 +43,20 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 <template>
 	<div class="TqTitleBar">
 		<div class="left">
-			<VMenu
+			<ColorIcon
+				ref="appIcon"
+				class="app-icon"
+				:src="icon"
+				:class="{shown: isMenuShown}"
+				@click="isMenuShown = !isMenuShown"
+			/>
+			<Popover
+				:reference="appIcon"
 				placement="bottom-start"
-				:delay="0"
-				:distance="4"
-				@update:shown="isMenuShown = $event"
+				v-model:open="isMenuShown"
 			>
-				<ColorIcon class="app-icon" :src="icon" :class="{shown: isMenuShown}" />
-				<template #popper>
-					<Menu :items="menus" />
-				</template>
-			</VMenu>
+				<Menu v-if="isMenuShown" ref="appMenu" :items="menus" />
+			</Popover>
 			<span class="app-name">{{ name }}</span>
 			<slot name="left" />
 		</div>
