@@ -14,6 +14,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	'update:transform': [mat2d]
 	'update:visibleRect': [Rect]
+	'update:size': [vec2]
 }>()
 
 const $root = useTemplateRef('$root')
@@ -21,6 +22,14 @@ const $root = useTemplateRef('$root')
 const {width: rootWidth, height: rootHeight} = useElementBounding($root)
 
 const transformLocal = shallowRef(mat2d.I)
+
+const size = computed<vec2>(() => {
+	return [rootWidth.value, rootHeight.value]
+})
+
+watchEffect(() => {
+	emit('update:size', size.value)
+})
 
 watch(
 	() => props.transform,
