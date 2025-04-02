@@ -92,6 +92,7 @@ export interface Theme {
 
 	// Popup
 	popupWidth: number
+	popupPadding: number
 
 	// Pane
 	panePadding: number

@@ -5,6 +5,7 @@ import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
 import {computed, ref, useTemplateRef} from 'vue'
 import Popover from '../Popover/Popover.vue'
+import {useThemeStore} from '../stores/theme'
 
 interface BaseMenu {
 	icon?: string
@@ -30,6 +31,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const theme = useThemeStore()
 
 const hoverIndex = ref(-1)
 
@@ -76,6 +79,7 @@ const childItems = computed(() => {
 		:reference="$childReference"
 		placement="right-start"
 		:open="true"
+		:offset="{crossAxis: -theme.popupPadding}"
 	>
 		<Menu :items="childItems" />
 	</Popover>
@@ -90,8 +94,8 @@ const childItems = computed(() => {
 	popup-style()
 
 .menu
-	padding 0 6px
-	height var(--tq-input-height)
+	padding 2px 6px
+	height calc(var(--tq-input-height) + 4px)
 	line-height var(--tq-input-height)
 	display flex
 	gap 8px
