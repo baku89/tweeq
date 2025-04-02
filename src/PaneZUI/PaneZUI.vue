@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {Rect} from '@baku89/pave'
 import {useElementBounding} from '@vueuse/core'
-import {mat2d, vec2} from 'linearly'
+import {mat2d, scalar, vec2} from 'linearly'
 import {computed, shallowRef, useTemplateRef, watch, watchEffect} from 'vue'
 
 import {useZUI} from '../use/useZUI'
@@ -59,12 +59,20 @@ useZUI($root, delta => {
 	transformLocal.value = mat2d.mul(delta, transformLocal.value)
 })
 
-const rootStyles = computed(() => {
+const averageZoom = computed(() => {
+	const [a, , , d] = transformLocal.value
+	return (a + d) / 2
+})
+
+const dotStyles = computed(() => {
 	const [a, , , d, tx, ty] = transformLocal.value
 
 	const size = 20
 
+	const opacity = scalar.smoothstep(0.1, 0.4, averageZoom.value)
+
 	return {
+		opacity: `${opacity * 100}%`,
 		backgroundPosition: `${tx}px ${ty}px`,
 		backgroundSize: `${size * a}px ${size * d}px`,
 	}
@@ -78,12 +86,8 @@ const transformStyles = computed(() => {
 </script>
 
 <template>
-	<div
-		ref="$root"
-		class="TqPaneZUI"
-		:class="{dots: background === 'dots'}"
-		:style="rootStyles"
-	>
+	<div ref="$root" class="TqPaneZUI" :class="{dots: background === 'dots'}">
+		<div v-if="background === 'dots'" class="dots" :style="dotStyles" />
 		<div class="transform" :style="transformStyles">
 			<slot />
 		</div>
@@ -98,10 +102,13 @@ const transformStyles = computed(() => {
 	width 100%
 	height 100%
 
-	&.dots
-		--bg var(--tq-color-background)
-		background-image linear-gradient(to right, transparent 1px, var(--bg) 1px), linear-gradient(to bottom, transparent 1px, var(--bg) 1px)
-		background-color var(--tq-color-text-mute)
+.dots
+	position absolute
+	inset 0
+	background-image radial-gradient(
+		circle at top left,
+		var(--tq-color-text-mute) 1px,
+		transparent 1px)
 
 .transform
 	position absolute

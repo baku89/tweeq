@@ -34,7 +34,7 @@ export function useZUI(
 			.on(onTransform)
 
 		// Zoom
-		const zoomByScroll = scroll.while(altPressed, false).map(([, y]) => y)
+		const zoomByScroll = scroll.while(altPressed, false).map(([, y]) => -y)
 		const zoomByPinch = pointer.pinch().map(v => -2 * v)
 
 		const zoomOrigin = position.stash(
