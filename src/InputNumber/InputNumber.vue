@@ -154,10 +154,10 @@ const {dragging: tweaking} = useDrag($input, {
 		$input.value?.select()
 	},
 	onDragStart(state, event) {
-		const isTipDragged = (event.target as Element).classList.contains('tip')
+		const handleDragged = (event.target as Element).classList.contains('handle')
 		const insideRange = props.min <= model.value && model.value <= props.max
 
-		if (barVisible.value && insideRange && !isTipDragged) {
+		if (barVisible.value && insideRange && !handleDragged) {
 			// Absolute Mode
 			local.value = scalar.fit(
 				state.xy[0],
@@ -455,7 +455,7 @@ const scaleAttrs = (offset: number) => {
 	}
 }
 
-const tipStyle = computed<StyleValue>(() => {
+const handleStyles = computed<StyleValue>(() => {
 	if (!barVisible.value) return {visibility: 'hidden'}
 
 	const tValue = scalar.invlerp(props.min, props.max, model.value)
@@ -530,7 +530,7 @@ const barStyle = computed<StyleValue>(() => {
 				<line class="scale" v-bind="scaleAttrs(2)"></line>
 			</svg>
 
-			<div class="tip" :style="tipStyle" />
+			<div class="handle" :style="handleStyles" />
 		</template>
 	</InputTextBase>
 </template>
@@ -573,6 +573,7 @@ const barStyle = computed<StyleValue>(() => {
 			background var(--tq-color-input)
 
 .display-at-inactive
+	pointer-events none
 	position absolute
 	inset 0
 	display flex
@@ -588,7 +589,7 @@ const barStyle = computed<StyleValue>(() => {
 	.suffix
 		margin-left .1em
 
-.bar, .tip
+.bar, .handle
 	position absolute
 	height 100%
 
@@ -600,7 +601,7 @@ const barStyle = computed<StyleValue>(() => {
 	.TqInputNumber:hover &
 		background var(--tq-color-accent-soft-hover)
 
-.tip
+.handle
 	width 1px
 	background var(--tq-color-accent)
 	opacity .3
@@ -654,6 +655,6 @@ const barStyle = computed<StyleValue>(() => {
 	.bar
 		background var(--tq-color-input-tinted-accent-hover)
 
-	.tip
+	.handle
 		background var(--tq-color-accent)
 </style>

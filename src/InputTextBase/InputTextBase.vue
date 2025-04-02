@@ -173,6 +173,12 @@ function onBlur(e: FocusEvent) {
 		pointer-events none
 
 .inactive-content
+	pointer-events none
+
+	& > *
+		pointer-events auto
+
+
 	:focus + &
 		display none
 

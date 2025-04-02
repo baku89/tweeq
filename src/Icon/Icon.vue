@@ -26,6 +26,10 @@ const icon = computed(() => {
 		value: props.icon,
 	}
 })
+
+defineOptions({
+	inheritAttrs: false,
+})
 </script>
 
 <template>
@@ -33,8 +37,9 @@ const icon = computed(() => {
 		class="TqIcon iconify"
 		v-if="icon.type === 'iconify'"
 		:icon="icon.value"
+		v-bind="$attrs"
 	/>
-	<div v-else-if="icon.type === 'char'" class="TqIcon char">
+	<div v-else-if="icon.type === 'char'" class="TqIcon char" v-bind="$attrs">
 		{{ icon.value }}
 	</div>
 	<svg
@@ -44,6 +49,7 @@ const icon = computed(() => {
 		height="24"
 		viewBox="0 0 24 24"
 		class="TqIcon fill"
+		v-bind="$attrs"
 	>
 		<path fill="currentColor" :d="icon.value" />
 	</svg>

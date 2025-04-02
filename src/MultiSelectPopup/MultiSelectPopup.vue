@@ -123,7 +123,7 @@ watchEffect(() => {
 	</div>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
 reset-viewport('.TqMultiSelectPopup')
@@ -144,8 +144,8 @@ reset-viewport('.TqMultiSelectPopup')
 	hover-transition(width, height, border-radius)
 
 	&:not(:hover)
-		width calc(var(--tq-input-height) / 2)
-		height calc(var(--tq-input-height) / 2)
+		width calc(var(--tq-icon-size) + 6px)
+		height calc(var(--tq-icon-size) + 6px)
 		border-radius 99px
 
 	&.visible
@@ -155,9 +155,6 @@ reset-viewport('.TqMultiSelectPopup')
 	position absolute
 	top 2px
 	left 2px
-	outline 3px solid var(--tq-color-background)
-	width calc(100% - 4px)
-	height calc(100% - 4px)
 	background var(--tq-color-background)
 	color var(--tq-color-accent)
 	opacity 1

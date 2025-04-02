@@ -99,6 +99,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 	// Defocus all when pressing Escape
 	onKeyStroke('Escape', defocusAll)
+	onKeyStroke('Tab', defocusAll)
 
 	const multiSelected = computed(() => {
 		return selectedInputs.value.length > 1
@@ -136,7 +137,9 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		const store = reactive({id, ...source})
 
-		const subfocus = computed(() => selectedIds.has(id))
+		const subfocus = computed(
+			() => selectedIds.has(id) && !source.focusing.value
+		)
 
 		inputs.set(id, store)
 

@@ -61,7 +61,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 	width var(--tq-input-height)
 	active-transition(background)
 
-	&:has(.input:focus),
+	&:has(.input:focus-visible),
 	&.subfocus
 		button-focus-style()
 
@@ -83,10 +83,8 @@ const {tweakingValue, subfocus} = useInputSwitch({
 
 .mark
 	position absolute
-	top 0
-	left 0
-	width 100%
-	height 100%
+	top calc((var(--tq-input-height) - var(--tq-icon-size)) / 2)
+	left calc((var(--tq-input-height) - var(--tq-icon-size)) / 2)
 	color set-alpha(--tq-color-text-subtle, .3)
 	pointer-events none
 
