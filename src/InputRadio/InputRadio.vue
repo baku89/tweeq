@@ -100,6 +100,7 @@ label
 	justify-content center
 	align-items center
 	hover-transition(background, color)
+	padding 0 0.75em
 
 	&:hover
 		background var(--tq-color-input-hover)
