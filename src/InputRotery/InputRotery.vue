@@ -296,7 +296,7 @@ useCopyPaste({
 <template>
 	<button
 		ref="$root"
-		class="InputRotery"
+		class="TqInputRotery"
 		:class="{tweaking, subfocus: multi.subfocus}"
 		:tweak-mode="tweakMode"
 		@focus="emit('focus')"
@@ -359,7 +359,7 @@ useCopyPaste({
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputRotery
+.TqInputRotery
 	position relative
 	display block
 	width var(--tq-input-height)
@@ -392,11 +392,11 @@ useCopyPaste({
 	stroke none
 
 	&:hover,
-	.InputRotery:focus-visible &,
-	.InputRotery:hover[tweak-mode=relative] &
+	.TqInputRotery:focus-visible &,
+	.TqInputRotery:hover[tweak-mode=relative] &
 		fill var(--tq-color-accent-hover)
 
-	.InputRotery:hover[tweak-mode=absolute] &
+	.TqInputRotery:hover[tweak-mode=absolute] &
 		fill var(--tq-color-accent-soft)
 
 .absolute-mode-area

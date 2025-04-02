@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
 <template>
 	<div
 		ref="$root"
-		class="InputDropdown"
+		class="TqInputDropdown"
 		:class="{open}"
 		v-bind="$attrs"
 		:align="align"
@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
 $right-arrow-width = 1em
 $chevron-width = calc(.7 * var(--tq-input-height))
 
-.InputDropdown
+.TqInputDropdown
 	position relative
 	display inline-block
 	width 100%
@@ -255,8 +255,8 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	opacity .4
 	hover-transition(opacity)
 
-	.InputDropdown:hover &,
-	.InputDropdown:focus-within &
+	.TqInputDropdown:hover &,
+	.TqInputDropdown:focus-within &
 		opacity 1
 
 .select

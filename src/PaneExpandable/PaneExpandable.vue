@@ -26,7 +26,7 @@ function collapse() {
 
 <template>
 	<div
-		class="PaneExpandable"
+		class="TqPaneExpandable"
 		:class="{open}"
 		@pointerenter="expand"
 		@pointerleave="collapse"
@@ -44,7 +44,7 @@ function collapse() {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.PaneExpandable
+.TqPaneExpandable
 	display flex
 	flex-direction column
 	gap 9px

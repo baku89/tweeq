@@ -23,7 +23,7 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 </script>
 
 <template>
-	<div ref="$root" class="InputAngle">
+	<div ref="$root" class="TqInputAngle">
 		<InputRotery
 			v-bind="props"
 			v-model="model"
@@ -45,7 +45,7 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 </template>
 
 <style lang="stylus" scoped>
-.InputAngle
+.TqInputAngle
 	display flex
 	gap var(--tq-input-gap)
 </style>

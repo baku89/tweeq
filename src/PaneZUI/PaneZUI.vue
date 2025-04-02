@@ -70,7 +70,7 @@ const transformStyles = computed(() => {
 <template>
 	<div
 		ref="$root"
-		class="PaneZUI"
+		class="TqPaneZUI"
 		:class="{dots: background === 'dots'}"
 		:style="rootStyles"
 	>
@@ -82,7 +82,7 @@ const transformStyles = computed(() => {
 
 <style lang="stylus" scoped>
 
-.PaneZUI
+.TqPaneZUI
 	position relative
 	overflow hidden
 	width 100%

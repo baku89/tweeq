@@ -54,7 +54,7 @@ async function pickColor() {
 </script>
 
 <template>
-	<div class="InputColorPicker">
+	<div class="TqInputColorPicker">
 		<template v-for="([type, ch], i) in pickers">
 			<InputColorChannelPad
 				v-if="type === 'pad'"
@@ -90,7 +90,7 @@ async function pickColor() {
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputColorPicker
+.TqInputColorPicker
 	padding 0
 	display grid
 	gap var(--tq-input-gap)

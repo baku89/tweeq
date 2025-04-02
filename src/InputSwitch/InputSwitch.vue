@@ -26,7 +26,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 </script>
 
 <template>
-	<div class="InputSwitch">
+	<div class="TqInputSwitch">
 		<div ref="track" class="track" :class="{subfocus}">
 			<input
 				:id="id"
@@ -46,7 +46,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputSwitch
+.TqInputSwitch
 	display flex
 	align-items center
 	gap 1em

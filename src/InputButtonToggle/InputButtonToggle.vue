@@ -9,7 +9,7 @@ defineProps<InputButtonToggleProps>()
 
 <template>
 	<button
-		class="InputButtonToggle"
+		class="TqInputButtonToggle"
 		:class="{checked: model}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
@@ -24,7 +24,7 @@ defineProps<InputButtonToggleProps>()
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputButtonToggle
+.TqInputButtonToggle
 	border-radius var(--tq-radius-input)
 	background var(--tq-color-input)
 	color var(--tq-color-text)

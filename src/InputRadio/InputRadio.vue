@@ -39,7 +39,7 @@ function onChange(index: number) {
 </script>
 
 <template>
-	<ul class="InputRadio">
+	<ul class="TqInputRadio">
 		<li
 			v-for="({value, label}, index) in completeOptions"
 			:key="label"
@@ -69,7 +69,7 @@ function onChange(index: number) {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputRadio
+.TqInputRadio
 	position relative
 	display flex
 	overflow hidden

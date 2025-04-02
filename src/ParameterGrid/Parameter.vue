@@ -9,7 +9,7 @@ defineSlots<{
 }>()
 </script>
 <template>
-	<li class="Parameter">
+	<li class="TqParameter">
 		<div class="label">
 			<slot name="label">
 				<Icon v-if="icon" class="icon" :icon="icon" />
@@ -25,7 +25,7 @@ defineSlots<{
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.Parameter
+.TqParameter
 	display grid
 	grid-column 1 / 3
 	grid-template-columns subgrid

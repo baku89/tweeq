@@ -28,7 +28,7 @@ const easingPath = computed(() => {
 <template>
 	<button
 		ref="$button"
-		class="InputCubicBezier"
+		class="TqInputCubicBezier"
 		:class="{open}"
 		v-bind="$attrs"
 		@click="open = true"
@@ -50,7 +50,7 @@ const easingPath = computed(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputCubicBezier
+.TqInputCubicBezier
 	position relative
 	width var(--tq-input-height)
 	height var(--tq-input-height)

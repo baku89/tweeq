@@ -7,7 +7,7 @@ defineProps<InputButtonProps>()
 
 <template>
 	<button
-		class="InputButton"
+		class="TqInputButton"
 		:class="{blink, subtle}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
@@ -21,7 +21,7 @@ defineProps<InputButtonProps>()
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputButton
+.TqInputButton
 	position relative
 	height var(--tq-input-height)
 	min-width var(--tq-input-height)

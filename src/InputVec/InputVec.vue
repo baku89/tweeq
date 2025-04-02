@@ -60,7 +60,7 @@ function commitConfirm() {
 </script>
 
 <template>
-	<InputGroup class="InputVec">
+	<InputGroup class="TqInputVec">
 		<InputNumber
 			v-for="(v, i) in model"
 			:key="i"

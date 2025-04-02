@@ -57,7 +57,7 @@ onBeforeUnmount(() => {
 		v-show="isActive"
 		:id="paneId"
 		ref="tab"
-		class="Tab"
+		class="TqTab"
 		:data-tab-id="id"
 		:aria-hidden="!isActive"
 		role="tabpanel"
@@ -69,6 +69,6 @@ onBeforeUnmount(() => {
 
 <style lang="stylus" scoped>
 
-.Tab
+.TqTab
 	height 100%
 </style>

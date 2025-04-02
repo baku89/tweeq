@@ -35,7 +35,7 @@ defineProps<Props>()
 </script>
 
 <template>
-	<ul class="Menu">
+	<ul class="TqMenu">
 		<template v-for="(menu, index) in items">
 			<li
 				v-if="'perform' in menu"
@@ -79,7 +79,7 @@ defineProps<Props>()
 
 <style lang="stylus" scoped>
 
-.Menu
+.TqMenu
 	display flex
 	flex-direction column
 	padding 6px

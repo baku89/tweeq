@@ -5,7 +5,7 @@ defineSlots<{
 }>()
 </script>
 <template>
-	<li class="ParameterHeading">
+	<li class="TqParameterHeading">
 		<div class="heading">
 			<slot />
 		</div>
@@ -18,7 +18,7 @@ defineSlots<{
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.ParameterHeading
+.TqParameterHeading
 	display flex
 	height var(--tq-input-height)
 	line-height var(--tq-input-height)

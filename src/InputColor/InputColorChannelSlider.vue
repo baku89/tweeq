@@ -93,7 +93,7 @@ const circleStyle = computed(() => {
 <template>
 	<div
 		ref="$root"
-		class="InputColorChannelSlider"
+		class="TqInputColorChannelSlider"
 		:style="{cursor: tweakingInside ? 'none' : undefined}"
 	>
 		<GlslCanvas
@@ -112,7 +112,7 @@ const circleStyle = computed(() => {
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputColorChannelSlider
+.TqInputColorChannelSlider
 	position relative
 	width 100%
 	height calc(0.7 * var(--tq-input-height))

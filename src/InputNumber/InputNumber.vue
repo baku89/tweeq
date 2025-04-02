@@ -597,7 +597,7 @@ const barStyle = computed<StyleValue>(() => {
 	background var(--tq-color-accent-soft)
 	hover-transition(background)
 
-	.InputNumber:hover &
+	.TqInputNumber:hover &
 		background var(--tq-color-accent-soft-hover)
 
 .tip

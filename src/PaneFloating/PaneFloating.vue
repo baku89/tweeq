@@ -193,7 +193,7 @@ watch(position, position => emit('update:position', position))
 </script>
 
 <template>
-	<div ref="$root" class="PaneFloating" :class="classes" :style="style">
+	<div ref="$root" class="TqPaneFloating" :class="classes" :style="style">
 		<div ref="$top" class="resize top" />
 		<div ref="$right" class="resize right" />
 		<div ref="$left" class="resize left" />
@@ -210,7 +210,7 @@ watch(position, position => emit('update:position', position))
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.PaneFloating
+.TqPaneFloating
 	pane-style()
 	--resize-width var(--tq-rem)
 	--border 5px

@@ -98,7 +98,7 @@ const circleStyle = computed(() => {
 <template>
 	<div
 		ref="$root"
-		class="InputColorChannelPad"
+		class="TqInputColorChannelPad"
 		:style="{cursor: tweakingInside ? 'none' : undefined}"
 	>
 		<GlslCanvas
@@ -117,7 +117,7 @@ const circleStyle = computed(() => {
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputColorChannelPad
+.TqInputColorChannelPad
 	position relative
 	width 100%
 	aspect-ratio 1

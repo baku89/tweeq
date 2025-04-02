@@ -55,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="$root" class="PaneSplit" :class="direction">
+	<div ref="$root" class="TqPaneSplit" :class="direction">
 		<div class="first" :style="styles">
 			<div class="first-wrapper" :class="{scroll: scroll[0]}">
 				<slot name="first" />
@@ -73,7 +73,7 @@ onMounted(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.PaneSplit
+.TqPaneSplit
 	position relative
 	display flex
 	width 100%

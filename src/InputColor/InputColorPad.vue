@@ -498,6 +498,7 @@ defineOptions({
 		radial-gradient(closest-side, transparent calc(100% - 4.5px), black calc(100% - 4px)),
 		dot(0deg), dot(60deg), dot(120deg), dot(180deg), dot(240deg), dot(300deg)
 	mask-repeat no-repeat
+
 .slider
 	height calc(0.5 * var(--tq-input-height))
 	transform translate(-50%, -50%)

@@ -29,10 +29,10 @@ function shuffle() {
 </script>
 
 <template>
-	<button class="InputSeed" @click="shuffle">
+	<button class="TqInputSeed" @click="shuffle">
 		<SvgIcon
 			mode="block"
-			class="InputSeed__icon"
+			class="icon"
 			:style="{transform: `rotate(${iconRot}deg)`}"
 		>
 			<circle v-show="iconNum === 1" cx="16" cy="16" r="1" />
@@ -73,10 +73,10 @@ function shuffle() {
 	</button>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputSeed
+.TqInputSeed
 	display block
 	padding 0
 	width var(--tq-input-height)
@@ -89,15 +89,15 @@ function shuffle() {
 
 	hover-transition(background, color)
 
-	&__icon
-		width var(--tq-input-height)
-		height var(--tq-input-height)
-		transition transform 0.3s cubic-bezier(0.19, 1.6, 0.42, 1)
-
 	&:focus
 		background var(--tq-color-accent-hover)
 
 	&:hover
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
+
+.icon
+	width var(--tq-input-height)
+	height var(--tq-input-height)
+	transition transform 0.3s cubic-bezier(0.19, 1.6, 0.42, 1)
 </style>

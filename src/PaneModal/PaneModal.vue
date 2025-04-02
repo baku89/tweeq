@@ -45,7 +45,7 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div ref="$root" class="PaneModal" popover="auto">
+	<div ref="$root" class="TqPaneModal" popover="auto">
 		<slot />
 	</div>
 </template>
@@ -53,7 +53,7 @@ watchEffect(() => {
 <style scoped lang="stylus">
 @import '../common.styl'
 
-.PaneModal
+.TqPaneModal
 	popup-style()
 	inset 0
 	margin auto

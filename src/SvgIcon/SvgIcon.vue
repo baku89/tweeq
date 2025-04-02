@@ -1,6 +1,6 @@
 <template>
 	<svg
-		class="SvgIcon"
+		class="TqSvgIcon"
 		xmlns="http://www.w3.org/2000/svg"
 		:class="{
 			inline: mode === 'inline',
@@ -36,8 +36,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="stylus">
-.SvgIcon
+<style lang="stylus" scoped>
+.TqSvgIcon
 	fill none
 	stroke currentColor
 	stroke-linecap butt

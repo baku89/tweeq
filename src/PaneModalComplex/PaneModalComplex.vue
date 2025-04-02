@@ -63,7 +63,7 @@ defineExpose({
 
 <template>
 	<PaneModal v-model:open="open" @close="onAbort">
-		<div v-if="desc" class="PaneModalComplex">
+		<div v-if="desc" class="TqPaneModalComplex">
 			<InputComplex
 				:title="desc.options?.title"
 				:scheme="desc.scheme"
@@ -76,7 +76,7 @@ defineExpose({
 </template>
 
 <style lang="stylus" scoped>
-.PaneModalComplex
+.TqPaneModalComplex
 	display grid
 	gap 12px
 </style>

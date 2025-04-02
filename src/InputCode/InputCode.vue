@@ -10,7 +10,7 @@ defineEmits<{
 </script>
 
 <template>
-	<div class="InputCode">
+	<div class="TqInputCode">
 		<MonacoEditor
 			class="monaco-editor"
 			:modelValue="modelValue"
@@ -23,7 +23,7 @@ defineEmits<{
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.InputCode
+.TqInputCode
 	position relative
 	border-radius var(--tq-radius-input)
 	overflow hidden

@@ -21,7 +21,7 @@ const presetsMerged = computedInject(InputColorPresetsKey, injectedPresets => {
 </script>
 
 <template>
-	<div class="InputColorPresets">
+	<div class="TqInputColorPresets">
 		<button
 			v-for="preset in presetsMerged"
 			:key="preset"
@@ -34,7 +34,7 @@ const presetsMerged = computedInject(InputColorPresetsKey, injectedPresets => {
 <style lang="stylus" scoped>
 @import './common.styl'
 
-.InputColorPresets
+.TqInputColorPresets
 	display flex
 	gap 6px
 

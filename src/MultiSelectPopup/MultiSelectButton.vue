@@ -22,7 +22,7 @@ function edit() {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.MultiSelectButton
+.TqMultiSelectButton
 	border-radius var(--tq-radius-input)
 
 	&:hover

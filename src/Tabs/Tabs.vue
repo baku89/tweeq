@@ -93,7 +93,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="Tabs">
+	<div class="TqTabs">
 		<div class="tablist-wrapper">
 			<div clas="before-tablist">
 				<slot name="before-tablist" />
@@ -128,7 +128,7 @@ onMounted(() => {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.Tabs
+.TqTabs
 	display grid
 	gap calc(0.5 * var(--tq-rem))
 	grid-template-columns 1fr

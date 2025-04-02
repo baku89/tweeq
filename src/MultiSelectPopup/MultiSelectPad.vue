@@ -68,7 +68,7 @@ const {xy, dragging} = useDrag($root, {
 <template>
 	<IconIndicator
 		ref="$root"
-		class="MultiSelectPad"
+		class="TqMultiSelectPad"
 		:class="{[type]: true}"
 		:icon="icon"
 		:active="dragging"
@@ -78,7 +78,7 @@ const {xy, dragging} = useDrag($root, {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.MultiSelectPad
+.TqMultiSelectPad
 	border-radius var(--tq-radius-input)
 
 	&:hover

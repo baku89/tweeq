@@ -38,7 +38,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 </script>
 
 <template>
-	<div class="TitleBar">
+	<div class="TqTitleBar">
 		<div class="left">
 			<VMenu
 				placement="bottom-start"
@@ -64,7 +64,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 </template>
 
 <style lang="stylus" scoped>
-.TitleBar
+.TqTitleBar
 	--titlebar-area-height: env(titlebar-area-height, 37px)
 
 	display grid
