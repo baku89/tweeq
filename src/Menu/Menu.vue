@@ -60,18 +60,21 @@ const childItems = computed(() => {
 			@click="menu.perform?.()"
 			@pointerenter="hoverIndex = index"
 		>
-			<Icon class="icon" :icon="menu.icon ?? ''" />
-			<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
-			<BindIcon
-				v-if="'bindIcon' in menu && menu.bindIcon"
-				class="bind-icon"
-				:icon="menu.bindIcon"
-			/>
-			<Icon
-				v-if="'children' in menu"
-				class="group-chevron"
-				icon="mdi:chevron-right"
-			/>
+			<Icon v-if="menu.icon" class="icon" :icon="menu.icon" />
+			<span v-else />
+			<div class="label-container">
+				<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
+				<BindIcon
+					v-if="'bindIcon' in menu && menu.bindIcon"
+					class="bind-icon"
+					:icon="menu.bindIcon"
+				/>
+				<Icon
+					v-if="'children' in menu"
+					class="group-chevron"
+					icon="mdi:chevron-right"
+				/>
+			</div>
 		</li>
 	</ul>
 	<Popover
@@ -80,6 +83,7 @@ const childItems = computed(() => {
 		placement="right-start"
 		:open="true"
 		:offset="{crossAxis: -theme.popupPadding}"
+		:lightDismiss="false"
 	>
 		<Menu :items="childItems" />
 	</Popover>
@@ -92,21 +96,29 @@ const childItems = computed(() => {
 	display flex
 	flex-direction column
 	popup-style()
+	display grid
+	grid-template-columns min-content 1fr
 
 .menu
+	grid-column 1 / 3
+	display grid
+	grid-template-columns subgrid
 	padding 2px 6px
 	height calc(var(--tq-input-height) + 4px)
 	line-height var(--tq-input-height)
-	display flex
-	gap 8px
 	align-items center
-	align-content center
-	// justify-content center
 	border-radius var(--tq-radius-input)
 
 	&:hover
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
+
+.icon
+	margin-right 8px
+
+.label-container
+	display flex
+	justify-content center
 
 .label
 	flex-grow 1
