@@ -3,6 +3,7 @@ import {uniqueId} from 'lodash-es'
 import {computed} from 'vue'
 
 import {type InputEmits, type LabelizerProps, useLabelizer} from '../types'
+import {Icon} from '../Icon'
 
 interface CompleteOption {
 	value: T
@@ -11,6 +12,7 @@ interface CompleteOption {
 
 type Props = LabelizerProps<T> & {
 	modelValue: T
+	icons?: string[]
 }
 
 const model = defineModel<T>({required: true})
@@ -59,6 +61,7 @@ function onChange(index: number) {
 					:value="value"
 					:isActive="model === value"
 				>
+					<Icon class="icon" v-if="icons?.[index]" :icon="icons[index]" />
 					{{ label }}
 				</slot>
 			</label>
@@ -108,4 +111,7 @@ label
 
 		&:hover
 			background var(--tq-color-accent-hover)
+
+.icon
+	margin-right 0.5em
 </style>

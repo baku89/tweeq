@@ -119,6 +119,7 @@ const childItems = computed(() => {
 .label-container
 	display flex
 	justify-content center
+	align-items center
 
 .label
 	flex-grow 1

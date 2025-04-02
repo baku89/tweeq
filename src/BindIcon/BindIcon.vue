@@ -14,7 +14,7 @@ defineProps<Props>()
 	<div class="BindIcon">
 		<template v-for="(ic, index) in icon" :key="index">
 			<span v-if="typeof ic === 'string'">{{ ic }}</span>
-			<Icon v-else-if="ic.type === 'iconify'" :icon="ic.icon" />
+			<Icon class="icon" v-else-if="ic.type === 'iconify'" :icon="ic.icon" />
 		</template>
 	</div>
 </template>
@@ -25,4 +25,8 @@ defineProps<Props>()
 	display flex
 	align-items center
 	gap 2px
+
+.icon
+	width 1em
+	height 1em
 </style>

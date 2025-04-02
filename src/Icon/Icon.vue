@@ -58,11 +58,11 @@ defineOptions({
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.TqIcon.iconify
+.iconify
 	width var(--tq-icon-size)
 	height var(--tq-icon-size)
 
-.TqIcon.char
+.char
 	line-height 100%
 	font-size 1.2em
 	text-align center
