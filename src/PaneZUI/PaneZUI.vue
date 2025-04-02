@@ -29,8 +29,9 @@ watch(
 	}
 )
 
-watchEffect(() => {
-	emit('update:transform', transformLocal.value)
+watch(transformLocal, local => {
+	if (local === props.transform) return
+	emit('update:transform', local)
 })
 
 watchEffect(() => {
