@@ -6,6 +6,7 @@ import {type InputNumberProps} from '../InputNumber'
 import {type InputPositionProps} from '../InputPosition'
 import {type InputRoteryProps} from '../InputRotery'
 import {type InputStringProps} from '../InputString'
+import {InputTimeProps} from '../InputTime'
 import {InputVecProps} from '../InputVec'
 
 type ParameterBase = {label?: string; icon?: string}
@@ -17,6 +18,7 @@ type ParameterDescNumber = Desc<
 	InputNumberProps
 >
 type ParameterDescAngle = Desc<{type: 'number'; ui: 'angle'}, InputRoteryProps>
+type ParameterDescTime = Desc<{type: 'number'; ui: 'time'}, InputTimeProps>
 
 type ParameterDescString = Desc<
 	{
@@ -30,7 +32,7 @@ type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
 type ParameterDescBoolean = {type: 'boolean'}
 
 type ParameterDescForType<T> = T extends number
-	? ParameterDescNumber | ParameterDescAngle
+	? ParameterDescNumber | ParameterDescAngle | ParameterDescTime
 	: T extends string
 		? ParameterDescString | ParameterDescCode | ParameterDescColor
 		: T extends boolean

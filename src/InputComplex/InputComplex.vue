@@ -9,6 +9,7 @@ import {InputNumber} from '../InputNumber'
 import {InputPosition} from '../InputPosition'
 import {InputString} from '../InputString'
 import {InputSwitch} from '../InputSwitch'
+import {InputTime} from '../InputTime'
 import {InputVec} from '../InputVec'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
 import {InputEmits} from '../types'
@@ -27,6 +28,7 @@ const entries = computed<[keyof T, Scheme<T>[keyof T]][]>(() => {
 function getComponentName(param: Scheme<T>[keyof T]) {
 	if (param.type === 'number') {
 		if (param.ui === 'angle') return InputAngle
+		if (param.ui === 'time') return InputTime
 		return InputNumber
 	} else if (param.type === 'string') {
 		if (param.ui === 'code') return InputCode
