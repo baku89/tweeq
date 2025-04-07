@@ -34,12 +34,6 @@ const targets: Model[] = [
 		color: '#5c8badb5',
 	},
 	{
-		offset: [-3.0, -3.0],
-		blur: 4,
-		spread: 1,
-		color: '#000000e4',
-	},
-	{
 		offset: [0, 7],
 		blur: 52.61111111111116,
 		spread: -10.111111111111105,

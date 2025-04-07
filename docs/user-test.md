@@ -24,3 +24,5 @@ The following user tests are used to evaluate the performance of UI components f
 ## Task 3
 
 <UserTestThreePointLighting />
+
+<div style="height: 30vh"></div>

@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-import {useUrlSearchParams} from '@vueuse/core'
+import {useEventListener, useUrlSearchParams} from '@vueuse/core'
 import {kebab} from 'case'
 import {Icon, InputComplex, Viewport} from 'tweeq'
 import {computed, ref, shallowRef, watch} from 'vue'
@@ -41,13 +41,14 @@ let startTime = 0
 watch(currentTask, task => {
 	if (task === 'result' || (typeof task === 'number' && task >= 1)) {
 		const userData: ControlUserData = {
-			history: controlHistory,
+			history,
 			totalTime: new Date().getTime() - startTime,
 		}
 		allUserDatas.push(userData)
 	}
 
 	startTime = new Date().getTime()
+	history.length = 0
 })
 
 const target = computed(() =>
@@ -58,19 +59,33 @@ const target = computed(() =>
 
 const modelValue = shallowRef(props.initialValue)
 
-type ControlHistory = [time: number, value: T]
+type TweakHistory = [time: number, value: T]
+type ClickHistory = [time: number, pressed: boolean]
+type History = TweakHistory | ClickHistory
+
 type ControlUserData = {
-	history: ControlHistory[]
+	history: History[]
 	totalTime: number
 }
 
-const controlHistory: ControlHistory[] = []
+const history: History[] = []
 const allUserDatas: ControlUserData[] = []
 
 function update(value: T) {
+	console.log('update', value)
 	modelValue.value = value
-	controlHistory.push([new Date().getTime() - startTime, value])
+	history.push([new Date().getTime() - startTime, value])
 }
+
+useEventListener('pointerdown', () => {
+	console.log('pointerdown')
+	history.push([new Date().getTime() - startTime, true])
+})
+
+useEventListener('pointerup', () => {
+	console.log('pointerup')
+	history.push([new Date().getTime() - startTime, false])
+})
 
 function nextTask() {
 	if (typeof currentTask.value !== 'number') return
@@ -99,7 +114,7 @@ function downloadUserData() {
 
 	const a = document.createElement('a')
 	a.href = url
-	a.download = `Tweeq_Evaluation_${props.title}&name=${personalInfo.name}&occupation=${personalInfo.occupation}&date=${timestamp}.json`
+	a.download = `Tweeq_Evaluation_${props.title}&name=${personalInfo.name}&date=${timestamp}.json`
 	a.click()
 }
 
@@ -195,20 +210,13 @@ const hasNext = computed(() => {
 							ボタンを押してください。</strong
 						>
 						このユーザーテスト中におけるあなたのパラメーターの変更履歴は記録され、
-						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、可能な範囲でお名前やハンドルネーム（<em>Name</em>）とご職業（<em>Occupation</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
+						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、ハンドルネーム（<em>Name</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
 					</p>
 					<p style="text-align: right">
 						<input v-model="personalInfo.name" placeholder="Name" type="text" />
-						<input
-							v-model="personalInfo.occupation"
-							placeholder="Occupation"
-							type="text"
-						/>
 						<button
 							class="complete"
-							:disabled="
-								personalInfo.name === '' || personalInfo.occupation === ''
-							"
+							:disabled="personalInfo.name === ''"
 							@click="currentTask = 0"
 						>
 							Start<Icon icon="mdi:arrow-right" />

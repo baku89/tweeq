@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import * as Tq from 'tweeq'
 import {ref} from 'vue'
 
 defineSlots<{
@@ -13,7 +14,7 @@ function fullScreen() {
 </script>
 
 <template>
-	<Viewport class="DemoContainer" :class="{fullscreen: isFullscreen}">
+	<Tq.Viewport class="DemoContainer" :class="{fullscreen: isFullscreen}">
 		<ClientOnly>
 			<InputButton
 				class="full-screen-button"
@@ -24,7 +25,7 @@ function fullScreen() {
 			/>
 			<slot :isFullscreen="isFullscreen" />
 		</ClientOnly>
-	</Viewport>
+	</Tq.Viewport>
 </template>
 
 <style lang="stylus" scoped>
