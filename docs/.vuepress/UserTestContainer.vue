@@ -41,7 +41,7 @@ let startTime = 0
 watch(currentTask, task => {
 	if (task === 'result' || (typeof task === 'number' && task >= 1)) {
 		const userData: ControlUserData = {
-			history,
+			history: structuredClone(history),
 			totalTime: new Date().getTime() - startTime,
 		}
 		allUserDatas.push(userData)
@@ -59,8 +59,8 @@ const target = computed(() =>
 
 const modelValue = shallowRef(props.initialValue)
 
-type TweakHistory = [time: number, value: T]
-type ClickHistory = [time: number, pressed: boolean]
+type TweakHistory = {time: number; value: T}
+type ClickHistory = {time: number; pressed: boolean}
 type History = TweakHistory | ClickHistory
 
 type ControlUserData = {
@@ -72,19 +72,16 @@ const history: History[] = []
 const allUserDatas: ControlUserData[] = []
 
 function update(value: T) {
-	console.log('update', value)
 	modelValue.value = value
-	history.push([new Date().getTime() - startTime, value])
+	history.push({time: new Date().getTime() - startTime, value})
 }
 
 useEventListener('pointerdown', () => {
-	console.log('pointerdown')
-	history.push([new Date().getTime() - startTime, true])
+	history.push({time: new Date().getTime() - startTime, pressed: true})
 })
 
 useEventListener('pointerup', () => {
-	console.log('pointerup')
-	history.push([new Date().getTime() - startTime, false])
+	history.push({time: new Date().getTime() - startTime, pressed: false})
 })
 
 function nextTask() {
