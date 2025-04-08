@@ -13,7 +13,7 @@ const model = shallowRef({
 const targets = [
 	{stiffness: 100, damping: 0.1},
 	{stiffness: 1000, damping: 0.5},
-	{stiffness: 62, damping: 0.4},
+	// {stiffness: 62, damping: 0.4},
 ]
 
 const scheme = {

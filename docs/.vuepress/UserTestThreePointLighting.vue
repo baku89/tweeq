@@ -20,14 +20,14 @@ const targets: (typeof initialValue)[] = [
 		backIntensity: 110,
 		backColor: '#ffffff',
 	},
-	{
-		keyIntensity: 140,
-		keyColor: '#fed9a8',
-		fillIntensity: 130,
-		fillColor: '#8a83f9',
-		backIntensity: 70,
-		backColor: '#f1dd44',
-	},
+	// {
+	// 	keyIntensity: 140,
+	// 	keyColor: '#fed9a8',
+	// 	fillIntensity: 130,
+	// 	fillColor: '#8a83f9',
+	// 	backIntensity: 70,
+	// 	backColor: '#f1dd44',
+	// },
 	{
 		keyIntensity: 45.648763960346386,
 		keyColor: '#5a37e6',

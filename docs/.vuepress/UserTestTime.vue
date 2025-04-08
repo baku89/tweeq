@@ -15,7 +15,7 @@ function timecode(h: number, m: number, s: number, f: number) {
 const targets = [
 	{time: timecode(0, 10, 15, 12)},
 	{time: timecode(0, 35, 42, 8)},
-	{time: timecode(1, 12, 5, 20)},
+	// {time: timecode(1, 12, 5, 20)},
 ]
 
 const scheme = {

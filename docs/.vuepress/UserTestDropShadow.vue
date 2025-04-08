@@ -27,12 +27,12 @@ const targets: Model[] = [
 		spread: 0,
 		color: '#1e387d36',
 	},
-	{
-		offset: [0, 6.4],
-		blur: 17,
-		spread: 0,
-		color: '#5c8badb5',
-	},
+	// {
+	// 	offset: [0, 6.4],
+	// 	blur: 17,
+	// 	spread: 0,
+	// 	color: '#5c8badb5',
+	// },
 	{
 		offset: [0, 7],
 		blur: 52.61111111111116,
