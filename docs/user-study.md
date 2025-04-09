@@ -1,13 +1,13 @@
 ---
-title: User Test
+title: User Study
 sidebar: false
-pageClass: user-test
+pageClass: user-study
 
 ---
 
 <MultiSelectPopup />
 
-# User Test
+# User Study
 
 The following user tests are used to evaluate the performance of UI components for creative professionals.
 

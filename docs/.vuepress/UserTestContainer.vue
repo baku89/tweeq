@@ -183,7 +183,7 @@ const hasNext = computed(() => {
 					<img
 						class="instruction-animation"
 						src="./public/assets/instruction.webp"
-						alt="User Test"
+						alt="User Study"
 					/>
 					<p>
 						<strong

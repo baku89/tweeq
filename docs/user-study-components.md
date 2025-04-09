@@ -1,7 +1,7 @@
 ---
 title: User Study Components
 sidebar: false
-pageClass: user-test
+pageClass: user-study
 ---
 
 <MultiSelectPopup />
