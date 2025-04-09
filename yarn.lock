@@ -475,13 +475,6 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
-"@floating-ui/core@^1.1.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.6.0.tgz#fa41b87812a16bf123122bf945946bae3fdf7fc1"
-  integrity sha512-PcF++MykgmTj3CIyOQbKA/hDzOAiqI3mhuoN44WRCopIs1sgoDoU4oty4Jtqaj/y3oDU6fnVSm4QG0a3t5i0+g==
-  dependencies:
-    "@floating-ui/utils" "^0.2.1"
-
 "@floating-ui/core@^1.6.0":
   version "1.6.9"
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.6.9.tgz#64d1da251433019dafa091de9b2886ff35ec14e6"
@@ -496,18 +489,6 @@
   dependencies:
     "@floating-ui/core" "^1.6.0"
     "@floating-ui/utils" "^0.2.9"
-
-"@floating-ui/dom@~1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.1.1.tgz#66aa747e15894910869bf9144fc54fc7d6e9f975"
-  integrity sha512-TpIO93+DIujg3g7SykEAGZMDtbJRrmnYRCNYSjJlvIbGhBjRSNTLVbNeDQBrzy9qDgUbiWdc7KA0uZHZ2tJmiw==
-  dependencies:
-    "@floating-ui/core" "^1.1.0"
-
-"@floating-ui/utils@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.1.tgz#16308cea045f0fc777b6ff20a9f25474dd8293d2"
-  integrity sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==
 
 "@floating-ui/utils@^0.2.9":
   version "0.2.9"
@@ -2010,10 +1991,10 @@ birpc@^0.2.19:
   resolved "https://registry.yarnpkg.com/birpc/-/birpc-0.2.19.tgz#cdd183a4a70ba103127d49765b4a71349da5a0ca"
   integrity sha512-5WeXXAvTmitV1RqJFppT5QtUiz2p1mRSYU000Jkft5ZUCLJIk4uQriYNO50HknxKwM6jd8utNc66K1qGIwwWBQ==
 
-bndr-js@^0.18.5:
-  version "0.18.5"
-  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.18.5.tgz#1a9f5f88fb02f58190afed37a283d77a2c5839db"
-  integrity sha512-84IppJKbW4/ls3EUzGdwv4T4wwbbmPWr2PYzlmBymj90uZw9cCkLxq2m1NYSjL/SlBlOJUTLkkMDEjc8QzLLvA==
+bndr-js@^0.18.6:
+  version "0.18.6"
+  resolved "https://registry.yarnpkg.com/bndr-js/-/bndr-js-0.18.6.tgz#113eac8eb65339590dca870861f65bebddfe472c"
+  integrity sha512-G3d/YAIXs28S+zuvNRd3Y6OTAzYuAR+1AIz6MlVo0uE9j6BOz1JbPdItcVzVOgNG1s1eBjw/HwcTkdhKLgBMRQ==
   dependencies:
     case "^1.6.3"
     linearly "^0.20.3"
@@ -2817,14 +2798,6 @@ flatted@^3.2.9:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
-
-floating-vue@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/floating-vue/-/floating-vue-5.2.2.tgz#e263932042753f59f3e36e7c1188f3f3e272a539"
-  integrity sha512-afW+h2CFafo+7Y9Lvw/xsqjaQlKLdJV7h1fCHfcYQ1C4SVMlu7OAekqWgu5d4SgvkBVU0pVpLlVsrSTBURFRkg==
-  dependencies:
-    "@floating-ui/dom" "~1.1.1"
-    vue-resize "^2.0.0-alpha.1"
 
 fp-ts@^2.16.8:
   version "2.16.9"
@@ -4765,11 +4738,6 @@ vue-eslint-parser@^9.4.3:
     esquery "^1.4.0"
     lodash "^4.17.21"
     semver "^7.3.6"
-
-vue-resize@^2.0.0-alpha.1:
-  version "2.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-2.0.0-alpha.1.tgz#43eeb79e74febe932b9b20c5c57e0ebc14e2df3a"
-  integrity sha512-7+iqOueLU7uc9NrMfrzbG8hwMqchfVfSzpVlCMeJQe4pyibqyoifDNbKTZvwxZKDvGkB+PdFeKvnGZMoEb8esg==
 
 vue-router@^4.5.0:
   version "4.5.0"
