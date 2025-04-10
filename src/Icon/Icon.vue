@@ -58,7 +58,7 @@ defineOptions({
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.iconify
+.TqIcon
 	width var(--tq-icon-size)
 	height var(--tq-icon-size)
 
