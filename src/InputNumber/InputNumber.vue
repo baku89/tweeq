@@ -228,7 +228,7 @@ const {dragging: tweaking} = useDrag($input, {
 		clearTimeout(resetTweakModeTimer)
 		resetTweakModeTimer = setTimeout(() => {
 			tweakMode.value = state.xy
-		}, 200)
+		}, 60)
 
 		snapEnabled.value = snapKey.value
 	},
