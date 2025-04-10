@@ -107,7 +107,7 @@ watchEffect(() => {
 		popover="manual"
 	>
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
-		<template v-for="action in enabledActions" :key="action.icon">
+		<div v-for="action in enabledActions" :key="action.icon" class="actions">
 			<MultiSelectPad
 				v-if="action.type === 'slider' || action.type === 'pad'"
 				:type="action.type"
@@ -119,7 +119,7 @@ watchEffect(() => {
 				:updator="action.updator"
 				:icon="action.icon"
 			/>
-		</template>
+		</div>
 	</div>
 </template>
 
@@ -136,12 +136,12 @@ reset-viewport('.TqMultiSelectPopup')
 	left 0
 	z-index 1000
 	visibility hidden
-	display flex
 	padding 4px
 	border-color var(--tq-color-accent)
 	box-shadow none
 	overflow hidden
 	hover-transition(width, height, border-radius)
+	box-sizing border-box
 
 	&:not(:hover)
 		width calc(var(--tq-icon-size) + 6px)
@@ -162,4 +162,9 @@ reset-viewport('.TqMultiSelectPopup')
 
 	.TqMultiSelectPopup:hover &
 		opacity 0
+
+	.actions
+		display flex
+		flex-direction column
+		gap 4px
 </style>
