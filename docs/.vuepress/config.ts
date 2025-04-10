@@ -36,10 +36,10 @@ export default defineUserConfig({
 				text: 'Home',
 				link: '/',
 			},
-			{
-				text: 'Principles',
-				link: '/principles',
-			},
+			// {
+			// 	text: 'Principles',
+			// 	link: '/principles',
+			// },
 			{
 				text: 'Features',
 				link: '/features',
