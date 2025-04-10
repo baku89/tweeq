@@ -34,8 +34,8 @@ defineOptions({
 
 <template>
 	<Iconify
-		class="TqIcon iconify"
 		v-if="icon.type === 'iconify'"
+		class="TqIcon iconify"
 		:icon="icon.value"
 		v-bind="$attrs"
 	/>
