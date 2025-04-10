@@ -30,6 +30,7 @@ defineProps<{
 	pointer-events none
 	inset 0 calc(var(--tq-input-height) * -1.2)
 	active-transition(inset)
+	padding calc((var(--tq-input-height) - var(--tq-icon-size)) / 2) 0
 
 	&.v-enter-from,
 	&.v-leave-to

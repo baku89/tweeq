@@ -36,6 +36,7 @@ defineSlots<{
 	display flex
 	gap 4px
 	color var(--tq-color-text-mute)
+	text-wrap nowrap
 
 .label
 	height var(--tq-input-height)
