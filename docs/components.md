@@ -91,7 +91,7 @@
 	:scheme="{
 		alpha: {type: 'boolean'},
 	}"
-	:options="{alpha: false}"
+	:options="{alpha: true}"
 	v-slot="{modelValue, options, listeners}"
 >
 	<InputColor

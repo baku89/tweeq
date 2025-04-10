@@ -15,7 +15,7 @@
 	}"
 />
 
-## 3-Band EQ
+## Three Angle Inputs
 
 <ExampleContainer
 	:initialValue="{low: 0, mid: 0, high: 0}"
