@@ -11,17 +11,17 @@ const emit = defineEmits<{
 	collapse: []
 }>()
 
-const open = ref(false)
+const open = ref(true)
 
 function expand() {
 	open.value = true
 	emit('expand')
 }
 
-function collapse() {
-	open.value = false
-	emit('collapse')
-}
+// function collapse() {
+// 	open.value = false
+// 	emit('collapse')
+// }
 </script>
 
 <template>
@@ -71,14 +71,11 @@ function collapse() {
 		transition all .2s ease
 		overflow hidden
 		opacity 0
-		height 260px
 		width 0px
 		overflow hidden
 		transform-origin top right
 		transform scale(0.7)
 
-	.wrapper
-		width 260px
 
 	&.open
 		popup-style()
@@ -86,6 +83,6 @@ function collapse() {
 		.content
 			transform none
 			opacity 1
-			width 260px
+			width auto
 			height auto
 </style>
