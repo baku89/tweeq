@@ -3,6 +3,7 @@ import Case from 'case'
 import {computed, nextTick} from 'vue'
 
 import {InputAngle} from '../InputAngle'
+import {InputCheckbox} from '../InputCheckbox'
 import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
 import {InputNumber} from '../InputNumber'
@@ -35,6 +36,7 @@ function getComponentName(param: Scheme<T>[keyof T]) {
 		if (param.ui === 'color') return InputColor
 		return InputString
 	} else if (param.type === 'boolean') {
+		if (param.ui === 'checkbox') return InputCheckbox
 		return InputSwitch
 	} else if (param.type === 'vec2') {
 		if (param.ui === 'position') return InputPosition
