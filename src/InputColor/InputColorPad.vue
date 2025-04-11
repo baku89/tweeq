@@ -154,6 +154,13 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	},
 })
 
+watch(tweakMode, () => {
+	if (!tweaking.value) return
+
+	localOnTweak = local.value
+	multi.capture()
+})
+
 // Update local value when model value changes externally
 watch(
 	model,

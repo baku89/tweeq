@@ -372,7 +372,7 @@ useCopyPaste({
 		.rotery
 			transform scale(1.8)
 
-	&:focus-visible,
+	&:focus,
 	&.subfocus
 		&:before
 			content ''
