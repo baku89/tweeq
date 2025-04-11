@@ -10,8 +10,7 @@ pageClass: user-study
 
 Anonymous Author(s) / UIST 2025
 
-
-**All the widgets below are in Google Chrome v134 or later.** If you are using other browsers, some gestures may not work.
+**The widgets below have only been tested on Google Chrome version 134 or later.**
 
 ## 4.2 Drag-to-Tweak Interaction and Overlay UI
 
