@@ -6,7 +6,7 @@ This directory contains the live demo for Twidgets.
 
 Do not open the `index.html` file directly.
 
-Please lanuch a local http server to view the demo, by running one of the following commands, then open the `http://localhost:8000` in Google Chrome v124 or later.
+Please lanuch a local http server to view the demo, by running one of the following commands, then open the `http://localhost:8000` in Google Chrome v134 or later.
 
 ### Python 3.x
 
