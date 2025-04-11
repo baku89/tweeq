@@ -40,7 +40,9 @@ interface MultiSelectInput extends MultiSelectSource {
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
-	const {meta, shift} = useMagicKeys()
+	const {meta, shift, control} = useMagicKeys()
+
+	const ctrlOrCommand = computed(() => meta.value || control.value)
 
 	let popupEl: HTMLElement | null
 
@@ -90,7 +92,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		const clickedPopup = popupEl && nodeContains(popupEl, target)
 
-		const modifierPressed = meta.value || shift.value
+		const modifierPressed = ctrlOrCommand.value || shift.value
 
 		if (clickedOutside && !clickedPopup && !modifierPressed) {
 			defocusAll()
@@ -145,7 +147,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		const readyToBeSelected = computed(() => {
 			return (
-				(meta.value || shift.value) &&
+				(ctrlOrCommand.value || shift.value) &&
 				!selectedInputs.value.some(input => input.id === id)
 			)
 		})
@@ -167,7 +169,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 						selectInbetween(lastRect, newRect)
 					}
 
-					if (!subfocus.value && !meta.value && !shift.value) {
+					if (!subfocus.value && !ctrlOrCommand.value && !shift.value) {
 						defocusAll()
 					}
 

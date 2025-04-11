@@ -57,7 +57,9 @@ defineSlots<{
 const $button = useTemplateRef('$button')
 const open = ref(false)
 
-const {shift, meta, alt, h, f, a, s, v, r, g, b} = useMagicKeys()
+const {shift, meta, control, alt, h, f, a, s, v, r, g, b} = useMagicKeys()
+
+const ctrlOrCommand = computed(() => meta.value || control.value)
 
 const tweakMode = computed(() => {
 	if (shift.value || h.value || f.value) {
@@ -86,7 +88,7 @@ const $floating = useTemplateRef('$floating')
 const floatingFocused = useFocusWithin($floating).focused
 
 const temporarilyHidePopup = computed(() => {
-	return !floatingFocused.value && (shift.value || meta.value)
+	return !floatingFocused.value && (shift.value || ctrlOrCommand.value)
 })
 
 const tweakWidth = theme.popupWidth
