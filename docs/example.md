@@ -2,6 +2,19 @@
 
 # Examples
 
+## Many Sliders
+
+<ExampleContainer
+	:initialValue="{number1: 10, number2: 20, number3: 30, number4: 40, number5: 50}"
+	:scheme="{
+		number1: {type: 'number', min: 0, max: 100},
+		number2: {type: 'number', min: 0, max: 100},
+		number3: {type: 'number', min: 0, max: 100},
+		number4: {type: 'number', min: 0, max: 100},
+		number5: {type: 'number', min: 0, max: 100},
+	}"
+/>
+
 ## Color Palettes
 
 <ExampleContainer
