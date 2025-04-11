@@ -31,6 +31,7 @@ export default defineUserConfig({
 	],
 	theme: defaultTheme({
 		contributors: false,
+		colorMode: 'light',
 	}),
 	bundler: viteBundler({
 		viteOptions: {
