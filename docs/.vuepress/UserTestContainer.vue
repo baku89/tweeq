@@ -184,9 +184,8 @@ const hasNext = computed(() => {
 						>
 						During the test, all of your changes on the parameters are recorded
 						and used to evaluate the performance of the library. If you agree
-						with the conditions, please fill in your <em>Name</em> and
-						<em>Occupation</em> and hit the <em>Start</em> button to proceed the
-						test.
+						with the conditions, please fill in your <em>Name</em> and hit the
+						<em>Start</em> button to proceed the test.
 					</p>
 					<p style="text-align: right">
 						<input v-model="personalInfo.name" placeholder="Name" type="text" />
@@ -205,9 +204,6 @@ const hasNext = computed(() => {
 					<p>
 						Thank you for your participation. Please hit the download button
 						below and send the text file to the experimenter.
-					</p>
-					<p lang="ja">
-						ご協力ありがとうございました。以下のボタンを押して、テキストファイルをダウンロードし、実験者に送信してください。
 					</p>
 					<button class="download" @click="downloadUserData">
 						Download<Icon icon="mdi:arrow-down" />
