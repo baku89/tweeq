@@ -5,7 +5,7 @@ import {
 	useMagicKeys,
 	whenever,
 } from '@vueuse/core'
-import {scalar, vec2} from 'linearly'
+import {scalar} from 'linearly'
 import {
 	Component,
 	computed,
@@ -123,11 +123,6 @@ const precision = computed(() => {
 	)
 })
 
-let resetTweakModeTimer: ReturnType<typeof setTimeout>
-
-/** When the value is vec2, it means the origin point to determine the drag mode */
-const tweakMode = ref<vec2 | 'value' | 'speed'>(vec2.zero)
-
 const minSpeed = computed(() => {
 	let prec = props.precision
 
@@ -171,7 +166,6 @@ const {dragging: tweaking} = useDrag($input, {
 		}
 
 		deltaAccumulated = 0
-		tweakMode.value = state.xy
 		speedMultiplierGesture.value = 1
 
 		emit('focus')
@@ -180,55 +174,34 @@ const {dragging: tweaking} = useDrag($input, {
 	onDrag(state) {
 		const [dx, dy] = state.delta
 
-		if (typeof tweakMode.value !== 'string') {
-			const doDetectMode = minSpeed.value !== maxSpeed.value
+		// Inc/dec value by x-axis
+		const baseSpeed = barVisible.value
+			? (props.max - props.min) / width.value
+			: 1
 
-			if (doDetectMode) {
-				const [ox, oy] = vec2.sub(tweakMode.value, state.xy)
+		const delta = dx * baseSpeed * speed.value
 
-				if (Math.abs(ox) >= 2) {
-					tweakMode.value = 'value'
-				} else if (Math.abs(oy) >= 4) {
-					tweakMode.value = 'speed'
-				}
-			} else {
-				tweakMode.value = 'value'
+		let newLocal = local.value + delta
+
+		if (!barVisible.value) {
+			if (props.min !== Number.MIN_SAFE_INTEGER) {
+				newLocal = scalar.max(newLocal, props.min)
+			}
+			if (props.max !== Number.MAX_SAFE_INTEGER) {
+				newLocal = scalar.min(newLocal, props.max)
 			}
 		}
+		local.value = newLocal
 
-		if (tweakMode.value === 'value') {
-			const baseSpeed = barVisible.value
-				? (props.max - props.min) / width.value
-				: 1
+		deltaAccumulated += delta
+		multi.update(v => v + deltaAccumulated)
 
-			const delta = dx * baseSpeed * speed.value
-
-			let newLocal = local.value + delta
-
-			if (!barVisible.value) {
-				if (props.min !== Number.MIN_SAFE_INTEGER) {
-					newLocal = scalar.max(newLocal, props.min)
-				}
-				if (props.max !== Number.MAX_SAFE_INTEGER) {
-					newLocal = scalar.min(newLocal, props.max)
-				}
-			}
-			local.value = newLocal
-
-			deltaAccumulated += delta
-			multi.update(v => v + deltaAccumulated)
-		} else if (tweakMode.value === 'speed') {
-			speedMultiplierGesture.value = scalar.clamp(
-				speedMultiplierGesture.value * 0.98 ** dy,
-				minSpeed.value,
-				maxSpeed.value
-			)
-		}
-
-		clearTimeout(resetTweakModeTimer)
-		resetTweakModeTimer = setTimeout(() => {
-			tweakMode.value = state.xy
-		}, 60)
+		// Adjustment sensitivity by y-axis
+		speedMultiplierGesture.value = scalar.clamp(
+			speedMultiplierGesture.value * 0.98 ** dy,
+			minSpeed.value,
+			maxSpeed.value
+		)
 
 		snapEnabled.value = snapKey.value
 	},
@@ -531,11 +504,7 @@ const barStyle = computed<StyleValue>(() => {
 			<div class="bar" :style="barStyle" />
 			<InputNumberScales :min="min" :max="max" :step="step" />
 
-			<svg
-				v-if="tweaking"
-				class="overlay"
-				:class="{value: tweakMode === 'value', speed: tweakMode === 'speed'}"
-			>
+			<svg v-if="tweaking" class="overlay">
 				<line class="scale" v-bind="scaleAttrs(0)"></line>
 				<line class="scale" v-bind="scaleAttrs(1)"></line>
 				<line class="scale" v-bind="scaleAttrs(2)"></line>
