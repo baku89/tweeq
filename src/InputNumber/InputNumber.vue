@@ -621,13 +621,13 @@ const barStyle = computed<StyleValue>(() => {
 		stroke var(--tq-color-text-subtle)
 		hover-transition(stroke-width)
 
-	&.value .scale
+	.scale
 		stroke-width 3
-		stroke set-alpha(--tq-color-accent, .7)
-
-	&.speed .scale
-		stroke-width 4
 		stroke var(--tq-color-accent)
+
+	//&.speed .scale
+	//	stroke-width 4
+	//	stroke var(--tq-color-accent)
 
 	.pointer
 		fill var(--tq-color-accent)
