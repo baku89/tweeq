@@ -105,7 +105,7 @@
 </DemoComponent>
 
  - `Click`: toggle the color picker popup
- - `Drag`: tweak the color reatively
+ - `Drag`: tweak the color relatively
 	 - `Shift` or `H`: adjust the hue
 	 - `S` / `V`: adjust the saturation / brightness (value)
 	 - `Alt` or `A`: adjust the alpha
@@ -342,7 +342,7 @@
 </DemoComponent>
 
  - `Click`: edit the timecode
- - `Right Click`: toggle the time unit between SMTPE and frames
+ - `Right Click`: toggle the time unit between SMTPE timecode and frames
  - `Drag` on the time indicator: adjust the time
 	 - `Shift`: increase the scale of adjustment
 	 - `Alt`: decrease the scale of adjustment
