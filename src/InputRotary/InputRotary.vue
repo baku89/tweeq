@@ -17,10 +17,10 @@ import {useDrag} from '../use/useDrag'
 import {useElementCenter} from '../use/useElementCenter'
 import {unsignedMod} from '../util'
 import * as V from '../validator'
-import type {InputRoteryProps} from './types'
+import type {InputRotaryProps} from './types'
 import {clampPosWithinRect} from './utils'
 
-const props = withDefaults(defineProps<InputRoteryProps>(), {
+const props = withDefaults(defineProps<InputRotaryProps>(), {
 	snap: 45,
 	angleOffset: -90,
 })
@@ -148,7 +148,7 @@ watch(
 
 useCursorStyle(() => (tweaking.value ? 'none' : null))
 
-const roteryStyles = computed(() => {
+const rotaryStyles = computed(() => {
 	const rotation = model.value + props.angleOffset
 	return {
 		transform: `rotate(${rotation}deg)`,
@@ -296,17 +296,17 @@ useCopyPaste({
 <template>
 	<button
 		ref="$root"
-		class="TqInputRotery"
+		class="TqInputRotary"
 		:class="{tweaking, subfocus: multi.subfocus}"
 		:tweak-mode="tweakMode"
 		@focus="emit('focus')"
 		@blur="emit('blur')"
 	>
-		<SvgIcon mode="block" class="rotery">
+		<SvgIcon mode="block" class="rotary">
 			<circle class="circle" cx="16" cy="16" r="16" />
 			<g
 				transform-origin="16 16"
-				:style="roteryStyles"
+				:style="rotaryStyles"
 				@pointerenter="tweakModeByPointer = 'absolute'"
 				@pointerleave="!tweaking && (tweakModeByPointer = 'relative')"
 			>
@@ -359,7 +359,7 @@ useCopyPaste({
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.TqInputRotery
+.TqInputRotary
 	position relative
 	display block
 	width var(--tq-input-height)
@@ -369,7 +369,7 @@ useCopyPaste({
 	&:hover, &.tweaking
 		z-index 2
 
-		.rotery
+		.rotary
 			transform scale(1.8)
 
 	&:focus,
@@ -382,7 +382,7 @@ useCopyPaste({
 			border 1px solid var(--tq-color-accent-hover)
 
 
-.rotery
+.rotary
 	width var(--tq-input-height)
 	height var(--tq-input-height)
 	hover-transition(transform)
@@ -392,11 +392,11 @@ useCopyPaste({
 	stroke none
 
 	&:hover,
-	.TqInputRotery:focus-visible &,
-	.TqInputRotery:hover[tweak-mode=relative] &
+	.TqInputRotary:focus-visible &,
+	.TqInputRotary:hover[tweak-mode=relative] &
 		fill var(--tq-color-accent-hover)
 
-	.TqInputRotery:hover[tweak-mode=absolute] &
+	.TqInputRotary:hover[tweak-mode=absolute] &
 		fill var(--tq-color-accent-soft)
 
 .absolute-mode-area

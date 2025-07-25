@@ -5,7 +5,7 @@ import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
 import {type InputNumberProps} from '../InputNumber'
 import {type InputPositionProps} from '../InputPosition'
-import {type InputRoteryProps} from '../InputRotery'
+import {type InputRotaryProps} from '../InputRotary'
 import {type InputStringProps} from '../InputString'
 import {InputSwitchProps} from '../InputSwitch/types'
 import {InputTimeProps} from '../InputTime'
@@ -19,7 +19,7 @@ type ParameterDescNumber = Desc<
 	{type: 'number'; ui?: undefined},
 	InputNumberProps
 >
-type ParameterDescAngle = Desc<{type: 'number'; ui: 'angle'}, InputRoteryProps>
+type ParameterDescAngle = Desc<{type: 'number'; ui: 'angle'}, InputRotaryProps>
 type ParameterDescTime = Desc<{type: 'number'; ui: 'time'}, InputTimeProps>
 
 type ParameterDescString = Desc<

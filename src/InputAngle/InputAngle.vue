@@ -3,14 +3,14 @@ import {useElementSize} from '@vueuse/core'
 import {computed, useTemplateRef} from 'vue'
 
 import {InputNumber} from '../InputNumber'
-import {InputRotery} from '../InputRotery'
-import type {InputRoteryProps} from '../InputRotery/types'
+import {InputRotary} from '../InputRotary'
+import type {InputRotaryProps} from '../InputRotary/types'
 import {useThemeStore} from '../stores/theme'
 import {InputEmits} from '../types'
 
 const model = defineModel<number>({required: true})
 
-const props = defineProps<InputRoteryProps>()
+const props = defineProps<InputRotaryProps>()
 
 const emit = defineEmits<InputEmits>()
 
@@ -24,7 +24,7 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 
 <template>
 	<div ref="$root" class="TqInputAngle">
-		<InputRotery
+		<InputRotary
 			v-bind="props"
 			v-model="model"
 			@focus="emit('focus')"
