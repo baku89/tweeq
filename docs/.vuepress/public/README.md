@@ -1,6 +1,6 @@
-# Twidgets Live Demo
+# Tweeq Live Demo
 
-This directory contains the live demo for Twidgets.
+This directory contains the live demo for Tweeq.
 
 ## How to view the demo
 

@@ -1,14 +1,14 @@
 ---
-title: Twidgets
+title: 'Tweeq: Parameter-Tuning GUI Widgets by/for Creative Professionals'
 sidebar: false
 pageClass: user-study
 ---
 
 <MultiSelectPopup />
 
-# Twidgets: Parameter-Tuning GUI Widgets by/for Creative Professionals
+# Tweeq: Parameter-Tuning GUI Widgets by/for Creative Professionals
 
-Anonymous Author(s) / UIST 2025
+[Baku Hashimoto](https://baku89.com), [Jun Kato](https://junkato.jp/) / UIST 2025
 
 **The widgets below have only been tested on Google Chrome version 134 or later.**
 
@@ -37,7 +37,7 @@ Anonymous Author(s) / UIST 2025
 	- `Alt`: decrease the adjustment sensitivity
 	- `Q`: snap to the times of 10
 
-### 4.2.2 Rotery Knobs
+### 4.2.2 Rotary Knobs
 
 <ExampleContainer
 	:initialValue="{angle: 0}"
@@ -65,7 +65,7 @@ Anonymous Author(s) / UIST 2025
 #### Gestures
 
  - `Click`: toggle the color picker popup
- - `Drag`: tweak the color reatively
+ - `Drag`: tweak the color relatively
 	 - `Shift` or `H`: adjust the hue
 	 - `S` / `V`: adjust the saturation / brightness (value)
 	 - `Alt` or `A`: adjust the alpha
@@ -113,7 +113,7 @@ Anonymous Author(s) / UIST 2025
 #### Gestures
 
  - `Click`: edit the timecode
- - `Right Click`: toggle the time unit between SMTPE and frames
+ - `Right Click`: toggle the time unit between SMTPE timecode and frames
  - `Drag` on the time indicator: adjust the time
 	 - `Shift`: increase the adjustment sensitivity
 	 - `Alt`: decrease the adjustment sensitivity
