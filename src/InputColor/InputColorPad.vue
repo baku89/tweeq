@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-import {useFocus, useFocusWithin, useMagicKeys, whenever} from '@vueuse/core'
+import {
+	useEventListener,
+	useFocus,
+	useFocusWithin,
+	useMagicKeys,
+	whenever,
+} from '@vueuse/core'
 import chroma from 'chroma-js'
 import Color from 'colorjs.io'
 import {scalar, vec2} from 'linearly'
@@ -153,6 +159,24 @@ const {origin, dragging: tweaking} = useDrag($button, {
 		emit('update:tweaking', false)
 	},
 })
+
+useEventListener(
+	$button,
+	'wheel',
+	e => {
+		if (tweaking.value) {
+			e.preventDefault()
+			e.stopPropagation()
+			local.value = tweakHSVAChannel(local.value, 'h', (e.deltaY / 360) * 0.5)
+			model.value = compose(local.value)
+
+			const delta =
+				getHSVAChannel(local.value, 'h') - getHSVAChannel(localOnTweak!, 'h')
+			multi.update(hsva => tweakHSVAChannel(hsva, 'h', delta))
+		}
+	},
+	{passive: false}
+)
 
 watch(tweakMode, () => {
 	if (!tweaking.value) return
