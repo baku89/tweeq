@@ -5,7 +5,7 @@ import {
 	useMagicKeys,
 	whenever,
 } from '@vueuse/core'
-import {scalar} from 'linearly'
+import {scalar, vec2} from 'linearly'
 import {
 	Component,
 	computed,
@@ -142,6 +142,9 @@ const maxSpeed = computed(() => {
 
 let deltaAccumulated = 0
 
+let dirAverage: vec2 = vec2.unitX
+let offsetWeight = 1
+
 const {dragging: tweaking} = useDrag($input, {
 	lockPointer: computed(() => !barVisible.value),
 	disabled: computed(() => props.disabled || focused.value),
@@ -174,12 +177,23 @@ const {dragging: tweaking} = useDrag($input, {
 	onDrag(state) {
 		const [dx, dy] = state.delta
 
+		// Decide the weight for sensitivity/delta by the direction of the drag
+		dirAverage = vec2.normalize(
+			vec2.lerp(dirAverage, vec2.abs(state.delta), 0.1)
+		)
+
+		offsetWeight = scalar.smoothstep(
+			0.4,
+			0.6,
+			Math.abs(vec2.dot([1, 0], dirAverage))
+		)
+
 		// Inc/dec value by x-axis
 		const baseSpeed = barVisible.value
 			? (props.max - props.min) / width.value
 			: 1
 
-		const delta = dx * baseSpeed * speed.value
+		const delta = dx * baseSpeed * speed.value * offsetWeight
 
 		let newLocal = local.value + delta
 
@@ -198,7 +212,11 @@ const {dragging: tweaking} = useDrag($input, {
 
 		// Adjustment sensitivity by y-axis
 		speedMultiplierGesture.value = scalar.clamp(
-			speedMultiplierGesture.value * 0.98 ** dy,
+			scalar.lerp(
+				speedMultiplierGesture.value * 0.98 ** dy,
+				speedMultiplierGesture.value,
+				offsetWeight
+			),
 			minSpeed.value,
 			maxSpeed.value
 		)
@@ -411,29 +429,28 @@ const valueRangeStateClasses = computed(() => {
 })
 
 const scaleAttrs = (offset: number) => {
+	const base = 10
+
 	const precision = scalar.mod(
-		-Math.log10(speedMultiplierGesture.value) + offset,
+		-Math.log(speedMultiplierGesture.value) / Math.log(base) + offset,
 		3
 	)
 
+	const opacity = Math.pow(scalar.smoothstep(1, 2, precision), 0.5)
+
 	const halfWidth = width.value / 2
 
-	const opacityForBar = barVisible.value
-		? scalar.smoothstep(1, 0.1, speedMultiplierGesture.value)
-		: 1
-
-	const opacity = scalar.smoothstep(1, 2, precision) * opacityForBar
-
 	const dashoffset = barVisible.value
-		? scalar.fit(model.value, props.min, props.max, 0, width.value)
+		? scalar.efit(model.value, props.min, props.max, 0, width.value)
 		: halfWidth - model.value / speedMultiplierGesture.value
 
 	return {
 		x1: -halfWidth,
 		x2: halfWidth,
 		style: {
+			'--offset-weight': offsetWeight,
+			'--gesture-precision': precision,
 			strokeDashoffset: -dashoffset,
-			strokeDasharray: `0 ${10 ** precision}`,
 			opacity,
 		},
 	}
@@ -615,19 +632,14 @@ const barStyle = computed<StyleValue>(() => {
 	left 50%
 
 	.scale
+		--offset-weight 1
+		--gesture-precision 0
 		fill none
-		stroke-width 2
+		stroke 'color-mix(in srgb, var(--tq-color-accent), var(--tq-color-text-subtle) calc(var(--offset-weight) * 100%))' % ()
 		stroke-linecap round
-		stroke var(--tq-color-text-subtle)
+		stroke-width calc(4px + var(--offset-weight) * -1px)
+		stroke-dasharray 0 calc(pow(10, var(--gesture-precision)))
 		hover-transition(stroke-width)
-
-	.scale
-		stroke-width 3
-		stroke var(--tq-color-accent)
-
-	//&.speed .scale
-	//	stroke-width 4
-	//	stroke var(--tq-color-accent)
 
 	.pointer
 		fill var(--tq-color-accent)
