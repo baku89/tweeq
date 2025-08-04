@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the following paper:"
+title: "Tweeq: Parameter-Tuning GUI Widgets by/for Creative Professionals"
+authors:
+  - family-names: Hashimoto
+    given-names: Baku
+    orcid: https://orcid.org/0009-0008-9515-9669
+  - family-names: Kato
+    given-names: Jun
+    orcid: https://orcid.org/0000-0003-4832-8024
+date-released: 2025-10-01
+version: 1.0.0
+doi: 10.1145/3746059.3747723
+url: https://doi.org/10.1145/3746059.3747723
+conference:
+  name: "38th Annual ACM Symposium on User Interface Software and Technology"
+  location: "Busan, Republic of Korea"
+  date: 2025-9-26
+type: conference-paper
+publisher: "Association for Computing Machinery"
+keywords:
+  - creativity support
+  - user interface
+  - creative software
+  - numeric slider
+  - color picker
+isbn: 9798400720376
+numpages: 16
