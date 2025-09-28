@@ -5,10 +5,9 @@ import glsl from 'vite-plugin-glsl'
 import {defineUserConfig} from 'vuepress'
 
 export default defineUserConfig({
-	title: 'Tweeq',
-	base: '/tweeq/',
+	title: 'Twidgets',
+	base: '/',
 	head: [
-		['link', {rel: 'icon', href: './logo.svg'}],
 		['link', {rel: 'preconnect', href: 'https://fonts.googleapis.com'}],
 		[
 			'link',
@@ -31,38 +30,8 @@ export default defineUserConfig({
 		],
 	],
 	theme: defaultTheme({
-		navbar: [
-			{
-				text: 'Home',
-				link: '/',
-			},
-			// {
-			// 	text: 'Principles',
-			// 	link: '/principles',
-			// },
-			{
-				text: 'Features',
-				link: '/features',
-			},
-			{
-				text: 'Components',
-				link: '/components',
-			},
-			{
-				text: 'Example',
-				link: '/example',
-			},
-		],
-		logo: './logo.svg',
-		repo: 'baku89/tweeq',
+		contributors: false,
 	}),
-	locales: {
-		'/': {
-			lang: 'en-US',
-			description:
-				'A collection of Vue.js components for creative professionals',
-		},
-	},
 	bundler: viteBundler({
 		viteOptions: {
 			plugins: [glsl() as any],

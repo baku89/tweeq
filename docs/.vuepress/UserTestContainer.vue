@@ -159,15 +159,6 @@ const hasNext = computed(() => {
 						<em>Preview</em> with the <em>Target</em> as closely as possible.
 						When you're satisfied, press the <em>Complete</em> button.
 					</p>
-					<p lang="ja">
-						<strong>タスク</strong>:
-						<em>Parameters</em>を調整して、<em>Preview</em>を
-						<em>Target</em
-						>に近づけてください。あなたの感覚で十分だと思ったら、<em
-							>Complete</em
-						>
-						ボタンを押してください。
-					</p>
 					<button class="complete" @click="nextTask">
 						Complete<Icon :icon="hasNext ? 'mdi:arrow-right' : 'mdi:check'" />
 					</button>
@@ -196,18 +187,6 @@ const hasNext = computed(() => {
 						with the conditions, please fill in your <em>Name</em> and
 						<em>Occupation</em> and hit the <em>Start</em> button to proceed the
 						test.
-					</p>
-					<p lang="ja">
-						<strong
-							>タスク: <em>Parameters</em>を調整して、<em>Preview</em>を
-							<em>Target</em
-							>に近づけてください。あなたの感覚で十分だと思ったら、<em
-								>Complete</em
-							>
-							ボタンを押してください。</strong
-						>
-						このユーザーテスト中におけるあなたのパラメーターの変更履歴は記録され、
-						ライブラリのパフォーマンスを評価するために使用されます。同意する場合は、ハンドルネーム（<em>Name</em>）を入力し、<em>Start</em>ボタンを押してテストを開始してください。
 					</p>
 					<p style="text-align: right">
 						<input v-model="personalInfo.name" placeholder="Name" type="text" />
