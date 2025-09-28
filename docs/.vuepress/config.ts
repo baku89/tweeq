@@ -5,7 +5,7 @@ import glsl from 'vite-plugin-glsl'
 import {defineUserConfig} from 'vuepress'
 
 export default defineUserConfig({
-	title: '',
+	title: 'Twidgets',
 	base: '/',
 	head: [
 		['link', {rel: 'preconnect', href: 'https://fonts.googleapis.com'}],
