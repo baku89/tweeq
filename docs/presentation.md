@@ -18,7 +18,7 @@ pageClass: user-study
 - - -
 
 <ExampleContainer
-	:initialValue="{color: '#ff0000'}"
+	:initialValue="{color: '#0100DC'}"
 	:presentationMode="true"
 	:scheme="{
 		color: {type: 'string', ui: 'color'},
