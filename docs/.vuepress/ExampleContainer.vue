@@ -7,9 +7,12 @@ import DemoContainer from './DemoContainer.vue'
 interface Props {
 	initialValue: T
 	scheme: any
+	presentationMode: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+	presentationMode: false,
+})
 
 defineSlots<{
 	default: (props: {modelValue: T}) => any
@@ -23,7 +26,11 @@ function update(value: T) {
 </script>
 
 <template>
-	<DemoContainer class="ExampleContainer">
+	<DemoContainer
+		class="ExampleContainer"
+		:class="{presentation: presentationMode}"
+		:fullscreenEnabled="!presentationMode"
+	>
 		<template #default="{isFullscreen}">
 			<div class="sandbox" :class="{fullscreen: isFullscreen}">
 				<InputComplex
@@ -58,4 +65,9 @@ function update(value: T) {
 
 .parameters
 	flex-grow 1
+
+.presentation
+	height calc(100vh - var(--navbar-height))
+	align-items center
+	justify-content center
 </style>

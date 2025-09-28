@@ -2,6 +2,15 @@
 import * as Tq from 'tweeq'
 import {ref} from 'vue'
 
+withDefaults(
+	defineProps<{
+		fullscreenEnabled: boolean
+	}>(),
+	{
+		fullscreenEnabled: true,
+	}
+)
+
 defineSlots<{
 	default: (props: {isFullscreen: boolean}) => any
 }>()
@@ -17,6 +26,7 @@ function fullScreen() {
 	<Tq.Viewport class="DemoContainer" :class="{fullscreen: isFullscreen}">
 		<ClientOnly>
 			<InputButton
+				v-if="fullscreenEnabled"
 				class="full-screen-button"
 				:icon="isFullscreen ? 'mdi:fullscreen-exit' : 'mdi:fullscreen'"
 				:label="isFullscreen ? 'Exit Full Screen' : 'Full Screen'"
