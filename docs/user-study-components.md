@@ -178,7 +178,7 @@ pageClass: user-study
 </DemoComponent>
 
  - `Click`: edit the timecode
- - `Right Click`: toggle the time unit between SMTPE timecode and frames
+ - `Right Click`: toggle the time unit between SMTPE and frames
  - `Drag` on the time indicator: adjust the time
 	 - `Shift`: increase the scale of adjustment
 	 - `Alt`: decrease the scale of adjustment
