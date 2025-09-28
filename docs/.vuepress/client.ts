@@ -12,6 +12,9 @@ const registerComponents = async (app: App) => {
 	const UserTestSpring = await import('./UserTestSpring.vue')
 	const UserTestDropShadow = await import('./UserTestDropShadow.vue')
 	const UserTestTime = await import('./UserTestTime.vue')
+	const PresentationThreePointLighting = await import(
+		'./PresentationThreePointLighting.vue'
+	)
 	// Tweeqコンポーネントを登録
 	for (const [key, value] of Object.entries(Tq)) {
 		if (typeof value === 'function') continue
@@ -28,6 +31,10 @@ const registerComponents = async (app: App) => {
 	app.component('UserTestSpring', UserTestSpring.default)
 	app.component('UserTestTime', UserTestTime.default)
 	app.component('UserTestDropShadow', UserTestDropShadow.default)
+	app.component(
+		'PresentationThreePointLighting',
+		PresentationThreePointLighting.default
+	)
 }
 
 export default defineClientConfig({
