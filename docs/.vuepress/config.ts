@@ -6,8 +6,9 @@ import {defineUserConfig} from 'vuepress'
 
 export default defineUserConfig({
 	title: 'Tweeq',
-	base: '/',
+	base: '/tweeq/',
 	head: [
+		['link', {rel: 'icon', href: './logo.svg'}],
 		['link', {rel: 'preconnect', href: 'https://fonts.googleapis.com'}],
 		[
 			'link',
@@ -30,9 +31,38 @@ export default defineUserConfig({
 		],
 	],
 	theme: defaultTheme({
-		contributors: false,
-		colorMode: 'light',
+		navbar: [
+			{
+				text: 'Home',
+				link: '/',
+			},
+			// {
+			// 	text: 'Principles',
+			// 	link: '/principles',
+			// },
+			{
+				text: 'Features',
+				link: '/features',
+			},
+			{
+				text: 'Components',
+				link: '/components',
+			},
+			{
+				text: 'Example',
+				link: '/example',
+			},
+		],
+		logo: './logo.svg',
+		repo: 'baku89/tweeq',
 	}),
+	locales: {
+		'/': {
+			lang: 'en-US',
+			description:
+				'A collection of Vue.js components for creative professionals',
+		},
+	},
 	bundler: viteBundler({
 		viteOptions: {
 			plugins: [glsl() as any],
