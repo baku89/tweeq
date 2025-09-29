@@ -26,6 +26,11 @@
 }
 
 // For user testing
-.user-study .vp-navbar {
+.user-study .vp-navbar,
+.presentation .vp-navbar {
 	display: none;
+}
+
+.presentation .vp-page {
+	padding: 0px;
 }

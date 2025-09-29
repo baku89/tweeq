@@ -5,13 +5,13 @@ import PreviewThreePointLightingPresentation from './PreviewThreePointLightingPr
 const initialValue = {
 	keyEnabled: true,
 	keyIntensity: 63,
-	keyColor: '#dcd7f5',
+	keyColor: '#a28fff',
 	fillEnabled: true,
 	fillIntensity: 28,
-	fillColor: '#f65436',
+	fillColor: '#ed8d40',
 	backEnabled: true,
 	backIntensity: 110,
-	backColor: '#ffffff',
+	backColor: '#5240fa',
 }
 
 const scheme = {

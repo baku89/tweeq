@@ -41,7 +41,7 @@ function fullScreen() {
 <style lang="stylus" scoped>
 .DemoContainer
 	position relative
-	padding 4rem 0 2rem
+	padding 2rem 0 2rem
 
 	&.fullscreen
 		position fixed

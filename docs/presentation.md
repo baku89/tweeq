@@ -1,7 +1,7 @@
 ---
 title: 'Tweeq: UIST 2025 Presentation'
 sidebar: false
-pageClass: user-study
+pageClass: presentation
 ---
 
 
@@ -37,12 +37,13 @@ pageClass: user-study
 
 - - -
 
+
 <ExampleContainer
 	:initialValue="{position: [0, 0], time: 120, switch: true, checkbox: true}"
 	:presentationMode="true"
 	:scheme="{
 		position: {type: 'vec2', ui: 'position', min: -100, max: 100},
-		time: {type: 'number', ui: 'time'},
+		time: {type: 'number', ui: 'time', min: 0},
 		switch: {type: 'boolean'},
 		checkbox: {type: 'boolean', ui: 'checkbox'},
 	}"
@@ -50,4 +51,6 @@ pageClass: user-study
 
 - - -
 
-<PresentationThreePointLighting />
+<h3 style="margin-bottom: 0">Three Point Lighting</h3>
+
+<PresentationThreePointLighting  />
