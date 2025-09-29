@@ -12,6 +12,9 @@ actions:
   - text: Example
     link: /example
     type: secondary
+  - text: UIST 2025 Paper
+    link: /uist2025
+    type: secondary
 features:
   - title: Specialized Inputs for Creators
     details: Tweeq offers a suite of specialized input components tailored for professional creative applications.
@@ -21,6 +24,8 @@ features:
     details: Select and edit multiple parameters parametrically at once.
   - title: Expression Support
     details: Control parameters dynamically through JavaScript expressions.
+  - title: Peer-Reviewed Research
+    details: Accepted at UIST 2025, demonstrating the academic rigor and practical value of Tweeq's design principles.
 ---
 
 <div class="badges">

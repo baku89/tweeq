@@ -3,7 +3,7 @@
 <img src="./docs/.vuepress/public/logo.svg" width="200" />
 <h1>Tweeq</h1>
 
-<a href="https://baku89.github.io/tweeq/">Documentation</a> ⌇ <a href="https://github.com/sponsors/baku89">Become a Sponsor</a>
+<a href="https://baku89.github.io/tweeq/">Documentation</a> ⌇ <a href="https://baku89.github.io/tweeq/uist2025.html">UIST 2025 Paper</a> ⌇ <a href="https://github.com/sponsors/baku89">Become a Sponsor</a>
 
 </div>
 
