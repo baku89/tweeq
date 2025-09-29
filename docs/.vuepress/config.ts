@@ -36,10 +36,10 @@ export default defineUserConfig({
 				text: 'Home',
 				link: '/',
 			},
-			// {
-			// 	text: 'Principles',
-			// 	link: '/principles',
-			// },
+			{
+				text: 'UIST ’25',
+				link: '/uist2025',
+			},
 			{
 				text: 'Features',
 				link: '/features',
