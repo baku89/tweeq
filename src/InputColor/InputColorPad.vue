@@ -162,6 +162,12 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	},
 })
 
+/**
+ * Wheel is assigned to tewak the hue
+ */
+const wheelTweaking = ref(false)
+let wheelTweakingTimeout: ReturnType<typeof setTimeout> | undefined
+
 useEventListener(
 	$button,
 	'wheel',
@@ -176,6 +182,11 @@ useEventListener(
 				getHSVAChannel(local.value, 'h') - getHSVAChannel(localOnTweak!, 'h')
 			multi.update(hsva => tweakHSVAChannel(hsva, 'h', delta))
 		}
+		wheelTweaking.value = true
+		clearTimeout(wheelTweakingTimeout)
+		wheelTweakingTimeout = setTimeout(() => {
+			wheelTweaking.value = false
+		}, 500)
 	},
 	{passive: false}
 )
@@ -288,7 +299,7 @@ const wheelUniforms = computed(() => {
 const wheelStyle = computed(() => {
 	return {
 		...tweakUIOffset.value,
-		opacity: tweakMode.value === 'h' ? 1 : 0.1,
+		opacity: tweakMode.value === 'h' || wheelTweaking.value ? 1 : 0.1,
 		rotate: `${local.value.h * -360}deg`,
 	}
 })
