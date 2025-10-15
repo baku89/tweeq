@@ -73,4 +73,19 @@ const projectName = Tq.config.ref('projectName', 'Untitled')
 const accentColor = Tq.theme.accentColor
 ```
 
+```html
+<Tq.App>
+  <template #title>
+    <Tq.TitleBar name="My App" icon="favicon.svg">
+  </template>
+  <template #default>
+    <Tq.ParameterGrid>
+      <Tq.Parameter label="Opacity">
+        <Tq.InputNumber v-model="opacity" :min="0" :max="1" />
+      </Tq.Parameter>
+    </Tq.ParameterGrid>
+  </template>
+</Tq.App>
+```
+
 
