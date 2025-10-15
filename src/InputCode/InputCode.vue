@@ -32,6 +32,8 @@ defineEmits<{
 	background var(--tq-color-input)
 
 .monaco-editor
-	position absolute
+	position absolute !important
 	inset calc(var(--tq-input-height) * .25)
+	width auto !important
+	height auto !important
 </style>

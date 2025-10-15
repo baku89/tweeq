@@ -2,8 +2,12 @@
 import {vec2} from 'linearly'
 
 import type {MonacoEditorProps} from './types'
+import {CodeEditor} from 'monaco-editor-vue3'
+import type * as monaco from 'monaco-editor'
+import {useThemeStore} from '../stores/theme'
+import {onMounted, useTemplateRef} from 'vue'
 
-const props = withDefaults(defineProps<MonacoEditorProps>(), {})
+withDefaults(defineProps<MonacoEditorProps>(), {})
 
 defineEmits<{
 	'update:modelValue': [value: string]
@@ -11,50 +15,46 @@ defineEmits<{
 	'update:cursorPosition': [value: vec2]
 }>()
 
-// const $root = useTemplateRef('$root')
-// const $editor = useTemplateRef('$editor')
+const theme = useThemeStore()
 
-// initialze Monaco editor
-// onMounted(() => {
-// 	if (!$editor.value || !$root.value) return
+const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
+	minimap: {enabled: false},
+	fontLigatures: true,
+	fontFamily: 'Geist Mono',
+	fontSize: theme.rem,
+	folding: false,
+	lineNumbers: 'off',
+	lineDecorationsWidth: 0,
+	lineNumbersMinChars: 0,
+	overviewRulerLanes: 0,
+	renderLineHighlight: 'none',
+	scrollBeyondLastLine: false,
+	scrollbar: {
+		horizontalSliderSize: 2,
+		useShadows: false,
+		verticalSliderSize: 2,
+		verticalScrollbarSize: 2,
+	},
+	tabSize: 2,
+	// @ts-ignore
+	'bracketPairColorization.enabled': false,
+	renderIndentGuides: false,
+}
 
-// 	// get the font size of the root element
-// 	const fontSize = parseFloat(
-// 		window.getComputedStyle($root.value).fontSize ?? '16'
-// 	)
+const $editor = useTemplateRef('$editor')
 
-// 	// Initialize the editor
-// 	const editor = monaco.editor.create($editor.value, {
-// 		value: props.modelValue,
-// 		language: props.lang,
+onMounted(() => {
+	if (!$editor.value) return
 
-// 		// make the editor look prettier
+	const el = $editor.value.$el as HTMLElement
 
-// 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// 		// @ts-ignore
-// 		'bracketPairColorization.enabled': false,
-// 		fontLigatures: true,
-// 		fontFamily: 'Geist Mono',
-// 		fontSize,
-// 		folding: false,
-// 		lineNumbers: 'off',
-// 		lineDecorationsWidth: 0,
-// 		lineNumbersMinChars: 0,
-// 		minimap: {
-// 			enabled: false,
-// 		},
-// 		overviewRulerLanes: 0,
-// 		renderIndentGuides: false,
-// 		renderLineHighlight: 'none',
-// 		scrollBeyondLastLine: false,
-// 		scrollbar: {
-// 			horizontalSliderSize: 2,
-// 			useShadows: false,
-// 			verticalSliderSize: 2,
-// 			verticalScrollbarSize: 2,
-// 		},
-// 		tabSize: 2,
-// 	})
+	el.addEventListener('keydown', (event: KeyboardEvent) => {
+		event.stopPropagation()
+	})
+	el.addEventListener('keyup', (event: KeyboardEvent) => {
+		event.stopPropagation()
+	})
+})
 
 // 	// fetch the theme file and apply to the editor
 // 	monaco.editor.defineTheme('light', Tomorrow as any)
@@ -106,36 +106,6 @@ defineEmits<{
 // 		}
 // 	})
 
-// 	// Watch props and reflect the changes
-// 	watch(
-// 		() => props.modelValue,
-// 		value => {
-// 			if (editor.getValue() === value) return
-
-// 			const model = editor.getModel()
-// 			if (!model) return
-
-// 			editor.pushUndoStop()
-
-// 			editor.executeEdits('name-of-edit', [
-// 				{
-// 					range: model.getFullModelRange(),
-// 					text: value,
-// 				},
-// 			])
-// 			editor.pushUndoStop()
-// 		}
-// 	)
-
-// 	watch(
-// 		() => props.lang,
-// 		lang => {
-// 			const model = editor.getModel()
-// 			if (!model) return
-// 			monaco.editor.setModelLanguage(model, lang)
-// 		}
-// 	)
-
 // 	watch(
 // 		() => props.cursorIndex,
 // 		cursorIndex => {
@@ -180,19 +150,22 @@ defineEmits<{
 </script>
 
 <template>
-	<div class="TqMonacoEditor">{{ props.modelValue }}</div>
+	<CodeEditor
+		ref="$editor"
+		class="TqMonacoEditor"
+		:value="modelValue"
+		:theme="theme.colorMode"
+		:language="lang"
+		:options="editorOptions"
+		@update:value="$emit('update:modelValue', $event)"
+		height="100%"
+	/>
 </template>
 
 <style lang="stylus" scoped>
 .TqMonacoEditor
-	position relative
-	min-height 0
-	background transparent
-
-// .root
-// 	width 100%
-// 	height 100%
+	background transparent !important
 
 :deep(.monaco-editor)
-	--vscode-editor-background transparent
+	--vscode-editor-background transparent !important
 </style>
