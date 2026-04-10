@@ -1,8 +1,6 @@
 <script setup lang="ts">
+import {TweeqProvider} from '../TweeqProvider'
 import {Viewport} from '../Viewport'
-import {CommandPalette} from '../CommandPalette'
-import {PaneModalComplex} from '../PaneModalComplex'
-import {MultiSelectPopup} from '../MultiSelectPopup'
 
 defineSlots<{
 	title: () => any
@@ -11,15 +9,14 @@ defineSlots<{
 </script>
 
 <template>
-	<Viewport class="TqApp">
-		<CommandPalette />
-		<PaneModalComplex />
-		<MultiSelectPopup />
-		<slot name="title" />
-		<main class="main">
-			<slot />
-		</main>
-	</Viewport>
+	<TweeqProvider>
+		<Viewport class="TqApp">
+			<slot name="title" />
+			<main class="main">
+				<slot />
+			</main>
+		</Viewport>
+	</TweeqProvider>
 </template>
 
 <style lang="stylus" scoped>
