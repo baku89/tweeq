@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onBeforeUnmount, ref} from 'vue'
 
 import {InputButton} from '../InputButton'
 import {InputComplex, type Scheme} from '../InputComplex'
@@ -26,11 +26,11 @@ function onUpdate(value: any) {
 let onInput: ((value: any) => void) | undefined = undefined
 let endEdit: (value: any) => void
 
-modal.prompt = <T extends Record<string, unknown>>(
+function promptImpl<T extends Record<string, unknown>>(
 	value: T,
 	scheme: Scheme<T>,
 	options?: ShowOptions<T>
-): Promise<T> => {
+): Promise<T> {
 	if (desc.value) {
 		endEdit(desc.value.initialValue)
 	}
@@ -48,6 +48,9 @@ modal.prompt = <T extends Record<string, unknown>>(
 	})
 }
 
+modal.registerPrompt(promptImpl)
+onBeforeUnmount(() => modal.registerPrompt(null))
+
 function onAbort() {
 	endEdit(desc.value!.initialValue)
 }
@@ -57,7 +60,7 @@ function onConfirm() {
 }
 
 defineExpose({
-	prompt,
+	prompt: promptImpl,
 })
 </script>
 
