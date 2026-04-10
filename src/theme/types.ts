@@ -61,10 +61,6 @@ export interface Theme {
 	// Selection
 	colorSelection: string
 	colorOnSelection: string
-
-	// Secondary Colors
-	colorSecondary: string
-
 	// Semantic Colors: string,
 	colorError: string
 	colorRec: string

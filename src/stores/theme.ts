@@ -2,7 +2,6 @@ import {
 	argbFromHex,
 	customColor,
 	hexFromArgb,
-	themeFromSourceColor,
 } from '@material/material-color-utilities'
 import {toReactive} from '@vueuse/core'
 import Case from 'case'
@@ -51,10 +50,6 @@ export const useThemeStore = defineStore('theme', () => {
 		}
 	}
 
-	const materialTheme = computed(() => {
-		return themeFromSourceColor(argbFromHex(accentColor.value))
-	})
-
 	const theme = computed<Theme>(() => {
 		// Get the theme from a hex color
 		const radixColors = generateThemeColorsRadix({
@@ -65,8 +60,6 @@ export const useThemeStore = defineStore('theme', () => {
 		})
 
 		const dark = colorMode.value === 'dark'
-
-		const materialColors = materialTheme.value.schemes[dark ? 'dark' : 'light']
 
 		const accent = argbFromHex(accentColor.value)
 
@@ -111,10 +104,6 @@ export const useThemeStore = defineStore('theme', () => {
 			// Selection
 			colorSelection: radixColors.accentScale[10],
 			colorOnSelection: radixColors.background,
-
-			// Secondary Colors
-			colorSecondary: toColor(materialColors.secondary),
-
 			// Semantic Colors: Can be used as same as accent color
 			colorError: toColor(dark ? error.dark.color : error.light.color),
 			colorErrorSoft: toColor(
