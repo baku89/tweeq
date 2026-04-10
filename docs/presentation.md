@@ -4,9 +4,6 @@ sidebar: false
 pageClass: presentation
 ---
 
-
-<MultiSelectPopup />
-
 <ExampleContainer
 	:initialValue="{opacity: 10}"
 	:presentationMode="true"

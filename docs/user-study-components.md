@@ -4,8 +4,6 @@ sidebar: false
 pageClass: user-study
 ---
 
-<MultiSelectPopup />
-
 # InputNumber
 
 <DemoComponent

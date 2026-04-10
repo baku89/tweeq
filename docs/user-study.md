@@ -5,8 +5,6 @@ pageClass: user-study
 
 ---
 
-<MultiSelectPopup />
-
 # User Study
 
 The following user tests are used to evaluate the performance of UI components for creative professionals.

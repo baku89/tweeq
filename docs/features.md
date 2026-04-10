@@ -1,5 +1,3 @@
-<MultiSelectPopup />
-
 # Features
 
 ## Specialized Inputs for Creative Software

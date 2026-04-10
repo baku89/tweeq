@@ -1,5 +1,3 @@
-<MultiSelectPopup />
-
 # Components
 
 ## Input Components
