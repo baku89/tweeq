@@ -11,7 +11,7 @@ import {type InputStringProps} from './types'
 const model = defineModel<string>({required: true})
 
 const props = withDefaults(defineProps<InputStringProps>(), {
-	validator: () => V.identity,
+	validator: V.identity,
 })
 
 const emit = defineEmits<InputEmits>()
