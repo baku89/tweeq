@@ -27,7 +27,7 @@ defineEmits<{
 	position relative
 	border-radius var(--tq-radius-input)
 	overflow hidden
-	min-height calc(var(--tq-input-height) * 20)
+	min-height calc(var(--tq-input-height) * 10)
 	min-width 45em
 	background var(--tq-color-input)
 

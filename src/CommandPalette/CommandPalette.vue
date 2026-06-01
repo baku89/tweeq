@@ -138,6 +138,17 @@ function perform(action: ActionItemOptions) {
 	</div>
 </template>
 
+<!--
+	The popover is promoted to the top layer and rendered outside .TqViewport,
+	so it misses Tweeq's viewport reset (font-family, etc.) and falls back to
+	the UA serif font. Apply the reset here, unscoped — same as PaneModal.
+-->
+<style lang="stylus">
+@import '../common.styl'
+
+reset-viewport('.TqCommandPalette')
+</style>
+
 <style lang="stylus" scoped>
 @import '../common.styl'
 

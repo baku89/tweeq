@@ -50,6 +50,18 @@ watchEffect(() => {
 	</div>
 </template>
 
+<!--
+	The popover is promoted to the top layer and rendered outside .TqViewport,
+	so it misses Tweeq's viewport reset (font-family, etc.) and falls back to
+	the UA serif font. Apply the reset here, unscoped so it also reaches slotted
+	content — same approach as MultiSelectPopup.
+-->
+<style lang="stylus">
+@import '../common.styl'
+
+reset-viewport('.TqPaneModal')
+</style>
+
 <style scoped lang="stylus">
 @import '../common.styl'
 
