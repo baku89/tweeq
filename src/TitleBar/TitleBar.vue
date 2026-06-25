@@ -23,6 +23,14 @@ const appMenu = useTemplateRef<any>('appMenu')
 
 const isMenuShown = ref(false)
 
+// The whole bar is a drag region (-webkit-app-region: drag), and the OS
+// swallows pointer events over drag regions — so clicking the bar's background
+// never reaches the DOM, and neither a popover's light-dismiss nor an input's
+// blur fires. While the app menu is open or something inside the bar is
+// focused, turn dragging off so those background clicks register and dismiss.
+const hasFocusWithin = ref(false)
+const noDrag = computed(() => isMenuShown.value || hasFocusWithin.value)
+
 function convertToMenuItem(action: Action): MenuItem {
 	if ('perform' in action) {
 		return {
@@ -41,7 +49,12 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 </script>
 
 <template>
-	<div class="TqTitleBar">
+	<div
+		class="TqTitleBar"
+		:class="{noDrag}"
+		@focusin="hasFocusWithin = true"
+		@focusout="hasFocusWithin = false"
+	>
 		<div class="left">
 			<ColorIcon
 				ref="appIcon"
@@ -89,6 +102,10 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
 	-webkit-app-region: drag
 	app-region: drag
+
+	&.noDrag
+		-webkit-app-region: no-drag
+		app-region: no-drag
 
 	@media (display-mode: window-controls-overlay)
 		background \
