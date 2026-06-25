@@ -6,12 +6,19 @@ defineProps<InputButtonProps>()
 </script>
 
 <template>
+	<!--
+		@mousedown.prevent stops a mouse click from focusing the button (the click
+		still fires). Otherwise the button keeps focus after a click and a later
+		Enter/Space re-activates it unexpectedly. Keyboard (Tab) focus is
+		unaffected, so keyboard activation still works — matching :focus-visible.
+	-->
 	<button
 		class="TqInputButton"
 		:class="{blink, subtle}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="disabled"
+		@mousedown.prevent
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
 		<span v-if="label" class="label">{{ label }}</span>

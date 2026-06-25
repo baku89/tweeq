@@ -8,12 +8,19 @@ defineProps<InputButtonToggleProps>()
 </script>
 
 <template>
+	<!--
+		@mousedown.prevent keeps a mouse click from focusing the button (the click
+		still toggles). Without it the button retains focus after a click and a
+		later Enter/Space flips it again unexpectedly. Keyboard (Tab) focus is
+		unaffected, so keyboard toggling still works — matching :focus-visible.
+	-->
 	<button
 		class="TqInputButtonToggle"
 		:class="{checked: model}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="!!disabled"
+		@mousedown.prevent
 		@click="model = !model"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
