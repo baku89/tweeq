@@ -2,7 +2,7 @@
 import {useElementBounding} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {scalar, vec2} from 'linearly'
-import {clamp} from 'lodash-es'
+import {clamp, debounce} from 'lodash-es'
 import {computed, shallowRef, useTemplateRef, watch} from 'vue'
 
 import {useBndr} from '../use/useBndr'
@@ -37,7 +37,16 @@ const visibleFrameRange = computed<vec2>(() => {
 
 const emit = defineEmits<{
 	'update:frameWidth': [number]
+	/**
+	 * Fired once the continuous frameWidth (zoom) change settles. Wheel-zoom has
+	 * no natural pointer-up, so this is debounced. Consumers use it to close out a
+	 * transaction opened on the first `update:frameWidth` (e.g. resuming autosave
+	 * that was batched during the gesture).
+	 */
+	confirm: []
 }>()
+
+const emitConfirmDebounced = debounce(() => emit('confirm'), 300)
 
 const $root = useTemplateRef('$root')
 const {width: containerWidth} = useElementBounding($root)
@@ -73,6 +82,7 @@ useBndr($root, $root => {
 			)
 
 			emit('update:frameWidth', newFrameWidth)
+			emitConfirmDebounced()
 
 			// Scales the range around the center point
 			range.value = [
