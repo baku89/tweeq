@@ -133,8 +133,18 @@ function showRange(showRange: vec2 | number) {
 	}
 }
 
+/**
+ * Scrolls so that the given frame sits at the horizontal center of the view,
+ * keeping the current zoom (visible duration).
+ */
+function centerFrame(frame: number) {
+	const duration = range.value[1] - range.value[0]
+	range.value = [frame - duration / 2, frame + duration / 2]
+}
+
 defineExpose({
 	showRange,
+	centerFrame,
 })
 
 function toOffset(frame: number) {
