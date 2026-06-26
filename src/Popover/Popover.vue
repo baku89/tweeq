@@ -72,7 +72,16 @@ const styles = computed(() => {
 </template>
 
 <style lang="stylus" scoped>
+// A transparent wrapper; consumers style their own box inside. Fade the whole
+// popup in over the active-transition duration when it opens (native popover →
+// @starting-style). The exit is instant — `display` flips with no
+// allow-discrete — which keeps dismissal snappy.
 .Popover
 	background transparent
 	overflow visible
+	transition opacity var(--tq-active-transition-duration) ease-out
+
+@starting-style
+	.Popover:popover-open
+		opacity 0
 </style>
