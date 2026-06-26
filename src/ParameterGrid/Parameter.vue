@@ -38,6 +38,13 @@ defineSlots<{
 	color var(--tq-color-text-mute)
 	text-wrap nowrap
 
+	// Keep icons / toggles (incl. those injected via the #label slot) at their
+	// intrinsic size when the label column gets narrow — only the text should
+	// give. Without this, flex's default shrink squashes the visibility toggle
+	// and parameter icon as the panel narrows.
+	& > :deep(*)
+		flex-shrink 0
+
 .label
 	height var(--tq-input-height)
 
