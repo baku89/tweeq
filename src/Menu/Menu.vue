@@ -32,6 +32,17 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Bubbles up when a command is chosen, so the whole menu chain can close (this
+// replaces floating-vue's v-close-popper.all now that menus use Tweeq Popover).
+const emit = defineEmits<{close: []}>()
+
+function onClick(menu: MenuItem) {
+	if ('perform' in menu && menu.perform) {
+		menu.perform()
+		emit('close')
+	}
+}
+
 const theme = useThemeStore()
 
 const hoverIndex = ref(-1)
@@ -55,9 +66,8 @@ const childItems = computed(() => {
 			ref="$lists"
 			v-for="(menu, index) in items"
 			:key="index + '_item'"
-			v-close-popper.all
 			class="menu"
-			@click="menu.perform?.()"
+			@click="onClick(menu)"
 			@pointerenter="hoverIndex = index"
 		>
 			<Icon v-if="menu.icon" class="icon" :icon="menu.icon" />
@@ -85,7 +95,7 @@ const childItems = computed(() => {
 		:offset="{crossAxis: -theme.popupPadding}"
 		:lightDismiss="false"
 	>
-		<Menu :items="childItems" />
+		<Menu :items="childItems" @close="emit('close')" />
 	</Popover>
 </template>
 

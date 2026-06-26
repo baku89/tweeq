@@ -68,7 +68,12 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 				placement="bottom-start"
 				v-model:open="isMenuShown"
 			>
-				<Menu v-if="isMenuShown" ref="appMenu" :items="menus" />
+				<Menu
+					v-if="isMenuShown"
+					ref="appMenu"
+					:items="menus"
+					@close="isMenuShown = false"
+				/>
 			</Popover>
 			<span class="app-name">{{ name }}</span>
 			<slot name="left" />
