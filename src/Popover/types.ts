@@ -33,4 +33,13 @@ export interface PopoverProps {
 	// points back at the reference). The arrow side/offset are derived from the
 	// resolved geometry, so they follow flips automatically.
 	arrow?: boolean
+	// Teleport the popover into this selector. Needed when the Popover is
+	// declared outside `.TqViewport` (e.g. the global tooltip), so it still
+	// inherits Tweeq's CSS reset (font, etc.) instead of the UA defaults.
+	teleport?: string
+	// Use this fixed CSS anchor name instead of generating one. When set, the
+	// caller is responsible for putting `anchor-name` on the reference element
+	// (e.g. the tooltip directive does it on hover, well before the popover
+	// shows, so CSS anchor() is already resolved on the first frame).
+	anchorName?: string
 }

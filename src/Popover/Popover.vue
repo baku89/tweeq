@@ -21,15 +21,18 @@ const emit = defineEmits<{
 
 const $popover = useTemplateRef<HTMLElement>('$popover')
 
-// Unique CSS anchor name for this instance. A plain counter is enough — this is
-// a client-only app, so there's no SSR hydration to keep in sync.
-const anchorName = `--tq-popover-${instanceCount++}`
+// CSS anchor name: the caller's fixed one, or a unique generated one. A plain
+// counter is enough — this is a client-only app, so there's no SSR hydration to
+// keep in sync.
+const anchorName = props.anchorName ?? `--tq-popover-${instanceCount++}`
 
-// CSS Anchor Positioning needs the name on the anchor element itself. Resolve
-// the reference to a real element first — callers may pass a component instance
-// (e.g. TitleBar passes its <ColorIcon>), not a raw HTMLElement. Clean up when
-// the reference changes or we unmount.
+// CSS Anchor Positioning needs the name on the anchor element itself. When we
+// generated the name, apply it to the reference ourselves (resolving a possible
+// component instance first — TitleBar passes its <ColorIcon>, not a raw
+// element) and clean up on change/unmount. When the caller supplied the name,
+// they own setting it on the reference.
 watchEffect(onCleanup => {
+	if (props.anchorName) return
 	const el = unrefElement(props.reference)
 	if (!el) return
 	el.style.setProperty('anchor-name', anchorName)
@@ -87,6 +90,15 @@ function updateArrow() {
 			? r.left + r.width / 2 - p.left
 			: r.top + r.height / 2 - p.top
 }
+
+// A shared tooltip popover keeps the same instance but swaps its reference, so
+// recompute the arrow when the reference changes too.
+watch(
+	() => props.reference,
+	() => {
+		if (props.open) requestAnimationFrame(updateArrow)
+	}
+)
 
 useEventListener('scroll', updateArrow, {capture: true, passive: true})
 useEventListener('resize', updateArrow)
@@ -171,18 +183,20 @@ let instanceCount = 0
 </script>
 
 <template>
-	<div
-		v-if="open"
-		ref="$popover"
-		class="Popover"
-		:style="styles"
-		:popover="lightDismiss ? 'auto' : 'manual'"
-	>
-		<Balloon v-if="arrow" :arrow-side="arrowSide" :arrow-offset="arrowOffset">
-			<slot />
-		</Balloon>
-		<slot v-else />
-	</div>
+	<Teleport :to="teleport" :disabled="!teleport">
+		<div
+			v-if="open"
+			ref="$popover"
+			class="Popover"
+			:style="styles"
+			:popover="lightDismiss ? 'auto' : 'manual'"
+		>
+			<Balloon v-if="arrow" :arrow-side="arrowSide" :arrow-offset="arrowOffset">
+				<slot />
+			</Balloon>
+			<slot v-else />
+		</div>
+	</Teleport>
 </template>
 
 <style lang="stylus" scoped>

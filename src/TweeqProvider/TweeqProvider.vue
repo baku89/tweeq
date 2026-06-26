@@ -2,6 +2,7 @@
 import {CommandPalette} from '../CommandPalette'
 import {MultiSelectPopup} from '../MultiSelectPopup'
 import {PaneModalComplex} from '../PaneModalComplex'
+import {TooltipRoot} from '../Tooltip'
 
 defineSlots<{default: () => unknown}>()
 </script>
@@ -11,4 +12,5 @@ defineSlots<{default: () => unknown}>()
 	<MultiSelectPopup />
 	<CommandPalette />
 	<PaneModalComplex />
+	<TooltipRoot />
 </template>
