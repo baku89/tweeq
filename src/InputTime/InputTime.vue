@@ -353,6 +353,8 @@ const hourTick = computed(() => {
 		v-model:focused="focused"
 		v-model="display"
 		class="TqInputTime"
+		:inline-position="inlinePosition"
+		:block-position="blockPosition"
 		:ignoreInput="!focused"
 		:active="multi.subfocus"
 		font="numeric"
