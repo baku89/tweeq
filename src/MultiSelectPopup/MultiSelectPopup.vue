@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {autoUpdate, useFloating} from '@floating-ui/vue'
 import {vec2} from 'linearly'
-import {computed, onMounted, toRef, useTemplateRef, watchEffect} from 'vue'
+import {computed, onMounted, useTemplateRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
@@ -21,11 +20,24 @@ onMounted(() => {
 	multiSelect.setPopupEl($root.value)
 })
 
-const {floatingStyles} = useFloating(
-	toRef(multiSelect, 'focusedElement'),
-	$root,
-	{placement: 'bottom-end', whileElementsMounted: autoUpdate}
-)
+// Anchor the popup under the focused input via CSS Anchor Positioning (no
+// floating-ui). The browser keeps it positioned on scroll/resize. anchor() is
+// passed inline rather than in the stylus block, which would try to parse it as
+// a stylus function call.
+const ANCHOR_NAME = '--tq-multi-select-anchor'
+
+const anchorStyle = {
+	positionAnchor: ANCHOR_NAME,
+	top: 'anchor(bottom)',
+	right: 'anchor(right)',
+}
+
+watchEffect(onCleanup => {
+	const el = multiSelect.focusedElement
+	if (!el) return
+	el.style.setProperty('anchor-name', ANCHOR_NAME)
+	onCleanup(() => el.style.removeProperty('anchor-name'))
+})
 
 type MultiSelectAction = {
 	enabled: (types: MultiSelectType[]) => boolean
@@ -103,7 +115,7 @@ watchEffect(() => {
 		ref="$root"
 		:class="{visible}"
 		class="TqMultiSelectPopup"
-		:style="floatingStyles"
+		:style="anchorStyle"
 		popover="manual"
 	>
 		<Icon class="tune-icon" icon="lsicon:control-filled" />
@@ -132,10 +144,9 @@ reset-viewport('.TqMultiSelectPopup')
 
 .TqMultiSelectPopup
 	position fixed
+	inset auto
 	popup-style()
 	margin 3px 0
-	top 0
-	left 0
 	z-index 1000
 	visibility hidden
 	padding 0

@@ -54,7 +54,6 @@
 	"devDependencies": {
 		"@baku89/pave": "^0.6.2",
 		"@eslint/js": "^9.21.0",
-		"@floating-ui/vue": "^1.1.6",
 		"@types/lodash-es": "^4.17.12",
 		"@typescript-eslint/parser": "^8.25.0",
 		"@vitejs/plugin-vue": "^5.1.3",
