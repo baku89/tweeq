@@ -15,6 +15,7 @@ import {
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {Tooltip} from '../Tooltip'
+import {TweakOverlay} from '../TweakOverlay'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {ValidateResult} from '../validator'
@@ -393,18 +394,28 @@ const hourTick = computed(() => {
 			</div>
 		</template>
 		<template #front>
-			<Transition>
-				<div v-if="tweaking" class="overlay">
-					<svg class="overlay-svg" viewBox="0 0 100 100">
-						<!-- <circle cx="50" cy="50" r="50" class="bold gray" /> -->
-						<path :d="meters" class="meters" />
-						<path :d="frameTick" class="frame" :tweaking="tweakScale === 0" />
-						<path :d="secondTick" class="second" :tweaking="tweakScale === 1" />
-						<path :d="minuteTick" class="minute" :tweaking="tweakScale === 2" />
-						<path :d="hourTick" class="hour" :tweaking="tweakScale === 3" />
-					</svg>
-				</div>
-			</Transition>
+			<TweakOverlay v-if="tweaking">
+				<Transition appear>
+					<div class="overlay">
+						<svg class="overlay-svg" viewBox="0 0 100 100">
+							<!-- <circle cx="50" cy="50" r="50" class="bold gray" /> -->
+							<path :d="meters" class="meters" />
+							<path :d="frameTick" class="frame" :tweaking="tweakScale === 0" />
+							<path
+								:d="secondTick"
+								class="second"
+								:tweaking="tweakScale === 1"
+							/>
+							<path
+								:d="minuteTick"
+								class="minute"
+								:tweaking="tweakScale === 2"
+							/>
+							<path :d="hourTick" class="hour" :tweaking="tweakScale === 3" />
+						</svg>
+					</div>
+				</Transition>
+			</TweakOverlay>
 		</template>
 	</InputTextBase>
 </template>

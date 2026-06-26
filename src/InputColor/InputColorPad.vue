@@ -16,6 +16,7 @@ import {Popover} from '../Popover'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {Tooltip} from '../Tooltip'
+import {TweakOverlay} from '../TweakOverlay'
 import {InputEmits} from '../types'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useDrag} from '../use/useDrag'
@@ -427,8 +428,8 @@ defineOptions({
 			/>
 		</div>
 	</Popover>
-	<Transition>
-		<div v-if="tweaking" class="overlay" :style="overlayStyle">
+	<TweakOverlay v-if="tweaking">
+		<div class="overlay" :style="overlayStyle">
 			<template
 				v-if="
 					tweakMode === 'pad' ||
@@ -473,7 +474,7 @@ defineOptions({
 				</template>
 			</Tooltip>
 		</div>
-	</Transition>
+	</TweakOverlay>
 </template>
 
 <style lang="stylus" scoped>
