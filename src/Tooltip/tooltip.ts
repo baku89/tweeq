@@ -13,6 +13,28 @@ export const tooltipReference = shallowRef<HTMLElement | null>(null)
 // resolved by the time the popover appears.
 export const TOOLTIP_ANCHOR_NAME = '--tq-tooltip'
 
+// Exactly one element carries the anchor name at a time. We move it on enter
+// rather than clearing on leave: clearing on leave would strip the anchor while
+// the popover is still closing (hide is async), flashing it to an unanchored
+// corner. Leaving it until the next element takes over keeps the popover
+// anchored through its close.
+let anchoredEl: HTMLElement | null = null
+
+export function setTooltipAnchor(el: HTMLElement) {
+	if (anchoredEl && anchoredEl !== el) {
+		anchoredEl.style.removeProperty('anchor-name')
+	}
+	el.style.setProperty('anchor-name', TOOLTIP_ANCHOR_NAME)
+	anchoredEl = el
+}
+
+export function clearTooltipAnchor(el: HTMLElement) {
+	if (anchoredEl === el) {
+		el.style.removeProperty('anchor-name')
+		anchoredEl = null
+	}
+}
+
 interface TooltipState {
 	content: string
 	html: boolean

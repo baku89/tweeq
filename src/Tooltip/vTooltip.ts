@@ -1,10 +1,11 @@
 import type {Directive} from 'vue'
 
 import {
+	clearTooltipAnchor,
 	closeTooltip,
 	hideTooltip,
+	setTooltipAnchor,
 	showTooltip,
-	TOOLTIP_ANCHOR_NAME,
 	updateTooltip,
 } from './tooltip'
 
@@ -37,14 +38,12 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
 				if (!content) return
 				// Register the anchor now, before the show delay, so CSS anchor()
 				// is resolved by the time the tooltip appears (no first-frame flash
-				// at the viewport corner).
-				el.style.setProperty('anchor-name', TOOLTIP_ANCHOR_NAME)
+				// at the viewport corner). It stays put until another element takes
+				// over, so the popover remains anchored while it closes.
+				setTooltipAnchor(el)
 				showTooltip(el, content, html)
 			},
-			leave: () => {
-				el.style.removeProperty('anchor-name')
-				hideTooltip(el)
-			},
+			leave: () => hideTooltip(el),
 		}
 		el.addEventListener('mouseenter', record.enter)
 		el.addEventListener('mouseleave', record.leave)
@@ -68,6 +67,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
 			el.removeEventListener('blur', record.leave)
 			records.delete(el)
 		}
+		clearTooltipAnchor(el)
 		closeTooltip(el)
 	},
 }
