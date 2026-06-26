@@ -43,10 +43,16 @@ defineProps<InputButtonProps>()
 	--bg var(--tq-color-accent)
 	--bg-blink var(--tq-color-accent-hover)
 
+	// Default button is accent-filled: an inner ring in the off-state button
+	// color (input) sits on the fill, plus an accent ring just OUTSIDE that reads
+	// against it at the edge. The subtle variant (input bg) below restores the
+	// plain outside accent ring.
+	--focus-ring inset 0 0 0 1px var(--tq-color-input), 0 0 0 1px var(--tq-color-accent)
+
 	use-input-position()
 
 	&:focus-visible
-		button-focus-style()
+		fill-focus-style()
 
 	&:hover
 		background var(--tq-color-accent-hover)
@@ -68,6 +74,7 @@ defineProps<InputButtonProps>()
 		background var(--tq-color-input)
 		--bg var(--tq-color-input)
 		--bg-blink var(--tq-color-input-hover)
+		--focus-ring 0 0 0 1px var(--tq-color-accent)
 
 		&:not(:hover)
 			color var(--tq-color-text)

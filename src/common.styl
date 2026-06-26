@@ -24,6 +24,16 @@ button-focus-style()
 		border 1px solid var(--tq-color-accent)
 		border-radius calc(var(--tq-radius-input) + 2px)
 
+// Focus ring for accent-fillable buttons (Button / ButtonToggle / Checkbox).
+// No offset; follows the corner radius (incl. corners squared by
+// use-input-position() in a group). Reads --focus-ring so a control can flip it:
+// the default is an accent ring just OUTSIDE (reads against a plain bg), but an
+// accent-filled control overrides it to an inset on-accent ring drawn just
+// INSIDE. An outside ring sits on the page bg, where on-accent is invisible
+// (light mode) and an accent ring would merge into the fill.
+fill-focus-style()
+	box-shadow var(--focus-ring, 0 0 0 1px var(--tq-color-accent))
+
 hover-transition(prop = all)
 	values = ()
 

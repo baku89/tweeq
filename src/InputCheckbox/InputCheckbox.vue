@@ -69,15 +69,20 @@ const {tweakingValue, subfocus} = useInputSwitch({
 
 	use-input-position()
 
+	// Unchecked: default accent ring just outside (on the input bg). Checked: an
+	// inner ring in the off-state button color (input) sits on the accent fill,
+	// and the outer accent ring reads against it at the edge — distinct in both
+	// modes. See fill-focus-style().
 	&:has(.input:focus-visible),
 	&.subfocus
-		button-focus-style()
+		fill-focus-style()
 
 	&:hover
 		background var(--tq-color-input-hover)
 
 	&:has(:checked)
 		background var(--tq-color-accent)
+		--focus-ring inset 0 0 0 1px var(--tq-color-input), 0 0 0 1px var(--tq-color-accent)
 		&:hover
 			background var(--tq-color-accent-hover)
 

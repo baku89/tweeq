@@ -45,8 +45,12 @@ defineProps<InputButtonToggleProps>()
 
 	use-input-position()
 
+	// Unchecked: default accent ring just outside (on the input bg). Checked: an
+	// inner ring in the off-state button color (input) sits on the accent fill,
+	// plus an accent ring just OUTSIDE that reads against it at the edge. See
+	// fill-focus-style().
 	&:focus-visible
-		button-focus-style()
+		fill-focus-style()
 
 	&:hover
 		background var(--tq-color-input-hover)
@@ -54,6 +58,7 @@ defineProps<InputButtonToggleProps>()
 	&.checked
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
+		--focus-ring inset 0 0 0 1px var(--tq-color-input), 0 0 0 1px var(--tq-color-accent)
 
 		&:hover
 			background var(--tq-color-accent-hover)
