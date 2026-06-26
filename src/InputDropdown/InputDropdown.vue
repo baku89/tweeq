@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
 		<InputString
 			ref="$input"
 			:modelValue="display"
-			class="input"
+			class="field"
 			:theme="props.theme"
 			:font="font"
 			:align="align"
@@ -235,11 +235,20 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 
 .TqInputDropdown
 	position relative
-	display inline-block
-	width 100%
+	// flex-grow: fill the slot inside an InputGroup (like InputTextBase).
+	// display:flex: let the field (InputString) stretch via its own flex-grow,
+	// matching how InputNumber's box fills the group.
+	display flex
+	flex-grow 1
 	height var(--tq-input-height)
 
-.input
+// IMPORTANT: this class must NOT be `input`. InputTextBase has its own
+// `.input { position: absolute; inset: 0 .5em }` for its internal text element;
+// since InputString's root carries that same scope, naming the wrapper child
+// `input` made the whole box absolutely positioned and shrink to content,
+// leaving a ~.5em gap on each side instead of filling the width.
+.field
+	flex-grow 1
 	cursor default
 	padding-right $chevron-width
 
