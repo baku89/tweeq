@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import {unrefElement, useEventListener} from '@vueuse/core'
-import {computed, useTemplateRef, watch, watchEffect} from 'vue'
+import {unrefElement, useEventListener, useResizeObserver} from '@vueuse/core'
+import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
+import {Balloon} from '../Balloon'
 import type {PopoverProps} from './types'
+
+type ArrowSide = 'top' | 'bottom' | 'left' | 'right'
 
 const props = withDefaults(defineProps<PopoverProps>(), {
 	open: false,
@@ -53,8 +56,41 @@ watch(
 	([open, $popover]) => {
 		if (!$popover) return
 		$popover.togglePopover(open)
+		if (open) requestAnimationFrame(updateArrow)
 	}
 )
+
+// Derive the Balloon arrow from where the popover actually landed (relative to
+// the reference), so it follows flips. Recomputed after it opens and whenever
+// the layout shifts.
+const arrowSide = ref<ArrowSide>()
+const arrowOffset = ref(0)
+
+function updateArrow() {
+	if (!props.arrow) return
+	const reference = unrefElement(props.reference)
+	const popover = $popover.value
+	if (!reference || !popover) return
+
+	const r = reference.getBoundingClientRect()
+	const p = popover.getBoundingClientRect()
+
+	let side: ArrowSide
+	if (p.top >= r.bottom - 1) side = 'top'
+	else if (p.bottom <= r.top + 1) side = 'bottom'
+	else if (p.left >= r.right - 1) side = 'left'
+	else side = 'right'
+
+	arrowSide.value = side
+	arrowOffset.value =
+		side === 'top' || side === 'bottom'
+			? r.left + r.width / 2 - p.left
+			: r.top + r.height / 2 - p.top
+}
+
+useEventListener('scroll', updateArrow, {capture: true, passive: true})
+useEventListener('resize', updateArrow)
+useResizeObserver($popover, updateArrow)
 
 const offsetOption = computed(() => {
 	const o = props.offset
@@ -142,7 +178,10 @@ let instanceCount = 0
 		:style="styles"
 		:popover="lightDismiss ? 'auto' : 'manual'"
 	>
-		<slot />
+		<Balloon v-if="arrow" :arrow-side="arrowSide" :arrow-offset="arrowOffset">
+			<slot />
+		</Balloon>
+		<slot v-else />
 	</div>
 </template>
 

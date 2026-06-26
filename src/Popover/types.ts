@@ -29,4 +29,8 @@ export interface PopoverProps {
 	placement?: Placement | vec2
 	offset?: number | OffsetOptions
 	lightDismiss?: boolean
+	// Wrap the content in a Balloon (blurred, bordered chrome with an arrow that
+	// points back at the reference). The arrow side/offset are derived from the
+	// resolved geometry, so they follow flips automatically.
+	arrow?: boolean
 }
