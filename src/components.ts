@@ -1,4 +1,5 @@
 export * from './App'
+export * from './Balloon'
 export * from './ColorIcon'
 export * from './CommandPalette'
 export * from './Icon'
