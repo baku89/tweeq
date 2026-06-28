@@ -181,8 +181,11 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 				ref="$lists"
 				class="menu"
 				:class="{
-					active: index === hoverIndex && !('children' in menu),
-					'submenu-open': index === hoverIndex && 'children' in menu,
+					active: index === hoverIndex && candidateIndex === index,
+					'submenu-open':
+						index === hoverIndex &&
+						candidateIndex !== index &&
+						'children' in menu,
 				}"
 				@click="onClick(menu)"
 				@pointerenter="onItemEnter(index, $event)"
