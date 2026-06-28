@@ -15,17 +15,20 @@ const props = withDefaults(defineProps<TimelineProps>(), {
 	overscroll: 0.5,
 })
 
-// Clamp a candidate [start, end] window so it can't scroll past the content
-// (`frameRange`) by more than `overscroll` of the viewport — i.e. you can't drag
-// the content edge beyond that fraction in from the screen edge. Keeps the
-// visible duration (zoom) intact; only the position is constrained.
-function clampRange([start, end]: vec2): vec2 {
-	const duration = end - start
+// The travel limits of the window's `start` for a given visible `duration`: you
+// may scroll until the content edge sits `overscroll` of the viewport in from
+// the screen edge (so at most that fraction of the view is empty on each side).
+function scrollBounds(duration: number): vec2 {
 	const margin = props.overscroll * duration
 	const [contentStart, contentEnd] = props.frameRange
+	return [contentStart - margin, contentEnd - duration + margin]
+}
 
-	const minStart = contentStart - margin
-	const maxStart = contentEnd - duration + margin
+// Clamp a candidate [start, end] window to those limits. Keeps the visible
+// duration (zoom) intact; only the position is constrained.
+function clampRange([start, end]: vec2): vec2 {
+	const duration = end - start
+	const [minStart, maxStart] = scrollBounds(duration)
 
 	const clampedStart =
 		minStart <= maxStart ? clamp(start, minStart, maxStart) : start
@@ -116,19 +119,24 @@ useBndr($root, $root => {
 })
 
 const barStyles = computed(() => {
-	const width =
-		(range.value[1] - range.value[0]) /
-		(props.frameRange[1] - props.frameRange[0])
+	const [start, end] = range.value
+	const duration = end - start
+	const [contentStart, contentEnd] = props.frameRange
 
-	const left = scalar.invlerp(
-		props.frameRange[0],
-		props.frameRange[1],
-		range.value[0]
-	)
+	// Knob width = the visible fraction of the content (capped to the track).
+	const width = Math.min(duration / (contentEnd - contentStart), 1)
+
+	// The knob's CENTER tracks the scroll position across the full scrollable
+	// travel: it sits at the track's left edge at the leftmost scroll and the
+	// right edge at the rightmost, so the knob never runs off the track (only
+	// its overhanging half is clipped at the extremes).
+	const [minStart, maxStart] = scrollBounds(duration)
+	const center =
+		minStart < maxStart ? scalar.invlerp(minStart, maxStart, start) : 0.5
 
 	return {
-		width: toPercent(Math.min(width, 1)),
-		left: toPercent(left),
+		width: toPercent(width),
+		left: toPercent(center - width / 2),
 	}
 })
 
