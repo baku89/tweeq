@@ -56,6 +56,33 @@ const indicator = ref<{left: number; width: number} | null>(null)
 const animating = ref(false)
 let animTimer: ReturnType<typeof setTimeout> | undefined
 
+// When every option has an icon, the labels are droppable: hide them (leaving
+// the icons) once they no longer fit. Only meaningful when the control's width
+// is externally constrained — if it's content-sized it always fits, so it never
+// compacts (and never oscillates).
+const collapsible = computed(() => !!props.icons && props.icons.length > 0)
+const compact = ref(false)
+let fullWidth = 0 // content width needed with labels shown (hysteresis anchor)
+
+function updateLayout() {
+	const ul = $ul.value
+	if (!ul) return
+
+	if (!collapsible.value) {
+		compact.value = false
+	} else if (!compact.value) {
+		// Labels are showing → scrollWidth is the full requirement. Collapse once
+		// it overflows the available (client) width.
+		fullWidth = ul.scrollWidth
+		if (ul.scrollWidth > ul.clientWidth + 1) compact.value = true
+	} else if (fullWidth && ul.clientWidth >= fullWidth) {
+		// Compact, but the labels would fit again → expand.
+		compact.value = false
+	}
+
+	nextTick(updateIndicator)
+}
+
 function updateIndicator() {
 	const ul = $ul.value
 	if (!ul) return
@@ -81,10 +108,11 @@ watch(activeIndex, () => {
 	animTimer = setTimeout(() => (animating.value = false), 250)
 	nextTick(updateIndicator)
 })
-// Layout-only changes (option set, external resize) reposition without animating.
-watch(completeOptions, () => nextTick(updateIndicator))
-useResizeObserver($ul, updateIndicator)
-onMounted(updateIndicator)
+// Layout-only changes (option set, external resize) re-evaluate compact and
+// reposition, both without animating.
+watch([completeOptions, collapsible], () => nextTick(updateLayout))
+useResizeObserver($ul, updateLayout)
+onMounted(updateLayout)
 
 // Drag-to-select: press anywhere and slide across the segments (the indicator
 // follows). We track on `window` rather than via pointer capture so the gesture
@@ -169,10 +197,12 @@ onBeforeUnmount(endDrag)
 					:value="value"
 					:isActive="model === value"
 				>
-					<!-- An icon, when given, stands in for the label (segmented icon
-						control); otherwise fall back to the text label. -->
+					<!-- Icon + label. When icons are set the label is droppable: it
+						hides (leaving the icon) once the labels don't fit (see compact). -->
 					<Icon v-if="icons?.[index]" class="icon" :icon="icons[index]" />
-					<template v-else>{{ label }}</template>
+					<span v-if="!icons?.[index] || !compact" class="text">
+						{{ label }}
+					</span>
 				</slot>
 			</label>
 		</li>
@@ -244,6 +274,8 @@ label
 	text-align center
 	justify-content center
 	align-items center
+	gap 0.4em
+	white-space nowrap
 	hover-transition(background, color)
 	padding 0 0.75em
 
@@ -255,4 +287,5 @@ label
 
 .icon
 	display block
+	flex none
 </style>
