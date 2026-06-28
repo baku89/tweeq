@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {Icon as Iconify} from '@iconify/vue'
-import {computed} from 'vue'
+import {computed, watchEffect} from 'vue'
+
+import {rememberIcon} from './iconCache'
 
 const props = defineProps<{
 	icon: string
@@ -25,6 +27,12 @@ const icon = computed(() => {
 		type: 'iconify',
 		value: props.icon,
 	}
+})
+
+// Persist iconify icons to localStorage so they're in memory (no async-resolve
+// flash) on the next reload.
+watchEffect(() => {
+	if (icon.value.type === 'iconify') rememberIcon(icon.value.value)
 })
 
 defineOptions({
