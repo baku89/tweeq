@@ -101,4 +101,11 @@ function commitConfirm() {
 	</ParameterGrid>
 </template>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+// A modal form sizes to its content (unlike an inspector panel, which is
+// width-constrained), so give the value column a comfortable floor here — the
+// Parameter default is 0 so panels can shrink, but a modal should be wide enough
+// that inputs like InputColor don't collapse to their compact form.
+.InputComplex:deep(.input)
+	min-width 14rem
+</style>
