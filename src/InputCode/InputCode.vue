@@ -28,7 +28,9 @@ defineEmits<{
 	border-radius var(--tq-radius-input)
 	overflow hidden
 	min-height calc(var(--tq-input-height) * 10)
-	min-width 45em
+	// Fill the host width (Monaco scrolls long lines itself) rather than forcing a
+	// fixed minimum that overflows a constrained host like a modal tab.
+	min-width 0
 	background var(--tq-color-input)
 
 .monaco-editor

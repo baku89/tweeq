@@ -74,7 +74,11 @@ onBeforeUnmount(() => {
 .TqTab
 	height 100%
 
+	// opacity (not visibility) because Monaco sets `visibility: visible` on its
+	// own layers, which would override an inherited `visibility: hidden` and show
+	// through. opacity can't be overridden by a descendant, and keeps the panel
+	// laid out so the wrapper still sizes to the tallest tab.
 	&:not(.active)
-		visibility hidden
+		opacity 0
 		pointer-events none
 </style>
