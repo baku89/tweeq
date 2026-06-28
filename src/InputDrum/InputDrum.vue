@@ -41,11 +41,19 @@ function triggerAnim() {
 // option changes), keeping every cell the same — evenly spaced — and wide enough
 // for its content. The cellWidth prop overrides it.
 const measuredWidth = ref(0)
+// Label font-size in px, so the gap cap below can be expressed in em.
+const emPx = ref(16)
 const $measure = shallowRef<HTMLElement | null>(null)
+
+// Cap how far the cells may stretch past the widest label, so on a wide drum the
+// labels don't drift so far apart they're tedious to scrub past (e.g. shutter
+// speed's long list).
+const MAX_GAP_EM = 2
 
 function measure() {
 	const m = $measure.value
 	if (!m) return
+	emPx.value = parseFloat(getComputedStyle(m).fontSize) || 16
 	let max = 0
 	for (const child of Array.from(m.children)) {
 		max = Math.max(max, (child as HTMLElement).offsetWidth)
@@ -71,7 +79,11 @@ const cellWidth = computed(() => {
 	let cells = Math.floor(W / label)
 	if (cells % 2 === 1) cells -= 1
 	if (cells < 2) cells = 2
-	return W / cells
+
+	// Stretch to fill the width, but never let the gap past the label exceed
+	// MAX_GAP_EM (the drum then just doesn't span the full width — the mask still
+	// fades the edges).
+	return Math.min(W / cells, label + MAX_GAP_EM * emPx.value)
 })
 
 function clampIndex(i: number) {
@@ -90,9 +102,11 @@ function setIndex(i: number) {
 const floatIndex = ref(0)
 let dragStartIndex = 0
 
-// Drag gearing: with the pointer locked there's no cursor to stay in sync with,
-// so spin the drum faster than 1:1 to flick through long lists quickly.
-const DRAG_GAIN = 1.8
+// Pixels of (locked) pointer movement per option step while dragging. Fixed —
+// NOT the cell width — so a wide label (e.g. shutter speed's "1/8000") doesn't
+// stretch the cells and make the drum sluggish to scrub. The pointer is locked
+// during a drag, so there's no on-screen cursor to keep aligned with the cells.
+const DRAG_STEP_PX = 40
 
 const {dragging} = useDrag($root, {
 	disabled,
@@ -110,7 +124,7 @@ const {dragging} = useDrag($root, {
 		// offset from pointerdown) — so dragging past an end builds up no hidden
 		// overshoot and a reversal turns the drum back immediately.
 		floatIndex.value = clampIndex(
-			floatIndex.value - (state.delta[0] * DRAG_GAIN) / cellWidth.value
+			floatIndex.value - state.delta[0] / DRAG_STEP_PX
 		)
 		setIndex(Math.round(floatIndex.value))
 	},
