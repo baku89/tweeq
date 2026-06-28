@@ -44,6 +44,13 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
 
 const emit = defineEmits<InputEmits>()
 
+function onReset() {
+	if (props.default !== undefined) {
+		model.value = props.default
+		emit('confirm')
+	}
+}
+
 const $input = useTemplateRef('$input')
 const $inputEl = computed(() => unrefElement($input.value as Component))
 const {left, width, right} = useElementBounding($inputEl)
@@ -516,6 +523,7 @@ const barStyle = computed<StyleValue>(() => {
 		:invalid="invalid"
 		:leftIcon="leftIcon"
 		:rightIcon="rightIcon"
+		:default="props.default"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
@@ -523,6 +531,7 @@ const barStyle = computed<StyleValue>(() => {
 		@keydown.up.prevent="onIncrementByKey(1)"
 		@keydown.down.prevent="onIncrementByKey(-1)"
 		@keydown.enter.prevent="confirm"
+		@reset="onReset"
 	>
 		<template #inactiveContent>
 			<div class="display-at-inactive">

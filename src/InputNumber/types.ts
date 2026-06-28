@@ -13,4 +13,6 @@ export interface InputNumberProps extends InputBoxProps {
 	suffix?: string
 	leftIcon?: string
 	rightIcon?: string
+	/** Value restored by the right-click "Reset to Default" menu item. */
+	default?: number
 }

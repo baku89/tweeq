@@ -1,10 +1,13 @@
 import {defineStore} from 'pinia'
-import {ref} from 'vue'
 
+import {useAppConfigStore} from '../stores/appConfig'
 import {TimeFormat} from './types'
 
 export const useInputTimeContext = defineStore('tq.inputTime', () => {
-	const format = ref<TimeFormat>('timecode')
+	// Persisted app-wide so the choice survives reloads. Defaults to plain frame
+	// numbers; toggle to SMPTE timecode from the input itself.
+	const config = useAppConfigStore().group('inputTime')
+	const format = config.ref<TimeFormat>('format', 'frames')
 
 	return {format}
 })

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import {computed, useTemplateRef} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
+import {Menu, type MenuItem} from '../Menu'
+import {Popover} from '../Popover'
 import {
 	type InputAlign,
 	type InputBoxProps,
@@ -18,19 +20,56 @@ export interface InputTextBaseProps extends InputBoxProps {
 	align?: InputAlign
 	leftIcon?: string
 	rightIcon?: string
+	/**
+	 * When set, the right-click menu offers "Reset to Default" (emits `reset`).
+	 * It's only the presence that matters here — the wrapper holds the value.
+	 */
+	default?: unknown
+	/** Extra right-click menu items appended below "Reset to Default". */
+	menuItems?: MenuItem[]
 }
 
 const model = defineModel<string>({required: true})
 
-defineProps<InputTextBaseProps>()
+const props = defineProps<InputTextBaseProps>()
 
 const emit = defineEmits<{
 	focus: [e: FocusEvent]
 	blur: [e: FocusEvent]
 	keydown: [e: KeyboardEvent]
 	confirm: []
+	reset: []
 	'update:focused': [value: boolean]
 }>()
+
+// Right-click context menu, shared by every InputTextBase-based field. Opens at
+// the cursor via a coordinate-placed Popover.
+const $root = useTemplateRef('$root')
+const menuOpen = ref(false)
+const menuPosition = ref<[number, number]>([0, 0])
+
+const contextMenuItems = computed<MenuItem[]>(() => {
+	const items: MenuItem[] = []
+	if (props.default !== undefined) {
+		items.push({
+			label: 'Reset to Default',
+			icon: 'mdi:restore',
+			perform: () => emit('reset'),
+		})
+	}
+	if (props.menuItems?.length) {
+		if (items.length > 0) items.push({separator: true})
+		items.push(...props.menuItems)
+	}
+	return items
+})
+
+function onContextMenu(e: MouseEvent) {
+	if (contextMenuItems.value.length === 0) return
+	e.preventDefault()
+	menuPosition.value = [e.clientX, e.clientY]
+	menuOpen.value = true
+}
 
 const slots = defineSlots<{
 	back: () => any
@@ -70,6 +109,7 @@ function onBlur(e: FocusEvent) {
 
 <template>
 	<div
+		ref="$root"
 		class="TqInputTextBase"
 		:class="{
 			active,
@@ -81,6 +121,7 @@ function onBlur(e: FocusEvent) {
 		:align="align"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
+		@contextmenu="onContextMenu"
 	>
 		<slot name="back" />
 		<input
@@ -105,6 +146,19 @@ function onBlur(e: FocusEvent) {
 		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
 
 		<slot name="front" />
+
+		<!-- Teleported out of this box: its container-type / overflow would
+			otherwise become the containing block for the fixed popover and clip it. -->
+		<Popover
+			v-if="menuOpen"
+			:reference="$root"
+			:placement="menuPosition"
+			:open="menuOpen"
+			teleport=".TqViewport"
+			@update:open="menuOpen = $event"
+		>
+			<Menu :items="contextMenuItems" @close="menuOpen = false" />
+		</Popover>
 	</div>
 </template>
 

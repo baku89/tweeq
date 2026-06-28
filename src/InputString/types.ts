@@ -10,4 +10,6 @@ export interface InputStringProps extends InputBoxProps {
 	font?: InputFont
 	align?: InputAlign
 	validator?: Validator<string>
+	/** Value restored by the right-click "Reset to Default" menu item. */
+	default?: string
 }

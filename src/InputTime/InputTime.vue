@@ -13,6 +13,7 @@ import {
 } from 'vue'
 
 import {InputTextBase} from '../InputTextBase'
+import {type MenuItem} from '../Menu'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {Tooltip} from '../Tooltip'
 import {TweakOverlay} from '../TweakOverlay'
@@ -276,10 +277,27 @@ function confirm() {
 	})
 }
 
-function toggleTimeFormat() {
-	context.format = context.format === 'frames' ? 'timecode' : 'frames'
-	display.value = print(model.value, context.format)
+function onReset() {
+	if (props.default !== undefined) {
+		model.value = props.default
+		emit('confirm')
+	}
 }
+
+// Right-click menu: switch the (app-wide, persisted) display format. A check
+// marks the active one; the display re-renders via the format watcher.
+const formatMenuItems = computed<MenuItem[]>(() => [
+	{
+		label: 'Frames',
+		icon: context.format === 'frames' ? 'mdi:check' : undefined,
+		perform: () => (context.format = 'frames'),
+	},
+	{
+		label: 'SMPTE Timecode',
+		icon: context.format === 'timecode' ? 'mdi:check' : undefined,
+		perform: () => (context.format = 'timecode'),
+	},
+])
 
 //------------------------------------------------------------------------------
 // Display
@@ -370,9 +388,11 @@ const hourTick = computed(() => {
 		font="numeric"
 		leftIcon="mdi-clock"
 		align="center"
+		:default="props.default"
+		:menuItems="formatMenuItems"
 		@confirm="confirm"
+		@reset="onReset"
 		@pointerenter="tweakScaleByHover = 0"
-		@click.right.stop.prevent="toggleTimeFormat"
 		@keydown.exact.up.prevent="increment(frameRate)"
 		@keydown.exact.down.prevent="increment(-frameRate)"
 		@keydown.exact.alt.up.prevent="increment(1)"

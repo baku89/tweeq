@@ -163,6 +163,10 @@ const multi = useMultiSelectStore().register({
 		emit('confirm')
 	},
 })
+
+function onReset() {
+	if (props.default !== undefined) model.value = props.default
+}
 </script>
 
 <template>
@@ -179,10 +183,12 @@ const multi = useMultiSelectStore().register({
 		:block-position="blockPosition"
 		:disabled="disabled"
 		:invalid="invalid"
+		:default="props.default"
 		@focus="onFocus"
 		@blur="onBlur"
 		@input="onInput"
 		@keydown="onKeyDown"
 		@keydown.enter="confirm"
+		@reset="onReset"
 	/>
 </template>
