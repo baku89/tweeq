@@ -152,6 +152,7 @@ export const useThemeStore = defineStore('theme', () => {
 		buildMonacoTheme({
 			appearance: colorMode.value,
 			background: radix.value.background,
+			accent: accentColor.value,
 			foreground: radix.value.grayScale[11],
 			comment: radix.value.grayScale[9],
 			cursor: radix.value.accentScale[8],

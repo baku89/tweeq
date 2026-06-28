@@ -27,9 +27,10 @@ export type PaletteHue = keyof typeof PALETTE
 // without letting it leave its canonical band (red stays red, amber stays
 // amber). The ±MAX_DEG clamp is what guarantees recognizability even when the
 // accent sits on the opposite side of the wheel.
-const NUDGE_T = 0.15 // fraction of the way toward the accent hue
-const NUDGE_MAX_DEG = 18 // hard cap on the hue shift from the canonical seed
-const CHROMA_MIX = 0.15 // pull vibrancy slightly toward the accent's chroma
+const NUDGE_T = 0.3 // fraction of the way toward the accent hue
+const NUDGE_MAX_DEG = 24 // hard cap on the hue shift from the canonical seed
+const CHROMA_MIX = 0.5 // pull vibrancy toward the accent's chroma
+const CHROMA_FLOOR = 0.5 // never drop below this fraction of the seed's chroma
 
 function nudgeTowardAccent(seedHex: string, accentHex: string): string {
 	const seed = new Color(seedHex).to('oklch')
@@ -46,7 +47,9 @@ function nudgeTowardAccent(seedHex: string, accentHex: string): string {
 	const delta = ((ah - sh + 540) % 360) - 180
 	const shifted = clamp(sh + delta * NUDGE_T, sh - NUDGE_MAX_DEG, sh + NUDGE_MAX_DEG)
 
-	const chroma = sc + (ac - sc) * CHROMA_MIX
+	// Track the accent's vibrancy, but keep a floor so a muted accent can't wash
+	// a semantic color out (an error must stay saturated enough to read as one).
+	const chroma = Math.max(sc + (ac - sc) * CHROMA_MIX, sc * CHROMA_FLOOR)
 	const hue = ((shifted % 360) + 360) % 360
 
 	return new Color('oklch', [sl, chroma, hue]).to('srgb').toString({format: 'hex'})
@@ -75,6 +78,34 @@ export interface SemanticColors {
 	colorAffirmative: string
 }
 
+/**
+ * The single "themed palette": every curated hue nudged toward the accent
+ * (bounded per-hue). Both semantic colors and editor syntax are extracted from
+ * this, so they share one accent-following source of truth.
+ */
+export function nudgePalette(accent: string): Record<PaletteHue, string> {
+	return Object.fromEntries(
+		Object.entries(PALETTE).map(([name, seed]) => [
+			name,
+			nudgeTowardAccent(seed, accent),
+		])
+	) as Record<PaletteHue, string>
+}
+
+/** Fit every hue of a (themed) palette to a 12-step scale against the background. */
+export function paletteScales(
+	palette: Record<PaletteHue, string>,
+	appearance: ColorMode,
+	background: string
+): Record<PaletteHue, RadixScale> {
+	return Object.fromEntries(
+		Object.entries(palette).map(([name, seed]) => [
+			name,
+			generateRadixScale({appearance, background, seed}),
+		])
+	) as Record<PaletteHue, RadixScale>
+}
+
 export function buildSemanticColors({
 	appearance,
 	background,
@@ -84,32 +115,22 @@ export function buildSemanticColors({
 	background: string
 	accent: string
 }): SemanticColors {
-	const scaleFor = (hue: PaletteHue): RadixScale =>
-		generateRadixScale({
-			appearance,
-			background,
-			seed: nudgeTowardAccent(PALETTE[hue], accent),
-		})
-
-	const red = scaleFor('red')
-	const amber = scaleFor('yellow')
-	const green = scaleFor('green')
-	const blue = scaleFor('blue')
+	const s = paletteScales(nudgePalette(accent), appearance, background)
 
 	return {
-		colorError: red.scale[TEXT],
-		colorErrorSoft: red.scale[SOFT],
-		colorWarning: amber.scale[TEXT],
-		colorWarningSoft: amber.scale[SOFT],
-		colorSuccess: green.scale[TEXT],
-		colorSuccessSoft: green.scale[SOFT],
-		colorRec: red.scale[SOLID],
-		colorInfo: blue.scale[TEXT],
-		colorAffirmative: green.scale[SOLID],
+		colorError: s.red.scale[TEXT],
+		colorErrorSoft: s.red.scale[SOFT],
+		colorWarning: s.yellow.scale[TEXT],
+		colorWarningSoft: s.yellow.scale[SOFT],
+		colorSuccess: s.green.scale[TEXT],
+		colorSuccessSoft: s.green.scale[SOFT],
+		colorRec: s.red.scale[SOLID],
+		colorInfo: s.blue.scale[TEXT],
+		colorAffirmative: s.green.scale[SOLID],
 	}
 }
 
-// --- Monaco editor theme (pure palette, no accent nudge) --------------------
+// --- Monaco editor theme ----------------------------------------------------
 
 export interface MonacoThemeData {
 	base: 'vs' | 'vs-dark'
@@ -123,6 +144,7 @@ const noHash = (hex: string) => hex.replace('#', '')
 export function buildMonacoTheme({
 	appearance,
 	background,
+	accent,
 	foreground,
 	comment,
 	cursor,
@@ -130,6 +152,8 @@ export function buildMonacoTheme({
 }: {
 	appearance: ColorMode
 	background: string
+	/** UI accent — the palette is nudged toward it, like the semantic colors. */
+	accent: string
 	/** Editor default text (typically gray step 12). */
 	foreground: string
 	/** Comments / line numbers (typically gray step 10–11). */
@@ -139,18 +163,16 @@ export function buildMonacoTheme({
 	/** Selection highlight (the soft accent). */
 	selection: string
 }): MonacoThemeData {
-	const scaleFor = (hue: PaletteHue): RadixScale =>
-		generateRadixScale({appearance, background, seed: PALETTE[hue]})
+	// Syntax draws from the same themed (accent-nudged) palette as the semantics.
+	const s = paletteScales(nudgePalette(accent), appearance, background)
 
-	// Syntax colors come straight from the palette — deliberately accent-free so
-	// code colors never shift when the UI accent changes.
-	const red = noHash(scaleFor('red').scale[TEXT])
-	const orange = noHash(scaleFor('orange').scale[TEXT])
-	const yellow = noHash(scaleFor('yellow').scale[TEXT])
-	const green = noHash(scaleFor('green').scale[TEXT])
-	const cyan = noHash(scaleFor('cyan').scale[TEXT])
-	const blue = noHash(scaleFor('blue').scale[TEXT])
-	const purple = noHash(scaleFor('purple').scale[TEXT])
+	const red = noHash(s.red.scale[TEXT])
+	const orange = noHash(s.orange.scale[TEXT])
+	const yellow = noHash(s.yellow.scale[TEXT])
+	const green = noHash(s.green.scale[TEXT])
+	const cyan = noHash(s.cyan.scale[TEXT])
+	const blue = noHash(s.blue.scale[TEXT])
+	const purple = noHash(s.purple.scale[TEXT])
 
 	const fg = noHash(foreground)
 	const muted = noHash(comment)
