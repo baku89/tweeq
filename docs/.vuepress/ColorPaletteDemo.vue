@@ -62,15 +62,14 @@ const semanticRows = computed(() => {
 		{name: 'rec (solid)', text: s.colorRec, soft: null},
 	]
 })
-
-const steps = Array.from({length: 12}, (_, i) => i + 1)
 </script>
 
 <template>
-	<div
-		class="ColorPaletteDemo"
-		:style="{background: radix.background, color: radix.grayScale[11]}"
-	>
+	<!--
+		Inline Tweeq usage: wrap the subtree in Tq.Viewport (it runs initTweeq and
+		scopes the CSS reset + theme variables), rather than theming the whole app.
+	-->
+	<Tq.Viewport class="ColorPaletteDemo">
 		<div class="controls">
 			<label>
 				<span>Appearance</span>
@@ -90,74 +89,71 @@ const steps = Array.from({length: 12}, (_, i) => i + 1)
 			</label>
 		</div>
 
-		<h3>Accent &amp; Gray scales</h3>
-		<div class="scale">
-			<div
-				v-for="(c, i) in radix.accentScale"
-				:key="'a' + i"
-				class="swatch"
-				:style="{background: c}"
-				:title="`accent ${i + 1}: ${c}`"
-			>
-				<span>{{ i + 1 }}</span>
-			</div>
-		</div>
-		<div class="scale">
-			<div
-				v-for="(c, i) in radix.grayScale"
-				:key="'g' + i"
-				class="swatch"
-				:style="{background: c}"
-				:title="`gray ${i + 1}: ${c}`"
-			>
-				<span>{{ i + 1 }}</span>
-			</div>
-		</div>
-
-		<h3>Semantic colors <small>(palette hue, nudged toward accent)</small></h3>
-		<div class="semantics">
-			<div
-				v-for="row in semanticRows"
-				:key="row.name"
-				class="semantic"
-				:style="{
-					background: row.soft ?? 'transparent',
-					borderColor: row.text,
-				}"
-			>
-				<span class="sample" :style="{color: row.text}">Aa</span>
-				<span class="name">{{ row.name }}</span>
-				<code>{{ row.text }}</code>
-			</div>
-		</div>
-
-		<h3>Palette <small>(pure — used for editor syntax)</small></h3>
-		<div class="palette">
-			<div v-for="hue in paletteScales" :key="hue.name" class="hue">
-				<div class="hue-label">
-					<span class="dot" :style="{background: hue.seed}" />
-					{{ hue.name }}
+		<!-- Swatches sit on the chosen background, which may differ from the docs theme. -->
+		<div
+			class="preview"
+			:style="{background: radix.background, color: radix.grayScale[11]}"
+		>
+			<h3>Accent &amp; Gray scales</h3>
+			<div class="scale">
+				<div
+					v-for="(c, i) in radix.accentScale"
+					:key="'a' + i"
+					class="swatch"
+					:style="{background: c}"
+				>
+					<span>{{ i + 1 }}</span>
 				</div>
-				<div class="scale">
-					<div
-						v-for="(c, i) in hue.scale"
-						:key="i"
-						class="swatch"
-						:style="{background: c}"
-						:title="`${hue.name} ${i + 1}: ${c}`"
-					>
-						<span>{{ steps[i] }}</span>
-					</div>
+			</div>
+			<div class="scale">
+				<div
+					v-for="(c, i) in radix.grayScale"
+					:key="'g' + i"
+					class="swatch"
+					:style="{background: c}"
+				>
+					<span>{{ i + 1 }}</span>
+				</div>
+			</div>
+
+			<h3>Semantic colors <small>(palette hue, nudged toward accent)</small></h3>
+			<div class="semantics">
+				<div
+					v-for="row in semanticRows"
+					:key="row.name"
+					class="semantic"
+					:style="{
+						background: row.soft ?? 'transparent',
+						borderColor: row.text,
+					}"
+				>
+					<span class="sample" :style="{color: row.text}">Aa</span>
+					<span class="name">{{ row.name }}</span>
+				</div>
+			</div>
+
+			<h3>Palette <small>(representative hues — used for editor syntax)</small></h3>
+			<div class="palette-row">
+				<div v-for="hue in paletteScales" :key="hue.name" class="palette-chip">
+					<span class="chip-swatch" :style="{background: hue.scale[8]}" />
+					<span class="chip-label">{{ hue.name }}</span>
 				</div>
 			</div>
 		</div>
-	</div>
+	</Tq.Viewport>
 </template>
 
 <style scoped lang="stylus">
 .ColorPaletteDemo
 	border-radius var(--tq-radius-pane)
 	padding 1.5rem
+	display flex
+	flex-direction column
+	gap 0.5rem
+
+.preview
+	border-radius var(--tq-radius-input)
+	padding 1.25rem
 	display flex
 	flex-direction column
 	gap 0.5rem
@@ -222,29 +218,20 @@ h3
 	.name
 		font-size 0.85rem
 
-	code
-		font-size 0.75rem
-		opacity 0.7
-
-.palette
+.palette-row
 	display flex
-	flex-direction column
-	gap 0.35rem
-
-.hue
-	display grid
-	grid-template-columns 6rem 1fr
-	align-items center
+	flex-wrap wrap
 	gap 0.75rem
 
-.hue-label
+.palette-chip
 	display flex
+	flex-direction column
 	align-items center
-	gap 0.4rem
-	font-size 0.85rem
+	gap 0.3rem
+	font-size 0.8rem
 
-	.dot
-		width 0.9rem
-		height 0.9rem
-		border-radius 50%
+	.chip-swatch
+		width 2.5rem
+		height 2.5rem
+		border-radius var(--tq-radius-input)
 </style>
