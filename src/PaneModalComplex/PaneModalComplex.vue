@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {useEventListener} from '@vueuse/core'
 import {onBeforeUnmount, ref} from 'vue'
 
 import {InputButton} from '../InputButton'
@@ -61,6 +62,38 @@ function onConfirm() {
 	endEdit(desc.value!.value)
 }
 
+// Keyboard: Esc cancels (restoring the opening value), Enter saves. The modal is
+// a manual popover, so neither is handled by the platform — we wire them here.
+function isMultilineTarget(target: EventTarget | null) {
+	const el = target as HTMLElement | null
+	return (
+		!!el &&
+		(el.tagName === 'TEXTAREA' ||
+			el.isContentEditable ||
+			!!el.closest?.('.monaco-editor'))
+	)
+}
+
+useEventListener('keydown', (e: KeyboardEvent) => {
+	if (!open.value) return
+
+	// A nested popover (dropdown / menu) open on top of the modal owns Esc/Enter
+	// first — closing/selecting there shouldn't cancel or save the whole modal.
+	// The modal itself is one `:popover-open`, so anything beyond that is nested.
+	if (document.querySelectorAll(':popover-open').length > 1) return
+
+	if (e.key === 'Escape') {
+		e.preventDefault()
+		onCancel()
+	} else if (e.key === 'Enter') {
+		// Leave Enter to the field when it means a newline (textarea / code editor)
+		// or while an IME composition is in flight.
+		if (e.isComposing || isMultilineTarget(e.target)) return
+		e.preventDefault()
+		onConfirm()
+	}
+})
+
 defineExpose({
 	prompt: promptImpl,
 })
@@ -90,12 +123,14 @@ defineExpose({
 	display flex
 	flex-direction column
 	gap var(--tq-gap-section)
-	// Fill the height the PaneModal allows so the form can scroll within it.
+	// Size to content (so the modal doesn't collapse), but allow shrinking to the
+	// PaneModal's max-height. NB: no `flex: 1` here — with the PaneModal's height
+	// being auto, a 0 flex-basis would collapse the whole modal to nothing.
 	min-height 0
-	flex 1
 
-	// The form scrolls; the footer below stays pinned and always reachable.
+	// The form takes the slack and scrolls; the footer below stays pinned.
 	.body
+		flex 1 1 auto
 		min-height 0
 		overflow-y auto
 		// Room so focus rings / inputs aren't clipped by the scroll edge.
@@ -103,6 +138,7 @@ defineExpose({
 		padding-right var(--tq-pane-padding)
 
 	.footer
+		flex 0 0 auto
 		display flex
 		gap var(--tq-gap-control)
 
