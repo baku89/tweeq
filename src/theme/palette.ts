@@ -32,6 +32,22 @@ const NUDGE_MAX_DEG = 24 // hard cap on the hue shift from the canonical seed
 const CHROMA_MIX = 0.5 // pull vibrancy toward the accent's chroma
 const CHROMA_FLOOR = 0.5 // never drop below this fraction of the seed's chroma
 
+// Lean a seed hue toward the accent hue along the shorter arc, bounded so it
+// can't leave its canonical band. Returns the seed hue unchanged when either is
+// achromatic.
+function nudgedHue(seedHue: number, accentHue: number): number {
+	if (Number.isNaN(seedHue) || Number.isNaN(accentHue)) return seedHue
+	const delta = ((accentHue - seedHue + 540) % 360) - 180
+	const shifted = clamp(
+		seedHue + delta * NUDGE_T,
+		seedHue - NUDGE_MAX_DEG,
+		seedHue + NUDGE_MAX_DEG
+	)
+	return ((shifted % 360) + 360) % 360
+}
+
+// Full hue + chroma nudge of a seed (lightness stays). Used to build the themed
+// palette the editor syntax draws from.
 function nudgeTowardAccent(seedHex: string, accentHex: string): string {
 	const seed = new Color(seedHex).to('oklch')
 	const accent = new Color(accentHex).to('oklch')
@@ -40,29 +56,23 @@ function nudgeTowardAccent(seedHex: string, accentHex: string): string {
 	const ac = accent.coords[1]
 	const ah = accent.coords[2]
 
-	// Achromatic seed or accent → no meaningful hue to pull toward.
 	if (Number.isNaN(sh) || Number.isNaN(ah)) return seedHex
 
-	// Shortest signed angle from the seed hue to the accent hue, in (-180, 180].
-	const delta = ((ah - sh + 540) % 360) - 180
-	const shifted = clamp(sh + delta * NUDGE_T, sh - NUDGE_MAX_DEG, sh + NUDGE_MAX_DEG)
-
 	// Track the accent's vibrancy, but keep a floor so a muted accent can't wash
-	// a semantic color out (an error must stay saturated enough to read as one).
+	// the hue out entirely.
 	const chroma = Math.max(sc + (ac - sc) * CHROMA_MIX, sc * CHROMA_FLOOR)
-	const hue = ((shifted % 360) + 360) % 360
 
-	return new Color('oklch', [sl, chroma, hue]).to('srgb').toString({format: 'hex'})
+	return new Color('oklch', [sl, chroma, nudgedHue(sh, ah)])
+		.to('srgb')
+		.toString({format: 'hex'})
 }
 
 function clamp(n: number, min: number, max: number) {
 	return Math.max(min, Math.min(max, n))
 }
 
-// Step roles within a Radix scale (0-indexed: index = step − 1).
-const SOLID = 8 // step 9  — solid fill
-const TEXT = 10 // step 11 — text on the app background
-const SOFT = 1 // step 2  — soft tinted background
+// Step role within a Radix scale used by the editor theme.
+const TEXT = 10 // step 11 — readable token text on the background
 
 export interface SemanticColors {
 	colorError: string
@@ -71,17 +81,72 @@ export interface SemanticColors {
 	colorWarningSoft: string
 	colorSuccess: string
 	colorSuccessSoft: string
-	/** Recording indicator — a vivid solid red, not the contrast-safe text red. */
+	/** Recording indicator — same red as error/alert. */
 	colorRec: string
 	colorInfo: string
-	/** Back-compat alias used by older call sites; == success solid. */
+	/** Back-compat alias used by older call sites; == success. */
 	colorAffirmative: string
 }
 
 /**
- * The single "themed palette": every curated hue nudged toward the accent
- * (bounded per-hue). Both semantic colors and editor syntax are extracted from
- * this, so they share one accent-following source of truth.
+ * The representative color of a palette hue: the accent's own lightness and
+ * chroma, recolored to the (nudged) hue — i.e. "the accent, rendered as red /
+ * amber / green". One color per hue, no per-role steps.
+ */
+function representativeColor(seedHex: string, accentHex: string): string {
+	const seedHue = new Color(seedHex).to('oklch').coords[2]
+	const [al, ac, ah] = new Color(accentHex).to('oklch').coords
+	const hue = nudgedHue(seedHue, ah)
+
+	return new Color('oklch', [al, ac, Number.isNaN(hue) ? seedHue : hue])
+		.to('srgb')
+		.toString({format: 'hex'})
+}
+
+/** Representative color for every palette hue (accent's L & C, nudged hue). */
+export function paletteRepresentatives(
+	accent: string
+): Record<PaletteHue, string> {
+	return Object.fromEntries(
+		Object.entries(PALETTE).map(([name, seed]) => [
+			name,
+			representativeColor(seed, accent),
+		])
+	) as Record<PaletteHue, string>
+}
+
+/** A soft tinted background: the representative blended toward the background. */
+function softTint(background: string, color: string): string {
+	return new Color(Color.mix(background, color, 0.15, {space: 'oklch'}))
+		.to('srgb')
+		.toString({format: 'hex'})
+}
+
+export function buildSemanticColors({
+	background,
+	accent,
+}: {
+	background: string
+	accent: string
+}): SemanticColors {
+	const rep = paletteRepresentatives(accent)
+
+	return {
+		colorError: rep.red,
+		colorErrorSoft: softTint(background, rep.red),
+		colorWarning: rep.yellow,
+		colorWarningSoft: softTint(background, rep.yellow),
+		colorSuccess: rep.green,
+		colorSuccessSoft: softTint(background, rep.green),
+		colorRec: rep.red, // identical to error / alert
+		colorInfo: rep.blue,
+		colorAffirmative: rep.green,
+	}
+}
+
+/**
+ * The themed palette (hue + chroma nudged) fit to full 12-step scales — used by
+ * the editor syntax theme, which needs readable text steps per token.
  */
 export function nudgePalette(accent: string): Record<PaletteHue, string> {
 	return Object.fromEntries(
@@ -92,7 +157,6 @@ export function nudgePalette(accent: string): Record<PaletteHue, string> {
 	) as Record<PaletteHue, string>
 }
 
-/** Fit every hue of a (themed) palette to a 12-step scale against the background. */
 export function paletteScales(
 	palette: Record<PaletteHue, string>,
 	appearance: ColorMode,
@@ -104,30 +168,6 @@ export function paletteScales(
 			generateRadixScale({appearance, background, seed}),
 		])
 	) as Record<PaletteHue, RadixScale>
-}
-
-export function buildSemanticColors({
-	appearance,
-	background,
-	accent,
-}: {
-	appearance: ColorMode
-	background: string
-	accent: string
-}): SemanticColors {
-	const s = paletteScales(nudgePalette(accent), appearance, background)
-
-	return {
-		colorError: s.red.scale[TEXT],
-		colorErrorSoft: s.red.scale[SOFT],
-		colorWarning: s.yellow.scale[TEXT],
-		colorWarningSoft: s.yellow.scale[SOFT],
-		colorSuccess: s.green.scale[TEXT],
-		colorSuccessSoft: s.green.scale[SOFT],
-		colorRec: s.red.scale[SOLID],
-		colorInfo: s.blue.scale[TEXT],
-		colorAffirmative: s.green.scale[SOLID],
-	}
 }
 
 // --- Monaco editor theme ----------------------------------------------------
