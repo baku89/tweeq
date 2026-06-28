@@ -70,6 +70,15 @@ reset-viewport('.TqPaneModal')
 	inset 0
 	margin auto
 	padding var(--tq-pane-padding)
+	// Never let tall content spill past the viewport without a way to reach it.
+	// Cap to the viewport minus a gutter (so a full-height modal still keeps a
+	// margin from the screen edges — margin:auto splits the slack evenly) and
+	// let the slotted content own its own scrolling.
+	max-height calc(100dvh - 2 * var(--tq-pane-margin))
+	max-width calc(100dvw - 2 * var(--tq-pane-margin))
+	overflow hidden
+	display flex
+	flex-direction column
 	transition opacity var(-tq-transition-duration), transform var(-tq-transition-duration), overlay var(-tq-transition-duration) allow-discrete, display var(-tq-transition-duration) allow-discrete
 	opacity 0
 	transform translateY(calc(var(--tq-rem) / -2))

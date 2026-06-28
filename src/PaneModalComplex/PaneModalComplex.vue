@@ -67,12 +67,14 @@ defineExpose({
 <template>
 	<PaneModal v-model:open="open" @close="onAbort">
 		<div v-if="desc" class="TqPaneModalComplex">
-			<InputComplex
-				:title="desc.options?.title"
-				:scheme="desc.scheme"
-				:modelValue="desc.value"
-				@update:modelValue="onUpdate"
-			/>
+			<div class="body">
+				<InputComplex
+					:title="desc.options?.title"
+					:scheme="desc.scheme"
+					:modelValue="desc.value"
+					@update:modelValue="onUpdate"
+				/>
+			</div>
 			<InputButton label="Save" @click="onConfirm" />
 		</div>
 	</PaneModal>
@@ -80,6 +82,18 @@ defineExpose({
 
 <style lang="stylus" scoped>
 .TqPaneModalComplex
-	display grid
+	display flex
+	flex-direction column
 	gap 12px
+	// Fill the height the PaneModal allows so the form can scroll within it.
+	min-height 0
+	flex 1
+
+	// The form scrolls; the Save button below stays pinned and always reachable.
+	.body
+		min-height 0
+		overflow-y auto
+		// Room so focus rings / inputs aren't clipped by the scroll edge.
+		margin-right calc(-1 * var(--tq-pane-padding))
+		padding-right var(--tq-pane-padding)
 </style>
