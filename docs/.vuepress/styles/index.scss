@@ -26,9 +26,15 @@
 	--vp-c-border-hard: var(--vp-c-border);
 	--vp-c-gutter: var(--vp-c-border);
 
+	--vp-c-accent-text: color-mix(
+		in srgb,
+		var(--vp-c-accent) 10%,
+		var(--vp-c-bg)
+	);
+
 	// font family
-	--font-family: 'Geist', a-otf-gothic-bbb-pr6n, 游ゴシック体, 'Yu Gothic',
-		YuGothic, 'Hiragino Kaku Gothic ProN', Osaka, 'ＭＳ Ｐゴシック', sans-serif;
+	--font-family: aktiv-grotesk, 游ゴシック体, 'Yu Gothic', YuGothic,
+		'Hiragino Kaku Gothic ProN', Osaka, 'ＭＳ Ｐゴシック', sans-serif;
 	--code-font-family: 'Geist Mono', monospace !important;
 
 	// custom variables
@@ -40,13 +46,19 @@
 	--vp-c-text: white;
 }
 
+html {
+	font-variant-east-asian: proportional-width;
+	line-break: strict;
+	hanging-punctuation: allow-end;
+	text-rendering: optimizeLegibility;
+}
+
 // Navbar
 .vp-navbar {
 	border-bottom: none;
 
 	.vp-site-name {
-		font-family: var(--code-font-family);
-		font-weight: 500;
+		font-weight: 400;
 	}
 }
 
@@ -84,6 +96,17 @@
 	}
 }
 
+.vp-hero-description {
+	text-wrap: balance;
+	line-height: 1.5;
+}
+
+.vp-feature {
+	h2 {
+		font-weight: 600;
+	}
+}
+
 .toggle-color-mode-button {
 	opacity: 1;
 }
@@ -91,71 +114,77 @@
 @layer vp, tweeq;
 
 @layer vp {
-	[vp-content] {
-		:is(h2, h3):not(:where(:is(h1, h2) + *)) {
-			margin-top: calc(3rem - var(--header-offset)) !important;
-		}
+[vp-content] {
+	h2,
+	h3:not(:where(h2 + *)) {
+		margin-top: calc(1rem - var(--header-offset));
+	}
 
-		a:not(.header-anchor) {
-			font-weight: inherit;
-			text-decoration-thickness: 0.5px;
-			text-underline-offset: 2px;
+	a:not(.header-anchor) {
+		font-weight: inherit;
+		text-decoration-thickness: 0.5px;
+		text-underline-offset: 2px;
 
-			&:has(img) {
-				&:after {
-					content: '';
-					display: none !important;
-				}
+		&:has(img) {
+			&:after {
+				content: '';
+				display: none !important;
 			}
-		}
-
-		// Code
-		code {
-			padding: 0 0.2em;
-			background: transparent;
-		}
-
-		// Paragraph
-		p,
-		ul,
-		ol,
-		dl {
-			line-height: 1.8 !important;
-			margin-block: 1lh;
-		}
-
-		// List
-		:is(ul, ol, dl) {
-			margin: 1em 0;
-		}
-
-		li {
-			list-style: none;
-			margin-bottom: 0.5em;
-
-			&:before {
-				content: '❊';
-				color: var(--vp-c-text-quote);
-				display: inline-block;
-				width: 1em;
-				margin-left: -0.5em;
-				margin-right: 0.3em;
-			}
-
-			:is(ul, ol, dl) {
-				margin: 0.5em 0;
-			}
-		}
-
-		li li:before {
-			content: '-';
-		}
-
-		svg.iconify {
-			vertical-align: middle;
-			margin: 0 0.2em 0.1em;
 		}
 	}
+
+	// Code
+	code {
+		padding: 0 0.2em;
+		background: transparent;
+	}
+
+	// Paragraph
+	p {
+		line-height: 1.8;
+	}
+
+	// List
+	:is(ul, ol, dl) {
+		margin: 1em 0;
+	}
+
+	li {
+		list-style: none;
+		margin-bottom: 0.5em;
+
+		&:before {
+			content: '❊';
+			color: var(--vp-c-text-quote);
+			display: inline-block;
+			width: 1em;
+			margin-left: -0.5em;
+			margin-right: 0.3em;
+		}
+
+		:is(ul, ol, dl) {
+			margin: 0.5em 0;
+		}
+	}
+}
+}
+
+// Sidebar
+.vp-sidebar {
+	border-right: none;
+
+	li li li {
+		font-family: var(--code-font-family);
+		font-size: 0.9em;
+	}
+}
+
+.vp-sidebar-item.vp-sidebar-heading {
+	font-weight: 500;
+}
+
+.vp-sidebar-item:not(.vp-sidebar-heading) {
+	padding-left: 1.25rem;
 }
 
 // Table
@@ -213,22 +242,4 @@ tr {
 td code {
 	padding-left: 0;
 	padding-right: 0;
-}
-
-// Sidebar
-.vp-sidebar {
-	border-right: none;
-
-	li li li {
-		font-family: var(--code-font-family);
-		font-size: 0.9em;
-	}
-}
-
-.vp-sidebar-item.vp-sidebar-heading {
-	font-weight: 500;
-}
-
-.vp-sidebar-item:not(.vp-sidebar-heading) {
-	padding-left: 1.25rem;
 }
