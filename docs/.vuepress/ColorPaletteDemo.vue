@@ -52,7 +52,7 @@ const semanticRows = computed(() => {
 		{name: 'error / alert / rec', text: s.colorError, soft: s.colorErrorSoft},
 		{name: 'warning', text: s.colorWarning, soft: s.colorWarningSoft},
 		{name: 'success', text: s.colorSuccess, soft: s.colorSuccessSoft},
-		{name: 'info', text: s.colorInfo, soft: null},
+		{name: 'info', text: s.colorInfo, soft: s.colorInfoSoft},
 	]
 })
 </script>

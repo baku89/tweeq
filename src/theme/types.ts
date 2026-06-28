@@ -79,6 +79,7 @@ export interface Theme {
 	colorSuccess: string
 	colorSuccessSoft: string
 	colorInfo: string
+	colorInfoSoft: string
 	colorRec: string
 	colorAffirmative: string
 

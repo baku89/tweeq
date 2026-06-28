@@ -84,6 +84,7 @@ export interface SemanticColors {
 	/** Recording indicator — same red as error/alert. */
 	colorRec: string
 	colorInfo: string
+	colorInfoSoft: string
 	/** Back-compat alias used by older call sites; == success. */
 	colorAffirmative: string
 }
@@ -140,6 +141,7 @@ export function buildSemanticColors({
 		colorSuccessSoft: softTint(background, rep.green),
 		colorRec: rep.red, // identical to error / alert
 		colorInfo: rep.blue,
+		colorInfoSoft: softTint(background, rep.blue),
 		colorAffirmative: rep.green,
 	}
 }
