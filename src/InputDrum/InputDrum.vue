@@ -177,10 +177,14 @@ function onKeyDown(e: KeyboardEvent) {
 	if (disabled.value) return
 	if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
 		e.preventDefault()
+		// Don't let the arrow bubble to global shortcuts (frame step etc.) — the
+		// drum handled it.
+		e.stopPropagation()
 		triggerAnim()
 		setIndex(activeIndex.value - 1)
 	} else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
 		e.preventDefault()
+		e.stopPropagation()
 		triggerAnim()
 		setIndex(activeIndex.value + 1)
 	}

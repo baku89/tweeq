@@ -105,6 +105,23 @@ function onBlur(e: FocusEvent) {
 	emit('update:focused', false)
 	emit('blur', e)
 }
+
+function onKeydown(e: KeyboardEvent) {
+	// Stop a focused field's typing (incl. single-key shortcuts like "v") from
+	// reaching app-wide shortcut handlers. Let Escape / Enter / Tab and modifier
+	// combos (cmd/ctrl+…) through, so dialog dismissal and global shortcuts still
+	// work while a field is focused.
+	if (
+		!e.metaKey &&
+		!e.ctrlKey &&
+		e.key !== 'Escape' &&
+		e.key !== 'Enter' &&
+		e.key !== 'Tab'
+	) {
+		e.stopPropagation()
+	}
+	emit('keydown', e)
+}
 </script>
 
 <template>
@@ -134,7 +151,7 @@ function onBlur(e: FocusEvent) {
 			@focus="onFocus"
 			@blur="onBlur"
 			@input="onInput"
-			@keydown="emit('keydown', $event)"
+			@keydown="onKeydown"
 			@keydown.enter="emit('confirm')"
 		/>
 

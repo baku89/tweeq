@@ -73,6 +73,9 @@ export function useInputSwitch({
 
 		function update(value: boolean) {
 			e.preventDefault()
+			// The switch consumed the key (e.g. "m"); don't also let it trigger an
+			// app-wide shortcut bound to the same key.
+			e.stopPropagation()
 			emit('update:modelValue', value)
 			emit('confirm')
 		}
