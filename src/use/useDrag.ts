@@ -201,9 +201,12 @@ export function useDrag(
 		if (vec2.squaredLength(state.delta) === 0) return
 
 		if (!state.dragging) {
-			// Determine whether dragging has started
+			// Determine whether dragging has started. The mouse threshold is a few
+			// px, not 1 — a 1px threshold misreads the incidental jitter of an
+			// ordinary click as a drag, which (for lockPointer inputs like
+			// InputColor) flickers pointer lock on a plain click.
 			const d = vec2.dist(state.initial, state.xy)
-			const minDragDistance = event.pointerType === 'mouse' ? 1 : 5
+			const minDragDistance = event.pointerType === 'mouse' ? 4 : 5
 			if (d >= minDragDistance) {
 				clearTimeout(dragDelayTimer)
 				fireDragStart(event)
