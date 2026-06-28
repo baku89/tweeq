@@ -4,6 +4,7 @@ import {computed} from 'vue'
 
 import {type InputEmits, type LabelizerProps, useLabelizer} from '../types'
 import {Icon} from '../Icon'
+import {vTooltip} from '../Tooltip'
 
 interface CompleteOption {
 	value: T
@@ -13,6 +14,7 @@ interface CompleteOption {
 type Props = LabelizerProps<T> & {
 	modelValue: T
 	icons?: string[]
+	tooltips?: string[]
 }
 
 const model = defineModel<T>({required: true})
@@ -54,7 +56,11 @@ function onChange(index: number) {
 				:checked="model === value"
 				@change="onChange(index)"
 			/>
-			<label :for="id + value" :class="{active: model === value}">
+			<label
+				:for="id + value"
+				:class="{active: model === value}"
+				v-tooltip="tooltips?.[index]"
+			>
 				<slot
 					name="option"
 					:label="label"
