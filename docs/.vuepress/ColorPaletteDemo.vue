@@ -170,6 +170,11 @@ const semanticRows = computed(() => {
 		gap 0.3rem
 		font-size 0.8rem
 
+	// Keep the three color pickers a uniform width (their hex labels otherwise
+	// size them differently).
+	:deep(.TqInputColor)
+		width 9rem
+
 h3
 	margin 0.75rem 0 0.25rem
 	font-size 0.95rem
