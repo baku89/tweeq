@@ -138,9 +138,11 @@ function onUpdateChannel(channel: ColorChannel, value: number) {
 
 <style lang="stylus" scoped>
 
-.color-space
-	width 4.5em
-	flex-shrink 0
+// Double class to outweigh InputDropdown's own `.TqInputDropdown { flex-grow: 1 }`
+// (same element, equal specificity otherwise). Without flex-grow:0 the dropdown
+// keeps filling the group and width is ignored.
+.color-space.color-space
+	flex 0 0 5rem
 
 .channel
 	flex-grow 1
