@@ -12,7 +12,26 @@ import type {TimelineProps} from './types'
 const props = withDefaults(defineProps<TimelineProps>(), {
 	frameWidth: 60,
 	frameWidthRange: () => [10, 100],
+	overscroll: 0.5,
 })
+
+// Clamp a candidate [start, end] window so it can't scroll past the content
+// (`frameRange`) by more than `overscroll` of the viewport — i.e. you can't drag
+// the content edge beyond that fraction in from the screen edge. Keeps the
+// visible duration (zoom) intact; only the position is constrained.
+function clampRange([start, end]: vec2): vec2 {
+	const duration = end - start
+	const margin = props.overscroll * duration
+	const [contentStart, contentEnd] = props.frameRange
+
+	const minStart = contentStart - margin
+	const maxStart = contentEnd - duration + margin
+
+	const clampedStart =
+		minStart <= maxStart ? clamp(start, minStart, maxStart) : start
+
+	return [clampedStart, clampedStart + duration]
+}
 
 defineSlots<{
 	default(props: {
@@ -85,13 +104,13 @@ useBndr($root, $root => {
 			emitConfirmDebounced()
 
 			// Scales the range around the center point
-			range.value = [
+			range.value = clampRange([
 				origin - (origin - start) / zoomDelta,
 				origin + (end - origin) / zoomDelta,
-			]
+			])
 		} else {
 			const delta = x / props.frameWidth
-			range.value = vec2.add(range.value, [delta, delta])
+			range.value = clampRange(vec2.add(range.value, [delta, delta]))
 		}
 	})
 })
