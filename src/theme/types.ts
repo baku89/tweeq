@@ -101,6 +101,8 @@ export interface Theme {
 
 	// Input
 	inputHeight: number
+	/** Min width for an input's full (non-compact) form. See the theme store. */
+	inputComfortableWidth: number
 
 	// Gap scale, named by how related the separated things are (tightest →
 	// loosest). See the theme store for values.

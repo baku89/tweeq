@@ -107,5 +107,5 @@ function commitConfirm() {
 // Parameter default is 0 so panels can shrink, but a modal should be wide enough
 // that inputs like InputColor don't collapse to their compact form.
 .InputComplex:deep(.input)
-	min-width 14rem
+	min-width var(--tq-input-comfortable-width)
 </style>

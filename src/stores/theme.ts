@@ -134,6 +134,11 @@ export const useThemeStore = defineStore('theme', () => {
 
 			iconSize: 18,
 			inputHeight: 24,
+			// Width at which every input renders its full (non-compact) form
+			// comfortably — sized for the most demanding ones (InputColor's hex
+			// code, InputVec's side-by-side fields). Hosts that size to content
+			// (e.g. a modal form) use it as a min width.
+			inputComfortableWidth: 224,
 
 			// Gap scale, named by how related the two things being separated are
 			// (tightest → loosest): segments of one control, items that read as a
