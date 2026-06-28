@@ -88,6 +88,7 @@ useBndr($root, el => {
 	inset 0
 
 .scale
+	pointer-events none
 	border-left 1px solid var(--tq-color-text-mute)
 	font-size 9px
 	color var(--tq-color-text-mute)
