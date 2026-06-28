@@ -102,8 +102,12 @@ export const generateThemeColorsRadix = ({
 		backgroundColor
 	)
 
-	// Enforce srgb for the background color
-	const backgroundHex = backgroundColor.to('srgb').toString({format: 'hex'})
+	// Enforce srgb for the background color. `collapse: false` keeps the full
+	// 6-digit form (#111111, not #111) — Monaco's theme parser rejects 3-digit
+	// hex, which would break every code editor (e.g. Project Settings).
+	const backgroundHex = backgroundColor
+		.to('srgb')
+		.toString({format: 'hex', collapse: false})
 
 	const accentBaseColor = new Color(args.accent).to('oklch')
 
