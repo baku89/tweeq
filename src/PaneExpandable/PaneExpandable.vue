@@ -1,91 +1,128 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
+import {Popover} from '../Popover'
 import type {PaneExpandableProps} from './types'
 
-defineProps<PaneExpandableProps>()
+const props = withDefaults(defineProps<PaneExpandableProps>(), {
+	openIcon: 'mdi:chevron-up',
+	placement: 'bottom-end',
+	arrow: true,
+})
 
 const emit = defineEmits<{
+	'update:open': [boolean]
 	expand: []
 	collapse: []
 }>()
 
-const open = ref(false)
+defineSlots<{default: () => any}>()
 
-function expand() {
+const $button = useTemplateRef<HTMLElement>('$button')
+
+// Internal flag is the single source of truth. We can't detect "controlled" by
+// `props.open === undefined`: a Boolean prop that's absent is cast to `false` by
+// Vue, not left undefined. Instead we always keep the flag and mirror a bound
+// `open` prop into it — uncontrolled users simply never change the prop, so the
+// watch fires once (false) and the button drives the flag from there.
+const internalOpen = ref(false)
+watch(() => props.open, value => (internalOpen.value = value), {immediate: true})
+
+const open = computed<boolean>({
+	get: () => internalOpen.value,
+	set(value) {
+		if (internalOpen.value === value) return
+		internalOpen.value = value
+		emit('update:open', value)
+		emit(value ? 'expand' : 'collapse')
+	},
+})
+
+// Hover opens; it deliberately does NOT close on leave. A click on the button
+// explicitly toggles. Dismissal is otherwise the native popover light-dismiss
+// (an outside pointerdown) or Esc.
+function onPointerEnter() {
 	open.value = true
-	emit('expand')
 }
 
-function collapse() {
-	open.value = false
-	emit('collapse')
+// The button sits outside the popover, so a click on it while open ALSO triggers
+// the native light-dismiss (which closes it and stamps this). Without the guard
+// the click handler would immediately reopen what the dismiss just closed.
+let lastDismissAt = 0
+
+function onClick() {
+	if (performance.now() - lastDismissAt < 200) return
+	open.value = !open.value
+}
+
+function onPopoverUpdateOpen(value: boolean) {
+	if (!value) lastDismissAt = performance.now()
+	open.value = value
 }
 </script>
 
 <template>
-	<div
-		class="TqPaneExpandable"
-		:class="{open}"
-		@pointerenter="expand"
-		@pointerleave="collapse"
-		@pointercancel="collapse"
-	>
-		<Icon class="icon" :icon="icon" />
-		<div class="content">
-			<div class="wrapper">
+	<div class="TqPaneExpandable">
+		<button
+			ref="$button"
+			class="button"
+			:class="{open}"
+			type="button"
+			@pointerenter="onPointerEnter"
+			@click="onClick"
+		>
+			<Icon class="icon" :icon="open ? openIcon : icon" />
+		</button>
+		<Popover
+			:reference="$button ?? null"
+			:open="open"
+			:placement="placement"
+			:arrow="arrow"
+			exit-transition
+			@update:open="onPopoverUpdateOpen"
+		>
+			<div class="content">
 				<slot />
 			</div>
-		</div>
+		</Popover>
 	</div>
 </template>
 
 <style lang="stylus" scoped>
 @import '../common.styl'
 
+// Single root so a class / positioning from the consumer falls through cleanly
+// (the Popover is position:fixed, so it doesn't affect this box's size).
 .TqPaneExpandable
-	display flex
-	flex-direction column
-	gap var(--tq-gap-control)
-	position absolute
-	top 9px
-	right 9px
-	// overflow hidden
-	background blue
-	popup-style()
-	transition all 0.3s ease
-	box-shadow 0 0 20px -15px transparent
-	background transparent
-	border-color transparent
-	backdrop-filter blur(0px)
-	pointer-events none
+	display inline-flex
 
-	.icon
-		position absolute
-		top var(--tq-popup-padding)
-		right var(--tq-popup-padding)
-		pointer-events auto
+// A subtle, frosted, round button. Background is the semi-transparent surface
+// colour; backdrop-filter blurs whatever sits behind it (e.g. the preview).
+.button
+	display grid
+	place-items center
+	width 2rem
+	height 2rem
+	border-radius 9999px
+	background var(--tq-color-surface)
+	backdrop-filter blur(var(--tq-popup-blur))
+	border 1px solid var(--tq-color-border)
+	color var(--tq-color-text-mute)
+	cursor pointer
+	hover-transition(color, background, border-color)
 
-	.content
-		transition all .2s ease
-		overflow hidden
-		opacity 0
-		height 260px
-		width 0px
-		overflow hidden
-		transform-origin top right
-		transform scale(0.7)
+	&:hover, &.open
+		color var(--tq-color-text)
 
-	.wrapper
-		width 260px
+.icon
+	width 1.1rem
+	height 1.1rem
 
-	&.open
-		popup-style()
-		pointer-events auto
-		.content
-			transform none
-			opacity 1
-			width 260px
-			height auto
+// A ParameterGrid dropped straight into the pane sizes to its content rather
+// than a hard-coded width: the label/icon column takes its intrinsic width (it
+// never wraps, see TqParameter) while the value column keeps a usable minimum
+// and grows to fit wider controls. Consumers no longer set a panel width.
+.content :deep(.TqParameterGrid)
+	grid-template-columns max-content minmax(var(--tq-input-comfortable-width), 1fr)
 </style>
