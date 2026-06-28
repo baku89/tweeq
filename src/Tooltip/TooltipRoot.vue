@@ -24,9 +24,21 @@ function onUpdateOpen(open: boolean) {
 		teleport=".TqViewport"
 		@update:open="onUpdateOpen"
 	>
+		<!-- Structured: bold title + muted description (replaces "Title — sub"). -->
+		<div
+			v-if="tooltipState.title || tooltipState.description"
+			class="TqTooltipContent structured"
+		>
+			<div v-if="tooltipState.title" class="title">
+				{{ tooltipState.title }}
+			</div>
+			<div v-if="tooltipState.description" class="description">
+				{{ tooltipState.description }}
+			</div>
+		</div>
 		<!-- eslint-disable-next-line vue/no-v-html -->
 		<div
-			v-if="tooltipState.html"
+			v-else-if="tooltipState.html"
 			class="TqTooltipContent html"
 			v-html="tooltipState.content"
 		/>
@@ -50,4 +62,18 @@ function onUpdateOpen(open: boolean) {
 .html
 	max-width 26em
 	text-align left
+
+// Title + description: a bold caption with a muted explanatory line beneath.
+.structured
+	max-width 20em
+	text-align center
+	white-space pre-line
+
+	.title
+		font-weight bold
+
+	.description
+		color var(--tq-color-text-mute)
+		// Slightly tighter so the description reads as secondary.
+		font-size 0.95em
 </style>

@@ -19,7 +19,7 @@ defineSlots<{
 	border 1px solid var(--tq-color-border)
 	background var(--tq-color-surface)
 	color var(--tq-color-text)
-	backdrop-filter blur(3px)
+	backdrop-filter blur(var(--tq-popup-blur))
 	font-size .9em
 	font-numeric()
 

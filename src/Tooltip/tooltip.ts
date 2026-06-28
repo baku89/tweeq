@@ -38,15 +38,28 @@ export function clearTooltipAnchor(el: HTMLElement) {
 	}
 }
 
-interface TooltipState {
+/**
+ * The renderable payload for one tooltip. `title`/`description` drive the
+ * structured two-line layout (bold title + muted description); `content` is the
+ * single-blob form (plain text, or rich markup when `html` is set). A value can
+ * mix them, but in practice it's either title/description or content.
+ */
+export interface TooltipContent {
 	content: string
 	html: boolean
+	title: string
+	description: string
+}
+
+interface TooltipState extends TooltipContent {
 	open: boolean
 }
 
 export const tooltipState = reactive<TooltipState>({
 	content: '',
 	html: false,
+	title: '',
+	description: '',
 	open: false,
 })
 
@@ -56,18 +69,13 @@ const HIDE_DELAY = 0
 let showTimer: ReturnType<typeof setTimeout> | undefined
 let hideTimer: ReturnType<typeof setTimeout> | undefined
 
-export function showTooltip(
-	reference: HTMLElement,
-	content: string,
-	html: boolean
-) {
+export function showTooltip(reference: HTMLElement, content: TooltipContent) {
 	clearTimeout(hideTimer)
 	clearTimeout(showTimer)
 
 	const apply = () => {
 		tooltipReference.value = reference
-		tooltipState.content = content
-		tooltipState.html = html
+		Object.assign(tooltipState, content)
 		tooltipState.open = true
 	}
 
@@ -92,12 +100,10 @@ export function hideTooltip(reference: HTMLElement) {
 // string that changes).
 export function updateTooltip(
 	reference: HTMLElement,
-	content: string,
-	html: boolean
+	content: TooltipContent
 ) {
 	if (tooltipState.open && tooltipReference.value === reference) {
-		tooltipState.content = content
-		tooltipState.html = html
+		Object.assign(tooltipState, content)
 	}
 }
 
