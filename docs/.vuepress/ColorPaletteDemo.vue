@@ -6,8 +6,7 @@ import {
 	buildSemanticColors,
 	type ColorMode,
 	generateThemeColorsRadix,
-	nudgePalette,
-	paletteScales as buildPaletteScales,
+	paletteRepresentatives,
 } from '../../src/theme'
 
 // Local, self-contained theme inputs — this demo computes scales directly and
@@ -33,34 +32,27 @@ const radix = computed(() =>
 
 const semantics = computed(() =>
 	buildSemanticColors({
-		appearance: appearance.value,
 		background: background.value,
 		accent: accent.value,
 	})
 )
 
-// The themed palette: each hue nudged toward the accent, then fit to a 12-step
-// scale. Semantic colors are extracted from this same source.
-const paletteScales = computed(() => {
-	const scales = buildPaletteScales(
-		nudgePalette(accent.value),
-		appearance.value,
-		background.value
-	)
-	return Object.entries(scales).map(([name, scale]) => ({
+// The representative color of each palette hue (accent L&C, nudged hue) — the
+// same colors the semantics draw from.
+const palette = computed(() =>
+	Object.entries(paletteRepresentatives(accent.value)).map(([name, color]) => ({
 		name,
-		scale: scale.scale,
+		color,
 	}))
-})
+)
 
 const semanticRows = computed(() => {
 	const s = semantics.value
 	return [
-		{name: 'error', text: s.colorError, soft: s.colorErrorSoft},
+		{name: 'error / alert / rec', text: s.colorError, soft: s.colorErrorSoft},
 		{name: 'warning', text: s.colorWarning, soft: s.colorWarningSoft},
 		{name: 'success', text: s.colorSuccess, soft: s.colorSuccessSoft},
 		{name: 'info', text: s.colorInfo, soft: null},
-		{name: 'rec (solid)', text: s.colorRec, soft: null},
 	]
 })
 </script>
@@ -146,8 +138,8 @@ const semanticRows = computed(() => {
 
 			<h3>Palette</h3>
 			<div class="palette-row">
-				<div v-for="hue in paletteScales" :key="hue.name" class="palette-chip">
-					<span class="chip-swatch" :style="{background: hue.scale[8]}" />
+				<div v-for="hue in palette" :key="hue.name" class="palette-chip">
+					<span class="chip-swatch" :style="{background: hue.color}" />
 					<span class="chip-label">{{ hue.name }}</span>
 				</div>
 			</div>
