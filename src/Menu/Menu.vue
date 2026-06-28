@@ -216,10 +216,13 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 		<Menu ref="$childMenu" :items="childItems" @close="emit('close')" />
 	</Popover>
 	<!-- Faint visualization of the safe triangle (cursor → submenu edge). A
-		top-layer popover so it paints above the (also top-layer) menu popovers. -->
-	<svg ref="$overlay" popover="manual" class="safe-triangle-overlay">
-		<polygon v-if="safeTriangle" :points="safeTriangle" />
-	</svg>
+		top-layer popover (an HTML div — `popover` doesn't apply to <svg>) so it
+		paints above the (also top-layer) menu popovers. -->
+	<div ref="$overlay" popover="manual" class="safe-triangle-overlay">
+		<svg class="safe-triangle-svg">
+			<polygon v-if="safeTriangle" :points="safeTriangle" />
+		</svg>
+	</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -278,13 +281,10 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 
 // Full-viewport top-layer overlay (a popover); polygon points are client px.
 .safe-triangle-overlay
-	width 100vw
-	height 100vh
 	margin 0
 	border 0
 	padding 0
 	background transparent
-	overflow visible
 	pointer-events none
 
 	// Clear the popover UA inset/centering so it covers the viewport from 0,0.
@@ -292,6 +292,13 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 		display block
 		position fixed
 		inset 0
+		width 100vw
+		height 100vh
+
+.safe-triangle-svg
+	width 100%
+	height 100%
+	overflow visible
 
 	polygon
 		fill var(--tq-color-accent)
