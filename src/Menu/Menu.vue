@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {IconSequence} from 'bndr-js'
-import {computed, ref, useTemplateRef, watch} from 'vue'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
@@ -84,8 +84,6 @@ let pointer: Pt = {x: 0, y: 0}
 let prevPointer: Pt = {x: 0, y: 0}
 // Item currently under the cursor (may differ from hoverIndex while in the beam).
 const candidateIndex = ref(-1)
-// Current safe triangle as an SVG points string, for the faint overlay.
-const safeTriangle = ref<string | null>(null)
 
 function submenuIsOpen() {
 	const cur = props.items[hoverIndex.value]
@@ -121,23 +119,15 @@ function onItemEnter(index: number, e: PointerEvent) {
 function onPointerMove(e: PointerEvent) {
 	pointer = {x: e.clientX, y: e.clientY}
 
-	if (submenuIsOpen()) {
-		const edge = submenuEdge()
-		if (edge) {
-			safeTriangle.value = `${pointer.x},${pointer.y} ${edge.c1.x},${edge.c1.y} ${edge.c2.x},${edge.c2.y}`
-			// Left the beam → let the item the cursor is actually over take over.
-			if (
-				!headingToSubmenu(pointer) &&
-				candidateIndex.value !== -1 &&
-				candidateIndex.value !== hoverIndex.value
-			) {
-				commitHover(candidateIndex.value)
-			}
-		} else {
-			safeTriangle.value = null
-		}
-	} else {
-		safeTriangle.value = null
+	// Left the beam toward the submenu → let the item the cursor is actually over
+	// take over.
+	if (
+		submenuIsOpen() &&
+		!headingToSubmenu(pointer) &&
+		candidateIndex.value !== -1 &&
+		candidateIndex.value !== hoverIndex.value
+	) {
+		commitHover(candidateIndex.value)
 	}
 
 	prevPointer = pointer
@@ -145,23 +135,7 @@ function onPointerMove(e: PointerEvent) {
 
 function onPointerLeave() {
 	candidateIndex.value = -1
-	safeTriangle.value = null
 }
-
-// The overlay must sit in the top layer too (the menus are native popovers), so
-// it's a manual popover toggled with the triangle's presence.
-const $overlay = useTemplateRef<HTMLElement>('$overlay')
-watch(safeTriangle, points => {
-	const el = $overlay.value
-	if (!el) return
-	const open = el.matches(':popover-open')
-	try {
-		if (points && !open) el.showPopover()
-		else if (!points && open) el.hidePopover()
-	} catch {
-		// showPopover/hidePopover throw if the state already matches — ignore.
-	}
-})
 
 function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 	const cross = (p1: Pt, p2: Pt, p3: Pt) =>
@@ -226,14 +200,6 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 	>
 		<Menu ref="$childMenu" :items="childItems" @close="emit('close')" />
 	</Popover>
-	<!-- Faint visualization of the safe triangle (cursor → submenu edge). A
-		top-layer popover (an HTML div — `popover` doesn't apply to <svg>) so it
-		paints above the (also top-layer) menu popovers. -->
-	<div ref="$overlay" popover="manual" class="safe-triangle-overlay">
-		<svg class="safe-triangle-svg">
-			<polygon v-if="safeTriangle" :points="safeTriangle" />
-		</svg>
-	</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -289,29 +255,4 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 
 .group-chevron
 	margin-right -6px
-
-// Full-viewport top-layer overlay (a popover); polygon points are client px.
-.safe-triangle-overlay
-	margin 0
-	border 0
-	padding 0
-	background transparent
-	pointer-events none
-
-	// Clear the popover UA inset/centering so it covers the viewport from 0,0.
-	&:popover-open
-		display block
-		position fixed
-		inset 0
-		width 100vw
-		height 100vh
-
-.safe-triangle-svg
-	width 100%
-	height 100%
-	overflow visible
-
-	polygon
-		fill var(--tq-color-accent)
-		opacity 0.08
 </style>
