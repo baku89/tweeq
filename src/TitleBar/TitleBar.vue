@@ -4,9 +4,9 @@ import {ref} from 'vue'
 
 import {ColorIcon} from '../ColorIcon'
 import {Menu, type MenuItem} from '../Menu'
-import {type Action, useActionsStore} from '../stores/actions'
-import type {TitleBarProps} from './types'
 import {Popover} from '../Popover'
+import {type ActionItem, useActionsStore} from '../stores/actions'
+import type {TitleBarProps} from './types'
 
 defineProps<TitleBarProps>()
 
@@ -31,21 +31,17 @@ const isMenuShown = ref(false)
 const hasFocusWithin = ref(false)
 const noDrag = computed(() => isMenuShown.value || hasFocusWithin.value)
 
-function convertToMenuItem(action: Action): MenuItem {
-	if ('perform' in action) {
-		return {
-			...action,
-			bindIcon: action.bind?.icon,
-		}
-	} else {
-		return {
-			...action,
-			children: action.children.map(convertToMenuItem),
-		}
+function convertToMenuItem(item: MenuItem): MenuItem {
+	if ('separator' in item) return item
+	if ('perform' in item) {
+		// Registered actions carry a Bndr `bind` whose icon is the shortcut hint
+		// (dynamic extras have none).
+		return {...item, bindIcon: (item as ActionItem).bind?.icon}
 	}
+	return {...item, children: item.children.map(convertToMenuItem)}
 }
 
-const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
+const menus = computed(() => actions.menu.map(convertToMenuItem))
 </script>
 
 <template>

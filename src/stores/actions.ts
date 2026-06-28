@@ -10,6 +10,8 @@ import {
 	ref,
 } from 'vue'
 
+import type {MenuCommand, MenuItem} from '../Menu'
+
 interface ActionItemBase {
 	id: string
 	shortLabel?: string
@@ -110,28 +112,45 @@ function bindDescriptorToEmitter(
 }
 
 // Recursively sort each menu / submenu by its items' `order` (ascending, stable
-// so equal/unset keys keep registration order). `order` only ranks siblings —
-// it never moves an item across levels.
-function sortActions(items: Action[]): Action[] {
+// so equal/unset keys keep registration order — `order` only ranks siblings),
+// and append any registered extras (a separator + the extra items) to the group
+// whose id matches.
+function buildMenu(
+	items: Action[],
+	extras: Record<string, MenuCommand[]>
+): MenuItem[] {
 	const sorted = [...items].sort(
 		(a, b) =>
 			(a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
 	)
-	return sorted.map(item =>
-		'children' in item
-			? {...item, children: sortActions(item.children)}
-			: item
-	)
+	return sorted.map(item => {
+		if (!('children' in item)) return item
+		const children = buildMenu(item.children, extras)
+		const ex = extras[item.id]
+		if (ex?.length) children.push({separator: true}, ...ex)
+		return {...item, children}
+	})
 }
 
 export const useActionsStore = defineStore('actions', () => {
 	const allActions = reactive<Record<string, ActionItem>>({})
 
-	// Registration order, as built up by register(). Exposed (order-sorted) via
-	// the `menu` getter.
+	// Registration order, as built up by register(). Exposed (order-sorted, with
+	// extras appended) via the `menu` getter.
 	const menuRaw = ref<Action[]>([])
 
-	const menu = computed(() => sortActions(menuRaw.value as Action[]))
+	// Dynamic, declarative extras appended (after a separator) to a group's
+	// children — e.g. a Recent Projects list. Keyed by group id; replacing a
+	// group's array is idempotent, so removals are handled cleanly.
+	const menuExtras = ref<Record<string, MenuCommand[]>>({})
+
+	function setMenuExtras(groupId: string, items: MenuCommand[]) {
+		menuExtras.value = {...menuExtras.value, [groupId]: items}
+	}
+
+	const menu = computed(() =>
+		buildMenu(menuRaw.value as Action[], menuExtras.value)
+	)
 
 	function register(options: ActionOptions[]) {
 		// SSRの場合は何もしない
@@ -251,5 +270,12 @@ export const useActionsStore = defineStore('actions', () => {
 		})
 	}
 
-	return {register, perform, onBeforePerform, allActions, menu}
+	return {
+		register,
+		perform,
+		onBeforePerform,
+		allActions,
+		menu,
+		setMenuExtras,
+	}
 })

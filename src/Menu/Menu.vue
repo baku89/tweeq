@@ -21,7 +21,7 @@ export interface MenuCommand extends BaseMenu {
 }
 
 export interface MenuGroup extends BaseMenu {
-	children: (MenuGroup | MenuCommand)[]
+	children: MenuItem[]
 }
 
 // A non-interactive divider between groups of items.
