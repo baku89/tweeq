@@ -54,8 +54,14 @@ defineProps<InputButtonProps>()
 	&:focus-visible
 		fill-focus-style()
 
-	&:hover
+	&:not(:disabled):hover
 		background var(--tq-color-accent-hover)
+
+	// Disabled: dim and inert. animation:none stops blink; hover is gated above.
+	&:disabled
+		opacity .4
+		cursor not-allowed
+		animation none
 
 	&:has(.label):not(:has(.icon))
 		padding 0 .75em
@@ -79,7 +85,7 @@ defineProps<InputButtonProps>()
 		&:not(:hover)
 			color var(--tq-color-text)
 
-		&:hover
+		&:not(:disabled):hover
 			background var(--tq-color-accent-hover)
 
 	&.blink
