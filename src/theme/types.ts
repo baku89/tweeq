@@ -58,6 +58,13 @@ export interface Theme {
 	/** Background of the input box when hovered */
 	colorInputHover: string
 
+	// Neutral
+
+	/** Background of an achromatic filled button */
+	colorNeutral: string
+	/** Background of an achromatic filled button when hovered */
+	colorNeutralHover: string
+
 	// Selection
 	colorSelection: string
 	colorOnSelection: string
@@ -92,6 +99,8 @@ export interface Theme {
 
 	// Pane
 	panePadding: number
+	/** Gutter between a top-layer pane/modal and the viewport edge */
+	paneMargin: number
 	scrollbarWidth: number
 
 	// Transition

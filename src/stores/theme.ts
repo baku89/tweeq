@@ -101,6 +101,12 @@ export const useThemeStore = defineStore('theme', () => {
 			colorInput: radixColors.grayScale[2],
 			colorInputHover: radixColors.grayScale[3],
 
+			// Neutral: an achromatic filled-button tone. More present than the
+			// input/checkbox-off background (grayScale[2]) so it reads as a real
+			// button, but without borrowing the accent color.
+			colorNeutral: radixColors.grayScale[4],
+			colorNeutralHover: radixColors.grayScale[5],
+
 			// Selection
 			colorSelection: radixColors.accentScale[10],
 			colorOnSelection: radixColors.background,
@@ -134,6 +140,9 @@ export const useThemeStore = defineStore('theme', () => {
 			inputGap: 9,
 
 			panePadding: 12,
+			// Gutter kept between a top-layer pane/modal and the viewport edge
+			// when its content would otherwise reach (or overflow) the screen.
+			paneMargin: 48,
 			scrollbarWidth: 6,
 
 			hoverTransitionDuration: '0.15s',
