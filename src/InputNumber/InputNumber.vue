@@ -618,7 +618,8 @@ const barStyle = computed<StyleValue>(() => {
 	background var(--tq-color-accent-soft)
 	hover-transition(background)
 
-	.TqInputNumber:hover &
+	// Not while disabled — the bar shouldn't light up on hover then.
+	.TqInputNumber:hover:not(:has(:disabled)) &
 		background var(--tq-color-accent-soft-hover)
 
 .handle
