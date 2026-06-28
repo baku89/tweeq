@@ -194,6 +194,10 @@ export const useThemeStore = defineStore('theme', () => {
 				document.body.style.setProperty(varName, cssValue)
 			}
 
+			// Expose the mode for the rare CSS rule that must differ between light
+			// and dark beyond what the (already mode-adaptive) tokens give.
+			document.body.dataset.colorMode = colorMode.value
+
 			metaThemeColor.setAttribute('content', theme.value.colorBackground)
 		},
 		{immediate: true}
