@@ -157,7 +157,7 @@ const semanticRows = computed(() => {
 
 .preview
 	border-radius var(--tq-radius-input)
-	padding 1.25rem
+	padding 1.25rem 0
 	display flex
 	flex-direction column
 	gap 0.5rem
