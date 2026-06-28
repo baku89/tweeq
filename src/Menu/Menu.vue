@@ -52,8 +52,15 @@ const theme = useThemeStore()
 
 const hoverIndex = ref(-1)
 
+const $menuRoot = useTemplateRef<HTMLElement>('$menuRoot')
 const $lists = useTemplateRef('$lists')
-const $childMenu = useTemplateRef<{$el: HTMLElement}>('$childMenu')
+const $childMenu = useTemplateRef<{getRoot: () => HTMLElement | null}>(
+	'$childMenu'
+)
+
+// Expose the root <ul> so a parent menu can measure this submenu for its safe
+// triangle (the component is multi-root, so $el isn't reliably the <ul>).
+defineExpose({getRoot: () => $menuRoot.value})
 
 const $childReference = computed(() => {
 	if (hoverIndex.value === -1) return null
@@ -87,8 +94,8 @@ function submenuIsOpen() {
 
 // The submenu's vertical edge facing the cursor (handles a left-flipped submenu).
 function submenuEdge(): {c1: Pt; c2: Pt} | null {
-	const el = $childMenu.value?.$el
-	if (!el || el.nodeType !== 1) return null
+	const el = $childMenu.value?.getRoot()
+	if (!el) return null
 	const r = el.getBoundingClientRect()
 	const edgeX = r.left >= pointer.x ? r.left : r.right
 	return {c1: {x: edgeX, y: r.top}, c2: {x: edgeX, y: r.bottom}}
@@ -170,6 +177,7 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 
 <template>
 	<ul
+		ref="$menuRoot"
 		class="TqMenu"
 		@pointermove="onPointerMove"
 		@pointerleave="onPointerLeave"
