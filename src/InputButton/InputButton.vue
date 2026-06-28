@@ -1,8 +1,15 @@
 <script lang="ts" setup>
 import {Icon} from '../Icon'
+import {useFlash} from '../use/useFlash'
 import type {InputButtonProps} from './types'
 
 defineProps<InputButtonProps>()
+
+// Imperative attention flash: a parent grabs this button via a template ref and
+// calls `.flash()` to pulse it (e.g. to point the eye at the next action).
+const {flashing, flash} = useFlash()
+
+defineExpose({flash})
 </script>
 
 <template>
@@ -14,7 +21,7 @@ defineProps<InputButtonProps>()
 	-->
 	<button
 		class="TqInputButton"
-		:class="{blink, subtle}"
+		:class="{blink, subtle, narrow, flashing}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="disabled"
@@ -39,7 +46,7 @@ defineProps<InputButtonProps>()
 	align-items center
 	justify-content center
 	hover-transition(background, color)
-	gap .2em
+	gap var(--tq-gap-related)
 	--bg var(--tq-color-accent)
 	--bg-blink var(--tq-color-accent-hover)
 
@@ -68,6 +75,14 @@ defineProps<InputButtonProps>()
 
 	&:has(.icon):has(.label)
 		padding 0 .75em 0 0.5em
+
+	// Narrow: shed the square min-width down to a hair of horizontal padding so an
+	// icon-only button nearly hugs its glyph (height is unchanged, so it still
+	// lines up in an InputGroup). A label keeps its own wider padding, so this
+	// only ever slims the icon-only case.
+	&.narrow
+		min-width 0
+		padding-inline 1px
 
 	.icon
 		display block
@@ -99,4 +114,19 @@ defineProps<InputButtonProps>()
 			background var(--bg)
 		100%
 			background var(--bg-blink)
+
+	// Attention flash (imperative .flash()): a couple of accent-glow + faint-scale
+	// pulses. relative z-index keeps the glow above neighbours in an InputGroup.
+	&.flashing
+		position relative
+		z-index 1
+		animation tq-input-button-flash .6s ease-in-out 2
+
+	@keyframes tq-input-button-flash
+		0%, 100%
+			box-shadow 0 0 0 0 transparent
+			transform scale(1)
+		50%
+			box-shadow 0 0 0 2px var(--tq-color-accent), 0 0 10px 1px var(--tq-color-accent)
+			transform scale(1.06)
 </style>

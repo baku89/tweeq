@@ -8,6 +8,7 @@ export type {
 	ActionOptions,
 } from './stores/actions'
 export * from './use/useBndr'
+export * from './use/useFlash'
 export {type InputEmits} from './types'
 export {initTweeq, useTweeq} from './useTweeq'
 export * from './util'

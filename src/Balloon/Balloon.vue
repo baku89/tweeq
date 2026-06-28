@@ -14,10 +14,14 @@ const props = withDefaults(
 		radius?: number
 		// Inner padding around the slotted content.
 		padding?: string
+		// Attention flash: pulse the whole balloon (scale + accent drop-shadow +
+		// glowing border). Driven by a boolean so re-arming restarts the keyframes.
+		flash?: boolean
 	}>(),
 	{
 		arrowSide: null,
 		arrowOffset: 0,
+		flash: false,
 		// Concentric with the content: inner control radius (4) + popup padding
 		// (9), matching --tq-radius-popup.
 		radius: 13,
@@ -146,7 +150,11 @@ const transformOrigin = computed(() => {
 </script>
 
 <template>
-	<div class="TqBalloon" :style="[wrapperStyle, {transformOrigin}]">
+	<div
+		class="TqBalloon"
+		:class="{flash}"
+		:style="[wrapperStyle, {transformOrigin}]"
+	>
 		<div class="fill" :style="fillStyle" />
 		<svg
 			class="stroke"
@@ -207,4 +215,37 @@ const transformOrigin = computed(() => {
 .content
 	position relative
 	color var(--tq-color-text)
+
+// Attention flash: the whole balloon swells slightly while its drop-shadow and
+// its outline (the SVG border that traces the speech-balloon shape, arrow and
+// all) bloom to the accent colour, then settle. Each layer animates the property
+// it owns; the 0%/100% frames match the resting style so it's seamless.
+.TqBalloon.flash
+	animation tq-balloon-flash-scale .6s ease-in-out 2
+
+	.fill
+		animation tq-balloon-flash-fill .6s ease-in-out 2
+
+	.stroke path
+		animation tq-balloon-flash-stroke .6s ease-in-out 2
+
+@keyframes tq-balloon-flash-scale
+	0%, 100%
+		transform scale(1)
+	50%
+		transform scale(1.03)
+
+@keyframes tq-balloon-flash-fill
+	0%, 100%
+		filter drop-shadow(0 2px 12px var(--tq-color-shadow))
+	50%
+		filter drop-shadow(0 2px 12px var(--tq-color-shadow)) drop-shadow(0 0 9px var(--tq-color-accent))
+
+@keyframes tq-balloon-flash-stroke
+	0%, 100%
+		stroke var(--tq-color-border)
+		filter none
+	50%
+		stroke var(--tq-color-accent)
+		filter drop-shadow(0 0 3px var(--tq-color-accent))
 </style>

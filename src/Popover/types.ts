@@ -33,6 +33,9 @@ export interface PopoverProps {
 	// points back at the reference). The arrow side/offset are derived from the
 	// resolved geometry, so they follow flips automatically.
 	arrow?: boolean
+	// Attention flash forwarded to the Balloon (scale + accent glow + glowing
+	// border). Only has an effect together with `arrow`.
+	flash?: boolean
 	// Teleport the popover into this selector. Needed when the Popover is
 	// declared outside `.TqViewport` (e.g. the global tooltip), so it still
 	// inherits Tweeq's CSS reset (font, etc.) instead of the UA defaults.

@@ -66,6 +66,12 @@ watch(
 			// for the new opening (the anchor/reference may have moved).
 			shiftX.value = 0
 			shiftY.value = 0
+			// Resolve the arrow side/offset synchronously (forces a layout read on
+			// the just-shown popover) so anything keyed off it — the Balloon's
+			// transform-origin, e.g. its pop-in/flash scaling about the arrow — is
+			// correct on the very first frame, not a frame late. The rAF pass then
+			// settles any post-layout shift.
+			update()
 			requestAnimationFrame(update)
 		}
 	}
@@ -250,7 +256,12 @@ let instanceCount = 0
 			:style="[styles, shiftStyle]"
 			:popover="lightDismiss ? 'auto' : 'manual'"
 		>
-			<Balloon v-if="arrow" :arrow-side="arrowSide" :arrow-offset="arrowOffset">
+			<Balloon
+				v-if="arrow"
+				:arrow-side="arrowSide"
+				:arrow-offset="arrowOffset"
+				:flash="flash"
+			>
 				<slot />
 			</Balloon>
 			<slot v-else />
