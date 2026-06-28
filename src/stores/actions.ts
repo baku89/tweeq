@@ -1,13 +1,26 @@
 import * as Bndr from 'bndr-js'
 import Case from 'case'
 import {defineStore} from 'pinia'
-import {markRaw, onBeforeUnmount, onUnmounted, reactive, ref} from 'vue'
+import {
+	computed,
+	markRaw,
+	onBeforeUnmount,
+	onUnmounted,
+	reactive,
+	ref,
+} from 'vue'
 
 interface ActionItemBase {
 	id: string
 	shortLabel?: string
 	menu?: string
 	icon?: string
+	/**
+	 * Sort key among siblings in the same menu / submenu (ascending). Sparse
+	 * values are fine (1, 40, 200); unset items keep their registration order
+	 * after the explicitly-ordered ones.
+	 */
+	order?: number
 	perform(): any
 }
 
@@ -22,6 +35,7 @@ export interface ActionGroup {
 	icon?: string
 	id: string
 	label: string
+	order?: number
 	children: Action[]
 }
 
@@ -38,6 +52,7 @@ export interface ActionGroupOptions {
 	icon?: string
 	id: string
 	label?: string
+	order?: number
 	children: ActionOptions[]
 }
 
@@ -94,10 +109,29 @@ function bindDescriptorToEmitter(
 	}
 }
 
+// Recursively sort each menu / submenu by its items' `order` (ascending, stable
+// so equal/unset keys keep registration order). `order` only ranks siblings —
+// it never moves an item across levels.
+function sortActions(items: Action[]): Action[] {
+	const sorted = [...items].sort(
+		(a, b) =>
+			(a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
+	)
+	return sorted.map(item =>
+		'children' in item
+			? {...item, children: sortActions(item.children)}
+			: item
+	)
+}
+
 export const useActionsStore = defineStore('actions', () => {
 	const allActions = reactive<Record<string, ActionItem>>({})
 
-	const menu = ref<Action[]>([])
+	// Registration order, as built up by register(). Exposed (order-sorted) via
+	// the `menu` getter.
+	const menuRaw = ref<Action[]>([])
+
+	const menu = computed(() => sortActions(menuRaw.value as Action[]))
 
 	function register(options: ActionOptions[]) {
 		// SSRの場合は何もしない
@@ -108,7 +142,7 @@ export const useActionsStore = defineStore('actions', () => {
 		const emitters = new Set<Bndr.Emitter>()
 
 		for (const option of options) {
-			registerAction(option, menu.value as Action[])
+			registerAction(option, menuRaw.value as Action[])
 		}
 
 		onBeforeUnmount(() => {
@@ -142,6 +176,9 @@ export const useActionsStore = defineStore('actions', () => {
 
 				group.icon ??= option.icon
 				group.label ??= label
+				// A group can be registered from several places; let any of them
+				// supply the order (first non-undefined wins).
+				group.order ??= option.order
 			} else {
 				group = {...option, label, children: []}
 				parent.push(group)
