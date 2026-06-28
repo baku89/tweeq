@@ -59,7 +59,13 @@ watch(
 	([open, $popover]) => {
 		if (!$popover) return
 		$popover.togglePopover(open)
-		if (open) requestAnimationFrame(updateArrow)
+		if (open) {
+			// Reset the shift so update() re-derives it from the natural position
+			// for the new opening (the anchor/reference may have moved).
+			shiftX.value = 0
+			shiftY.value = 0
+			requestAnimationFrame(update)
+		}
 	}
 )
 
@@ -69,40 +75,90 @@ watch(
 const arrowSide = ref<ArrowSide>()
 const arrowOffset = ref(0)
 
-function updateArrow() {
-	if (!props.arrow) return
+// Cross-axis shift (px) applied via `transform` to slide the popover back into
+// the viewport. CSS `position-try-fallbacks` only flips; it never slides a
+// centred popover in when the anchor sits near a viewport edge — so we do the
+// floating-ui-style "shift" ourselves. Applied as `transform` (not the anchor
+// insets), it stays invisible to position-try, so it can't fight the flip.
+const shiftX = ref(0)
+const shiftY = ref(0)
+
+const shiftStyle = computed<Record<string, string>>(() =>
+	shiftX.value || shiftY.value
+		? {transform: `translate(${shiftX.value}px, ${shiftY.value}px)`}
+		: {}
+)
+
+// Keep this much gap between the popover and the viewport edge when shifting.
+const VIEWPORT_MARGIN = 8
+
+function update() {
 	const reference = unrefElement(props.reference)
 	const popover = $popover.value
-	if (!reference || !popover) return
+	// vec2 placements are manual coordinates (e.g. InputDropdown) — leave them be.
+	if (!reference || !popover || typeof props.placement !== 'string') return
 
 	const r = reference.getBoundingClientRect()
 	const p = popover.getBoundingClientRect()
 
-	let side: ArrowSide
-	if (p.top >= r.bottom - 1) side = 'top'
-	else if (p.bottom <= r.top + 1) side = 'bottom'
-	else if (p.left >= r.right - 1) side = 'left'
-	else side = 'right'
+	const [side] = props.placement.split('-')
+	const horizontal = side === 'top' || side === 'bottom'
 
-	arrowSide.value = side
+	// Shift along the cross axis (x for top/bottom, y for left/right) so the box
+	// stays within the viewport. Work from the *natural* position (measured rect
+	// minus the shift already applied) so this converges instead of drifting
+	// frame to frame.
+	let dx = 0
+	let dy = 0
+	if (horizontal) {
+		const left = p.left - shiftX.value
+		const right = p.right - shiftX.value
+		const vw = document.documentElement.clientWidth
+		if (right > vw - VIEWPORT_MARGIN) dx = vw - VIEWPORT_MARGIN - right
+		// If both edges overflow (popover wider than viewport) the left edge wins.
+		if (left + dx < VIEWPORT_MARGIN) dx = VIEWPORT_MARGIN - left
+	} else {
+		const top = p.top - shiftY.value
+		const bottom = p.bottom - shiftY.value
+		const vh = document.documentElement.clientHeight
+		if (bottom > vh - VIEWPORT_MARGIN) dy = vh - VIEWPORT_MARGIN - bottom
+		if (top + dy < VIEWPORT_MARGIN) dy = VIEWPORT_MARGIN - top
+	}
+	shiftX.value = dx
+	shiftY.value = dy
+
+	if (!props.arrow) return
+
+	// The final (post-shift) rect the arrow must point into.
+	const fpLeft = p.left - shiftX.value + dx
+	const fpTop = p.top - shiftY.value + dy
+	const fp = {left: fpLeft, top: fpTop, right: fpLeft + p.width, bottom: fpTop + p.height}
+
+	let arrow: ArrowSide
+	if (fp.top >= r.bottom - 1) arrow = 'top'
+	else if (fp.bottom <= r.top + 1) arrow = 'bottom'
+	else if (fp.left >= r.right - 1) arrow = 'left'
+	else arrow = 'right'
+
+	arrowSide.value = arrow
 	arrowOffset.value =
-		side === 'top' || side === 'bottom'
-			? r.left + r.width / 2 - p.left
-			: r.top + r.height / 2 - p.top
+		arrow === 'top' || arrow === 'bottom'
+			? r.left + r.width / 2 - fp.left
+			: r.top + r.height / 2 - fp.top
 }
 
 // A shared tooltip popover keeps the same instance but swaps its reference, so
-// recompute the arrow when the reference changes too.
+// recompute when the reference changes too.
 watch(
 	() => props.reference,
 	() => {
-		if (props.open) requestAnimationFrame(updateArrow)
+		if (props.open) requestAnimationFrame(update)
 	}
 )
 
-useEventListener('scroll', updateArrow, {capture: true, passive: true})
-useEventListener('resize', updateArrow)
-useResizeObserver($popover, updateArrow)
+useEventListener('scroll', update, {capture: true, passive: true})
+useEventListener('resize', update)
+useResizeObserver($popover, update)
 
 const offsetOption = computed(() => {
 	const o = props.offset
@@ -189,7 +245,7 @@ let instanceCount = 0
 			ref="$popover"
 			class="Popover"
 			:class="{'animate-exit': exitTransition}"
-			:style="styles"
+			:style="[styles, shiftStyle]"
 			:popover="lightDismiss ? 'auto' : 'manual'"
 		>
 			<Balloon v-if="arrow" :arrow-side="arrowSide" :arrow-offset="arrowOffset">
