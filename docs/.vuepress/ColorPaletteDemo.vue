@@ -74,12 +74,18 @@ const semanticRows = computed(() => {
 		<div class="controls">
 			<label>
 				<span>Appearance</span>
-				<Tq.InputRadio
-					v-model="appearance"
-					:options="['light', 'dark']"
-					:icons="['mdi:white-balance-sunny', 'mdi:weather-night']"
-					:tooltips="['Light', 'Dark']"
-				/>
+				<Tq.InputRadio v-model="appearance" :options="['light', 'dark']">
+					<template #option="{value, label}">
+						<Tq.Icon
+							:icon="
+								value === 'light'
+									? 'mdi:white-balance-sunny'
+									: 'mdi:weather-night'
+							"
+						/>
+						{{ label }}
+					</template>
+				</Tq.InputRadio>
 			</label>
 			<label>
 				<span>Accent</span>
@@ -180,6 +186,10 @@ const semanticRows = computed(() => {
 	// size them differently).
 	:deep(.TqInputColor)
 		width 9rem
+
+	// Space the icon from its text in the appearance toggle.
+	:deep(.TqInputRadio label)
+		gap 0.35em
 
 h3
 	margin 0.75rem 0 0.25rem
