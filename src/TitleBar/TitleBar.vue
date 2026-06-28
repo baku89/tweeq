@@ -119,6 +119,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 
 .left, .center, .right
 	display flex
+	align-items center
 	gap var(--tq-input-gap)
 
 	& > *

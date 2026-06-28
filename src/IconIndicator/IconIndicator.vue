@@ -12,7 +12,7 @@ defineEmits<{
 <template>
 	<div
 		class="IconIndicator"
-		:class="{active: active, inactive: active === false}"
+		:class="{active: active, inactive: active === false, inline}"
 		@click="$emit('update:active', !active)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
@@ -23,14 +23,20 @@ defineEmits<{
 @import '../common.styl'
 
 .IconIndicator
-	height var(--tq-input-height)
-	width var(--tq-input-height)
+	--size var(--tq-input-height)
+	height var(--size)
+	width var(--size)
 	display flex
 	align-items center
 	justify-content center
 	hover-transition(color)
 	border-radius 9999px
 	color var(--tq-color-text)
+
+	// Inline variant: shrink to the nested icon size so it sits naturally next
+	// to text instead of occupying a full input slot.
+	&.inline
+		--size var(--tq-icon-size)
 
 	&.inactive
 		color var(--tq-color-text-mute)
@@ -39,6 +45,6 @@ defineEmits<{
 
 	.icon
 		display block
-		height calc(var(--tq-input-height) - 2px)
-		width calc(var(--tq-input-height) - 2px)
+		height calc(var(--size) - 2px)
+		width calc(var(--size) - 2px)
 </style>
