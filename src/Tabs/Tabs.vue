@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, provide, reactive} from 'vue'
+import {provide, reactive, watch} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import {AddTabKey, DeleteTabKey, TabsProviderKey, UpdateTabKey} from './symbols'
@@ -73,23 +73,27 @@ const findTab = (id: string): Tab | undefined => {
 	return state.tabs.find(tab => tab.id === id)
 }
 
-onMounted(() => {
-	if (!state.tabs.length) {
-		return
-	}
+// Keep exactly one valid tab active. Reactive (not a one-shot onMounted) because
+// tabs register via their own onBeforeMount — which, for tabs rendered by a
+// v-for, can land after this parent mounts — and the active tab can later be
+// removed. A one-shot check that ran before any tab existed would leave nothing
+// selected. Preference: the persisted tab, then an explicit default, then tab 0.
+function ensureActiveTab() {
+	if (!state.tabs.length) return
+	// A valid tab is already active → leave it.
+	if (state.activeId && findTab(state.activeId)) return
 
-	if (activeId.value !== null && findTab(activeId.value)) {
-		selectTab(activeId.value)
-		return
-	}
+	const next =
+		(activeId.value && findTab(activeId.value) && activeId.value) ||
+		(props.options?.defaultTabId &&
+			findTab(props.options.defaultTabId) &&
+			props.options.defaultTabId) ||
+		state.tabs[0].id
 
-	if (props.options?.defaultTabId && findTab(props.options.defaultTabId)) {
-		selectTab(props.options.defaultTabId)
-		return
-	}
+	selectTab(next)
+}
 
-	selectTab(state.tabs[0].id)
-})
+watch(() => state.tabs.map(tab => tab.id), ensureActiveTab, {immediate: true})
 </script>
 
 <template>
@@ -197,14 +201,31 @@ onMounted(() => {
 	.tablist-item
 		border-bottom 0
 		border-left 3px solid transparent
-		padding calc(0.2 * var(--tq-rem)) calc(0.6 * var(--tq-rem))
+		// No padding here — it lives on the link below so the whole row (full
+		// column width × tab height), not just the label text, is the hover /
+		// click target. The flex column already stretches each item to the column
+		// width.
+		padding 0
 		white-space nowrap
+		// Transition the LEFT border (the base only transitions border-bottom-color,
+		// used by the horizontal layout), so it fades in step with the label colour.
+		hover-transition(border-left-color)
 
 		&.active
 			border-left-color var(--tq-color-text)
 
+			// Hovering anywhere on the active item (incl. the border sliver outside
+			// the link) accents the border — so accent the label in lockstep.
 			&:hover
 				border-left-color var(--tq-color-accent)
+
+				.tablist-link
+					color var(--tq-color-accent)
+
+	// Fill the whole item so the entire row is clickable / hoverable.
+	.tablist-link
+		display block
+		padding calc(0.2 * var(--tq-rem)) calc(0.6 * var(--tq-rem))
 
 	// Divider between the tab list (left) and the panels (right).
 	.panels-wrapper
