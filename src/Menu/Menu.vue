@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {IconSequence} from 'bndr-js'
-import {computed, ref, useTemplateRef} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
@@ -141,6 +141,21 @@ function onPointerLeave() {
 	safeTriangle.value = null
 }
 
+// The overlay must sit in the top layer too (the menus are native popovers), so
+// it's a manual popover toggled with the triangle's presence.
+const $overlay = useTemplateRef<HTMLElement>('$overlay')
+watch(safeTriangle, points => {
+	const el = $overlay.value
+	if (!el) return
+	const open = el.matches(':popover-open')
+	try {
+		if (points && !open) el.showPopover()
+		else if (!points && open) el.hidePopover()
+	} catch {
+		// showPopover/hidePopover throw if the state already matches — ignore.
+	}
+})
+
 function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 	const cross = (p1: Pt, p2: Pt, p3: Pt) =>
 		(p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
@@ -200,9 +215,10 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 	>
 		<Menu ref="$childMenu" :items="childItems" @close="emit('close')" />
 	</Popover>
-	<!-- Faint visualization of the safe triangle (cursor → submenu edge). -->
-	<svg v-if="safeTriangle" class="safe-triangle-overlay">
-		<polygon :points="safeTriangle" />
+	<!-- Faint visualization of the safe triangle (cursor → submenu edge). A
+		top-layer popover so it paints above the (also top-layer) menu popovers. -->
+	<svg ref="$overlay" popover="manual" class="safe-triangle-overlay">
+		<polygon v-if="safeTriangle" :points="safeTriangle" />
 	</svg>
 </template>
 
@@ -260,14 +276,22 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 .group-chevron
 	margin-right -6px
 
-// Full-viewport overlay; polygon points are in client (px) coordinates.
+// Full-viewport top-layer overlay (a popover); polygon points are client px.
 .safe-triangle-overlay
-	position fixed
-	inset 0
 	width 100vw
 	height 100vh
+	margin 0
+	border 0
+	padding 0
+	background transparent
+	overflow visible
 	pointer-events none
-	z-index 1000
+
+	// Clear the popover UA inset/centering so it covers the viewport from 0,0.
+	&:popover-open
+		display block
+		position fixed
+		inset 0
 
 	polygon
 		fill var(--tq-color-accent)
