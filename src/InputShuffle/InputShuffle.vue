@@ -1,36 +1,36 @@
-<script lang="ts" setup>
-import {clamp, random} from 'lodash-es'
+<script lang="ts" setup generic="T">
+import {random} from 'lodash-es'
 import {ref} from 'vue'
 
+import {Icon} from '../Icon'
 import {SvgIcon} from '../SvgIcon'
-import type {InputSeedProps} from './types'
+import type {InputShuffleProps} from './types'
 
-const props = withDefaults(defineProps<InputSeedProps>(), {
-	min: 0,
-	max: 1,
-})
+const props = defineProps<InputShuffleProps<T>>()
 
-const emit = defineEmits<{
-	'update:modelValue': [value: number]
-}>()
+const model = defineModel<T>({required: true})
 
 const iconRot = ref(0)
+// The die face is just flair now (values may be non-numeric), so roll it.
 const iconNum = ref(3)
 
 function shuffle() {
 	iconRot.value += 90
-	const v = random(props.min, props.max, true)
-
-	const t = (v - props.min) / (props.max - props.min)
-	iconNum.value = clamp(Math.floor(t * 6) + 1, 1, 6)
-
-	emit('update:modelValue', v)
+	iconNum.value = random(1, 6)
+	model.value = props.generate(model.value)
 }
 </script>
 
 <template>
-	<button class="TqInputSeed" @click="shuffle">
+	<button class="TqInputShuffle" @click="shuffle">
+		<Icon
+			v-if="icon"
+			class="icon"
+			:icon="icon"
+			:style="{transform: `rotate(${iconRot}deg)`}"
+		/>
 		<SvgIcon
+			v-else
 			mode="block"
 			class="icon"
 			:style="{transform: `rotate(${iconRot}deg)`}"
@@ -76,7 +76,7 @@ function shuffle() {
 <style lang="stylus" scoped>
 @import '../common.styl'
 
-.TqInputSeed
+.TqInputShuffle
 	display block
 	padding 0
 	width var(--tq-input-height)
