@@ -134,6 +134,46 @@
 	/>
 </DemoComponent>
 
+### InputDrum
+
+<DemoComponent
+	name="InputDrum"
+	initialValue="apple"
+	:scheme="{
+		cellWidth: {type: 'number', min: 0, step: 1},
+		prefix: {type: 'string'},
+		suffix: {type: 'string'},
+		disabled: {type: 'boolean'},
+		invalid: {type: 'boolean'},
+	}"
+	:options="{
+		cellWidth: 0,
+		prefix: '',
+		suffix: '',
+		disabled: false,
+		invalid: false,
+	}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputDrum
+		:modelValue="modelValue"
+		:options="['apple', 'banana', 'cherry']"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</DemoComponent>
+
+A horizontal "slot machine" picker: the selected option sits in the centre and its neighbours peek in at the edges. `cellWidth` overrides the auto-measured cell size (0 = auto).
+
+ - `Drag`: spin the drum to neighbouring options
+ - `Click`: jump to a peeking option
+ - `Wheel`: step through the options
+ - `←` / `↑`: previous option
+ - `→` / `↓`: next option
+
 ### InputNumber
 
 <DemoComponent
