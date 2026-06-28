@@ -5,9 +5,9 @@ import {computed, ref, watch} from 'vue'
 import {
 	buildSemanticColors,
 	type ColorMode,
-	generateRadixScale,
 	generateThemeColorsRadix,
-	PALETTE,
+	nudgePalette,
+	paletteScales as buildPaletteScales,
 } from '../../src/theme'
 
 // Local, self-contained theme inputs — this demo computes scales directly and
@@ -39,18 +39,19 @@ const semantics = computed(() =>
 	})
 )
 
-// Each curated palette hue, fit to a 12-step scale (pure — no accent nudge).
-const paletteScales = computed(() =>
-	Object.entries(PALETTE).map(([name, seed]) => ({
+// The themed palette: each hue nudged toward the accent, then fit to a 12-step
+// scale. Semantic colors are extracted from this same source.
+const paletteScales = computed(() => {
+	const scales = buildPaletteScales(
+		nudgePalette(accent.value),
+		appearance.value,
+		background.value
+	)
+	return Object.entries(scales).map(([name, scale]) => ({
 		name,
-		seed,
-		scale: generateRadixScale({
-			appearance: appearance.value,
-			background: background.value,
-			seed,
-		}).scale,
+		scale: scale.scale,
 	}))
-)
+})
 
 const semanticRows = computed(() => {
 	const s = semantics.value
@@ -132,7 +133,10 @@ const semanticRows = computed(() => {
 				</div>
 			</div>
 
-			<h3>Palette <small>(representative hues — used for editor syntax)</small></h3>
+			<h3>
+				Palette
+				<small>(themed hues — semantic &amp; editor syntax draw from these)</small>
+			</h3>
 			<div class="palette-row">
 				<div v-for="hue in paletteScales" :key="hue.name" class="palette-chip">
 					<span class="chip-swatch" :style="{background: hue.scale[8]}" />
