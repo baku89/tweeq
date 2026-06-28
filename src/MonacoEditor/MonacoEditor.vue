@@ -3,9 +3,9 @@ import {vec2} from 'linearly'
 
 import type {MonacoEditorProps} from './types'
 import {CodeEditor} from 'monaco-editor-vue3'
-import type * as monaco from 'monaco-editor'
+import * as monaco from 'monaco-editor'
 import {useThemeStore} from '../stores/theme'
-import {onMounted, useTemplateRef} from 'vue'
+import {onMounted, useTemplateRef, watchEffect} from 'vue'
 
 withDefaults(defineProps<MonacoEditorProps>(), {})
 
@@ -40,6 +40,19 @@ const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
 	'bracketPairColorization.enabled': false,
 	renderIndentGuides: false,
 }
+
+// Register (and keep in sync) the palette-derived editor theme. defineTheme is
+// global and safe to call before the editor mounts; setTheme re-applies it when
+// the palette/appearance changes.
+const THEME_NAME = 'tweeq'
+
+watchEffect(() => {
+	monaco.editor.defineTheme(
+		THEME_NAME,
+		theme.monacoTheme as monaco.editor.IStandaloneThemeData
+	)
+	monaco.editor.setTheme(THEME_NAME)
+})
 
 const $editor = useTemplateRef('$editor')
 
@@ -154,7 +167,7 @@ onMounted(() => {
 		ref="$editor"
 		class="TqMonacoEditor"
 		:value="modelValue"
-		:theme="'vs-' + theme.colorMode"
+		:theme="THEME_NAME"
 		:language="lang"
 		:options="editorOptions"
 		@update:value="$emit('update:modelValue', $event)"
