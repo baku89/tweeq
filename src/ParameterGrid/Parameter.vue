@@ -57,5 +57,6 @@ defineSlots<{
 	display grid
 	gap var(--tq-gap-related)
 	align-items center
-	min-width 15rem
+	// Allow the value column to shrink with the panel instead of overflowing.
+	min-width 0
 </style>
