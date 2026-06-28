@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {Path} from '@baku89/pave'
-import {useMagicKeys} from '@vueuse/core'
+import {useElementBounding, useMagicKeys} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
 import {range} from 'lodash-es'
 import {
@@ -41,6 +41,15 @@ const context = useInputTimeContext()
 const focused = ref(false)
 
 const $input = useTemplateRef('$input')
+
+// The tweak overlay renders in the browser top layer (a full-viewport popover),
+// so it can't centre on the input with CSS percentages — that would centre it on
+// the viewport. Position it at the input's viewport-space centre instead.
+const inputBounds = useElementBounding($input)
+const overlayStyle = computed(() => ({
+	left: `${inputBounds.x.value + inputBounds.width.value / 2}px`,
+	top: `${inputBounds.y.value + inputBounds.height.value / 2}px`,
+}))
 
 //------------------------------------------------------------------------------
 // Tweak
@@ -396,7 +405,7 @@ const hourTick = computed(() => {
 		<template #front>
 			<TweakOverlay v-if="tweaking">
 				<Transition appear>
-					<div class="overlay">
+					<div class="overlay" :style="overlayStyle">
 						<svg class="overlay-svg" viewBox="0 0 100 100">
 							<!-- <circle cx="50" cy="50" r="50" class="bold gray" /> -->
 							<path :d="meters" class="meters" />
@@ -465,10 +474,11 @@ $size = 360px
 .overlay
 	input-overlay()
 	z-index 0
+	// top/left come from :style (the input's viewport-space centre); translate
+	// re-centres the box on that point.
 	position absolute
+	inset auto
 	pointer-events none
-	top 50%
-	left 50%
 	hover-transition(scale, opacity)
 	width $size
 	height $size
