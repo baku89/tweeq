@@ -45,7 +45,7 @@ defineProps<InputButtonProps>()
 
 	// Default button is accent-filled: an inner ring in the off-state button
 	// color (input) sits on the fill, plus an accent ring just OUTSIDE that reads
-	// against it at the edge. The subtle variant (input bg) below restores the
+	// against it at the edge. The subtle variant (neutral bg) below restores the
 	// plain outside accent ring.
 	--focus-ring inset 0 0 0 1px var(--tq-color-input), 0 0 0 1px var(--tq-color-accent)
 
@@ -76,10 +76,12 @@ defineProps<InputButtonProps>()
 		line-height var(--tq-input-height)
 
 	// Styles
+	// Subtle: an achromatic neutral fill at rest (more present than the
+	// input/checkbox-off tone) that lights up to accent on hover.
 	&.subtle
-		background var(--tq-color-input)
-		--bg var(--tq-color-input)
-		--bg-blink var(--tq-color-input-hover)
+		background var(--tq-color-neutral)
+		--bg var(--tq-color-neutral)
+		--bg-blink var(--tq-color-neutral-hover)
 		--focus-ring 0 0 0 1px var(--tq-color-accent)
 
 		&:not(:hover)

@@ -9,5 +9,6 @@ export interface InputButtonProps {
 	label?: string
 	tooltip?: string
 	blink?: boolean
+	/** Achromatic neutral fill at rest that lights up to accent on hover. */
 	subtle?: boolean
 }
