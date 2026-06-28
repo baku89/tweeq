@@ -40,8 +40,9 @@ function fullScreen() {
 
 <style lang="stylus" scoped>
 .DemoContainer
+	--demo-margin 1rem
 	position relative
-	padding 2rem 0 2rem
+	padding calc(var(--demo-margin) * 2 + var(--tq-input-height)) 0 2rem
 
 	&.fullscreen
 		position fixed
@@ -55,7 +56,7 @@ function fullScreen() {
 
 .full-screen-button
 	position absolute !important
-	top 1rem
+	top var(--demo-margin)
 	right 0rem
 
 	.fullscreen &
