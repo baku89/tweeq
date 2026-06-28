@@ -11,6 +11,8 @@ interface TweeqOptions {
 	accentColor?: string
 	backgroundColor?: string
 	grayColor?: string
+	/** App-wide InputColor swatches. Defaults to the theme palette. */
+	colorPresets?: string[]
 }
 
 export function initTweeq(appId: string, options: TweeqOptions = {}) {
@@ -20,7 +22,7 @@ export function initTweeq(appId: string, options: TweeqOptions = {}) {
 	const theme = useThemeStore()
 	theme.setDefault(options)
 
-	useInputColor()
+	useInputColor(options.colorPresets)
 }
 
 export function useTweeq() {
