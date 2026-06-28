@@ -185,9 +185,10 @@ let instanceCount = 0
 <template>
 	<Teleport :to="teleport" :disabled="!teleport">
 		<div
-			v-if="open"
+			v-if="open || exitTransition"
 			ref="$popover"
 			class="Popover"
+			:class="{'animate-exit': exitTransition}"
 			:style="styles"
 			:popover="lightDismiss ? 'auto' : 'manual'"
 		>
@@ -215,4 +216,33 @@ let instanceCount = 0
 @starting-style
 	.Popover:popover-open
 		opacity 0
+
+// Opt-in animated exit. The element stays mounted while closed (v-if keeps it),
+// and `display ... allow-discrete` defers the display:none flip so the fade-out
+// + the Balloon's scale-down can play first. Because the element is never
+// re-created per open, the Balloon's own @starting-style won't re-fire — so the
+// scale is driven here from the popover's :popover-open state instead.
+.Popover.animate-exit
+	opacity 0
+	// `overlay allow-discrete` keeps the popover in the top layer for the whole
+	// fade — without it hidePopover() drops it out of the top layer at once and it
+	// vanishes instantly despite the opacity transition. `display allow-discrete`
+	// likewise defers the display:none flip.
+	transition opacity var(--tq-active-transition-duration) ease-out, display var(--tq-active-transition-duration) allow-discrete, overlay var(--tq-active-transition-duration) allow-discrete
+
+	:deep(.TqBalloon)
+		transform scale(0.96)
+
+.Popover.animate-exit:popover-open
+	opacity 1
+
+	:deep(.TqBalloon)
+		transform scale(1)
+
+@starting-style
+	.Popover.animate-exit:popover-open
+		opacity 0
+
+		:deep(.TqBalloon)
+			transform scale(0.96)
 </style>

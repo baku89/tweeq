@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type {IconSequence} from 'bndr-js'
+import {computed, ref, useTemplateRef} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
-import {computed, onUnmounted, ref, useTemplateRef} from 'vue'
 import Popover from '../Popover/Popover.vue'
 import {useThemeStore} from '../stores/theme'
 
@@ -24,7 +24,12 @@ export interface MenuGroup extends BaseMenu {
 	children: (MenuGroup | MenuCommand)[]
 }
 
-export type MenuItem = MenuCommand | MenuGroup
+// A non-interactive divider between groups of items.
+export interface MenuSeparator {
+	separator: true
+}
+
+export type MenuItem = MenuCommand | MenuGroup | MenuSeparator
 
 interface Props {
 	items: MenuItem[]
@@ -57,59 +62,83 @@ const $childReference = computed(() => {
 })
 
 const childItems = computed(() => {
-	return props.items[hoverIndex.value].children ?? null
+	const item = props.items[hoverIndex.value]
+	return item && 'children' in item ? (item.children ?? null) : null
 })
 
 // --- "Safe triangle" submenu navigation ---------------------------------------
 // While a submenu is open, let the cursor cut diagonally across sibling items to
-// reach it without the submenu closing. We keep the open item as long as the
-// cursor stays inside the triangle from where it entered that item (the apex) to
-// the near edge of the open submenu.
+// reach it without the submenu closing. Each move we test whether the cursor is
+// travelling *into* the submenu: it's inside the triangle (beam) fanned from the
+// previous cursor position to the submenu's near edge. While so, sibling hovers
+// are ignored; the moment the cursor leaves that beam, the hovered sibling wins.
 type Pt = {x: number; y: number}
 let pointer: Pt = {x: 0, y: 0}
-let apex: Pt = {x: 0, y: 0}
-let pendingIndex = -1
-let switchTimer: ReturnType<typeof setTimeout> | undefined
+let prevPointer: Pt = {x: 0, y: 0}
+// Item currently under the cursor (may differ from hoverIndex while in the beam).
+const candidateIndex = ref(-1)
+// Current safe triangle as an SVG points string, for the faint overlay.
+const safeTriangle = ref<string | null>(null)
 
 function submenuIsOpen() {
 	const cur = props.items[hoverIndex.value]
 	return hoverIndex.value !== -1 && !!cur && 'children' in cur && !!cur.children
 }
 
-function inSafeTriangle(): boolean {
+// The submenu's vertical edge facing the cursor (handles a left-flipped submenu).
+function submenuEdge(): {c1: Pt; c2: Pt} | null {
 	const el = $childMenu.value?.$el
-	if (!el || el.nodeType !== 1) return false
+	if (!el || el.nodeType !== 1) return null
 	const r = el.getBoundingClientRect()
-	// Use whichever vertical edge of the submenu faces the apex (handles a
-	// submenu that flipped to the left).
-	const edgeX = r.left >= apex.x ? r.left : r.right
-	return inTriangle(pointer, apex, {x: edgeX, y: r.top}, {x: edgeX, y: r.bottom})
+	const edgeX = r.left >= pointer.x ? r.left : r.right
+	return {c1: {x: edgeX, y: r.top}, c2: {x: edgeX, y: r.bottom}}
+}
+
+// Is the cursor travelling toward the submenu — i.e. inside the beam fanned from
+// the previous cursor position to the submenu's near edge?
+function headingToSubmenu(at: Pt): boolean {
+	const e = submenuEdge()
+	return !!e && inTriangle(at, prevPointer, e.c1, e.c2)
 }
 
 function commitHover(index: number) {
-	clearTimeout(switchTimer)
-	switchTimer = undefined
-	pendingIndex = -1
 	hoverIndex.value = index
-	apex = {...pointer}
 }
 
 function onItemEnter(index: number, e: PointerEvent) {
+	candidateIndex.value = index
 	pointer = {x: e.clientX, y: e.clientY}
-	if (index !== hoverIndex.value && submenuIsOpen() && inSafeTriangle()) {
-		// Heading toward the open submenu — defer the switch (a timeout still
-		// commits if the cursor just parks on the sibling).
-		pendingIndex = index
-		clearTimeout(switchTimer)
-		switchTimer = setTimeout(() => commitHover(index), 300)
-	} else {
-		commitHover(index)
-	}
+	if (!submenuIsOpen() || !headingToSubmenu(pointer)) commitHover(index)
 }
 
 function onPointerMove(e: PointerEvent) {
 	pointer = {x: e.clientX, y: e.clientY}
-	if (pendingIndex !== -1 && !inSafeTriangle()) commitHover(pendingIndex)
+
+	if (submenuIsOpen()) {
+		const edge = submenuEdge()
+		if (edge) {
+			safeTriangle.value = `${pointer.x},${pointer.y} ${edge.c1.x},${edge.c1.y} ${edge.c2.x},${edge.c2.y}`
+			// Left the beam → let the item the cursor is actually over take over.
+			if (
+				!headingToSubmenu(pointer) &&
+				candidateIndex.value !== -1 &&
+				candidateIndex.value !== hoverIndex.value
+			) {
+				commitHover(candidateIndex.value)
+			}
+		} else {
+			safeTriangle.value = null
+		}
+	} else {
+		safeTriangle.value = null
+	}
+
+	prevPointer = pointer
+}
+
+function onPointerLeave() {
+	candidateIndex.value = -1
+	safeTriangle.value = null
 }
 
 function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
@@ -122,40 +151,44 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 	const pos = d1 > 0 || d2 > 0 || d3 > 0
 	return !(neg && pos)
 }
-
-onUnmounted(() => clearTimeout(switchTimer))
 </script>
 
 <template>
-	<ul class="TqMenu" @pointermove="onPointerMove">
-		<li
-			ref="$lists"
-			v-for="(menu, index) in items"
-			:key="index + '_item'"
-			class="menu"
-			:class="{
-				active: index === hoverIndex && !('children' in menu),
-				'submenu-open': index === hoverIndex && 'children' in menu,
-			}"
-			@click="onClick(menu)"
-			@pointerenter="onItemEnter(index, $event)"
-		>
-			<Icon v-if="menu.icon" class="icon" :icon="menu.icon" />
-			<span v-else />
-			<div class="label-container">
-				<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
-				<BindIcon
-					v-if="'bindIcon' in menu && menu.bindIcon"
-					class="bind-icon"
-					:icon="menu.bindIcon"
-				/>
-				<Icon
-					v-if="'children' in menu"
-					class="group-chevron"
-					icon="mdi:chevron-right"
-				/>
-			</div>
-		</li>
+	<ul
+		class="TqMenu"
+		@pointermove="onPointerMove"
+		@pointerleave="onPointerLeave"
+	>
+		<template v-for="(menu, index) in items" :key="index + '_item'">
+			<li v-if="'separator' in menu" ref="$lists" class="separator" />
+			<li
+				v-else
+				ref="$lists"
+				class="menu"
+				:class="{
+					active: index === hoverIndex && !('children' in menu),
+					'submenu-open': index === hoverIndex && 'children' in menu,
+				}"
+				@click="onClick(menu)"
+				@pointerenter="onItemEnter(index, $event)"
+			>
+				<Icon v-if="menu.icon" class="icon" :icon="menu.icon" />
+				<span v-else />
+				<div class="label-container">
+					<span class="label">{{ menu.shortLabel ?? menu.label }}</span>
+					<BindIcon
+						v-if="'bindIcon' in menu && menu.bindIcon"
+						class="bind-icon"
+						:icon="menu.bindIcon"
+					/>
+					<Icon
+						v-if="'children' in menu"
+						class="group-chevron"
+						icon="mdi:chevron-right"
+					/>
+				</div>
+			</li>
+		</template>
 	</ul>
 	<Popover
 		v-if="$childReference && childItems"
@@ -167,6 +200,10 @@ onUnmounted(() => clearTimeout(switchTimer))
 	>
 		<Menu ref="$childMenu" :items="childItems" @close="emit('close')" />
 	</Popover>
+	<!-- Faint visualization of the safe triangle (cursor → submenu edge). -->
+	<svg v-if="safeTriangle" class="safe-triangle-overlay">
+		<polygon :points="safeTriangle" />
+	</svg>
 </template>
 
 <style lang="stylus" scoped>
@@ -178,6 +215,12 @@ onUnmounted(() => clearTimeout(switchTimer))
 	popup-style()
 	display grid
 	grid-template-columns min-content 1fr
+
+.separator
+	grid-column 1 / 3
+	height 1px
+	margin 3px 6px
+	background var(--tq-color-border)
 
 .menu
 	grid-column 1 / 3
@@ -216,4 +259,17 @@ onUnmounted(() => clearTimeout(switchTimer))
 
 .group-chevron
 	margin-right -6px
+
+// Full-viewport overlay; polygon points are in client (px) coordinates.
+.safe-triangle-overlay
+	position fixed
+	inset 0
+	width 100vw
+	height 100vh
+	pointer-events none
+	z-index 1000
+
+	polygon
+		fill var(--tq-color-accent)
+		opacity 0.08
 </style>

@@ -42,4 +42,9 @@ export interface PopoverProps {
 	// (e.g. the tooltip directive does it on hover, well before the popover
 	// shows, so CSS anchor() is already resolved on the first frame).
 	anchorName?: string
+	// Animate the exit (fade-out + the Balloon's scale-down) instead of vanishing
+	// instantly. Keeps the element mounted while closed so the native popover's
+	// allow-discrete display transition can play. Off by default — most popovers
+	// (tooltips, menus) want a snappy instant dismiss.
+	exitTransition?: boolean
 }
