@@ -54,10 +54,10 @@ onBeforeUnmount(() => {
 
 <template>
 	<section
-		v-show="isActive"
 		:id="paneId"
 		ref="tab"
 		class="TqTab"
+		:class="{active: isActive}"
 		:data-tab-id="id"
 		:aria-hidden="!isActive"
 		role="tabpanel"
@@ -69,6 +69,12 @@ onBeforeUnmount(() => {
 
 <style lang="stylus" scoped>
 
+// Panels stack in one grid cell (parent sizes to the tallest tab, so the modal
+// never jumps on switch); the inactive ones stay laid out but hidden.
 .TqTab
 	height 100%
+
+	&:not(.active)
+		visibility hidden
+		pointer-events none
 </style>

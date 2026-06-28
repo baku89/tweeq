@@ -18,6 +18,8 @@ export interface Tabs {
 
 export interface TabsProps {
 	name: string
+	/** Lay the tab list down the left side (panels on the right), AE/Resolve-style. */
+	vertical?: boolean
 	options?: {
 		storageKey?: string
 		defaultTabId?: string
