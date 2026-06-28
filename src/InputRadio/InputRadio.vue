@@ -51,8 +51,10 @@ function onChange(index: number) {
 // real labels (not assumed equal-width) so it follows variable label widths.
 const $ul = ref<HTMLUListElement>()
 const indicator = ref<{left: number; width: number} | null>(null)
-// Suppress the transition for the very first placement (no slide-in from 0).
-const ready = ref(false)
+// Only animate the indicator for a user-driven change of value (click, drag,
+// arrow keys) — never for external layout/resize, where a slide reads as a glitch.
+const animating = ref(false)
+let animTimer: ReturnType<typeof setTimeout> | undefined
 
 function updateIndicator() {
 	const ul = $ul.value
@@ -71,13 +73,18 @@ function updateIndicator() {
 	indicator.value = {left: rect.left - ulRect.left, width: rect.width}
 }
 
-watch([activeIndex, completeOptions], () => nextTick(updateIndicator))
-useResizeObserver($ul, updateIndicator)
-onMounted(async () => {
-	updateIndicator()
-	await nextTick()
-	ready.value = true
+// User changed the value → animate the slide. Keep the class on just long
+// enough to cover the transition, then drop it so the next resize won't animate.
+watch(activeIndex, () => {
+	animating.value = true
+	clearTimeout(animTimer)
+	animTimer = setTimeout(() => (animating.value = false), 250)
+	nextTick(updateIndicator)
 })
+// Layout-only changes (option set, external resize) reposition without animating.
+watch(completeOptions, () => nextTick(updateIndicator))
+useResizeObserver($ul, updateIndicator)
+onMounted(updateIndicator)
 
 // Drag-to-select: press anywhere and slide across the segments (the indicator
 // follows). We track on `window` rather than via pointer capture so the gesture
@@ -133,7 +140,7 @@ onBeforeUnmount(endDrag)
 		<div
 			v-if="indicator"
 			class="indicator"
-			:class="{ready, dragging}"
+			:class="{animating, dragging}"
 			:style="{
 				transform: `translateX(${indicator.left}px)`,
 				width: `${indicator.width}px`,
@@ -208,7 +215,7 @@ onBeforeUnmount(endDrag)
 	pointer-events none
 	z-index 0
 
-	&.ready
+	&.animating
 		transition transform var(--tq-hover-transition-duration) ease, width var(--tq-hover-transition-duration) ease
 
 	// While dragging, the active block reads as "held" with the hover tint.
