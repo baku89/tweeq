@@ -89,7 +89,7 @@ defineExpose({
 .TqPaneModalComplex
 	display flex
 	flex-direction column
-	gap 12px
+	gap var(--tq-gap-section)
 	// Fill the height the PaneModal allows so the form can scroll within it.
 	min-height 0
 	flex 1
@@ -104,7 +104,7 @@ defineExpose({
 
 	.footer
 		display flex
-		gap 8px
+		gap var(--tq-gap-control)
 
 		// Split the width evenly between Cancel and Save.
 		> *

@@ -47,7 +47,7 @@ function collapse() {
 .TqPaneExpandable
 	display flex
 	flex-direction column
-	gap 9px
+	gap var(--tq-gap-control)
 	position absolute
 	top 9px
 	right 9px

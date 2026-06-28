@@ -36,7 +36,7 @@ const presetsMerged = computedInject(InputColorPresetsKey, injectedPresets => {
 
 .TqInputColorPresets
 	display flex
-	gap 6px
+	gap var(--tq-gap-related)
 
 button
 	width var(--tq-input-height)

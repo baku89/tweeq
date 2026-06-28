@@ -47,5 +47,5 @@ const showNumber = computed(() => width.value > theme.inputHeight * 4)
 <style lang="stylus" scoped>
 .TqInputAngle
 	display flex
-	gap var(--tq-input-gap)
+	gap var(--tq-gap-control)
 </style>

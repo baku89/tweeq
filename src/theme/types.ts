@@ -101,7 +101,13 @@ export interface Theme {
 
 	// Input
 	inputHeight: number
-	inputGap: number // Drag-to-t
+
+	// Gap scale, named by how related the separated things are (tightest →
+	// loosest). See the theme store for values.
+	gapGroup: number
+	gapRelated: number
+	gapControl: number
+	gapSection: number
 
 	// Popup
 	popupWidth: number

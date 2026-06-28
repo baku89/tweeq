@@ -166,7 +166,7 @@ reset-viewport('.TqCommandPalette')
 .searchContainer
 	display flex
 	align-items center
-	gap 6px
+	gap var(--tq-gap-related)
 	padding-left 3px
 
 .search-icon
@@ -191,7 +191,7 @@ reset-viewport('.TqCommandPalette')
 .action
 	display flex
 	align-items center
-	gap 18px
+	gap var(--tq-gap-section)
 	line-height 32px
 	border-radius 3px
 	padding 0 6px

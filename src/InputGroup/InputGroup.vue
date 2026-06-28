@@ -68,7 +68,7 @@ function PositionedChildren(): VNode[] {
 .TqInputGroup
 	display flex
 	flex-grow 1
-	gap 2px
+	gap var(--tq-gap-group)
 
 	&[data-direction=vertical]
 		flex-direction column

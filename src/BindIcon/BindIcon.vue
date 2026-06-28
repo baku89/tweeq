@@ -24,7 +24,7 @@ defineProps<Props>()
 .BindIcon
 	display flex
 	align-items center
-	gap 2px
+	gap var(--tq-gap-group)
 
 .icon
 	width 1em

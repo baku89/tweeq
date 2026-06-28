@@ -182,7 +182,7 @@ reset-viewport('.TqMultiSelectPopup')
 	display flex
 	flex-direction row
 	padding 2px
-	gap 2px
+	gap var(--tq-gap-group)
 	opacity 0
 
 	.TqMultiSelectPopup:hover &

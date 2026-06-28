@@ -103,7 +103,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 	user-select none
 	background linear-gradient(to bottom, var(--tq-color-background), transparent)
 	backdrop-filter blur(2px)
-	gap var(--tq-input-gap)
+	gap var(--tq-gap-control)
 	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
 	-webkit-app-region: drag
 	app-region: drag
@@ -120,7 +120,7 @@ const menus = computed(() => (actions.menu as Action[]).map(convertToMenuItem))
 .left, .center, .right
 	display flex
 	align-items center
-	gap var(--tq-input-gap)
+	gap var(--tq-gap-control)
 
 	& > *
 		flex-grow 0

@@ -543,7 +543,7 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	height var(--tq-input-height)
 	line-height var(--tq-input-height)
 	display flex
-	gap 4px
+	gap var(--tq-gap-related)
 	align-items center
 	align-content center
 	justify-content center

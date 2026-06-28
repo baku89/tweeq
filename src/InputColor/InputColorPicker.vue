@@ -93,7 +93,7 @@ async function pickColor() {
 .TqInputColorPicker
 	padding 0
 	display grid
-	gap var(--tq-input-gap)
+	gap var(--tq-gap-control)
 
 
 .eyeDropper

@@ -44,7 +44,7 @@ const expanded = appConfig.ref(props.name, true)
 .ParameterGroup, .content
 	display grid
 	grid-template-columns subgrid
-	grid-gap var(--tq-input-gap)
+	grid-gap var(--tq-gap-control)
 	grid-column 1 / 3
 
 .chevron

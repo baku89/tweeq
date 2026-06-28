@@ -34,7 +34,7 @@ defineSlots<{
 	line-height var(--tq-input-height)
 	align-items center
 	display flex
-	gap 4px
+	gap var(--tq-gap-related)
 	color var(--tq-color-text-mute)
 	text-wrap nowrap
 
@@ -55,7 +55,7 @@ defineSlots<{
 
 .input
 	display grid
-	gap 6px
+	gap var(--tq-gap-related)
 	align-items center
 	min-width 15rem
 </style>

@@ -9,7 +9,7 @@
 .TqParameterGrid
 	display grid
 	grid-template-columns minmax(60px, max-content) 1fr
-	grid-gap var(--tq-input-gap)
+	grid-gap var(--tq-gap-control)
 	padding-left 3px
 	align-items start
 </style>

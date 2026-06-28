@@ -41,7 +41,7 @@ defineProps<InputButtonToggleProps>()
 	align-items center
 	justify-content center
 	hover-transition(background, color)
-	gap 4px
+	gap var(--tq-gap-related)
 
 	use-input-position()
 

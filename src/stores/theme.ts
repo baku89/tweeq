@@ -132,7 +132,15 @@ export const useThemeStore = defineStore('theme', () => {
 
 			iconSize: 18,
 			inputHeight: 24,
-			inputGap: 9,
+
+			// Gap scale, named by how related the two things being separated are
+			// (tightest → loosest): segments of one control, items that read as a
+			// unit (icon + label, a parameter's inputs), independent controls, and
+			// whole sections.
+			gapGroup: 2,
+			gapRelated: 6,
+			gapControl: 9,
+			gapSection: 18,
 
 			panePadding: 12,
 			// Gutter kept between a top-layer pane/modal and the viewport edge
