@@ -18,7 +18,9 @@ const props = withDefaults(
 	{
 		arrowSide: null,
 		arrowOffset: 0,
-		radius: 6,
+		// Concentric with the content: inner control radius (4) + popup padding
+		// (9), matching --tq-radius-popup.
+		radius: 13,
 		padding: 'var(--tq-popup-padding)',
 	}
 )
@@ -122,10 +124,29 @@ const wrapperStyle = computed(() => {
 const fillStyle = computed(() => ({
 	clipPath: d.value ? `path('${d.value}')` : undefined,
 }))
+
+// Anchor the pop-in scale at the arrow's tip so the balloon grows out of the
+// point it's aimed at (falls back to centre when there's no arrow). Offset is
+// measured along the arrow's edge from the box's top-left, matching the path.
+const transformOrigin = computed(() => {
+	const o = `${props.arrowOffset}px`
+	switch (props.arrowSide) {
+		case 'top':
+			return `${o} 0`
+		case 'bottom':
+			return `${o} 100%`
+		case 'left':
+			return `0 ${o}`
+		case 'right':
+			return `100% ${o}`
+		default:
+			return '50% 50%'
+	}
+})
 </script>
 
 <template>
-	<div class="TqBalloon" :style="wrapperStyle">
+	<div class="TqBalloon" :style="[wrapperStyle, {transformOrigin}]">
 		<div class="fill" :style="fillStyle" />
 		<svg
 			class="stroke"
@@ -151,13 +172,26 @@ const fillStyle = computed(() => ({
 .TqBalloon
 	position relative
 	display inline-block
-	filter drop-shadow(0 2px 12px var(--tq-color-shadow))
+	// Subtle pop-in: scale up from the arrow tip, in step with the popover's
+	// opacity fade (same duration). Exit is instant, like the fade.
+	transform scale(1)
+	transition transform var(--tq-active-transition-duration) ease-out
+
+@starting-style
+	.TqBalloon
+		transform scale(0.96)
 
 .fill
 	position absolute
 	inset 0
 	background var(--tq-color-surface)
-	backdrop-filter blur(6px)
+	backdrop-filter blur(var(--tq-popup-blur))
+	// Keep the drop-shadow here, NOT on .TqBalloon: a `filter` on an ancestor of
+	// a backdrop-filtered element turns that ancestor into a backdrop root, which
+	// blanks the blur (it samples the empty wrapper instead of the page behind
+	// the balloon). On .fill itself the shadow still follows the clipped outline
+	// (filters apply after clip-path) while backdrop-filter keeps working.
+	filter drop-shadow(0 2px 12px var(--tq-color-shadow))
 
 .stroke
 	position absolute

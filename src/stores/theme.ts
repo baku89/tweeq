@@ -121,7 +121,9 @@ export const useThemeStore = defineStore('theme', () => {
 			rem: 12,
 
 			radiusInput: 4,
-			radiusPopup: 6,
+			// Concentric with the content: inner control radius (4) + popup padding
+			// (9), so a popup's corners stay parallel to the controls inside it.
+			radiusPopup: 13,
 			radiusPane: 12,
 
 			popupWidth: 240,
