@@ -74,7 +74,12 @@ const semanticRows = computed(() => {
 		<div class="controls">
 			<label>
 				<span>Appearance</span>
-				<Tq.InputRadio v-model="appearance" :options="['light', 'dark']" />
+				<Tq.InputRadio
+					v-model="appearance"
+					:options="['light', 'dark']"
+					:icons="['mdi:white-balance-sunny', 'mdi:weather-night']"
+					:tooltips="['Light', 'Dark']"
+				/>
 			</label>
 			<label>
 				<span>Accent</span>
@@ -117,7 +122,7 @@ const semanticRows = computed(() => {
 				</div>
 			</div>
 
-			<h3>Semantic colors <small>(palette hue, nudged toward accent)</small></h3>
+			<h3>Semantic colors</h3>
 			<div class="semantics">
 				<div
 					v-for="row in semanticRows"
@@ -133,10 +138,7 @@ const semanticRows = computed(() => {
 				</div>
 			</div>
 
-			<h3>
-				Palette
-				<small>(themed hues — semantic &amp; editor syntax draw from these)</small>
-			</h3>
+			<h3>Palette</h3>
 			<div class="palette-row">
 				<div v-for="hue in paletteScales" :key="hue.name" class="palette-chip">
 					<span class="chip-swatch" :style="{background: hue.scale[8]}" />
@@ -182,10 +184,6 @@ const semanticRows = computed(() => {
 h3
 	margin 0.75rem 0 0.25rem
 	font-size 0.95rem
-
-	small
-		font-weight normal
-		opacity 0.6
 
 .scale
 	display grid

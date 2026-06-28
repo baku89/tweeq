@@ -19,16 +19,3 @@ hue update live.
 <ClientOnly>
 <ColorPaletteDemo />
 </ClientOnly>
-
-## How it fits together
-
-- **`generateThemeColorsRadix`** — accent + gray scales for the UI chrome.
-- **`generateRadixScale(seed)`** — the same engine for any single hue.
-- **`nudgePalette(accent)`** — the curated palette nudged toward the accent: the
-  one themed source both of the next two draw from.
-- **`buildSemanticColors`** — themed palette → `error`, `warning`, `success`,
-  `info`, `rec`.
-- **`buildMonacoTheme`** — themed palette mapped onto editor token types.
-
-The palette is a single source of truth: swap it (or expose it as a chooseable
-preset) to reskin every semantic and syntax color at once.
