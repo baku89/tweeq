@@ -21,7 +21,7 @@ export function useInputSwitch({
 	const {focused} = useFocus(input)
 
 	const {dragging, initial, xy} = useDrag(track, {
-		disabled: toRef(() => props.disabled),
+		disabled: toRef(() => props.disabled ?? false),
 		dragDelaySeconds: 0.2,
 		onClick() {
 			if (!multi.readyToBeSelected) {
