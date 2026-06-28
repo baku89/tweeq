@@ -181,7 +181,22 @@ export interface MonacoThemeData {
 	colors: Record<string, string>
 }
 
-const noHash = (hex: string) => hex.replace('#', '')
+// colorjs.io collapses #112233 → #123 and #111111 → #111, but Monaco's theme
+// parser rejects 3/4-digit hex (in both `colors` and token `rules`) — it wants
+// the full 6/8-digit form. Expand back before handing colors to Monaco.
+function toFullHex(hex: string): string {
+	const h = hex.replace('#', '')
+	const full =
+		h.length === 3 || h.length === 4
+			? h
+					.split('')
+					.map(c => c + c)
+					.join('')
+			: h
+	return '#' + full
+}
+
+const noHash = (hex: string) => toFullHex(hex).slice(1)
 
 export function buildMonacoTheme({
 	appearance,
@@ -246,11 +261,11 @@ export function buildMonacoTheme({
 			{token: 'invalid', foreground: red},
 		],
 		colors: {
-			'editor.background': background,
-			'editor.foreground': foreground,
-			'editorCursor.foreground': cursor,
-			'editor.selectionBackground': selection,
-			'editorLineNumber.foreground': comment,
+			'editor.background': toFullHex(background),
+			'editor.foreground': toFullHex(foreground),
+			'editorCursor.foreground': toFullHex(cursor),
+			'editor.selectionBackground': toFullHex(selection),
+			'editorLineNumber.foreground': toFullHex(comment),
 			'editor.lineHighlightBackground': '#00000000',
 		},
 	}
