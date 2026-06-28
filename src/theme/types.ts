@@ -68,8 +68,17 @@ export interface Theme {
 	// Selection
 	colorSelection: string
 	colorOnSelection: string
-	// Semantic Colors: string,
+
+	// Semantic Colors — derived from the curated palette (see theme/palette.ts),
+	// nudged slightly toward the accent. `*Soft` are tinted backgrounds; the
+	// plain token is text-on-background; `colorRec` is a vivid solid fill.
 	colorError: string
+	colorErrorSoft: string
+	colorWarning: string
+	colorWarningSoft: string
+	colorSuccess: string
+	colorSuccessSoft: string
+	colorInfo: string
 	colorRec: string
 	colorAffirmative: string
 
@@ -96,6 +105,8 @@ export interface Theme {
 	// Popup
 	popupWidth: number
 	popupPadding: number
+	/** Shared backdrop blur radius for popup surfaces */
+	popupBlur: number
 
 	// Pane
 	panePadding: number

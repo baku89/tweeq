@@ -102,62 +102,27 @@ export const generateThemeColorsRadix = ({
 		backgroundColor
 	)
 
-	const accentBaseColor = new Color(args.accent).to('oklch')
-
-	let accentScaleColors = getScaleFromColor(
-		accentBaseColor,
-		allScales,
-		backgroundColor
-	)
-
 	// Enforce srgb for the background color
 	const backgroundHex = backgroundColor.to('srgb').toString({format: 'hex'})
 
-	// Make sure we use the tint from the gray scale for when base is pure white or black
-	const accentBaseHex = accentBaseColor.to('srgb').toString({format: 'hex'})
-	if (accentBaseHex === '#000' || accentBaseHex === '#fff') {
-		accentScaleColors = grayScaleColors.map(color =>
-			color.clone()
-		) as ArrayOf12<Color>
-	}
+	const accentBaseColor = new Color(args.accent).to('oklch')
 
-	const [accent9Color, accentContrastColor] = getStep9Colors(
-		accentScaleColors,
-		accentBaseColor
+	// The accent is just one "accent-like" scale; semantic hues use the same
+	// builder (see generateRadixScale). Pass the already-computed gray scale so
+	// a pure white/black accent borrows its tint.
+	const accent = buildAccentLikeScale(
+		accentBaseColor,
+		allScales,
+		backgroundColor,
+		backgroundHex,
+		grayScaleColors
 	)
 
-	accentScaleColors[8] = accent9Color
-	accentScaleColors[9] = getButtonHoverColor(accent9Color, [accentScaleColors])
-
-	// Limit saturation of the text colors
-	accentScaleColors[10].coords[1] = Math.min(
-		Math.max(accentScaleColors[8].coords[1], accentScaleColors[7].coords[1]),
-		accentScaleColors[10].coords[1]
-	)
-	accentScaleColors[11].coords[1] = Math.min(
-		Math.max(accentScaleColors[8].coords[1], accentScaleColors[7].coords[1]),
-		accentScaleColors[11].coords[1]
-	)
-
-	const accentScaleHex = accentScaleColors.map(color =>
-		color.to('srgb').toString({format: 'hex'})
-	) as ArrayOf12<string>
-
-	const accentScaleWideGamut = accentScaleColors.map(
-		toOklchString
-	) as ArrayOf12<string>
-
-	const accentScaleAlphaHex = accentScaleHex.map(color =>
-		getAlphaColorSrgb(color, backgroundHex)
-	) as ArrayOf12<string>
-
-	const accentScaleAlphaWideGamutString = accentScaleHex.map(color =>
-		getAlphaColorP3(color, backgroundHex)
-	) as ArrayOf12<string>
-
-	const accentContrastColorHex = accentContrastColor
-		.to('srgb')
-		.toString({format: 'hex'})
+	const accentScaleHex = accent.scale
+	const accentScaleWideGamut = accent.scaleWideGamut
+	const accentScaleAlphaHex = accent.scaleAlpha
+	const accentScaleAlphaWideGamutString = accent.scaleAlphaWideGamut
+	const accentContrastColorHex = accent.contrast
 
 	const grayScaleHex = grayScaleColors.map(color =>
 		color.to('srgb').toString({format: 'hex'})
@@ -208,6 +173,98 @@ export const generateThemeColorsRadix = ({
 
 		background: backgroundHex,
 	}
+}
+
+export interface RadixScale {
+	/** 12-step scale as sRGB hex (index 0 = step 1 … index 11 = step 12). */
+	scale: ArrayOf12<string>
+	/** Same scale expressed as alpha-over-background sRGB hex. */
+	scaleAlpha: ArrayOf12<string>
+	/** Wide-gamut (oklch) form of `scale`. */
+	scaleWideGamut: ArrayOf12<string>
+	/** Wide-gamut (display-p3) form of `scaleAlpha`. */
+	scaleAlphaWideGamut: ArrayOf12<string>
+	/** Text color that reads on top of step 9 (the solid fill). */
+	contrast: string
+}
+
+// The accent-color processing, factored out so any hue (the accent itself, or a
+// semantic seed like red/amber/green) can be fit to a Radix 12-step scale
+// against the chosen background. This is the single scale builder the theme uses.
+function buildAccentLikeScale(
+	seedColor: Color,
+	scales: Record<string, ArrayOf12<Color>>,
+	backgroundColor: Color,
+	backgroundHex: string,
+	// Used only to tint a pure white/black seed; semantic hues never hit this.
+	grayScaleColors?: ArrayOf12<Color>
+): RadixScale {
+	let scaleColors = getScaleFromColor(seedColor, scales, backgroundColor)
+
+	// Pure white/black seeds carry no hue, so borrow the gray scale's tint.
+	const seedHex = seedColor.to('srgb').toString({format: 'hex'})
+	if ((seedHex === '#000' || seedHex === '#fff') && grayScaleColors) {
+		scaleColors = grayScaleColors.map(color =>
+			color.clone()
+		) as ArrayOf12<Color>
+	}
+
+	const [step9Color, contrastColor] = getStep9Colors(scaleColors, seedColor)
+
+	scaleColors[8] = step9Color
+	scaleColors[9] = getButtonHoverColor(step9Color, [scaleColors])
+
+	// Limit saturation of the text colors (steps 11 & 12)
+	scaleColors[10].coords[1] = Math.min(
+		Math.max(scaleColors[8].coords[1], scaleColors[7].coords[1]),
+		scaleColors[10].coords[1]
+	)
+	scaleColors[11].coords[1] = Math.min(
+		Math.max(scaleColors[8].coords[1], scaleColors[7].coords[1]),
+		scaleColors[11].coords[1]
+	)
+
+	const scale = scaleColors.map(color =>
+		color.to('srgb').toString({format: 'hex'})
+	) as ArrayOf12<string>
+
+	const scaleWideGamut = scaleColors.map(toOklchString) as ArrayOf12<string>
+
+	const scaleAlpha = scale.map(color =>
+		getAlphaColorSrgb(color, backgroundHex)
+	) as ArrayOf12<string>
+
+	const scaleAlphaWideGamut = scale.map(color =>
+		getAlphaColorP3(color, backgroundHex)
+	) as ArrayOf12<string>
+
+	const contrast = contrastColor.to('srgb').toString({format: 'hex'})
+
+	return {scale, scaleAlpha, scaleWideGamut, scaleAlphaWideGamut, contrast}
+}
+
+/**
+ * Fit a single hue to a Radix 12-step scale against the given background — the
+ * same machinery the accent uses, exposed for semantic/syntax colors. Step
+ * roles: 9 (`scale[8]`) solid fill, 10 (`scale[9]`) its hover, 11/12
+ * (`scale[10/11]`) text, 2/3 soft backgrounds, 6/7 borders, `contrast` text on
+ * the solid fill.
+ */
+export const generateRadixScale = ({
+	appearance,
+	background,
+	seed,
+}: {
+	appearance: 'light' | 'dark'
+	background: string
+	seed: string
+}): RadixScale => {
+	const scales = appearance === 'light' ? lightColors : darkColors
+	const backgroundColor = new Color(background).to('oklch')
+	const backgroundHex = backgroundColor.to('srgb').toString({format: 'hex'})
+	const seedColor = new Color(seed).to('oklch')
+
+	return buildAccentLikeScale(seedColor, scales, backgroundColor, backgroundHex)
 }
 
 function getStep9Colors(

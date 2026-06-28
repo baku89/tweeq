@@ -1,14 +1,16 @@
-import {
-	argbFromHex,
-	customColor,
-	hexFromArgb,
-} from '@material/material-color-utilities'
 import {toReactive} from '@vueuse/core'
 import Case from 'case'
 import {defineStore} from 'pinia'
 import {computed, toRefs, watch} from 'vue'
 
-import {type ColorMode, generateThemeColorsRadix, type Theme} from '../theme'
+import {
+	buildMonacoTheme,
+	buildSemanticColors,
+	type ColorMode,
+	generateThemeColorsRadix,
+	type MonacoThemeData,
+	type Theme,
+} from '../theme'
 import {useAppConfigStore} from './appConfig'
 
 export const useThemeStore = defineStore('theme', () => {
@@ -50,30 +52,28 @@ export const useThemeStore = defineStore('theme', () => {
 		}
 	}
 
-	const theme = computed<Theme>(() => {
-		// Get the theme from a hex color
-		const radixColors = generateThemeColorsRadix({
+	// Accent + gray scales, fit to the chosen background (the Radix engine).
+	const radix = computed(() =>
+		generateThemeColorsRadix({
 			appearance: colorMode.value,
 			background: backgroundColor.value,
 			accent: accentColor.value,
 			gray: grayColor.value,
 		})
+	)
 
+	// Semantic colors from the curated palette, nudged toward the accent.
+	const semanticColors = computed(() =>
+		buildSemanticColors({
+			appearance: colorMode.value,
+			background: backgroundColor.value,
+			accent: accentColor.value,
+		})
+	)
+
+	const theme = computed<Theme>(() => {
+		const radixColors = radix.value
 		const dark = colorMode.value === 'dark'
-
-		const accent = argbFromHex(accentColor.value)
-
-		const error = customColor(accent, {
-			value: 0xff0000,
-			name: 'error',
-			blend: true,
-		})
-
-		const affirmative = customColor(accent, {
-			value: 0x4752ff,
-			name: 'affirmative',
-			blend: true,
-		})
 
 		return {
 			// Accent
@@ -110,16 +110,9 @@ export const useThemeStore = defineStore('theme', () => {
 			// Selection
 			colorSelection: radixColors.accentScale[10],
 			colorOnSelection: radixColors.background,
-			// Semantic Colors: Can be used as same as accent color
-			colorError: toColor(dark ? error.dark.color : error.light.color),
-			colorErrorSoft: toColor(
-				dark ? error.dark.color : error.light.colorContainer
-			),
 
-			colorRec: toColor(dark ? error.dark.color : error.light.color),
-			colorAffirmative: toColor(
-				dark ? affirmative.dark.color : affirmative.light.color
-			),
+			// Semantic Colors (curated palette → see theme/palette.ts)
+			...semanticColors.value,
 
 			fontCode: "'Geist Mono', monospace",
 			fontHeading: 'Geist, sans-serif',
@@ -134,6 +127,9 @@ export const useThemeStore = defineStore('theme', () => {
 
 			popupWidth: 240,
 			popupPadding: 9,
+			// Shared backdrop blur for popup surfaces (menus, dropdowns, balloons,
+			// tooltips) so they read as the same frosted glass.
+			popupBlur: 6,
 
 			iconSize: 18,
 			inputHeight: 24,
@@ -149,6 +145,19 @@ export const useThemeStore = defineStore('theme', () => {
 			activeTransitionDuration: '64ms',
 		}
 	})
+
+	// Monaco editor theme: pure-palette syntax colors (no accent nudge) plus the
+	// app's own background/text/accent. Consumed by InputCode/MonacoEditor.
+	const monacoTheme = computed<MonacoThemeData>(() =>
+		buildMonacoTheme({
+			appearance: colorMode.value,
+			background: radix.value.background,
+			foreground: radix.value.grayScale[11],
+			comment: radix.value.grayScale[9],
+			cursor: radix.value.accentScale[8],
+			selection: radix.value.accentScale[4],
+		})
+	)
 
 	// Promote all as CSS variabbles
 	let metaThemeColor = document.querySelector('meta[name=theme-color]')
@@ -181,18 +190,7 @@ export const useThemeStore = defineStore('theme', () => {
 		backgroundColor,
 		grayColor,
 		setDefault,
+		monacoTheme,
 		...toRefs(toReactive(theme)),
 	}
 })
-
-function toColor(color: number, opacity?: number) {
-	let alpha = ''
-
-	if (opacity !== undefined) {
-		alpha = Math.round(opacity * 255)
-			.toString(16)
-			.padStart(2, '0')
-	}
-
-	return `${hexFromArgb(color)}${alpha}`
-}
