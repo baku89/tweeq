@@ -15,6 +15,7 @@ const registerComponents = async (app: App) => {
 	const PresentationThreePointLighting = await import(
 		'./PresentationThreePointLighting.vue'
 	)
+	const ColorPaletteDemo = await import('./ColorPaletteDemo.vue')
 	// Tweeqコンポーネントを登録
 	for (const [key, value] of Object.entries(Tq)) {
 		if (typeof value === 'function') continue
@@ -35,6 +36,7 @@ const registerComponents = async (app: App) => {
 		'PresentationThreePointLighting',
 		PresentationThreePointLighting.default
 	)
+	app.component('ColorPaletteDemo', ColorPaletteDemo.default)
 }
 
 export default defineClientConfig({

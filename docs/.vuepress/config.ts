@@ -49,6 +49,10 @@ export default defineUserConfig({
 				link: '/components',
 			},
 			{
+				text: 'Colors',
+				link: '/colors',
+			},
+			{
 				text: 'Example',
 				link: '/example',
 			},
