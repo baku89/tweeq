@@ -428,6 +428,20 @@ const valueRangeStateClasses = computed(() => {
 	return {}
 })
 
+// The tweak overlay's scale dots visualise the (continuous) drag sensitivity.
+// They're pointless for a value that's both stepped and clamped — it only moves
+// between a fixed set of discrete stops, so hide them while tweaking (the step
+// grid + bar already show the granularity).
+const showTweakScale = computed(() => {
+	const stepped = !!props.step
+	const clamped =
+		props.clampMin &&
+		props.clampMax &&
+		props.min !== Number.MIN_SAFE_INTEGER &&
+		props.max !== Number.MAX_SAFE_INTEGER
+	return !(stepped && clamped)
+})
+
 const scaleAttrs = (offset: number) => {
 	const base = 10
 
@@ -521,7 +535,7 @@ const barStyle = computed<StyleValue>(() => {
 			<div class="bar" :style="barStyle" />
 			<InputNumberScales :min="min" :max="max" :step="step" />
 
-			<svg v-if="tweaking" class="overlay">
+			<svg v-if="tweaking && showTweakScale" class="overlay">
 				<line class="scale" v-bind="scaleAttrs(0)"></line>
 				<line class="scale" v-bind="scaleAttrs(1)"></line>
 				<line class="scale" v-bind="scaleAttrs(2)"></line>
