@@ -68,17 +68,16 @@ const {tweakingValue, subfocus} = useInputSwitch({
 	&.disabled
 		cursor not-allowed
 
+		// Unchecked: outlined empty box (the faint mark is left untouched).
 		.checkbox
 			pointer-events none
 			background transparent
 			box-shadow inset 0 0 0 1px var(--tq-color-border)
 
-		// Override the checked accent fill — stay outlined.
+		// Checked: a muted gray fill instead of the accent, so the existing
+		// (background-colored) check still reads without recoloring the icon.
 		.checkbox:has(:checked)
-			background transparent
-
-		.mark, input:checked + .mark
-			color var(--tq-color-text-mute)
+			background var(--tq-color-text-subtle)
 
 		label
 			pointer-events none
