@@ -136,19 +136,31 @@ export function useDrag(
 	useEventListener(targetEl, 'pointerleave', onPointerUp)
 
 	function fireDragStart(event: PointerEvent) {
-		if (
-			unref(lockPointer) &&
-			target.value &&
-			targetEl.value &&
-			'requestPointerLock' in targetEl.value
-		) {
-			lock(event)
-			state.pointerLocked = true
-		}
-
 		state.dragging = true
 		state.initial = state.previous
 		onDragStart?.(state, event)
+	}
+
+	// Engage pointer lock once the drag has clearly travelled, NOT at drag-start.
+	// Requesting it the instant the (1px) drag threshold is crossed would flash
+	// pointer lock on a plain click whose pointer merely jittered. Tweaking still
+	// responds from the first px — only the cursor-hiding lock waits for a
+	// movement too large to be click jitter.
+	function maybeEngagePointerLock(event: PointerEvent) {
+		if (state.pointerLocked || !unref(lockPointer)) return
+		if (
+			!target.value ||
+			!targetEl.value ||
+			!('requestPointerLock' in targetEl.value)
+		) {
+			return
+		}
+
+		const lockThreshold = event.pointerType === 'mouse' ? 8 : 10
+		if (vec2.dist(state.initial, state.xy) < lockThreshold) return
+
+		lock(event)
+		state.pointerLocked = true
 	}
 
 	function onPointerDown(event: PointerEvent) {
@@ -201,12 +213,9 @@ export function useDrag(
 		if (vec2.squaredLength(state.delta) === 0) return
 
 		if (!state.dragging) {
-			// Determine whether dragging has started. The mouse threshold is a few
-			// px, not 1 — a 1px threshold misreads the incidental jitter of an
-			// ordinary click as a drag, which (for lockPointer inputs like
-			// InputColor) flickers pointer lock on a plain click.
+			// Determine whether dragging has started
 			const d = vec2.dist(state.initial, state.xy)
-			const minDragDistance = event.pointerType === 'mouse' ? 4 : 5
+			const minDragDistance = event.pointerType === 'mouse' ? 1 : 5
 			if (d >= minDragDistance) {
 				clearTimeout(dragDelayTimer)
 				fireDragStart(event)
@@ -214,6 +223,7 @@ export function useDrag(
 		}
 
 		if (state.dragging) {
+			maybeEngagePointerLock(event)
 			onDrag?.(state, event)
 		}
 
