@@ -10,6 +10,7 @@ import {PaneSplitProps} from './types'
 const props = withDefaults(defineProps<PaneSplitProps>(), {
 	size: 50,
 	scroll: () => [true, true],
+	min: 40,
 })
 
 const appConfig = useAppConfigStore()
@@ -83,7 +84,12 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="$root" class="TqPaneSplit" :class="direction">
+	<div
+		ref="$root"
+		class="TqPaneSplit"
+		:class="[direction, {fixed: !!fixed}]"
+		:style="{'--pane-min': min + 'px'}"
+	>
 		<div class="pane" :class="{grow: sizedPane !== 'first'}" :style="firstStyle">
 			<div class="wrapper" :class="{scroll: scroll[0]}">
 				<slot name="first" />
@@ -118,15 +124,32 @@ onMounted(() => {
 	position relative
 	width 100%
 	height 100%
-	// Sized pane: the inline style sets its main-axis size; it neither grows
-	// nor shrinks.
+	// Kill the default `min-size: auto` so a pane can shrink below its content
+	// (otherwise a tall/wide grow pane overflows and clips the sized pane to 0).
+	min-width 0
+	min-height 0
+	// Sized pane: the inline style sets its main-axis size. It holds that size
+	// and never grows…
 	flex-grow 0
 	flex-shrink 0
 
-	// Filling pane: takes whatever the sized pane leaves.
+	// …but in fixed mode it yields once the grow pane would drop below --pane-min,
+	// so the filling pane never disappears when the split gets small.
+	.fixed > &:not(.grow)
+		flex-shrink 1
+
+	// Filling pane: basis 0 + grow takes whatever the sized pane leaves, and
+	// keeps at least --pane-min on the main axis so it stays visible.
 	&.grow
 		flex-grow 1
 		flex-shrink 1
+		flex-basis 0
+
+	.horizontal > &.grow
+		min-width var(--pane-min)
+
+	.vertical > &.grow
+		min-height var(--pane-min)
 
 .wrapper
 	width 100%

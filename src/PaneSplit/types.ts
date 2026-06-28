@@ -14,4 +14,9 @@ export interface PaneSplitProps {
 	 * proportional (percentage) split where `first` holds the stored size.
 	 */
 	fixed?: 'first' | 'second'
+	/**
+	 * Minimum pixels the flex-grow pane keeps on the main axis, so it never
+	 * collapses out of sight when the split shrinks. Defaults to 40.
+	 */
+	min?: number
 }
