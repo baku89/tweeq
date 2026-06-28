@@ -4,6 +4,7 @@ import {computed, onMounted, useTemplateRef, watchEffect} from 'vue'
 
 import {Icon} from '../Icon'
 import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
+import {addAnchorName} from '../util'
 import MultiSelectButton from './MultiSelectButton.vue'
 import MultiSelectPad from './MultiSelectPad.vue'
 
@@ -35,8 +36,7 @@ const anchorStyle = {
 watchEffect(onCleanup => {
 	const el = multiSelect.focusedElement
 	if (!el) return
-	el.style.setProperty('anchor-name', ANCHOR_NAME)
-	onCleanup(() => el.style.removeProperty('anchor-name'))
+	onCleanup(addAnchorName(el, ANCHOR_NAME))
 })
 
 type MultiSelectAction = {

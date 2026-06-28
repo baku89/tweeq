@@ -1,5 +1,7 @@
 import {reactive, shallowRef} from 'vue'
 
+import {addAnchorName} from '../util'
+
 // Shared state for the single, app-wide tooltip. The vTooltip directive feeds it
 // and TooltipRoot renders from it (one popover reused across every tooltip).
 //
@@ -19,18 +21,19 @@ export const TOOLTIP_ANCHOR_NAME = '--tq-tooltip'
 // corner. Leaving it until the next element takes over keeps the popover
 // anchored through its close.
 let anchoredEl: HTMLElement | null = null
+let removeAnchorName: (() => void) | null = null
 
 export function setTooltipAnchor(el: HTMLElement) {
-	if (anchoredEl && anchoredEl !== el) {
-		anchoredEl.style.removeProperty('anchor-name')
-	}
-	el.style.setProperty('anchor-name', TOOLTIP_ANCHOR_NAME)
+	if (anchoredEl === el) return
+	removeAnchorName?.()
+	removeAnchorName = addAnchorName(el, TOOLTIP_ANCHOR_NAME)
 	anchoredEl = el
 }
 
 export function clearTooltipAnchor(el: HTMLElement) {
 	if (anchoredEl === el) {
-		el.style.removeProperty('anchor-name')
+		removeAnchorName?.()
+		removeAnchorName = null
 		anchoredEl = null
 	}
 }

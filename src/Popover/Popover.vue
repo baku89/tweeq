@@ -3,6 +3,7 @@ import {unrefElement, useEventListener, useResizeObserver} from '@vueuse/core'
 import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
 import {Balloon} from '../Balloon'
+import {addAnchorName} from '../util'
 import type {PopoverProps} from './types'
 
 type ArrowSide = 'top' | 'bottom' | 'left' | 'right'
@@ -35,8 +36,7 @@ watchEffect(onCleanup => {
 	if (props.anchorName) return
 	const el = unrefElement(props.reference)
 	if (!el) return
-	el.style.setProperty('anchor-name', anchorName)
-	onCleanup(() => el.style.removeProperty('anchor-name'))
+	onCleanup(addAnchorName(el, anchorName))
 })
 
 useEventListener('keydown', e => {
