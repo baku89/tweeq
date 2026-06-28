@@ -61,17 +61,28 @@ const {tweakingValue, subfocus} = useInputSwitch({
 	align-items center
 	gap 1em
 
-	// Disabled: dim and inert. pointer-events:none also kills the track's hover
-	// background, and the native input is :disabled so focus/keyboard are off.
+	// Disabled & inert. Rather than fading the whole control (which made an
+	// unchecked box vanish), draw an outlined empty box — same language as a
+	// disabled InputString/Number (transparent fill + inset border). A checked
+	// box keeps a muted check instead of the accent fill.
 	&.disabled
-		opacity .4
 		cursor not-allowed
 
 		.checkbox
 			pointer-events none
+			background transparent
+			box-shadow inset 0 0 0 1px var(--tq-color-border)
+
+		// Override the checked accent fill — stay outlined.
+		.checkbox:has(:checked)
+			background transparent
+
+		.mark, input:checked + .mark
+			color var(--tq-color-text-mute)
 
 		label
 			pointer-events none
+			color var(--tq-color-text-mute)
 
 .checkbox
 	position relative
