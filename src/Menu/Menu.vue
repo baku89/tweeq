@@ -3,7 +3,7 @@ import type {IconSequence} from 'bndr-js'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
-import {computed, ref, useTemplateRef} from 'vue'
+import {computed, onUnmounted, ref, useTemplateRef} from 'vue'
 import Popover from '../Popover/Popover.vue'
 import {useThemeStore} from '../stores/theme'
 
@@ -48,6 +48,7 @@ const theme = useThemeStore()
 const hoverIndex = ref(-1)
 
 const $lists = useTemplateRef('$lists')
+const $childMenu = useTemplateRef<{$el: HTMLElement}>('$childMenu')
 
 const $childReference = computed(() => {
 	if (hoverIndex.value === -1) return null
@@ -58,18 +59,86 @@ const $childReference = computed(() => {
 const childItems = computed(() => {
 	return props.items[hoverIndex.value].children ?? null
 })
+
+// --- "Safe triangle" submenu navigation ---------------------------------------
+// While a submenu is open, let the cursor cut diagonally across sibling items to
+// reach it without the submenu closing. We keep the open item as long as the
+// cursor stays inside the triangle from where it entered that item (the apex) to
+// the near edge of the open submenu.
+type Pt = {x: number; y: number}
+let pointer: Pt = {x: 0, y: 0}
+let apex: Pt = {x: 0, y: 0}
+let pendingIndex = -1
+let switchTimer: ReturnType<typeof setTimeout> | undefined
+
+function submenuIsOpen() {
+	const cur = props.items[hoverIndex.value]
+	return hoverIndex.value !== -1 && !!cur && 'children' in cur && !!cur.children
+}
+
+function inSafeTriangle(): boolean {
+	const el = $childMenu.value?.$el
+	if (!el || el.nodeType !== 1) return false
+	const r = el.getBoundingClientRect()
+	// Use whichever vertical edge of the submenu faces the apex (handles a
+	// submenu that flipped to the left).
+	const edgeX = r.left >= apex.x ? r.left : r.right
+	return inTriangle(pointer, apex, {x: edgeX, y: r.top}, {x: edgeX, y: r.bottom})
+}
+
+function commitHover(index: number) {
+	clearTimeout(switchTimer)
+	switchTimer = undefined
+	pendingIndex = -1
+	hoverIndex.value = index
+	apex = {...pointer}
+}
+
+function onItemEnter(index: number, e: PointerEvent) {
+	pointer = {x: e.clientX, y: e.clientY}
+	if (index !== hoverIndex.value && submenuIsOpen() && inSafeTriangle()) {
+		// Heading toward the open submenu — defer the switch (a timeout still
+		// commits if the cursor just parks on the sibling).
+		pendingIndex = index
+		clearTimeout(switchTimer)
+		switchTimer = setTimeout(() => commitHover(index), 300)
+	} else {
+		commitHover(index)
+	}
+}
+
+function onPointerMove(e: PointerEvent) {
+	pointer = {x: e.clientX, y: e.clientY}
+	if (pendingIndex !== -1 && !inSafeTriangle()) commitHover(pendingIndex)
+}
+
+function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
+	const cross = (p1: Pt, p2: Pt, p3: Pt) =>
+		(p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
+	const d1 = cross(p, a, b)
+	const d2 = cross(p, b, c)
+	const d3 = cross(p, c, a)
+	const neg = d1 < 0 || d2 < 0 || d3 < 0
+	const pos = d1 > 0 || d2 > 0 || d3 > 0
+	return !(neg && pos)
+}
+
+onUnmounted(() => clearTimeout(switchTimer))
 </script>
 
 <template>
-	<ul class="TqMenu">
+	<ul class="TqMenu" @pointermove="onPointerMove">
 		<li
 			ref="$lists"
 			v-for="(menu, index) in items"
 			:key="index + '_item'"
 			class="menu"
-			:class="{'submenu-open': index === hoverIndex && 'children' in menu}"
+			:class="{
+				active: index === hoverIndex && !('children' in menu),
+				'submenu-open': index === hoverIndex && 'children' in menu,
+			}"
 			@click="onClick(menu)"
-			@pointerenter="hoverIndex = index"
+			@pointerenter="onItemEnter(index, $event)"
 		>
 			<Icon v-if="menu.icon" class="icon" :icon="menu.icon" />
 			<span v-else />
@@ -96,7 +165,7 @@ const childItems = computed(() => {
 		:offset="{crossAxis: -theme.popupPadding}"
 		:lightDismiss="false"
 	>
-		<Menu :items="childItems" @close="emit('close')" />
+		<Menu ref="$childMenu" :items="childItems" @close="emit('close')" />
 	</Popover>
 </template>
 
@@ -120,12 +189,13 @@ const childItems = computed(() => {
 	align-items center
 	border-radius var(--tq-radius-input)
 
-	// Keep the parent highlighted (neutral, not accent) while its submenu is open
-	// and the pointer has moved off it into the child menu.
+	// Highlight is driven by hoverIndex (not :hover) so the safe-triangle can keep
+	// the open item lit while the cursor cuts across siblings toward the submenu.
+	// Open-submenu parent: neutral; a plain focused command: accent.
 	&.submenu-open
 		background var(--tq-color-neutral)
 
-	&:hover
+	&.active
 		background var(--tq-color-accent)
 		color var(--tq-color-on-accent)
 
