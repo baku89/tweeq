@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<PaneExpandableProps>(), {
 	openIcon: 'mdi:chevron-up',
 	placement: 'bottom-end',
 	arrow: true,
+	persistent: false,
 })
 
 const emit = defineEmits<{
@@ -41,8 +42,10 @@ const open = computed<boolean>({
 
 // Hover opens; it deliberately does NOT close on leave. A click on the button
 // explicitly toggles. Dismissal is otherwise the native popover light-dismiss
-// (an outside pointerdown) or Esc.
+// (an outside pointerdown) or Esc. A persistent pane opts out of both: it never
+// hovers open and never light-dismisses, so the click is the only toggle.
 function onPointerEnter() {
+	if (props.persistent) return
 	open.value = true
 }
 
@@ -79,6 +82,7 @@ function onPopoverUpdateOpen(value: boolean) {
 			:open="open"
 			:placement="placement"
 			:arrow="arrow"
+			:light-dismiss="!persistent"
 			exit-transition
 			@update:open="onPopoverUpdateOpen"
 		>
@@ -115,9 +119,12 @@ function onPopoverUpdateOpen(value: boolean) {
 	&:hover, &.open
 		color var(--tq-color-text)
 
+// An integer icon size (--tq-icon-size = 18px) so it centres on a whole-pixel
+// grid inside the 2rem button; a fractional size (e.g. 1.1rem → 17.6px) rounds
+// its left/right gutters unevenly and the glyph drifts a pixel off-centre.
 .icon
-	width 1.1rem
-	height 1.1rem
+	width var(--tq-icon-size)
+	height var(--tq-icon-size)
 
 // A ParameterGrid dropped straight into the pane sizes to its content rather
 // than a hard-coded width: the label/icon column takes its intrinsic width (it

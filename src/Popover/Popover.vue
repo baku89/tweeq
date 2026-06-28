@@ -40,7 +40,9 @@ watchEffect(onCleanup => {
 })
 
 useEventListener('keydown', e => {
-	if (e.key === 'Escape' && props.open) {
+	// Esc is part of light-dismiss; a popover with lightDismiss off (a manual
+	// popover) stays open until its controller closes it.
+	if (e.key === 'Escape' && props.open && props.lightDismiss) {
 		emit('close')
 		emit('update:open', false)
 	}

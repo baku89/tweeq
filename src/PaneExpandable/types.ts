@@ -15,4 +15,11 @@ export interface PaneExpandableProps {
 	placement?: Placement
 	/** Wrap the panel in a Balloon whose arrow points back at the button. */
 	arrow?: boolean
+	/**
+	 * Make the panel persistent: it never opens on hover and never closes on an
+	 * outside click or Esc (the native popover light-dismiss is turned off). The
+	 * only toggle is an explicit click on the button, or the controlled `open`
+	 * prop. Use for panels that should stay put until the user dismisses them.
+	 */
+	persistent?: boolean
 }
