@@ -51,7 +51,9 @@ function promptImpl<T extends Record<string, unknown>>(
 modal.registerPrompt(promptImpl)
 onBeforeUnmount(() => modal.registerPrompt(null))
 
-function onAbort() {
+// Cancel restores the value the modal opened with; Save keeps the edits. The
+// modal can't be light-dismissed, so these buttons are the only way out.
+function onCancel() {
 	endEdit(desc.value!.initialValue)
 }
 
@@ -65,7 +67,7 @@ defineExpose({
 </script>
 
 <template>
-	<PaneModal v-model:open="open" @close="onAbort">
+	<PaneModal v-model:open="open">
 		<div v-if="desc" class="TqPaneModalComplex">
 			<div class="body">
 				<InputComplex
@@ -75,7 +77,10 @@ defineExpose({
 					@update:modelValue="onUpdate"
 				/>
 			</div>
-			<InputButton label="Save" @click="onConfirm" />
+			<div class="footer">
+				<InputButton subtle label="Cancel" @click="onCancel" />
+				<InputButton label="Save" @click="onConfirm" />
+			</div>
 		</div>
 	</PaneModal>
 </template>
@@ -89,11 +94,19 @@ defineExpose({
 	min-height 0
 	flex 1
 
-	// The form scrolls; the Save button below stays pinned and always reachable.
+	// The form scrolls; the footer below stays pinned and always reachable.
 	.body
 		min-height 0
 		overflow-y auto
 		// Room so focus rings / inputs aren't clipped by the scroll edge.
 		margin-right calc(-1 * var(--tq-pane-padding))
 		padding-right var(--tq-pane-padding)
+
+	.footer
+		display flex
+		gap 8px
+
+		// Split the width evenly between Cancel and Save.
+		> *
+			flex 1
 </style>

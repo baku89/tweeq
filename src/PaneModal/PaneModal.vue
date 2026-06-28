@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useEventListener} from '@vueuse/core'
-import {useTemplateRef, watchEffect} from 'vue'
+import {ref, useTemplateRef, watchEffect} from 'vue'
 
 defineSlots<{
 	default: void
@@ -15,37 +15,36 @@ const props = withDefaults(
 	}
 )
 
-const emit = defineEmits<{
-	close: []
-	'update:open': [boolean]
-}>()
-
 const $root = useTemplateRef('$root')
-
-useEventListener($root, 'toggle', (e: ToggleEvent) => {
-	if (e.newState !== 'open') {
-		close()
-	}
-})
-
-useEventListener('keydown', e => {
-	if (e.key === 'Escape' && props.open) {
-		close()
-	}
-})
-
-function close() {
-	emit('update:open', false)
-	emit('close')
-}
 
 watchEffect(() => {
 	$root.value?.togglePopover(props.open)
 })
+
+// The modal is `popover="manual"`, so it never light-dismisses: closing is up to
+// the slotted Save/Cancel buttons. A pointerdown outside bounces the modal to
+// signal that it's modal rather than silently doing nothing.
+const emphasize = ref(false)
+
+useEventListener('pointerdown', e => {
+	if (!props.open) return
+	const root = $root.value
+	if (!root || e.composedPath().includes(root)) return
+
+	// Restart the animation even on rapid repeated clicks.
+	emphasize.value = false
+	requestAnimationFrame(() => (emphasize.value = true))
+})
 </script>
 
 <template>
-	<div ref="$root" class="TqPaneModal" popover="auto">
+	<div
+		ref="$root"
+		class="TqPaneModal"
+		:class="{emphasize}"
+		popover="manual"
+		@animationend="emphasize = false"
+	>
 		<slot />
 	</div>
 </template>
@@ -101,4 +100,16 @@ reset-viewport('.TqPaneModal')
 
 			&::backdrop
 				backdrop-filter blur(0px)
+
+	// Bounce when the user clicks outside, signalling the modal won't dismiss.
+	&.emphasize
+		animation modal-emphasize 0.2s ease
+
+@keyframes modal-emphasize
+	0%
+		transform scale(1)
+	35%
+		transform scale(1.03)
+	100%
+		transform scale(1)
 </style>
