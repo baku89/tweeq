@@ -6,7 +6,7 @@ import {
 import {toReactive} from '@vueuse/core'
 import Case from 'case'
 import {defineStore} from 'pinia'
-import {computed, toRefs, watch, watchEffect} from 'vue'
+import {computed, toRefs, watch} from 'vue'
 
 import {type ColorMode, generateThemeColorsRadix, type Theme} from '../theme'
 import {useAppConfigStore} from './appConfig'
@@ -22,12 +22,12 @@ export const useThemeStore = defineStore('theme', () => {
 		colorMode.value === 'light' ? '#ffffff' : '#111111'
 	)
 
-	watchEffect(() => {
-		if (colorMode.value === 'light') {
-			backgroundColor.value = '#ffffff'
-		} else {
-			backgroundColor.value = '#111111'
-		}
+	// Snap the background to the appearance's default when the user toggles
+	// light/dark, but leave it untouched afterwards (and on load) so a custom
+	// background sticks. No `immediate`: we must not clobber a saved background
+	// when the store first restores it.
+	watch(colorMode, mode => {
+		backgroundColor.value = mode === 'light' ? '#ffffff' : '#111111'
 	})
 
 	function setDefault(options: {
