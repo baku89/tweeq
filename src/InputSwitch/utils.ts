@@ -12,7 +12,7 @@ export function useInputSwitch({
 }: {
 	track: Ref<HTMLElement | null>
 	input: Ref<HTMLInputElement | null>
-	props: Pick<InputCheckboxProps, 'modelValue'>
+	props: Pick<InputCheckboxProps, 'modelValue' | 'disabled'>
 	emit: any
 }) {
 	const tweakThreshold = 3
@@ -21,6 +21,7 @@ export function useInputSwitch({
 	const {focused} = useFocus(input)
 
 	const {dragging, initial, xy} = useDrag(track, {
+		disabled: toRef(() => props.disabled),
 		dragDelaySeconds: 0.2,
 		onClick() {
 			if (!multi.readyToBeSelected) {

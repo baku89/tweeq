@@ -28,7 +28,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 </script>
 
 <template>
-	<div class="TqInputCheckbox">
+	<div class="TqInputCheckbox" :class="{disabled: props.disabled}">
 		<div
 			ref="track"
 			class="checkbox"
@@ -40,6 +40,7 @@ const {tweakingValue, subfocus} = useInputSwitch({
 				:id="id"
 				ref="input"
 				:checked="model"
+				:disabled="props.disabled"
 				class="input"
 				type="checkbox"
 			/>
@@ -59,6 +60,18 @@ const {tweakingValue, subfocus} = useInputSwitch({
 	display flex
 	align-items center
 	gap 1em
+
+	// Disabled: dim and inert. pointer-events:none also kills the track's hover
+	// background, and the native input is :disabled so focus/keyboard are off.
+	&.disabled
+		opacity .4
+		cursor not-allowed
+
+		.checkbox
+			pointer-events none
+
+		label
+			pointer-events none
 
 .checkbox
 	position relative
