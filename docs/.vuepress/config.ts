@@ -37,10 +37,6 @@ export default defineUserConfig({
 				link: '/',
 			},
 			{
-				text: 'UIST ’25',
-				link: '/uist2025',
-			},
-			{
 				text: 'Features',
 				link: '/features',
 			},
