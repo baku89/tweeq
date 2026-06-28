@@ -67,6 +67,7 @@ const childItems = computed(() => {
 			v-for="(menu, index) in items"
 			:key="index + '_item'"
 			class="menu"
+			:class="{'submenu-open': index === hoverIndex && 'children' in menu}"
 			@click="onClick(menu)"
 			@pointerenter="hoverIndex = index"
 		>
@@ -118,6 +119,11 @@ const childItems = computed(() => {
 	line-height var(--tq-input-height)
 	align-items center
 	border-radius var(--tq-radius-input)
+
+	// Keep the parent highlighted (neutral, not accent) while its submenu is open
+	// and the pointer has moved off it into the child menu.
+	&.submenu-open
+		background var(--tq-color-neutral)
 
 	&:hover
 		background var(--tq-color-accent)
