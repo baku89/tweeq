@@ -192,9 +192,20 @@ const styles = computed<Record<string, string>>(() => {
 	const main = `${mainAxis}px`
 	const cross = `${crossAxis}px`
 	const horizontal = side === 'top' || side === 'bottom'
+	// A centred popover must not flip on its cross axis: near a viewport edge
+	// `flip-inline` would mirror `left: anchor(center)` into `right:
+	// anchor(center)` while the -50% translate still applies, landing the box a
+	// full width off the anchor (and pre-empting the JS shift below, which then
+	// sees a rect that "fits"). Centred placements only flip along the main
+	// axis; the cross axis is handled by the shift in update().
+	const centred = align === undefined
 	const css: Record<string, string> = {
 		positionAnchor: anchorName,
-		positionTryFallbacks: 'flip-block, flip-inline, flip-block flip-inline',
+		positionTryFallbacks: centred
+			? horizontal
+				? 'flip-block'
+				: 'flip-inline'
+			: 'flip-block, flip-inline, flip-block flip-inline',
 	}
 
 	// main axis: pin the facing edge to the opposite anchor edge, then push off
