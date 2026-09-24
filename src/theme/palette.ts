@@ -81,7 +81,10 @@ export interface SemanticColors {
 	colorWarningSoft: string
 	colorSuccess: string
 	colorSuccessSoft: string
-	/** Recording indicator — same red as error/alert. */
+	/**
+	 * Recording indicator. Unlike error/alert this is the canonical red, not
+	 * nudged toward the accent: a pinkish accent must not turn REC pink.
+	 */
 	colorRec: string
 	colorInfo: string
 	colorInfoSoft: string
@@ -139,7 +142,7 @@ export function buildSemanticColors({
 		colorWarningSoft: softTint(background, rep.yellow),
 		colorSuccess: rep.green,
 		colorSuccessSoft: softTint(background, rep.green),
-		colorRec: rep.red, // identical to error / alert
+		colorRec: PALETTE.red, // canonical, never accent-nudged
 		colorInfo: rep.blue,
 		colorInfoSoft: softTint(background, rep.blue),
 		colorAffirmative: rep.green,
