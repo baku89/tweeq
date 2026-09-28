@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import {Icon} from '../Icon'
+import {vTooltip} from '../Tooltip'
 import {useFlash} from '../use/useFlash'
 import type {InputButtonProps} from './types'
 
@@ -28,6 +29,7 @@ defineExpose({flash})
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="disabled"
+		v-tooltip="tooltip"
 		@mousedown.prevent
 	>
 		<Icon v-if="icon" class="icon left" :icon="icon" />

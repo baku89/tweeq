@@ -12,7 +12,7 @@ defineEmits<{
 <template>
 	<div
 		class="IconIndicator"
-		:class="{active: active, inactive: active === false, inline}"
+		:class="{active: active, inactive: active === false, inline, glow}"
 		@click="$emit('update:active', !active)"
 	>
 		<Icon v-if="icon" class="icon" :icon="icon" />
@@ -42,6 +42,16 @@ defineEmits<{
 		color var(--tq-color-text-mute)
 	&.active
 		color var(--tq-color-accent)
+
+	// Lit look: the glyph itself casts an accent-coloured halo (drop-shadow
+	// follows the icon's shape, unlike box-shadow on the round box).
+	&.glow .icon
+		hover-transition(filter)
+		filter drop-shadow(0 0 0 transparent)
+
+	&.glow.active .icon
+		// unquote: stylus would read `in` (color-mix) as its operator
+		filter unquote('drop-shadow(0 0 calc(var(--size) * 0.18) var(--tq-color-accent)) drop-shadow(0 0 calc(var(--size) * 0.45) color-mix(in srgb, var(--tq-color-accent) 55%, transparent))')
 
 	.icon
 		display block

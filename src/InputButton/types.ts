@@ -1,3 +1,4 @@
+import type {TooltipValue} from '../Tooltip'
 import type {InputPosition} from '../types'
 
 export interface InputButtonProps {
@@ -14,7 +15,8 @@ export interface InputButtonProps {
 	 */
 	rightIcon?: string
 	label?: string
-	tooltip?: string
+	/** Hover/focus tooltip: a plain string, or `{title, description}` for the two-line layout. */
+	tooltip?: TooltipValue
 	blink?: boolean
 	/** Achromatic neutral fill at rest that lights up to accent on hover. */
 	subtle?: boolean
