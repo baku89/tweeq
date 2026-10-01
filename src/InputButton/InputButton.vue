@@ -108,8 +108,10 @@ defineExpose({flash})
 	.icon
 		display block
 
+	// The button is one line tall: a label never wraps, it sets the minimum width.
 	.label
 		line-height var(--tq-input-height)
+		white-space nowrap
 
 	// Styles
 	// Subtle: an achromatic neutral fill at rest (more present than the

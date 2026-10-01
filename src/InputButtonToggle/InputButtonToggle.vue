@@ -74,6 +74,8 @@ defineProps<InputButtonToggleProps>()
 		width calc(var(--tq-input-height) - 4px)
 		height calc(var(--tq-input-height) - 4px)
 
+	// The button is one line tall: a label never wraps, it sets the minimum width.
 	.label
 		line-height var(--tq-input-height)
+		white-space nowrap
 </style>

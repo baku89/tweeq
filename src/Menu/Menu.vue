@@ -249,6 +249,8 @@ function inTriangle(p: Pt, a: Pt, b: Pt, c: Pt): boolean {
 .label
 	flex-grow 1
 	margin-right 1em
+	// Items have a fixed height: a wrapped label would overprint the next one.
+	white-space nowrap
 
 .bind-icon
 	opacity .5
