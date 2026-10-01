@@ -20,6 +20,7 @@ import {TweakOverlay} from '../TweakOverlay'
 import {InputEmits} from '../types'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useDrag} from '../use/useDrag'
+import {useModifierKeys} from '../use/useModifierKeys'
 import InputColorPicker from './InputColorPicker.vue'
 import PadFragmentString from './pad.frag'
 import SliderFragmentString from './slider.frag'
@@ -58,7 +59,8 @@ defineSlots<{
 const $button = useTemplateRef('$button')
 const open = ref(false)
 
-const {shift, meta, control, alt, h, f, a, s, v, r, g, b} = useMagicKeys()
+const {h, f, a, s, v, r, g, b} = useMagicKeys()
+const {shift, meta, control, alt} = useModifierKeys()
 
 const ctrlOrCommand = computed(() => meta.value || control.value)
 

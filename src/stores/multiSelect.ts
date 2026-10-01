@@ -4,7 +4,6 @@ import {
 	reactiveComputed,
 	unrefElement,
 	useEventListener,
-	useMagicKeys,
 } from '@vueuse/core'
 import {vec2} from 'linearly'
 import {defineStore} from 'pinia'
@@ -18,6 +17,7 @@ import {
 } from 'vue'
 
 import {HSVA} from '../InputColor/types'
+import {useModifierKeys} from '../use/useModifierKeys'
 import {nodeContains} from '../util'
 
 export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
@@ -40,7 +40,7 @@ interface MultiSelectInput extends MultiSelectSource {
 }
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
-	const {meta, shift, control} = useMagicKeys()
+	const {meta, shift, control} = useModifierKeys()
 
 	const ctrlOrCommand = computed(() => meta.value || control.value)
 
