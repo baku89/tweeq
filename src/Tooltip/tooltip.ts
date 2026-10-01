@@ -43,12 +43,19 @@ export function clearTooltipAnchor(el: HTMLElement) {
  * structured two-line layout (bold title + muted description); `content` is the
  * single-blob form (plain text, or rich markup when `html` is set). A value can
  * mix them, but in practice it's either title/description or content.
+ *
+ * `actions` makes the tooltip interactive: it stays open while the pointer is
+ * over it, and a click on an element carrying `data-tooltip-action="<name>"`
+ * (in `html` content) runs the handler of that name.
  */
+export type TooltipActions = Record<string, () => void>
+
 export interface TooltipContent {
 	content: string
 	html: boolean
 	title: string
 	description: string
+	actions: TooltipActions | null
 }
 
 interface TooltipState extends TooltipContent {
@@ -60,11 +67,15 @@ export const tooltipState = reactive<TooltipState>({
 	html: false,
 	title: '',
 	description: '',
+	actions: null,
 	open: false,
 })
 
 const SHOW_DELAY = 200
 const HIDE_DELAY = 0
+// An interactive tooltip (one with `actions`) lingers this long after the
+// pointer leaves its element, so the pointer can cross the gap onto it.
+const INTERACTIVE_HIDE_DELAY = 150
 
 let showTimer: ReturnType<typeof setTimeout> | undefined
 let hideTimer: ReturnType<typeof setTimeout> | undefined
@@ -89,11 +100,32 @@ export function showTooltip(reference: HTMLElement, content: TooltipContent) {
 export function hideTooltip(reference: HTMLElement) {
 	clearTimeout(showTimer)
 	clearTimeout(hideTimer)
+	const interactive =
+		tooltipState.open &&
+		tooltipReference.value === reference &&
+		!!tooltipState.actions
+	hideTimer = setTimeout(
+		() => {
+			if (tooltipReference.value === reference) {
+				tooltipState.open = false
+			}
+		},
+		interactive ? INTERACTIVE_HIDE_DELAY : HIDE_DELAY
+	)
+}
+
+// The pointer moved onto the tooltip itself. An interactive one stays open for
+// as long as it is hovered; a plain one keeps its normal (immediate) hide.
+export function enterTooltip() {
+	if (tooltipState.open && tooltipState.actions) clearTimeout(hideTimer)
+}
+
+export function leaveTooltip() {
+	if (!tooltipState.open || !tooltipState.actions) return
+	clearTimeout(hideTimer)
 	hideTimer = setTimeout(() => {
-		if (tooltipReference.value === reference) {
-			tooltipState.open = false
-		}
-	}, HIDE_DELAY)
+		tooltipState.open = false
+	}, INTERACTIVE_HIDE_DELAY)
 }
 
 // Live-update the text while this element's tooltip is showing (e.g. a status

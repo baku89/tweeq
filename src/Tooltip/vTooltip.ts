@@ -6,6 +6,7 @@ import {
 	hideTooltip,
 	setTooltipAnchor,
 	showTooltip,
+	type TooltipActions,
 	type TooltipContent,
 	updateTooltip,
 } from './tooltip'
@@ -13,21 +14,39 @@ import {
 // `v-tooltip="'text'"`, `v-tooltip="{content, html}"`, or the structured
 // `v-tooltip="{title, description}"` (bold title + muted description — use this
 // instead of an em-dash "Title — subtext" string).
+//
+// `actions` (with `html` content) makes parts of the tooltip clickable: an
+// element with `data-tooltip-action="name"` runs `actions.name` on click, and
+// the tooltip stays open while the pointer is over it.
 export type TooltipValue =
 	| string
-	| {content?: string; html?: boolean; title?: string; description?: string}
+	| {
+			content?: string
+			html?: boolean
+			title?: string
+			description?: string
+			actions?: TooltipActions
+	  }
 	| undefined
 	| null
 
 function parse(value: TooltipValue): TooltipContent {
 	if (typeof value === 'string') {
-		return {content: value, html: false, title: '', description: ''}
+		return {
+			content: value,
+			html: false,
+			title: '',
+			description: '',
+			actions: null,
+		}
 	}
+	const actions = value?.actions
 	return {
 		content: value?.content ?? '',
 		html: value?.html ?? false,
 		title: value?.title ?? '',
 		description: value?.description ?? '',
+		actions: actions && Object.keys(actions).length > 0 ? actions : null,
 	}
 }
 
