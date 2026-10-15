@@ -1,5 +1,6 @@
 import {reactive, shallowRef} from 'vue'
 
+import type {Placement} from '../Popover/types'
 import {addAnchorName} from '../util'
 
 // Shared state for the single, app-wide tooltip. The vTooltip directive feeds it
@@ -47,6 +48,8 @@ export function clearTooltipAnchor(el: HTMLElement) {
  * `actions` makes the tooltip interactive: it stays open while the pointer is
  * over it, and a click on an element carrying `data-tooltip-action="<name>"`
  * (in `html` content) runs the handler of that name.
+ *
+ * `placement` is the side of the element the tooltip opens on.
  */
 export type TooltipActions = Record<string, () => void>
 
@@ -56,6 +59,7 @@ export interface TooltipContent {
 	title: string
 	description: string
 	actions: TooltipActions | null
+	placement: Placement
 }
 
 interface TooltipState extends TooltipContent {
@@ -68,6 +72,7 @@ export const tooltipState = reactive<TooltipState>({
 	title: '',
 	description: '',
 	actions: null,
+	placement: 'top',
 	open: false,
 })
 

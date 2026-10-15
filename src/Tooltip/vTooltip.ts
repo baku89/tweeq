@@ -1,5 +1,6 @@
 import type {Directive} from 'vue'
 
+import type {Placement} from '../Popover/types'
 import {
 	clearTooltipAnchor,
 	closeTooltip,
@@ -18,6 +19,9 @@ import {
 // `actions` (with `html` content) makes parts of the tooltip clickable: an
 // element with `data-tooltip-action="name"` runs `actions.name` on click, and
 // the tooltip stays open while the pointer is over it.
+//
+// `placement` picks the side it opens on (default `top`) — e.g. `right` for a
+// column of icons, where a tooltip above would cover the neighbouring one.
 export type TooltipValue =
 	| string
 	| {
@@ -26,6 +30,7 @@ export type TooltipValue =
 			title?: string
 			description?: string
 			actions?: TooltipActions
+			placement?: Placement
 	  }
 	| undefined
 	| null
@@ -38,6 +43,7 @@ function parse(value: TooltipValue): TooltipContent {
 			title: '',
 			description: '',
 			actions: null,
+			placement: 'top',
 		}
 	}
 	const actions = value?.actions
@@ -47,6 +53,7 @@ function parse(value: TooltipValue): TooltipContent {
 		title: value?.title ?? '',
 		description: value?.description ?? '',
 		actions: actions && Object.keys(actions).length > 0 ? actions : null,
+		placement: value?.placement ?? 'top',
 	}
 }
 

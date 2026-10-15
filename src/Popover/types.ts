@@ -50,4 +50,8 @@ export interface PopoverProps {
 	// allow-discrete display transition can play. Off by default — most popovers
 	// (tooltips, menus) want a snappy instant dismiss.
 	exitTransition?: boolean
+	// A popover that never claims keyboard focus or keys (the shared tooltip).
+	// It is left out of the "a popover is open on top of the modal" check that
+	// lets a dropdown / menu own Esc and Enter before the modal does.
+	passive?: boolean
 }

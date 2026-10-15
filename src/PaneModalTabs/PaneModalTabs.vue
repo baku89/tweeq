@@ -4,7 +4,7 @@ import {onBeforeUnmount, ref} from 'vue'
 
 import {InputButton} from '../InputButton'
 import {InputComplex} from '../InputComplex'
-import {PaneModal} from '../PaneModal'
+import {hasNestedPopover, PaneModal} from '../PaneModal'
 import {useModalStore} from '../stores/modal'
 import {Tab, Tabs} from '../Tabs'
 import type {ModalTab, TabsShowOptions} from './types'
@@ -76,7 +76,7 @@ function isMultilineTarget(target: EventTarget | null) {
 // modal) owns them first — the modal is one `:popover-open`, so >1 means nested.
 useEventListener('keydown', (e: KeyboardEvent) => {
 	if (!open.value) return
-	if (document.querySelectorAll(':popover-open').length > 1) return
+	if (hasNestedPopover()) return
 
 	if (e.key === 'Escape') {
 		e.preventDefault()

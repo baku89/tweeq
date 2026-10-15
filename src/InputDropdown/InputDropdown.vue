@@ -374,7 +374,20 @@ function onInputStringBlur() {
 	}
 }
 
-// When the popover is closed by pressing Esc, revert to the value at the start
+// Esc while open: close and revert to the value at the start. The popover is
+// not light-dismiss (so Popover's own Esc handling never runs) and before this
+// the key fell through to whatever enclosed the field — inside a modal it closed
+// the whole modal over the still-open list. Propagation stops here (`.stop`):
+// the closing is flushed before the window listeners run, so an enclosing modal
+// would otherwise see no nested popover any more and close itself on the same
+// keystroke.
+function onEscape() {
+	if (!open.value) return
+	onPopoverUpdateOpen(false)
+	$input.value?.blur()
+}
+
+// When the popover is closed from outside, revert to the value at the start
 function onPopoverUpdateOpen(_open: boolean) {
 	if (!_open) {
 		open.value = false
@@ -415,6 +428,7 @@ onBeforeUnmount(() => {
 			@focus="onInputStringFocus"
 			@blur="onInputStringBlur"
 			@keydown.enter.prevent="onEnter"
+			@keydown.esc.prevent.stop="onEscape"
 			@keydown.up.prevent="onPressArrow(true)"
 			@keydown.down.prevent="onPressArrow(false)"
 		/>

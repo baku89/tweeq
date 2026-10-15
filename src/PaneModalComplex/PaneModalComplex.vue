@@ -4,7 +4,7 @@ import {onBeforeUnmount, ref} from 'vue'
 
 import {InputButton} from '../InputButton'
 import {InputComplex, type Scheme} from '../InputComplex'
-import {PaneModal} from '../PaneModal'
+import {hasNestedPopover, PaneModal} from '../PaneModal'
 import {useModalStore} from '../stores/modal'
 import type {ShowOptions} from './types'
 
@@ -80,7 +80,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 	// A nested popover (dropdown / menu) open on top of the modal owns Esc/Enter
 	// first — closing/selecting there shouldn't cancel or save the whole modal.
 	// The modal itself is one `:popover-open`, so anything beyond that is nested.
-	if (document.querySelectorAll(':popover-open').length > 1) return
+	if (hasNestedPopover()) return
 
 	if (e.key === 'Escape') {
 		e.preventDefault()

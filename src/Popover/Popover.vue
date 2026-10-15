@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<PopoverProps>(), {
 	placement: 'bottom-start',
 	lightDismiss: true,
 	offset: 0,
+	passive: false,
 })
 
 const emit = defineEmits<{
@@ -37,6 +38,18 @@ watchEffect(onCleanup => {
 	const el = unrefElement(props.reference)
 	if (!el) return
 	onCleanup(addAnchorName(el, anchorName))
+})
+
+// Marked on the element when it belongs to something inside a modal (its
+// reference is in a `.TqPaneModal`): a dropdown, menu or colour picker opened
+// from the modal's own controls. PaneModalComplex / PaneModalTabs leave Esc and
+// Enter to such a popover (see PaneModal/nested.ts). Popovers anchored outside
+// the modal — the shoot-alert balloon, title-bar popups — and passive ones (the
+// tooltip) never block the modal's keys.
+const nestedInModal = computed(() => {
+	if (props.passive) return undefined
+	const el = unrefElement(props.reference)
+	return el?.closest('.TqPaneModal') ? '' : undefined
 })
 
 useEventListener('keydown', e => {
@@ -265,6 +278,7 @@ let instanceCount = 0
 			class="Popover"
 			:class="{'animate-exit': exitTransition}"
 			:style="[styles, shiftStyle]"
+			:data-tq-nested="nestedInModal"
 			:popover="lightDismiss ? 'auto' : 'manual'"
 		>
 			<Balloon

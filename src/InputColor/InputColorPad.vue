@@ -98,11 +98,29 @@ const tweakWidth = theme.popupWidth
 
 let localOnTweak: HSVA | null = null
 
+// Whether the picker was open when this press began. The native popover is
+// `auto`, so Chrome light-dismisses it on the pointerdown of a click on the
+// button (the button is outside the popover); by onClick `open` is already
+// false and would read as "open it again". Our pointerdown listener runs before
+// that default action, so this is the state the user actually clicked on.
+let openOnPointerDown = false
+useEventListener($button, 'pointerdown', () => {
+	openOnPointerDown = open.value
+})
+
 const {origin, dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	onClick() {
 		if (multi.multiSelected) return
-		open.value = !open.value
+		const next = !openOnPointerDown
+		// useDrag reports a click from the pointerup handler. A popover shown
+		// *during* pointerup is light-dismissed by that same pointerup's default
+		// action (its target is outside a popover that didn't exist at
+		// pointerdown), so it closes before `click` even fires. Open after the
+		// event has fully run instead.
+		setTimeout(() => {
+			open.value = next
+		})
 	},
 	onDragStart() {
 		local.value = localOnTweak = decompose(model.value)

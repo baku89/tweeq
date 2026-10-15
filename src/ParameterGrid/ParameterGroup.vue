@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import {computed, inject, ref, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {useAppConfigStore} from '../stores/appConfig'
 import ParameterHeading from './ParameterHeading.vue'
-import {ParameterGroupProps} from './types'
+import {ParameterGroupCollapsibleKey, ParameterGroupProps} from './types'
 
-const props = defineProps<ParameterGroupProps>()
+const props = withDefaults(defineProps<ParameterGroupProps>(), {
+	// Not `false` (Vue's cast for an absent Boolean prop): absent means "ask
+	// the container".
+	collapsible: undefined,
+})
 
 defineSlots<{
 	default: void
@@ -15,7 +19,17 @@ defineSlots<{
 
 const appConfig = useAppConfigStore()
 
-const expanded = appConfig.ref(props.name, true)
+const inheritedCollapsible = inject(ParameterGroupCollapsibleKey, true)
+const collapsible = computed(() => props.collapsible ?? inheritedCollapsible)
+
+// A group that can't collapse is always open, whatever was stored for it
+// while it could.
+const stored = appConfig.ref(props.name, true)
+const expanded = computed(() => !collapsible.value || stored.value)
+
+function toggle() {
+	if (collapsible.value) stored.value = !stored.value
+}
 
 // The 0fr↔1fr collapse needs overflow:hidden to clip the content, but that also
 // crops focus outlines of inputs once the group is open. So clip only while
@@ -41,8 +55,8 @@ function onTransitionEnd(e: TransitionEvent) {
 		@transitionend="onTransitionEnd">
 		<ParameterHeading>
 			<template #default>
-				<div class="heading" @click="expanded = !expanded">
-					<Icon class="chevron" icon="mdi:chevron-down" />
+				<div class="heading" :class="{collapsible}" @click="toggle">
+					<Icon v-if="collapsible" class="chevron" icon="mdi:chevron-down" />
 					<span>{{ label }}</span>
 				</div>
 			</template>
@@ -107,10 +121,12 @@ function onTransitionEnd(e: TransitionEvent) {
 	display flex
 	align-items center
 	gap 0.25em
-	cursor pointer
 	color var(--tq-color-text-mute)
 	hover-transition(color)
 
-	&:hover
-		color var(--tq-color-text)
+	&.collapsible
+		cursor pointer
+
+		&:hover
+			color var(--tq-color-text)
 </style>

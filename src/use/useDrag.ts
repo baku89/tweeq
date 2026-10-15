@@ -135,6 +135,18 @@ export function useDrag(
 	useEventListener(targetEl, 'pointercancel', onPointerUp)
 	useEventListener(targetEl, 'pointerleave', onPointerUp)
 
+	// A lock granted after the drag already ended (the grant is async; a quick
+	// flick can release before it lands) must not outlive the drag.
+	useEventListener(document, 'pointerlockchange', () => {
+		if (
+			!pointerdown &&
+			document.pointerLockElement &&
+			document.pointerLockElement === targetEl.value
+		) {
+			document.exitPointerLock()
+		}
+	})
+
 	function fireDragStart(event: PointerEvent) {
 		if (
 			unref(lockPointer) &&
@@ -142,7 +154,9 @@ export function useDrag(
 			targetEl.value &&
 			'requestPointerLock' in targetEl.value
 		) {
-			lock(event)
+			// The grant is asynchronous; a rejection (headless, no focus, a lock exited
+			// by Esc moments ago) is not an error for the drag itself.
+			lock(event).catch(() => {})
 			state.pointerLocked = true
 		}
 
@@ -223,7 +237,12 @@ export function useDrag(
 
 	function onPointerUp(event: PointerEvent) {
 		if (state.pointerLocked) {
-			unlock()
+			// usePointerLock's unlock() is a no-op until it has *seen* the lock get
+			// granted; a release that lands before the grant would leave the lock
+			// on (hidden cursor, every click swallowed). Exit directly as well, and
+			// the pointerlockchange guard below catches a grant that lands later.
+			unlock().catch(() => {})
+			if (document.pointerLockElement) document.exitPointerLock()
 		}
 		state.pointerLocked = false
 

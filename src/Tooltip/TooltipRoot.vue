@@ -47,8 +47,9 @@ function onUpdateOpen(open: boolean) {
 		:reference="reference"
 		:open="tooltipState.open"
 		:anchor-name="TOOLTIP_ANCHOR_NAME"
-		placement="top"
+		:placement="tooltipState.placement"
 		:light-dismiss="false"
+		passive
 		arrow
 		teleport=".TqViewport"
 		@update:open="onUpdateOpen"
