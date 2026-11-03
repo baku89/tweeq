@@ -76,7 +76,6 @@ reset-viewport('.TqPaneModal')
 	max-height calc(100dvh - 2 * var(--tq-pane-margin))
 	max-width calc(100dvw - 2 * var(--tq-pane-margin))
 	overflow hidden
-	display flex
 	flex-direction column
 	transition opacity var(-tq-transition-duration), transform var(-tq-transition-duration), overlay var(-tq-transition-duration) allow-discrete, display var(-tq-transition-duration) allow-discrete
 	opacity 0
@@ -86,7 +85,11 @@ reset-viewport('.TqPaneModal')
 		backdrop-filter blur(0px)
 		transition backdrop-filter var(-tq-transition-duration)
 
+	// Only while open: an author `display` beats the UA's
+	// `[popover]:not(:popover-open) {display: none}`, which would leave the closed
+	// modal laid out, invisible, and swallowing clicks on whatever is beneath it.
 	&:popover-open
+		display flex
 		opacity 1
 		transform translateY(0)
 
