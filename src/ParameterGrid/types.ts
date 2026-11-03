@@ -96,6 +96,8 @@ export interface ParameterTreeItemProps {
 	labelSource?: string
 	/** Whether a name is fine, while `renaming`. */
 	canRename?: (name: string) => boolean
+	/** The label stands out from those of the others. */
+	emphasized?: boolean
 	/** The guide along its children curves in at the end, like a `(`. */
 	closedGuide?: boolean
 	/** Set apart from the rows after it, by more than the usual gap. */

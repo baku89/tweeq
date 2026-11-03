@@ -196,7 +196,13 @@ function onContextMenu(event: MouseEvent) {
 					@keydown="onRenameKey"
 					@click.stop
 				/>
-				<span v-else class="name" :title="label" @click="onNameClick">{{
+				<span
+					v-else
+					class="name"
+					:class="{emphasized}"
+					:title="hint === undefined ? label : undefined"
+					@click="onNameClick"
+					>{{
 					label
 				}}</span>
 				<button
@@ -256,6 +262,10 @@ function onContextMenu(event: MouseEvent) {
 .rename {
 	flex: 1 1 0;
 	min-width: 0;
+}
+.name.emphasized {
+	color: var(--tq-color-text);
+	font-weight: 600;
 }
 .name {
 	min-width: 0;
