@@ -405,11 +405,15 @@ function onContextMenu(event: MouseEvent) {
 }
 .chevron {
 	display: block;
+	opacity: 0.5;
 	width: var(--tq-icon-size);
 	height: 100%;
 	margin-left: calc((var(--indent) - var(--tq-icon-size)) / 2);
 	transform: rotate(-90deg);
 	transition: transform var(--tq-hover-transition-duration) ease;
+}
+.toggle:hover .chevron {
+	opacity: 1;
 }
 .row.open .chevron {
 	transform: none;
