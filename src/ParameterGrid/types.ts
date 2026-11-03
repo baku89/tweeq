@@ -100,8 +100,6 @@ export interface ParameterTreeItemProps {
 	emphasized?: boolean
 	/** The guide along its children curves in at both ends, like a `(`. */
 	closedGuide?: boolean
-	/** Set apart from the rows after it, by more than the usual gap. */
-	gapAfter?: boolean
 	/** The menu on the label. Right-clicking also selects. */
 	menuItems?: MenuItem[]
 }

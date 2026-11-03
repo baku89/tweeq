@@ -132,7 +132,6 @@ function onContextMenu(event: MouseEvent) {
 	<li
 		v-if="$slots.wide"
 		class="TqParameterTreeItem wide"
-		:class="{'gap-after': gapAfter}"
 		:style="{'--depth': depth}"
 	>
 		<span class="toggle" />
@@ -150,7 +149,6 @@ function onContextMenu(event: MouseEvent) {
 			top: depth === 0,
 			dragged: isDragged,
 			'drop-target': isDropTarget,
-			'gap-after': gapAfter,
 		}"
 		:hint="hint"
 	>
@@ -400,9 +398,6 @@ function onContextMenu(event: MouseEvent) {
 .wide-content {
 	flex: 1 1 0;
 	min-width: 0;
-}
-.TqParameterTreeItem.gap-after {
-	margin-bottom: var(--tq-gap-control);
 }
 .toggle {
 	display: block;
