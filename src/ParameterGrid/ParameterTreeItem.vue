@@ -43,6 +43,8 @@ defineSlots<{
 	default?: () => any
 	/** Items one level down, rendered while open. */
 	children?: () => any
+	/** Takes the place of the label and the value, across both columns. */
+	wide?: () => any
 }>()
 
 const depth = inject(ParameterTreeDepthKey, 0)
@@ -122,7 +124,20 @@ function onContextMenu(event: MouseEvent) {
 </script>
 
 <template>
+	<li
+		v-if="$slots.wide"
+		class="TqParameterTreeItem wide"
+		:class="{'gap-after': gapAfter}"
+		:style="{'--depth': depth}"
+	>
+		<span class="toggle" />
+		<Icon class="icon" :icon="icon ?? DOT" />
+		<div class="wide-content">
+			<slot name="wide" />
+		</div>
+	</li>
 	<Parameter
+		v-else
 		class="TqParameterTreeItem"
 		:class="{
 			selected,
@@ -157,7 +172,7 @@ function onContextMenu(event: MouseEvent) {
 				<span v-else class="toggle" />
 				<Icon class="icon" :icon="icon ?? DOT" />
 				<InputTextBase
-					v-if="renaming && !renameElsewhere"
+					v-if="renaming"
 					ref="$rename"
 					v-model="draftName"
 					class="rename"
@@ -343,6 +358,16 @@ function onContextMenu(event: MouseEvent) {
 	border-right: none;
 	border-radius: calc(var(--tq-icon-size) / 2) 0 0 calc(var(--tq-icon-size) / 2);
 	background: none;
+}
+.TqParameterTreeItem.wide {
+	display: flex;
+	align-items: flex-start;
+	grid-column: 1 / -1;
+	padding-left: calc(var(--depth) * var(--tq-icon-size));
+}
+.wide-content {
+	flex: 1 1 0;
+	min-width: 0;
 }
 .TqParameterTreeItem.gap-after {
 	margin-bottom: var(--tq-gap-control);

@@ -92,8 +92,6 @@ export interface ParameterTreeItemProps {
 	renamable?: boolean
 	/** A + at the end of the label, which emits `add`. Says what it adds. */
 	addLabel?: string
-	/** The app edits it elsewhere, so `renaming` only says that it was asked for. */
-	renameElsewhere?: boolean
 	/** What to edit, while `renaming`, if it is not the label as shown. */
 	labelSource?: string
 	/** Whether a name is fine, while `renaming`. */
