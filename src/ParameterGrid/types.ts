@@ -43,6 +43,13 @@ export const ParameterTreeDepthKey: InjectionKey<number> = Symbol(
 	'parameterTreeDepth'
 )
 
+export interface ParameterTreeProps {
+	/** What to keep its label column's width under. */
+	name: string
+	/** The width of the label column, until it is resized. */
+	labelWidth?: number
+}
+
 export interface ParameterTreeItemProps {
 	label: string
 	icon?: string

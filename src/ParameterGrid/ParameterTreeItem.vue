@@ -114,7 +114,7 @@ function onContextMenu(event: MouseEvent) {
 				</button>
 				<span v-else class="toggle" />
 				<Icon class="icon" :icon="icon ?? DOT" />
-				<span class="name">{{ label }}</span>
+				<span class="name" :title="label">{{ label }}</span>
 			</span>
 			<!-- Teleported, or the grid's subgrid would clip the fixed popover. -->
 			<Popover
@@ -152,6 +152,15 @@ function onContextMenu(event: MouseEvent) {
 .TqParameterTreeItem :deep(.label) {
 	align-self: stretch;
 	height: auto;
+	min-width: 0;
+}
+.TqParameterTreeItem .row {
+	flex-shrink: 1;
+}
+.name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 /* Behind the row, so that inputs keep their own colors. */
 .TqParameterTreeItem.selected::after {
@@ -169,7 +178,8 @@ function onContextMenu(event: MouseEvent) {
 	align-items: flex-start;
 	align-self: stretch;
 	/* The whole label column selects, not only the text in it. */
-	flex: 1 0 auto;
+	flex: 1 1 0;
+	min-width: 0;
 	padding-left: calc(var(--depth) * var(--tq-icon-size));
 	cursor: pointer;
 }

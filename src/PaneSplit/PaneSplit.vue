@@ -168,13 +168,15 @@ onMounted(() => {
 
 	.horizontal > &
 		cursor col-resize
-		width 1px
+		flex-shrink 0
+		width var(--tq-gap-group)
 		height 100%
 
 	.vertical > &
 		cursor row-resize
+		flex-shrink 0
 		width 100%
-		height 1px
+		height var(--tq-gap-group)
 
 	&:hover
 		background var(--tq-color-accent)

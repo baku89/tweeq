@@ -242,11 +242,12 @@ function onEnter(e: KeyboardEvent) {
 	inset 0 .5em
 	overflow-x visible
 
+	// Past the icon, which is centered in a square as tall as the input.
 	.TqInputTextBase:has(.icon.left) &
-		left calc(var(--tq-icon-size))
+		left var(--tq-input-height)
 
 	.TqInputTextBase:has(.icon.right) &
-		right calc(var(--tq-icon-size))
+		right var(--tq-input-height)
 
 .input
 	height var(--tq-input-height)
