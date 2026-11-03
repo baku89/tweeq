@@ -15,7 +15,11 @@ export interface InputNumberProps extends InputBoxProps {
 	prefix?: string
 	suffix?: string
 	leftIcon?: string
+	/** The left icon can be pressed, for `leftIconClick`. */
+	leftIconPressable?: boolean
 	rightIcon?: string
+	/** The right icon can be pressed, for `rightIconClick`. */
+	rightIconPressable?: boolean
 	/** Value restored by the right-click "Reset to Default" menu item. */
 	default?: number
 }

@@ -86,7 +86,7 @@ let originX = 0
 function onPointerDown(event: PointerEvent) {
 	if (event.button !== 0 || !props.canDrop) return
 	const target = event.target as Element
-	if (target.closest('button')) return
+	if (target.closest('button, input, textarea')) return
 	const handle = target.closest<HTMLElement>('[data-tq-tree-handle]')
 	if (!handle) return
 	press = {

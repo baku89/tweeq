@@ -86,6 +86,14 @@ export interface ParameterTreeItemProps {
 	sortHandle?: boolean
 	/** The label drags the item around its ParameterTree, which knows it by this. */
 	dragId?: string
+	/** What to edit, while `renaming`, if it is not the label as shown. */
+	labelSource?: string
+	/** Whether a name is fine, while `renaming`. */
+	canRename?: (name: string) => boolean
+	/** The guide along its children curves in at the end, like a `(`. */
+	closedGuide?: boolean
+	/** Set apart from the rows after it, by more than the usual gap. */
+	gapAfter?: boolean
 	/** The menu on the label. Right-clicking also selects. */
 	menuItems?: MenuItem[]
 }

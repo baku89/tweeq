@@ -19,7 +19,11 @@ export interface InputTextBaseProps extends InputBoxProps {
 	font?: InputFont
 	align?: InputAlign
 	leftIcon?: string
+	/** The left icon can be pressed, which emits `leftIconClick`. */
+	leftIconPressable?: boolean
 	rightIcon?: string
+	/** The right icon can be pressed, which emits `rightIconClick`. */
+	rightIconPressable?: boolean
 	/** Shown while the input is empty. */
 	placeholder?: string
 	/**
@@ -46,6 +50,8 @@ const emit = defineEmits<{
 	keydown: [e: KeyboardEvent]
 	confirm: []
 	reset: []
+	leftIconClick: []
+	rightIconClick: []
 	'update:focused': [value: boolean]
 }>()
 
@@ -132,6 +138,18 @@ function onKeydown(e: KeyboardEvent) {
 	emit('keydown', e)
 }
 
+function onLeftIconClick(e: MouseEvent) {
+	if (!props.leftIconPressable) return
+	e.stopPropagation()
+	emit('leftIconClick')
+}
+
+function onRightIconClick(e: MouseEvent) {
+	if (!props.rightIconPressable) return
+	e.stopPropagation()
+	emit('rightIconClick')
+}
+
 function onEnter(e: KeyboardEvent) {
 	if (props.multiline && e.shiftKey) return
 	emit('confirm')
@@ -177,8 +195,20 @@ function onEnter(e: KeyboardEvent) {
 			<slot name="inactiveContent" />
 		</div>
 
-		<Icon v-if="leftIcon" class="icon left" :icon="leftIcon" />
-		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
+		<Icon
+			v-if="leftIcon"
+			class="icon left"
+			:class="{pressable: leftIconPressable}"
+			:icon="leftIcon"
+			@click="onLeftIconClick"
+		/>
+		<Icon
+			v-if="rightIcon"
+			class="icon right"
+			:class="{pressable: rightIconPressable}"
+			:icon="rightIcon"
+			@click="onRightIconClick"
+		/>
 
 		<slot name="front" />
 
@@ -249,6 +279,13 @@ function onEnter(e: KeyboardEvent) {
 	.TqInputTextBase:has(.icon.right) &
 		right var(--tq-input-height)
 
+	// What is centered stays in the middle of the input, whichever side has an icon.
+	.TqInputTextBase[align=center]:has(.icon.left) &
+		right var(--tq-input-height)
+
+	.TqInputTextBase[align=center]:has(.icon.right) &
+		left var(--tq-input-height)
+
 .input
 	height var(--tq-input-height)
 
@@ -304,6 +341,15 @@ function onEnter(e: KeyboardEvent) {
 	z-index 100
 	pointer-events none
 	top 0
+
+	&.pressable
+		pointer-events auto
+		cursor pointer
+		hover-transition(opacity, color)
+
+		&:hover
+			color var(--tq-color-text)
+			opacity 1
 
 	&.left
 		left 2px

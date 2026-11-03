@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import {computed, inject, onBeforeUnmount, provide, ref, useTemplateRef} from 'vue'
+import {
+	computed,
+	inject,
+	nextTick,
+	onBeforeUnmount,
+	provide,
+	ref,
+	useTemplateRef,
+	watch,
+} from 'vue'
 
 import {Icon} from '../Icon'
+import {InputTextBase} from '../InputTextBase'
 import {Menu} from '../Menu'
 import {Popover} from '../Popover'
 import Parameter from './Parameter.vue'
@@ -18,7 +28,13 @@ const props = defineProps<ParameterTreeItemProps>()
 
 const open = defineModel<boolean>('open', {default: false})
 
-const emit = defineEmits<{select: []}>()
+const renaming = defineModel<boolean>('renaming', {default: false})
+
+const emit = defineEmits<{
+	select: []
+	/** A new name was confirmed. Nothing changes as it is typed. */
+	rename: [name: string]
+}>()
 
 defineSlots<{
 	/** The value column. */
@@ -31,6 +47,42 @@ const depth = inject(ParameterTreeDepthKey, 0)
 provide(ParameterTreeDepthKey, depth + 1)
 
 const $label = useTemplateRef<HTMLElement>('$label')
+
+const $rename = useTemplateRef<{select: () => void}>('$rename')
+const draftName = ref('')
+const nameIsFine = computed(
+	() => props.canRename === undefined || props.canRename(draftName.value)
+)
+
+watch(renaming, async on => {
+	if (!on) return
+	draftName.value = props.labelSource ?? props.label
+	await nextTick()
+	$rename.value?.select()
+})
+
+function confirmRename() {
+	if (!renaming.value) return
+	renaming.value = false
+	const source = props.labelSource ?? props.label
+	if (nameIsFine.value && draftName.value !== source) emit('rename', draftName.value)
+}
+
+function onRenameKey(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		event.stopPropagation()
+		renaming.value = false
+	}
+}
+
+defineExpose({
+	/** Bring the row into view. */
+	scrollIntoView: () => $label.value?.scrollIntoView({block: 'nearest'}),
+})
+
+function onDoubleClick() {
+	if (!renaming.value && props.expandable) open.value = !open.value
+}
 
 const tree = inject(ParameterTreeContextKey, null)
 const unregister = tree?.register({
@@ -62,7 +114,13 @@ function onContextMenu(event: MouseEvent) {
 <template>
 	<Parameter
 		class="TqParameterTreeItem"
-		:class="{selected, top: depth === 0, dragged: isDragged, 'drop-target': isDropTarget}"
+		:class="{
+			selected,
+			top: depth === 0,
+			dragged: isDragged,
+			'drop-target': isDropTarget,
+			'gap-after': gapAfter,
+		}"
 		:hint="hint"
 	>
 		<template #label>
@@ -74,7 +132,7 @@ function onContextMenu(event: MouseEvent) {
 				:data-tq-array-handle="sortHandle ? '' : undefined"
 :data-tq-tree-handle="dragId"
 				@click="emit('select')"
-				@dblclick="expandable && (open = !open)"
+				@dblclick="onDoubleClick"
 				@contextmenu="onContextMenu"
 			>
 				<button
@@ -88,7 +146,19 @@ function onContextMenu(event: MouseEvent) {
 				</button>
 				<span v-else class="toggle" />
 				<Icon class="icon" :icon="icon ?? DOT" />
-				<span class="name" :title="label">{{ label }}</span>
+				<InputTextBase
+					v-if="renaming"
+					ref="$rename"
+					v-model="draftName"
+					class="rename"
+					font="monospace"
+					:invalid="!nameIsFine"
+					@confirm="confirmRename"
+					@blur="confirmRename"
+					@keydown="onRenameKey"
+					@click.stop
+				/>
+				<span v-else class="name" :title="label">{{ label }}</span>
 			</span>
 			<!-- Teleported, or the grid's subgrid would clip the fixed popover. -->
 			<Popover
@@ -104,7 +174,14 @@ function onContextMenu(event: MouseEvent) {
 		</template>
 		<slot />
 	</Parameter>
-	<slot v-if="expandable && open" name="children" />
+	<div
+		v-if="expandable && open"
+		class="children"
+		:class="{closed: closedGuide}"
+		:style="{'--depth': depth}"
+	>
+		<slot name="children" />
+	</div>
 </template>
 
 <style scoped>
@@ -124,6 +201,10 @@ function onContextMenu(event: MouseEvent) {
 }
 .TqParameterTreeItem .row {
 	flex-shrink: 1;
+}
+.rename {
+	flex: 1 1 0;
+	min-width: 0;
 }
 .name {
 	min-width: 0;
@@ -156,33 +237,40 @@ function onContextMenu(event: MouseEvent) {
 	cursor: pointer;
 	user-select: none;
 }
-/* One line for each level this row is inside, under that level's chevron. */
-.row::before {
-	content: '';
-	position: absolute;
-	top: calc(-1 * var(--tq-gap-related));
-	bottom: 0;
-	left: 0;
-	width: calc(var(--depth) * var(--tq-icon-size));
-	pointer-events: none;
-	background: repeating-linear-gradient(
-		to right,
-		transparent 0 calc(var(--tq-icon-size) / 2),
-		var(--tq-color-border) 0 calc(var(--tq-icon-size) / 2 + 1px),
-		transparent 0 var(--tq-icon-size)
+/*
+ * The guide along a row's children, from just below the tip of its chevron. It
+ * belongs to them, so that it ends where they do.
+ */
+.children {
+	--tip: calc(
+		(var(--tq-input-height) - var(--tq-icon-size)) / 2 + var(--tq-icon-size) * 0.64 + 4px
 	);
+	position: relative;
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	row-gap: var(--tq-gap-related);
 }
-/* The start of that line, just below the tip of an open chevron. */
-.row.open::after {
+.children::before {
 	content: '';
 	position: absolute;
-	top: calc(var(--inset) + var(--tq-icon-size) * 0.64 + 4px);
-	/* The first child's line takes over from here. They would darken if they met. */
+	top: calc(var(--tip) - var(--tq-input-height) - var(--tq-gap-related));
 	bottom: 0;
 	left: calc((var(--depth) + 0.5) * var(--tq-icon-size));
 	width: 1px;
-	pointer-events: none;
 	background: var(--tq-color-border);
+	pointer-events: none;
+}
+.children.closed::before {
+	box-sizing: border-box;
+	width: calc(var(--tq-icon-size) / 2);
+	border-left: 1px solid var(--tq-color-border);
+	border-bottom: 1px solid var(--tq-color-border);
+	border-bottom-left-radius: calc(var(--tq-icon-size) / 2);
+	background: none;
+}
+.TqParameterTreeItem.gap-after {
+	margin-bottom: var(--tq-gap-control);
 }
 .toggle {
 	display: block;

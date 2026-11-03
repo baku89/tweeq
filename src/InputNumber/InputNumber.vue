@@ -186,6 +186,11 @@ const insideRange = computed(
 let dragStartedFocused = false
 let dragRemainder = 0
 
+// A drag sends what it shows, unless a step says what it can be.
+function roundToShown(value: number) {
+	return props.step ? value : Number(value.toFixed(precision.value))
+}
+
 const {dragging: tweaking} = useDrag($input, {
 	lockPointer: computed(() => !barVisible.value),
 	disabled: computed(() => props.disabled),
@@ -207,12 +212,14 @@ const {dragging: tweaking} = useDrag($input, {
 		if (barVisible.value && insideRange.value && !grabbed) {
 			// Absolute Mode — jump to the pressed position. Only reachable while
 			// unfocused; focused presses on the bar go to the text input instead.
-			local.value = scalar.fit(
-				state.xy[0],
-				left.value,
-				right.value,
-				props.min,
-				props.max
+			local.value = roundToShown(
+				scalar.fit(
+					state.xy[0],
+					left.value,
+					right.value,
+					props.min,
+					props.max
+				)
 			)
 
 			multi.update(() => local.value)
@@ -259,16 +266,13 @@ const {dragging: tweaking} = useDrag($input, {
 			if (props.max !== Number.MAX_SAFE_INTEGER) {
 				newLocal = scalar.min(newLocal, props.max)
 			}
-			// Only what is displayed goes out, or dragging 40 yields 62.113 while
-			// showing 62. What is left over carries to the next move, so that slow
-			// drags still add up.
-			if (!props.step) {
-				const shown = Number(newLocal.toFixed(precision.value))
-				dragRemainder = newLocal - shown
-				newLocal = shown
-			}
 		}
-		local.value = newLocal
+		// Only what is displayed goes out, or dragging 40 yields 62.113 while
+		// showing 62. What is left over carries to the next move, so that slow
+		// drags still add up.
+		const shown = roundToShown(newLocal)
+		dragRemainder = newLocal - shown
+		local.value = shown
 
 		deltaAccumulated += delta
 		multi.update(v => v + deltaAccumulated)
@@ -616,7 +620,9 @@ const barStyle = computed<StyleValue>(() => {
 		:disabled="disabled"
 		:invalid="invalid"
 		:leftIcon="leftIcon"
+		:leftIconPressable="leftIconPressable"
 		:rightIcon="rightIcon"
+		:rightIconPressable="rightIconPressable"
 		:default="props.default"
 		@focus="onFocus"
 		@blur="onBlur"
@@ -671,7 +677,7 @@ const barStyle = computed<StyleValue>(() => {
 					<div class="scrub-zone scrub wide bottom" :class="rangeSide" />
 				</template>
 			</template>
-			<div v-else class="scrub grip" />
+			<div v-else-if="!leftIconPressable" class="scrub grip" />
 		</template>
 	</InputTextBase>
 </template>
