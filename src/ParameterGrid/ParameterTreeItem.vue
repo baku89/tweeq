@@ -182,7 +182,6 @@ function onContextMenu(event: MouseEvent) {
 					class="rename"
 					:style="{'--underline-from': underlineFrom}"
 					theme="underline"
-					font="monospace"
 					:invalid="!nameIsFine"
 					@confirm="confirmRename"
 					@blur="confirmRename"
