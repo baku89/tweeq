@@ -14,6 +14,7 @@ import {Icon} from '../Icon'
 import {InputTextBase} from '../InputTextBase'
 import {Menu} from '../Menu'
 import {Popover} from '../Popover'
+import {vTooltip} from '../Tooltip'
 import Parameter from './Parameter.vue'
 import {
 	ParameterTreeContextKey,
@@ -34,6 +35,7 @@ const emit = defineEmits<{
 	select: []
 	/** A new name was confirmed. Nothing changes as it is typed. */
 	rename: [name: string]
+	add: []
 }>()
 
 defineSlots<{
@@ -54,12 +56,47 @@ const nameIsFine = computed(
 	() => props.canRename === undefined || props.canRename(draftName.value)
 )
 
-watch(renaming, async on => {
-	if (!on) return
-	draftName.value = props.labelSource ?? props.label
-	await nextTick()
-	$rename.value?.select()
-})
+watch(
+	renaming,
+	async on => {
+		if (!on) return
+		draftName.value = props.labelSource ?? props.label
+		await nextTick()
+		$rename.value?.select()
+	},
+	{immediate: true}
+)
+
+// A click on what has been selected for a moment starts renaming it, as in a file
+// tree. It waits, as it may turn out to be a double click.
+const RENAME_AFTER_SELECTED = 500
+const DOUBLE_CLICK_WINDOW = 300
+let selectedAt = 0
+let renameTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+	() => props.selected,
+	selected => {
+		if (selected) selectedAt = performance.now()
+		else clearTimeout(renameTimer)
+	},
+	{immediate: true}
+)
+
+function onNameClick() {
+	if (
+		props.renamable &&
+		props.selected &&
+		performance.now() - selectedAt > RENAME_AFTER_SELECTED
+	) {
+		clearTimeout(renameTimer)
+		renameTimer = setTimeout(() => {
+			renaming.value = true
+		}, DOUBLE_CLICK_WINDOW)
+	}
+}
+
+onBeforeUnmount(() => clearTimeout(renameTimer))
 
 function confirmRename() {
 	if (!renaming.value) return
@@ -81,6 +118,7 @@ defineExpose({
 })
 
 function onDoubleClick() {
+	clearTimeout(renameTimer)
 	if (!renaming.value && props.expandable) open.value = !open.value
 }
 
@@ -158,7 +196,20 @@ function onContextMenu(event: MouseEvent) {
 					@keydown="onRenameKey"
 					@click.stop
 				/>
-				<span v-else class="name" :title="label">{{ label }}</span>
+				<span v-else class="name" :title="label" @click="onNameClick">{{
+					label
+				}}</span>
+				<button
+					v-if="addLabel !== undefined && !renaming"
+					v-tooltip="addLabel"
+					class="add"
+					type="button"
+					:aria-label="addLabel"
+					@click.stop="emit('add')"
+					@dblclick.stop
+				>
+					<Icon icon="mdi:plus" />
+				</button>
 			</span>
 			<!-- Teleported, or the grid's subgrid would clip the fixed popover. -->
 			<Popover
@@ -241,6 +292,34 @@ function onContextMenu(event: MouseEvent) {
  * The guide along a row's children, from just below the tip of its chevron. It
  * belongs to them, so that it ends where they do.
  */
+/* At the end of the label, and there when reached for. */
+.add {
+	display: block;
+	flex-shrink: 0;
+	width: var(--tq-icon-size);
+	height: var(--tq-icon-size);
+	margin-top: var(--inset);
+	margin-left: auto;
+	border-radius: var(--tq-radius-input);
+	color: var(--tq-color-text-mute);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity var(--tq-hover-transition-duration);
+}
+.add > * {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.row:hover .add,
+.selected .add,
+.add:focus-visible {
+	opacity: 1;
+}
+.add:hover {
+	color: var(--tq-color-text);
+	background: var(--tq-color-input-hover);
+}
 .children {
 	--tip: calc(
 		(var(--tq-input-height) - var(--tq-icon-size)) / 2 + var(--tq-icon-size) * 0.64 + 4px
