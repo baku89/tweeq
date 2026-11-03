@@ -5,6 +5,7 @@ import {scalar, vec2} from 'linearly'
 import {clamp, debounce} from 'lodash-es'
 import {computed, shallowRef, useTemplateRef, watch} from 'vue'
 
+import {keyboardTarget} from '../use/keyboardTarget'
 import {useBndr} from '../use/useBndr'
 import {toPercent} from '../util'
 import type {TimelineProps} from './types'
@@ -79,7 +80,7 @@ useBndr($root, $root => {
 
 	const center = pointer.position({coordinate: 'offset'}).map(([x]) => x)
 
-	const altPressed = Bndr.keyboard().pressed('option')
+	const altPressed = Bndr.keyboard(keyboardTarget()).pressed('option')
 
 	pointerScroll.on(([x, y]) => {
 		if (altPressed.value) {

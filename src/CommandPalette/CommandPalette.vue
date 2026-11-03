@@ -8,6 +8,7 @@ import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
 import {type ActionItemOptions, useActionsStore} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
+import {keyboardTarget} from '../use/keyboardTarget'
 import {useBndr} from '../use/useBndr'
 import {unsignedMod} from '../util'
 
@@ -63,7 +64,7 @@ watch(filteredActions, () => {
 })
 
 useBndr($popover, $popover => {
-	Bndr.keyboard()
+	Bndr.keyboard(keyboardTarget())
 		.hotkey('command+p', {preventDefault: true, capture: true})
 		.on(() => $popover instanceof HTMLElement && $popover.togglePopover())
 })

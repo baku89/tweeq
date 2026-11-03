@@ -11,6 +11,7 @@ import {
 } from 'vue'
 
 import type {MenuCommand, MenuItem} from '../Menu'
+import {keyboardTarget} from '../use/keyboardTarget'
 
 interface ActionItemBase {
 	id: string
@@ -65,7 +66,7 @@ let gamepad: ReturnType<typeof Bndr.gamepad> | undefined
 // クライアントサイドでのみ初期化する関数
 const initBndr = () => {
 	if (typeof window !== 'undefined' && (!keyboard || !gamepad)) {
-		keyboard = Bndr.keyboard()
+		keyboard = Bndr.keyboard(keyboardTarget())
 		gamepad = Bndr.gamepad()
 	}
 }
