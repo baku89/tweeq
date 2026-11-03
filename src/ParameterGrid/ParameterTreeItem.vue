@@ -58,10 +58,15 @@ const nameIsFine = computed(
 	() => props.canRename === undefined || props.canRename(draftName.value)
 )
 
+// The label's underline goes on to be the input's, spreading out from its width.
+const underlineFrom = ref('0')
+
 watch(
 	renaming,
 	async on => {
 		if (!on) return
+		const name = $label.value?.querySelector('.name')
+		if (name) underlineFrom.value = `${name.getBoundingClientRect().width}px`
 		draftName.value = props.labelSource ?? props.label
 		await nextTick()
 		$rename.value?.select()
@@ -177,6 +182,7 @@ function onContextMenu(event: MouseEvent) {
 					ref="$rename"
 					v-model="draftName"
 					class="rename"
+					:style="{'--underline-from': underlineFrom}"
 					theme="underline"
 					font="monospace"
 					:invalid="!nameIsFine"
@@ -252,26 +258,46 @@ function onContextMenu(event: MouseEvent) {
 	flex: 1 1 0;
 	min-width: 0;
 }
-/* What can be edited says so. */
+/* What can be edited says so, with the line that an input has along its bottom. */
 .name.renamable {
 	cursor: text;
-	text-decoration: underline;
-	text-decoration-color: var(--tq-color-border);
-	text-underline-offset: 0.2em;
-	transition: text-decoration-color var(--tq-hover-transition-duration);
+	box-shadow: inset 0 -1px 0 var(--tq-color-border);
+	transition: box-shadow var(--tq-hover-transition-duration);
 }
 .name.renamable:hover {
-	text-decoration-color: currentColor;
+	box-shadow: inset 0 -1px 0 var(--tq-color-text-mute);
 }
-.icon.emphasized {
-	color: var(--tq-color-info);
+/* The same line, spreading out from where the label's ended. */
+.rename {
+	box-shadow: none !important;
+}
+.rename::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 1px;
+	background: var(--tq-color-accent);
+	pointer-events: none;
+	animation: underline-spread var(--tq-hover-transition-duration) ease-out;
+}
+@keyframes underline-spread {
+	from {
+		width: var(--underline-from);
+		background: var(--tq-color-border);
+	}
 }
 .name.emphasized {
 	color: var(--tq-color-info);
 	font-weight: 600;
 }
 .name {
+	display: block;
 	min-width: 0;
+	height: var(--tq-input-height);
+	/* As far in as an input's text, so that it stays put on editing. */
+	padding-inline: 0.5em;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -402,7 +428,6 @@ function onContextMenu(event: MouseEvent) {
 	width: var(--tq-icon-size);
 	height: var(--tq-icon-size);
 	margin-top: var(--inset);
-	margin-right: var(--tq-gap-related);
 	color: var(--tq-color-text-subtle);
 }
 </style>
