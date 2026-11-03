@@ -95,7 +95,7 @@ function onContextMenu(event: MouseEvent) {
 	inset: calc(var(--tq-gap-control) / -2) 0 calc(var(--tq-gap-control) / -2) -3px;
 	z-index: -1;
 	border-radius: var(--tq-radius-input);
-	background: color-mix(in srgb, var(--tq-color-text) 5%, transparent);
+	background: var(--tq-color-accent-soft);
 	pointer-events: none;
 }
 .row {
