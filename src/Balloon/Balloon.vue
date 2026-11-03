@@ -2,6 +2,8 @@
 import {useElementSize} from '@vueuse/core'
 import {computed, useTemplateRef} from 'vue'
 
+import {BALLOON_ARROW_WIDTH, BALLOON_RADIUS} from './constants'
+
 type ArrowSide = 'top' | 'bottom' | 'left' | 'right'
 
 const props = withDefaults(
@@ -22,9 +24,7 @@ const props = withDefaults(
 		arrowSide: null,
 		arrowOffset: 0,
 		flash: false,
-		// Concentric with the content: inner control radius (4) + popup padding
-		// (9), matching --tq-radius-popup.
-		radius: 13,
+		radius: BALLOON_RADIUS,
 		padding: 'var(--tq-popup-padding)',
 	}
 )
@@ -32,7 +32,7 @@ const props = withDefaults(
 // Arrow base width / protrusion depth — fixed to the visual language; the
 // balloon shape itself is generated from the measured content. The tip is a
 // sharp point (no rounding).
-const AW = 14
+const AW = BALLOON_ARROW_WIDTH
 const AH = 7
 // Breathing room between the arrow tip and the layer edge (i.e. the anchor), so
 // the balloon doesn't sit dead-flush against what it points at. The layer/wrapper

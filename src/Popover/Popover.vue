@@ -3,6 +3,7 @@ import {unrefElement, useEventListener, useResizeObserver} from '@vueuse/core'
 import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
 import {Balloon} from '../Balloon'
+import {BALLOON_ARROW_INSET} from '../Balloon/constants'
 import {addAnchorName} from '../util'
 import type {PopoverProps} from './types'
 
@@ -125,25 +126,37 @@ function update() {
 	const [side] = props.placement.split('-')
 	const horizontal = side === 'top' || side === 'bottom'
 
-	// Shift along the cross axis (x for top/bottom, y for left/right) so the box
-	// stays within the viewport. Work from the *natural* position (measured rect
-	// minus the shift already applied) so this converges instead of drifting
-	// frame to frame.
+	// Work from the *natural* position (measured rect minus the shift already
+	// applied) so this converges instead of drifting frame to frame.
+	const naturalLeft = p.left - shiftX.value
+	const naturalTop = p.top - shiftY.value
+
+	// Shift along the cross axis (x for top/bottom, y for left/right), first so
+	// the arrow can reach the reference's centre: it can't get into the rounded
+	// corners, which a small reference at a start / end placement would ask for.
+	const arrowShift = (offset: number, size: number) => {
+		if (!props.arrow || size < BALLOON_ARROW_INSET * 2) return 0
+		if (offset < BALLOON_ARROW_INSET) return offset - BALLOON_ARROW_INSET
+		if (offset > size - BALLOON_ARROW_INSET) return offset - (size - BALLOON_ARROW_INSET)
+		return 0
+	}
+
+	// ...then so the box stays within the viewport, which wins.
 	let dx = 0
 	let dy = 0
 	if (horizontal) {
-		const left = p.left - shiftX.value
-		const right = p.right - shiftX.value
+		dx = arrowShift(r.left + r.width / 2 - naturalLeft, p.width)
 		const vw = document.documentElement.clientWidth
-		if (right > vw - VIEWPORT_MARGIN) dx = vw - VIEWPORT_MARGIN - right
+		const right = naturalLeft + p.width + dx
+		if (right > vw - VIEWPORT_MARGIN) dx += vw - VIEWPORT_MARGIN - right
 		// If both edges overflow (popover wider than viewport) the left edge wins.
-		if (left + dx < VIEWPORT_MARGIN) dx = VIEWPORT_MARGIN - left
+		if (naturalLeft + dx < VIEWPORT_MARGIN) dx = VIEWPORT_MARGIN - naturalLeft
 	} else {
-		const top = p.top - shiftY.value
-		const bottom = p.bottom - shiftY.value
+		dy = arrowShift(r.top + r.height / 2 - naturalTop, p.height)
 		const vh = document.documentElement.clientHeight
-		if (bottom > vh - VIEWPORT_MARGIN) dy = vh - VIEWPORT_MARGIN - bottom
-		if (top + dy < VIEWPORT_MARGIN) dy = VIEWPORT_MARGIN - top
+		const bottom = naturalTop + p.height + dy
+		if (bottom > vh - VIEWPORT_MARGIN) dy += vh - VIEWPORT_MARGIN - bottom
+		if (naturalTop + dy < VIEWPORT_MARGIN) dy = VIEWPORT_MARGIN - naturalTop
 	}
 	shiftX.value = dx
 	shiftY.value = dy
@@ -151,8 +164,8 @@ function update() {
 	if (!props.arrow) return
 
 	// The final (post-shift) rect the arrow must point into.
-	const fpLeft = p.left - shiftX.value + dx
-	const fpTop = p.top - shiftY.value + dy
+	const fpLeft = naturalLeft + dx
+	const fpTop = naturalTop + dy
 	const fp = {left: fpLeft, top: fpTop, right: fpLeft + p.width, bottom: fpTop + p.height}
 
 	let arrow: ArrowSide
