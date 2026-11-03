@@ -7,6 +7,9 @@ import {Popover} from '../Popover'
 import Parameter from './Parameter.vue'
 import {ParameterTreeDepthKey, type ParameterTreeItemProps} from './types'
 
+// A row without an icon keeps the rhythm of those with one.
+const DOT = 'fill:M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z'
+
 const props = defineProps<ParameterTreeItemProps>()
 
 const open = defineModel<boolean>('open', {default: false})
@@ -59,7 +62,7 @@ function onContextMenu(event: MouseEvent) {
 					<Icon class="chevron" icon="mdi:chevron-down" />
 				</button>
 				<span v-else class="toggle" />
-				<Icon v-if="icon" class="icon" :icon="icon" />
+				<Icon class="icon" :icon="icon ?? DOT" />
 				<span class="name">{{ label }}</span>
 				<span v-if="note" class="note">{{ note }}</span>
 			</span>
@@ -153,6 +156,7 @@ function onContextMenu(event: MouseEvent) {
 	flex-shrink: 0;
 	width: var(--tq-icon-size);
 	height: var(--tq-icon-size);
+	color: var(--tq-color-text-subtle);
 }
 .name {
 	padding-inline: 0.25em;
