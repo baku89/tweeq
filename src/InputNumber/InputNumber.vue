@@ -18,7 +18,6 @@ import {
 	watchSyncEffect,
 } from 'vue'
 
-import {Icon} from '../Icon'
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
@@ -192,7 +191,7 @@ const {dragging: tweaking} = useDrag($input, {
 	disabled: computed(() => props.disabled),
 	// While focused, only the grab affordances (.scrub) start a drag; pressing the
 	// text area falls through to the <input> to place a caret / edit. `closest` so
-	// a press on a child (e.g. the grip's hint icon / its inner SVG) still counts.
+	// a press on a child still counts.
 	shouldDrag(event) {
 		if (!focused.value) return true
 		return !!(event.target as Element | null)?.closest('.scrub')
@@ -653,7 +652,7 @@ const barStyle = computed<StyleValue>(() => {
 			Ranged: transparent grab zones over the handle (top/bottom strips leaving
 			a centre text gap; full-height at min/max; full-width when out of range).
 			Unranged: no bar to grab, so the left-icon area becomes a horizontal
-			scrub grip — falling back to a faint hint icon when there's no leftIcon. -->
+			scrub grip. -->
 		<template #front>
 			<template v-if="barVisible">
 				<template v-if="insideRange">
@@ -672,9 +671,7 @@ const barStyle = computed<StyleValue>(() => {
 					<div class="scrub-zone scrub wide bottom" :class="rangeSide" />
 				</template>
 			</template>
-			<div v-else class="scrub grip">
-				<Icon v-if="!leftIcon" class="grip-hint" icon="mdi:arrow-left-right" />
-			</div>
+			<div v-else class="scrub grip" />
 		</template>
 	</InputTextBase>
 </template>
@@ -826,23 +823,11 @@ const barStyle = computed<StyleValue>(() => {
 	top 0
 	bottom 0
 	width var(--tq-input-height)
-	display flex
-	align-items center
-	justify-content center
 	pointer-events none
 
 	.TqInputNumber:focus-within &
 		pointer-events auto
 		cursor ew-resize
-
-// Faint hint shown only while focused when there's no leftIcon to grab.
-.grip-hint
-	color var(--tq-color-text-mute)
-	transform scale(0.7)
-	opacity 0
-
-	.TqInputNumber:focus-within &
-		opacity .5
 
 .overlay
 	position absolute
