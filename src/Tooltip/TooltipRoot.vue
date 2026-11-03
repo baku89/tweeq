@@ -83,20 +83,18 @@ function onUpdateOpen(open: boolean) {
 
 <style lang="stylus" scoped>
 .TqTooltipContent
-	font-size 0.9em
 	line-height 1.4
+	text-align left
 
-// Plain string tooltips read as a centred caption.
+// Plain string tooltips read as a caption.
 .plain
-	max-width 18em
-	text-align center
+	max-width 24em
 	white-space pre-line
 
 // Rich (html) tooltips carry their own structured layout (e.g. a grid), so
 // keep them left-aligned and give them room.
 .html
 	max-width 26em
-	text-align left
 
 	// Clickable parts of an interactive tooltip (`actions`): the marked element
 	// reads as a button. The negative margin lets the hover fill reach past the
@@ -115,8 +113,7 @@ function onUpdateOpen(open: boolean) {
 
 // Title + description: a bold caption with a muted explanatory line beneath.
 .structured
-	max-width 20em
-	text-align center
+	max-width 24em
 	white-space pre-line
 
 	.title
@@ -124,6 +121,4 @@ function onUpdateOpen(open: boolean) {
 
 	.description
 		color var(--tq-color-text-mute)
-		// Slightly tighter so the description reads as secondary.
-		font-size 0.95em
 </style>
