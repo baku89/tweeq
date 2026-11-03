@@ -131,7 +131,7 @@ function onContextMenu(event: MouseEvent) {
 		:style="{'--depth': depth}"
 	>
 		<span class="toggle" />
-		<Icon class="icon" :icon="icon ?? DOT" />
+		<Icon class="icon" :class="{emphasized}" :icon="icon ?? DOT" />
 		<div class="wide-content">
 			<slot name="wide" />
 		</div>
@@ -170,7 +170,7 @@ function onContextMenu(event: MouseEvent) {
 					<Icon class="chevron" icon="mdi:chevron-down" />
 				</button>
 				<span v-else class="toggle" />
-				<Icon class="icon" :icon="icon ?? DOT" />
+				<Icon class="icon" :class="{emphasized}" :icon="icon ?? DOT" />
 				<InputTextBase
 					v-if="renaming"
 					ref="$rename"
@@ -261,6 +261,9 @@ function onContextMenu(event: MouseEvent) {
 }
 .name.renamable:hover {
 	text-decoration-color: currentColor;
+}
+.icon.emphasized {
+	color: var(--tq-color-info);
 }
 .name.emphasized {
 	color: var(--tq-color-info);
