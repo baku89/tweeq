@@ -77,13 +77,16 @@ const findTab = (id: string): Tab | undefined => {
 // tabs register via their own onBeforeMount — which, for tabs rendered by a
 // v-for, can land after this parent mounts — and the active tab can later be
 // removed. A one-shot check that ran before any tab existed would leave nothing
-// selected. Preference: the persisted tab, then an explicit default, then tab 0.
+// selected. Preference: the asked-for tab, the persisted tab, then an explicit default, then tab 0.
 function ensureActiveTab() {
 	if (!state.tabs.length) return
 	// A valid tab is already active → leave it.
 	if (state.activeId && findTab(state.activeId)) return
 
 	const next =
+		(props.options?.initialTabId &&
+			findTab(props.options.initialTabId) &&
+			props.options.initialTabId) ||
 		(activeId.value && findTab(activeId.value) && activeId.value) ||
 		(props.options?.defaultTabId &&
 			findTab(props.options.defaultTabId) &&

@@ -23,6 +23,8 @@ export interface TabsProps {
 	options?: {
 		storageKey?: string
 		defaultTabId?: string
+		/** Open at this tab, over the one remembered from last time. */
+		initialTabId?: string
 	}
 }
 

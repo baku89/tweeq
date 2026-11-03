@@ -17,6 +17,9 @@ const desc = ref<{tabs: ModalTab[]; options?: TabsShowOptions} | null>(null)
 // Live values for the form (scheme) tabs, keyed by tab id.
 const values = ref<Record<string, Record<string, unknown>>>({})
 
+// Each opening gets fresh tabs, so it starts at the tab it asks for.
+const opening = ref(0)
+
 let endEdit: () => void = () => {}
 
 function promptTabsImpl(
@@ -25,6 +28,7 @@ function promptTabsImpl(
 ): Promise<void> {
 	if (desc.value) endEdit()
 
+	opening.value++
 	desc.value = {tabs, options}
 	values.value = Object.fromEntries(
 		tabs
@@ -96,11 +100,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 				{{ desc.options.title }}
 			</div>
 			<Tabs
+				:key="opening"
 				:name="`modal-${desc.options?.title ?? 'tabs'}`"
+				:options="{initialTabId: desc.options?.initialTab}"
 				vertical
 				class="body"
 			>
-				<Tab v-for="tab in desc.tabs" :key="tab.id" :name="tab.title">
+				<Tab v-for="tab in desc.tabs" :id="tab.id" :key="tab.id" :name="tab.title">
 					<InputComplex
 						v-if="'scheme' in tab"
 						:scheme="tab.scheme"

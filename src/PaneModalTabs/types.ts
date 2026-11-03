@@ -23,6 +23,8 @@ export type ModalTab = ModalFormTab | ModalComponentTab
 
 export interface TabsShowOptions {
 	readonly title?: string
+	/** Id of the tab to open at, over the one remembered from last time. */
+	readonly initialTab?: string
 }
 
 export type PromptTabsFn = (
