@@ -360,12 +360,14 @@ function onContextMenu(event: MouseEvent) {
 	background: var(--tq-color-border);
 	pointer-events: none;
 }
+/* Closed at both ends, around just its children, like a `(`. */
 .children.closed::before {
 	box-sizing: border-box;
+	top: 0;
 	width: calc(var(--tq-icon-size) / 2);
-	border-left: 1px solid var(--tq-color-border);
-	border-bottom: 1px solid var(--tq-color-border);
-	border-bottom-left-radius: calc(var(--tq-icon-size) / 2);
+	border: 1px solid var(--tq-color-border);
+	border-right: none;
+	border-radius: calc(var(--tq-icon-size) / 2) 0 0 calc(var(--tq-icon-size) / 2);
 	background: none;
 }
 .TqParameterTreeItem.gap-after {
