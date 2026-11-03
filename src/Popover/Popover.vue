@@ -117,8 +117,27 @@ const VIEWPORT_MARGIN = 8
 function update() {
 	const reference = unrefElement(props.reference)
 	const popover = $popover.value
-	// vec2 placements are manual coordinates (e.g. InputDropdown) — leave them be.
-	if (!reference || !popover || typeof props.placement !== 'string') return
+	if (!popover) return
+
+	// vec2 placements are manual coordinates (e.g. a context menu at the cursor,
+	// or InputDropdown), which CSS cannot flip, so they only get slid into view.
+	if (typeof props.placement !== 'string') {
+		const p = popover.getBoundingClientRect()
+		const fit = (start: number, size: number, viewport: number) => {
+			const end = start + size
+			// If it does not fit at all, its start stays in view.
+			return Math.max(
+				VIEWPORT_MARGIN - start,
+				Math.min(0, viewport - VIEWPORT_MARGIN - end)
+			)
+		}
+		const {clientWidth, clientHeight} = document.documentElement
+		shiftX.value = fit(p.left - shiftX.value, p.width, clientWidth)
+		shiftY.value = fit(p.top - shiftY.value, p.height, clientHeight)
+		return
+	}
+
+	if (!reference) return
 
 	const r = reference.getBoundingClientRect()
 	const p = popover.getBoundingClientRect()
