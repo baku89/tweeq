@@ -33,6 +33,8 @@ const renaming = defineModel<boolean>('renaming', {default: false})
 
 const emit = defineEmits<{
 	select: []
+	/** The label itself was pressed, rather than the rest of the row. */
+	nameClick: []
 	/** A new name was confirmed. Nothing changes as it is typed. */
 	rename: [name: string]
 	add: []
@@ -75,6 +77,7 @@ watch(
 )
 
 function onNameClick() {
+	emit('nameClick')
 	if (props.renamable) renaming.value = true
 }
 
