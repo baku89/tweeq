@@ -300,10 +300,10 @@ function onContextMenu(event: MouseEvent) {
 .TqParameterTreeItem.selected::after {
 	content: '';
 	position: absolute;
-	/* From the icon, past the indent and the chevron. */
+	/* Around the chevron as well, rather than cutting into it. */
 	inset: calc(var(--tq-gap-related) / -2) calc(var(--tq-gap-related) / -2)
 		calc(var(--tq-gap-related) / -2)
-		calc((var(--depth) + 1) * var(--indent) - var(--tq-gap-related) / 2);
+		calc(var(--depth) * var(--indent) - var(--tq-gap-related) / 2);
 	z-index: -1;
 	/* Concentric with the inputs inside it. */
 	border-radius: calc(var(--tq-radius-input) + var(--tq-gap-related) / 2);
