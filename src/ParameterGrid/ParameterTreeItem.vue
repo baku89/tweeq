@@ -102,6 +102,8 @@ function onContextMenu(event: MouseEvent) {
 	display: flex;
 	align-items: center;
 	align-self: stretch;
+	/* The whole label column selects, not only the text in it. */
+	flex: 1 0 auto;
 	padding-left: calc(var(--depth) * var(--tq-icon-size));
 	cursor: pointer;
 }
