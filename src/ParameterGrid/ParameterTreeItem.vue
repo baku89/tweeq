@@ -102,6 +102,7 @@ function onContextMenu(event: MouseEvent) {
 				@dragstart="onDragStart"
 				@dragend="onDragEnd"
 				@click="emit('select')"
+				@dblclick="expandable && (open = !open)"
 				@contextmenu="onContextMenu"
 			>
 				<button
@@ -109,6 +110,7 @@ function onContextMenu(event: MouseEvent) {
 					class="toggle"
 					type="button"
 					@click.stop="open = !open"
+					@dblclick.stop
 				>
 					<Icon class="chevron" icon="mdi:chevron-down" />
 				</button>
@@ -182,6 +184,7 @@ function onContextMenu(event: MouseEvent) {
 	min-width: 0;
 	padding-left: calc(var(--depth) * var(--tq-icon-size));
 	cursor: pointer;
+	user-select: none;
 }
 /* One line for each level this row is inside, under that level's chevron. */
 .row::before {
