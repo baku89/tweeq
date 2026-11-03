@@ -60,6 +60,15 @@ interface UseDragOptions {
 	 */
 	dragDelaySeconds?: number
 
+	/**
+	 * Per-pointerdown gate. When it returns false the press is ignored entirely
+	 * (no capture, no click, no drag), so the event falls through to whatever is
+	 * underneath — e.g. a focused <input> placing its text caret. Use it to make
+	 * only certain regions of the target draggable.
+	 * @default () => true
+	 */
+	shouldDrag?: (event: PointerEvent) => boolean
+
 	onClick?: (state: DragState, event: PointerEvent) => void
 	onDrag?: (state: DragState, event: PointerEvent) => void
 	onDragStart?: (state: DragState, event: PointerEvent) => void
@@ -73,6 +82,7 @@ export function useDrag(
 		lockPointer = false,
 		pointerType = ['mouse', 'pen', 'touch'],
 		dragDelaySeconds = 0.5,
+		shouldDrag,
 		onClick,
 		onDrag,
 		onDragStart,
@@ -172,6 +182,9 @@ export function useDrag(
 		if (event.button !== 0 || !event.isPrimary) return
 		// Ignore non-pointer type
 		if (!pointerType.includes(event.pointerType as PointerType)) return
+		// Let the press fall through when the region opts out (e.g. a focused
+		// input's text area, so the click lands a caret instead of dragging)
+		if (shouldDrag && !shouldDrag(event)) return
 
 		pointerdown = true
 
@@ -189,7 +202,11 @@ export function useDrag(
 			)
 		}
 
-		;(event.target as Element).setPointerCapture(event.pointerId)
+		// Capture on the (stable) target element, not event.target: a pressed child
+		// can re-render or unmount mid-drag (e.g. a grab zone that only exists while
+		// the value is at an edge), which would implicitly release capture and let
+		// the drag break the moment the pointer leaves the element's box.
+		targetEl.value?.setPointerCapture(event.pointerId)
 	}
 
 	function onPointerMove(event: PointerEvent) {
@@ -259,7 +276,7 @@ export function useDrag(
 		pointerdown = false
 		state.dragging = false
 		state.xy = state.initial = state.delta = vec2.zero
-		;(event.target as Element).releasePointerCapture(event.pointerId)
+		targetEl.value?.releasePointerCapture(event.pointerId)
 	}
 
 	return toRefs(state)

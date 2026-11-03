@@ -1,10 +1,13 @@
 <script lang="ts" setup>
+import {useResizeObserver} from '@vueuse/core'
+import {computed, nextTick, ref, watch} from 'vue'
+
 import {Icon} from '../Icon'
 import {vTooltip} from '../Tooltip'
 import {useFlash} from '../use/useFlash'
 import type {InputButtonProps} from './types'
 
-defineProps<InputButtonProps>()
+const props = defineProps<InputButtonProps>()
 
 // Imperative attention flash: a parent grabs this button via a template ref and
 // calls `.flash()` to pulse it (e.g. to point the eye at the next action).
@@ -12,14 +15,29 @@ const {flashing, flash} = useFlash()
 
 defineExpose({flash})
 
-// The template root is a single <button> (no sibling comment node) so the
-// component's $el resolves to the button itself — parents anchor popovers and
-// move focus through it.
-//
-// @mousedown.prevent stops a mouse click from focusing the button (the click
-// still fires). Otherwise the button keeps focus after a click and a later
-// Enter/Space re-activates it unexpectedly. Keyboard (Tab) focus is unaffected,
-// so keyboard activation still works — matching :focus-visible.
+// Keep icon + label on one line; when the button is squeezed narrower than its
+// content the label clips to an ellipsis (see CSS). Detect that clip and surface
+// the full text as a tooltip so nothing becomes unreadable. An explicit
+// `tooltip` prop always wins over this fallback.
+const $label = ref<HTMLSpanElement>()
+const truncated = ref(false)
+
+function measure() {
+	const el = $label.value
+	truncated.value = el ? el.scrollWidth > el.clientWidth + 0.5 : false
+}
+
+// ResizeObserver catches the squeeze/grow; the watch catches a label text swap
+// that changes truncation without changing the (clipped) box size.
+useResizeObserver($label, measure)
+watch(
+	() => props.label,
+	() => nextTick(measure)
+)
+
+const tooltipContent = computed(
+	() => props.tooltip ?? (truncated.value ? props.label : undefined)
+)
 </script>
 
 <template>
@@ -29,12 +47,23 @@ defineExpose({flash})
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="disabled"
-		v-tooltip="tooltip"
+		v-tooltip="tooltipContent"
 		@mousedown.prevent
 	>
-		<Icon v-if="icon" class="icon left" :icon="icon" />
-		<span v-if="label" class="label">{{ label }}</span>
-		<Icon v-if="rightIcon" class="icon right" :icon="rightIcon" />
+		<!--
+			Keep this comment INSIDE <button> so the template stays single-root. A
+			leading sibling comment makes this component's $el resolve to the comment
+			node instead of the <button>, breaking callers that read $el as the
+			element (e.g. anchoring a Popover to it).
+
+			@mousedown.prevent stops a mouse click from focusing the button (the
+			click still fires). Otherwise the button keeps focus after a click and a
+			later Enter/Space re-activates it unexpectedly. Keyboard (Tab) focus is
+			unaffected, so keyboard activation still works — matching :focus-visible.
+		-->
+		<Icon v-if="icon" class="icon" :icon="icon" />
+		<span v-if="label" ref="$label" class="label">{{ label }}</span>
+		<span v-if="chevron" class="chevron"><Icon icon="mdi:chevron-down" /></span>
 	</button>
 </template>
 
@@ -76,26 +105,16 @@ defineExpose({flash})
 		cursor not-allowed
 		animation none
 
-	&:has(.label):not(:has(.icon))
-		padding 0 .75em
+	// A label earns horizontal breathing room; a leading icon trims the left side;
+	// a trailing chevron (slim, pinned to the edge) trims the right side.
+	&:has(.label)
+		padding-inline .75em
 
-	// Leading icon + label (no trailing icon): tighter on the icon side.
-	&:has(.icon.left):has(.label):not(:has(.icon.right))
-		padding 0 .75em 0 0.5em
+	&:has(.label):has(.icon)
+		padding-left .5em
 
-	// Spread layout: a label with a trailing icon (e.g. a dropdown chevron, with
-	// or without a leading icon). The label grows and left-aligns so the trailing
-	// icon pins to the right edge — like a dropdown trigger.
-	&:has(.icon.right):has(.label)
-		justify-content flex-start
-		padding 0 .5em
-
-		.label
-			flex 1
-			text-align left
-			overflow hidden
-			text-overflow ellipsis
-			white-space nowrap
+	&:has(.chevron)
+		padding-right .6em
 
 	// Narrow: shed the square min-width down to a hair of horizontal padding so an
 	// icon-only button nearly hugs its glyph (height is unchanged, so it still
@@ -107,11 +126,27 @@ defineExpose({flash})
 
 	.icon
 		display block
+		flex-shrink 0
+
+	// Trailing disclosure chevron, pinned to the right edge (which left-aligns the
+	// leading icon + label). mdi:chevron-down fills only the middle ~half of its
+	// icon box, so the wrapper is sized to that real width and the glyph overflows
+	// it symmetrically — no whitespace padding it off the edge.
+	.chevron
+		flex none
+		display grid
+		place-items center
+		width calc(var(--tq-icon-size) * 0.5)
+		margin-left auto
+		opacity 0.6
 
 	// The button is one line tall: a label never wraps, it sets the minimum width.
 	.label
 		line-height var(--tq-input-height)
+		min-width 0
+		overflow hidden
 		white-space nowrap
+		text-overflow ellipsis
 
 	// Styles
 	// Subtle: an achromatic neutral fill at rest (more present than the

@@ -6,15 +6,14 @@ export interface InputButtonProps {
 	disabled?: boolean
 	inlinePosition?: InputPosition
 	blockPosition?: InputPosition
-	/** Leading icon (before the label). */
 	icon?: string
-	/**
-	 * Trailing icon (after the label), e.g. a dropdown chevron. When set, the
-	 * button switches to a spread layout: the label grows and left-aligns so this
-	 * icon pins to the right edge — mirroring InputNumber's left/right icons.
-	 */
-	rightIcon?: string
 	label?: string
+	/**
+	 * Show a trailing chevron-down marking the button as a disclosure — it opens a
+	 * popover / menu / balloon on click. It pins tight to the right edge and so
+	 * left-aligns the leading icon + label, instead of the whole content centering.
+	 */
+	chevron?: boolean
 	/** Hover/focus tooltip: a plain string, or `{title, description}` for the two-line layout. */
 	tooltip?: TooltipValue
 	blink?: boolean

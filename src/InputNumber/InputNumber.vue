@@ -18,6 +18,7 @@ import {
 	watchSyncEffect,
 } from 'vue'
 
+import {Icon} from '../Icon'
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
@@ -147,23 +148,49 @@ const maxSpeed = computed(() => {
 	return barVisible.value ? 1 : 1000
 })
 
+// Unranged drag sensitivity, in pixels of movement per `step`. Fixed so the feel
+// is independent of the step's magnitude (otherwise a step of 0.1 scrubs hyper-
+// fine and a step of 100 sluggishly). Smaller than InputDrum's DRAG_STEP_PX (40):
+// a number field is unbounded and traversed in larger sweeps, with the y-axis
+// acceleration and Alt (0.1×) / Shift (snap) modifiers covering big/fine moves.
+const PX_PER_STEP = 20
+
 let deltaAccumulated = 0
 
 let dirAverage: vec2 = vec2.unitX
 let offsetWeight = 1
 
+// Whether the value currently sits within [min, max]. Out of range there's no
+// in-bar handle to grab, so the over-range strips take over as the scrub grip.
+const insideRange = computed(
+	() => props.min <= model.value && model.value <= props.max
+)
+
+// True when a drag began while the field was already focused (text editing).
+// Such a drag scrubs the value via a grab zone but must NOT steal text focus,
+// so we skip the focus/blur bracketing the unfocused path uses.
+let dragStartedFocused = false
+
 const {dragging: tweaking} = useDrag($input, {
 	lockPointer: computed(() => !barVisible.value),
-	disabled: computed(() => props.disabled || focused.value),
+	disabled: computed(() => props.disabled),
+	// While focused, only the grab affordances (.scrub) start a drag; pressing the
+	// text area falls through to the <input> to place a caret / edit. `closest` so
+	// a press on a child (e.g. the grip's hint icon / its inner SVG) still counts.
+	shouldDrag(event) {
+		if (!focused.value) return true
+		return !!(event.target as Element | null)?.closest('.scrub')
+	},
 	onClick() {
 		$input.value?.select()
 	},
 	onDragStart(state, event) {
-		const handleDragged = (event.target as Element).classList.contains('handle')
-		const insideRange = props.min <= model.value && model.value <= props.max
+		const grabbed = !!(event.target as Element).closest('.scrub')
+		dragStartedFocused = focused.value
 
-		if (barVisible.value && insideRange && !handleDragged) {
-			// Absolute Mode
+		if (barVisible.value && insideRange.value && !grabbed) {
+			// Absolute Mode — jump to the pressed position. Only reachable while
+			// unfocused; focused presses on the bar go to the text input instead.
 			local.value = scalar.fit(
 				state.xy[0],
 				left.value,
@@ -178,7 +205,7 @@ const {dragging: tweaking} = useDrag($input, {
 		deltaAccumulated = 0
 		speedMultiplierGesture.value = 1
 
-		emit('focus')
+		if (!dragStartedFocused) emit('focus')
 		multi.capture()
 	},
 	onDrag(state) {
@@ -195,10 +222,15 @@ const {dragging: tweaking} = useDrag($input, {
 			Math.abs(vec2.dot([1, 0], dirAverage))
 		)
 
-		// Inc/dec value by x-axis
+		// Inc/dec value by x-axis. Ranged: map the bar's full width to [min, max].
+		// Unranged: set sensitivity directly — a fixed PX_PER_STEP pixels per step
+		// when stepped (so it doesn't track the step's magnitude), else continuous
+		// at 1 unit/px.
 		const baseSpeed = barVisible.value
 			? (props.max - props.min) / width.value
-			: 1
+			: props.step
+				? props.step / PX_PER_STEP
+				: 1
 
 		const delta = dx * baseSpeed * speed.value * offsetWeight
 
@@ -232,7 +264,14 @@ const {dragging: tweaking} = useDrag($input, {
 	},
 	onDragEnd() {
 		confirm()
-		emit('blur')
+
+		if (dragStartedFocused) {
+			// Stay in text-edit mode; re-select so typing replaces the value the
+			// scrub just produced.
+			nextTick(() => $input.value?.select())
+		} else {
+			emit('blur')
+		}
 	},
 })
 
@@ -375,10 +414,11 @@ watch(
 // When the model value is changed from outside while the input is not focused,
 // update the display value properly
 watch(
-	() => [model.value, focused.value, print.value] as const,
-	([model, focused, print], prev) => {
-		// If the input has been focused, don't update the display value
-		if (focused && prev?.[1]) return
+	() => [model.value, focused.value, print.value, tweaking.value] as const,
+	([model, focused, print, tweaking], prev) => {
+		// While focused, keep the user's typed text — unless an active scrub (via a
+		// grab zone) is driving the value, in which case mirror it live.
+		if (focused && prev?.[1] && !tweaking) return
 
 		display.value = print(model)
 	},
@@ -487,6 +527,35 @@ const handleStyles = computed<StyleValue>(() => {
 	}
 })
 
+// Horizontal position of the in-range grab zones, pinned to the handle. The
+// zone's left edge is clamped so the full width stays inside the field — at min
+// / max the handle sits flush with an edge, and a centred zone would be half
+// clipped away (and ungrabbable). Clamping keeps the whole grip on-screen with
+// the handle at its edge.
+const zoneStyle = computed<StyleValue>(() => {
+	const tValue = scalar.clamp(
+		scalar.invlerp(props.min, props.max, model.value),
+		0,
+		1
+	)
+	return {
+		left:
+			`clamp(0px,` +
+			` calc((100% - 1px) * ${tValue} - var(--tq-input-height) / 2),` +
+			` calc(100% - var(--tq-input-height)))`,
+	}
+})
+
+const rangeSide = computed(() => (model.value < props.min ? 'below' : 'above'))
+
+// At min / max the handle is flush with an edge, where the thin top/bottom
+// strips get eaten by the corner radius — and there's no centred text to protect
+// out there anyway. So use a single full-height grab zone at the edges.
+const handleAtEdge = computed(
+	() =>
+		insideRange.value && (model.value <= props.min || model.value >= props.max)
+)
+
 const barStyle = computed<StyleValue>(() => {
 	if (!barVisible.value || props.bar === false) {
 		return {visibility: 'hidden'}
@@ -550,7 +619,36 @@ const barStyle = computed<StyleValue>(() => {
 				<line class="scale" v-bind="scaleAttrs(2)"></line>
 			</svg>
 
-			<div class="handle" :style="handleStyles" />
+			<div class="handle scrub" :style="handleStyles" />
+		</template>
+
+		<!-- Grab affordances live above the <input> (the back slot is below it) so
+			they can take the pointer while the field is focused for text editing.
+			Ranged: transparent grab zones over the handle (top/bottom strips leaving
+			a centre text gap; full-height at min/max; full-width when out of range).
+			Unranged: no bar to grab, so the left-icon area becomes a horizontal
+			scrub grip — falling back to a faint hint icon when there's no leftIcon. -->
+		<template #front>
+			<template v-if="barVisible">
+				<template v-if="insideRange">
+					<div
+						v-if="handleAtEdge"
+						class="scrub-zone scrub edge"
+						:style="zoneStyle"
+					/>
+					<template v-else>
+						<div class="scrub-zone scrub top" :style="zoneStyle" />
+						<div class="scrub-zone scrub bottom" :style="zoneStyle" />
+					</template>
+				</template>
+				<template v-else>
+					<div class="scrub-zone scrub wide top" :class="rangeSide" />
+					<div class="scrub-zone scrub wide bottom" :class="rangeSide" />
+				</template>
+			</template>
+			<div v-else class="scrub grip">
+				<Icon v-if="!leftIcon" class="grip-hint" icon="mdi:arrow-left-right" />
+			</div>
 		</template>
 	</InputTextBase>
 </template>
@@ -636,6 +734,14 @@ const barStyle = computed<StyleValue>(() => {
 	.TqInputNumber.tweaking &
 		opacity 1
 
+	// Focused: the grab zone (not the handle) takes the hover, so mirror the
+	// unfocused hover by thickening the handle when a tip zone is hovered. (The
+	// opacity is already 1 from the :hover rule above, since hovering a zone means
+	// the field is hovered.)
+	.TqInputNumber:focus-within:has(.scrub-zone:not(.wide):hover) &
+		width 3px
+		margin-left -1px
+
 	.below-range &,
 	.above-range &
 		pointer-events none
@@ -647,6 +753,70 @@ const barStyle = computed<StyleValue>(() => {
 		height 100%
 		left calc(var(--tq-input-height) / -2)
 		right @left
+
+	// Focused: the front grab zones own the pointer; the handle is just the mark.
+	.TqInputNumber:focus-within &
+		pointer-events none
+
+// Transparent hit areas above the <input>. Pinned to the handle's x (in range)
+// or spanning the width (out of range), split top/bottom so the centre stays
+// clickable as text. Only interactive while the field is focused — otherwise the
+// back-slot handle/bar drive dragging exactly as before.
+.scrub-zone
+	position absolute
+	// zoneStyle sets `left` to the (clamped) zone edge; no centring transform.
+	width var(--tq-input-height)
+	pointer-events none
+
+	&.top
+		top 0
+
+	&.bottom
+		bottom 0
+
+	&.top, &.bottom
+		height 'max((var(--tq-input-height) - 1em) / 2, 4px)' % ()
+
+	// At an edge: one full-height grip (the corner radius would gut thin strips).
+	&.edge
+		top 0
+		bottom 0
+
+	&.wide
+		left 0
+		right 0
+		width auto
+
+	.TqInputNumber:focus-within &
+		pointer-events auto
+		cursor ew-resize
+
+// Unranged: a horizontal scrub grip over the left-icon area. Inert until the
+// field is focused (unfocused, the whole field already drags); then it takes the
+// pointer so a focused press here scrubs while the text stays editable.
+.grip
+	position absolute
+	left 0
+	top 0
+	bottom 0
+	width var(--tq-input-height)
+	display flex
+	align-items center
+	justify-content center
+	pointer-events none
+
+	.TqInputNumber:focus-within &
+		pointer-events auto
+		cursor ew-resize
+
+// Faint hint shown only while focused when there's no leftIcon to grab.
+.grip-hint
+	color var(--tq-color-text-mute)
+	transform scale(0.7)
+	opacity 0
+
+	.TqInputNumber:focus-within &
+		opacity .5
 
 .overlay
 	position absolute

@@ -29,4 +29,5 @@ defineSlots<{
 	font-size 14px
 	font-weight bold
 	flex-grow 1
+	white-space nowrap
 </style>
