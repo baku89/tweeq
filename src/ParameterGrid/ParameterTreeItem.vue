@@ -189,7 +189,7 @@ function onContextMenu(event: MouseEvent) {
 					ref="$rename"
 					v-model="draftName"
 					class="rename"
-					font="monospace"
+					theme="underline"
 					:invalid="!nameIsFine"
 					@confirm="confirmRename"
 					@blur="confirmRename"
@@ -199,7 +199,7 @@ function onContextMenu(event: MouseEvent) {
 				<span
 					v-else
 					class="name"
-					:class="{emphasized}"
+					:class="{emphasized, renamable}"
 					:title="hint === undefined ? label : undefined"
 					@click="onNameClick"
 					>{{
@@ -262,6 +262,16 @@ function onContextMenu(event: MouseEvent) {
 .rename {
 	flex: 1 1 0;
 	min-width: 0;
+}
+/* What can be edited says so. */
+.name.renamable {
+	text-decoration: underline;
+	text-decoration-color: var(--tq-color-border);
+	text-underline-offset: 0.2em;
+	transition: text-decoration-color var(--tq-hover-transition-duration);
+}
+.name.renamable:hover {
+	text-decoration-color: currentColor;
 }
 .name.emphasized {
 	color: var(--tq-color-text);

@@ -103,6 +103,18 @@ use-input-theme()
 		&:focus-within
 			box-shadow 0 0 0 1px var(--tq-color-accent)
 
+	&[theme=underline]
+		border-radius 0
+		background transparent
+		box-shadow inset 0 -1px 0 var(--tq-color-border)
+
+		&:hover
+			background transparent
+			box-shadow inset 0 -1px 0 var(--tq-color-text-mute)
+
+		&:focus-within
+			box-shadow inset 0 -1px 0 var(--tq-color-accent)
+
 input-overlay()
 	position fixed
 	inset 0
