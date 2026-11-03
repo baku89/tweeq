@@ -65,10 +65,10 @@ export function treeDropsAt(
 	depths.sort((a, b) => Math.abs(a - wanted) - Math.abs(b - wanted))
 
 	for (const depth of depths) {
-		if (below !== undefined && below.depth === depth) {
-			if (below.id !== undefined) {
-				drops.push({target: below.id, position: 'before', depth, y: lineY})
-			}
+		// What cannot be dropped next to, such as a row to add with, leaves the row
+		// above it to go by.
+		if (below?.depth === depth && below.id !== undefined) {
+			drops.push({target: below.id, position: 'before', depth, y: lineY})
 			continue
 		}
 		for (let i = gap - 1; i >= 0; i--) {

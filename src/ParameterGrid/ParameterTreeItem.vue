@@ -43,6 +43,8 @@ const emit = defineEmits<{
 defineSlots<{
 	/** The value column. */
 	default?: () => any
+	/** At the end of the label column. */
+	labelEnd?: () => any
 	/** Items one level down, rendered while open. */
 	children?: () => any
 	/** Takes the place of the label and the value, across both columns. */
@@ -203,6 +205,7 @@ function onContextMenu(event: MouseEvent) {
 				>
 					<Icon icon="mdi:plus" />
 				</button>
+				<slot name="labelEnd" />
 			</span>
 			<!-- Teleported, or the grid's subgrid would clip the fixed popover. -->
 			<Popover

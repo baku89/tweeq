@@ -85,6 +85,12 @@ describe('treeDropsAt', () => {
 	})
 })
 
+describe('a row that cannot be dropped next to', () => {
+	it('leaves the row above it to go by', () => {
+		expect(best(rows(['x', 0], ['y', 0], [undefined, 0]), 0, 39)).toBe('after y')
+	})
+})
+
 describe('subtreeEnd', () => {
 	it('goes past what is deeper', () => {
 		const r = rows(['a', 0], ['b', 1], ['c', 2], ['d', 1], ['e', 0])
