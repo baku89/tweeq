@@ -181,8 +181,12 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			{flush: 'sync'}
 		)
 
-		// Automatically remove the input when unmounted
-		onBeforeUnmount(() => inputs.delete(id))
+		// Automatically remove the input when unmounted. It may be selected, as one
+		// that has focus is, and nothing can select what is not there.
+		onBeforeUnmount(() => {
+			inputs.delete(id)
+			selectedIds.delete(id)
+		})
 
 		function update(updator: (value: any, context: {i: number}) => any) {
 			selectedInputs.value.forEach((input, i) => {
