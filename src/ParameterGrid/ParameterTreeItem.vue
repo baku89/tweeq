@@ -76,10 +76,6 @@ watch(
 	{immediate: true}
 )
 
-function onNameClick() {
-	emit('nameClick')
-	if (props.renamable) renaming.value = true
-}
 
 function confirmRename() {
 	if (!renaming.value) return
@@ -196,7 +192,7 @@ function onContextMenu(event: MouseEvent) {
 					class="name"
 					:class="{emphasized, renamable}"
 					:title="hint === undefined ? label : undefined"
-					@click="onNameClick"
+					@click="emit('nameClick')"
 					>{{
 					label
 				}}</span>
@@ -263,15 +259,8 @@ function onContextMenu(event: MouseEvent) {
 	flex: 1 1 0;
 	min-width: 0;
 }
-/* What can be edited says so, with the line that an input has along its bottom. */
 .name.renamable {
 	color: var(--tq-color-text);
-	cursor: text;
-	box-shadow: inset 0 -1px 0 var(--tq-color-border);
-	transition: box-shadow var(--tq-hover-transition-duration);
-}
-.name.renamable:hover {
-	box-shadow: inset 0 -1px 0 var(--tq-color-text-mute);
 }
 /* The same line, spreading out from where the label's ended. */
 .rename {
@@ -318,7 +307,7 @@ function onContextMenu(event: MouseEvent) {
 	/* From the icon, past the indent and the chevron. */
 	inset: calc(var(--tq-gap-related) / -2) calc(var(--tq-gap-related) / -2)
 		calc(var(--tq-gap-related) / -2)
-		calc((var(--depth) + 1) * var(--indent));
+		calc((var(--depth) + 1) * var(--indent) - var(--tq-gap-related) / 2);
 	z-index: -1;
 	/* Concentric with the inputs inside it. */
 	border-radius: calc(var(--tq-radius-input) + var(--tq-gap-related) / 2);
