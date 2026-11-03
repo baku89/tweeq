@@ -1,6 +1,9 @@
+import type {MenuItem} from '../Menu'
 import {type InputBoxProps} from '../types'
 
 export interface InputNumberProps extends InputBoxProps {
+	/** Extra right-click menu items, below "Reset to Default". */
+	menuItems?: MenuItem[]
 	min?: number
 	max?: number
 	step?: number

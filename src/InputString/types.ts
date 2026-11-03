@@ -4,6 +4,7 @@ import {
 	type InputFont,
 	type InputTheme,
 } from '../types'
+import type {MenuItem} from '../Menu'
 import {Validator} from '../validator'
 export interface InputStringProps extends InputBoxProps {
 	theme?: InputTheme
@@ -14,4 +15,6 @@ export interface InputStringProps extends InputBoxProps {
 	placeholder?: string
 	/** Value restored by the right-click "Reset to Default" menu item. */
 	default?: string
+	/** Extra right-click menu items, below "Reset to Default". */
+	menuItems?: MenuItem[]
 }

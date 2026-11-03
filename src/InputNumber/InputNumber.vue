@@ -24,7 +24,13 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {useValidator} from '../use/useValidator'
-import {getNumberPresition, precisionOf, toFixed, toPercent} from '../util'
+import {
+	decimalsOf,
+	getNumberPresition,
+	precisionOf,
+	toFixed,
+	toPercent,
+} from '../util'
 import * as V from '../validator'
 import InputNumberScales from './InputNumberScales.vue'
 import {type InputNumberProps} from './types'
@@ -125,9 +131,18 @@ const precision = computed(() => {
 		)
 	}
 
+	// What is displayed says nothing about a value that has just arrived, and
+	// without a range nothing else does either, so the value has to speak for
+	// itself, or 1.5 is shown as 2.
+	const valuePrecision =
+		props.min === Number.MIN_SAFE_INTEGER ||
+		props.max === Number.MAX_SAFE_INTEGER
+			? decimalsOf(model.value)
+			: 0
+
 	return Math.min(
 		props.precision,
-		Math.max(displayPrecision.value, sliderPrecision.value)
+		Math.max(displayPrecision.value, sliderPrecision.value, valuePrecision)
 	)
 })
 
@@ -170,6 +185,7 @@ const insideRange = computed(
 // Such a drag scrubs the value via a grab zone but must NOT steal text focus,
 // so we skip the focus/blur bracketing the unfocused path uses.
 let dragStartedFocused = false
+let dragRemainder = 0
 
 const {dragging: tweaking} = useDrag($input, {
 	lockPointer: computed(() => !barVisible.value),
@@ -187,6 +203,7 @@ const {dragging: tweaking} = useDrag($input, {
 	onDragStart(state, event) {
 		const grabbed = !!(event.target as Element).closest('.scrub')
 		dragStartedFocused = focused.value
+		dragRemainder = 0
 
 		if (barVisible.value && insideRange.value && !grabbed) {
 			// Absolute Mode — jump to the pressed position. Only reachable while
@@ -234,7 +251,7 @@ const {dragging: tweaking} = useDrag($input, {
 
 		const delta = dx * baseSpeed * speed.value * offsetWeight
 
-		let newLocal = local.value + delta
+		let newLocal = local.value + dragRemainder + delta
 
 		if (!barVisible.value) {
 			if (props.min !== Number.MIN_SAFE_INTEGER) {
@@ -242,6 +259,14 @@ const {dragging: tweaking} = useDrag($input, {
 			}
 			if (props.max !== Number.MAX_SAFE_INTEGER) {
 				newLocal = scalar.min(newLocal, props.max)
+			}
+			// Only what is displayed goes out, or dragging 40 yields 62.113 while
+			// showing 62. What is left over carries to the next move, so that slow
+			// drags still add up.
+			if (!props.step) {
+				const shown = Number(newLocal.toFixed(precision.value))
+				dragRemainder = newLocal - shown
+				newLocal = shown
 			}
 		}
 		local.value = newLocal
@@ -583,6 +608,7 @@ const barStyle = computed<StyleValue>(() => {
 		:class="{...valueRangeStateClasses, tweaking}"
 		:ignoreInput="!focused"
 		:modelValue="display"
+		:menuItems="menuItems"
 		:active="multi.subfocus"
 		:font="expressionEnabled ? 'monospace' : 'numeric'"
 		align="center"

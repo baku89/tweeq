@@ -77,13 +77,13 @@ reset-viewport('.TqPaneModal')
 	max-width calc(100dvw - 2 * var(--tq-pane-margin))
 	overflow hidden
 	flex-direction column
-	transition opacity var(-tq-transition-duration), transform var(-tq-transition-duration), overlay var(-tq-transition-duration) allow-discrete, display var(-tq-transition-duration) allow-discrete
+	transition opacity var(--tq-hover-transition-duration), transform var(--tq-hover-transition-duration), overlay var(--tq-hover-transition-duration) allow-discrete, display var(--tq-hover-transition-duration) allow-discrete
 	opacity 0
 	transform translateY(calc(var(--tq-rem) / -2))
 
 	&[popover]::backdrop
 		backdrop-filter blur(0px)
-		transition backdrop-filter var(-tq-transition-duration)
+		transition backdrop-filter var(--tq-hover-transition-duration)
 
 	// Only while open: an author `display` beats the UA's
 	// `[popover]:not(:popover-open) {display: none}`, which would leave the closed

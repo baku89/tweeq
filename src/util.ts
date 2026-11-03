@@ -37,6 +37,20 @@ export function getNumberPresition(value: string) {
 	return floats ? floats[0].length - 1 : 0
 }
 
+/**
+ * Get the number of decimal places a number needs to be written exactly
+ * @example decimalsOf(1.5) // 1
+ * @example decimalsOf(40) // 0
+ * @example decimalsOf(1e-7) // 7
+ */
+export function decimalsOf(value: number) {
+	if (!Number.isFinite(value)) return 0
+
+	const [mantissa = '', exponent = '0'] = String(value).split('e')
+	const fraction = mantissa.split('.')[1] ?? ''
+	return Math.max(0, fraction.length - Number(exponent))
+}
+
 export const unsignedMod = (x: number, y: number) => ((x % y) + y) % y
 
 export function isDecendantElementOf(child: Element, parent: Element) {
