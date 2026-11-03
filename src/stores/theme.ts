@@ -62,7 +62,7 @@ export const useThemeStore = defineStore('theme', () => {
 		})
 	)
 
-	// Semantic colors from the curated palette, nudged toward the accent.
+	// Semantic colors from the curated palette, in harmony with the accent.
 	const semanticColors = computed(() =>
 		buildSemanticColors({
 			background: backgroundColor.value,

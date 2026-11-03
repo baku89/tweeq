@@ -73,6 +73,7 @@ export interface Theme {
 	// nudged slightly toward the accent. `*Soft` are tinted backgrounds; the
 	// plain token is text-on-background; `colorRec` is a vivid solid fill.
 	colorError: string
+	colorOnError: string
 	colorErrorSoft: string
 	colorWarning: string
 	colorWarningSoft: string

@@ -22,15 +22,51 @@ export const PALETTE = {
 
 export type PaletteHue = keyof typeof PALETTE
 
-// --- Accent nudge (applied to UI semantics only, never to syntax) -----------
-// Pull a semantic hue slightly toward the accent so the UI feels cohesive,
-// without letting it leave its canonical band (red stays red, amber stays
-// amber). The ±MAX_DEG clamp is what guarantees recognizability even when the
-// accent sits on the opposite side of the wheel.
+// --- Accent nudge (applied to the editor syntax only) ------------------------
+// Pull a hue slightly toward the accent so the theme feels cohesive, without
+// letting it leave its canonical band. The ±MAX_DEG clamp is what guarantees
+// recognizability even when the accent sits on the opposite side of the wheel.
 const NUDGE_T = 0.3 // fraction of the way toward the accent hue
 const NUDGE_MAX_DEG = 24 // hard cap on the hue shift from the canonical seed
 const CHROMA_MIX = 0.5 // pull vibrancy toward the accent's chroma
 const CHROMA_FLOOR = 0.5 // never drop below this fraction of the seed's chroma
+
+// --- Semantic colors -----------------------------------------------------------
+// Radix's vividness and Material's harmony. Each color keeps the palette's own
+// lightness and chroma, so amber stays bright and red stays saturated, and only its
+// hue reacts to the accent, in OKLCH, within a narrow band so it keeps its meaning:
+// - Harmonize: lean slightly toward the accent (Material's "harmonize").
+// - Separate: if that leaves it too close to the accent, move away, so an error
+//   doesn't read as the primary color.
+// A grey accent has no hue to react to; it fades out by the accent's chroma.
+const HARMONY_RATIO = 0.15 // fraction of the hue distance to lean
+const HARMONY_MAX_DEG = 8 // however far apart the two are
+const SEPARATION_DEG = 24 // the closest a semantic hue gets to the accent's
+const SEMANTIC_MAX_SHIFT_DEG = 20 // hard cap from the palette hue, so red stays red
+const ACCENT_CHROMA_FULL = 0.05 // the accent's hue counts fully from this chroma
+const MIN_CONTRAST = 4.5 // these are read as text, too
+
+/** Signed shortest distance from hue `a` to hue `b`, in degrees. */
+function hueDelta(a: number, b: number) {
+	return ((b - a + 540) % 360) - 180
+}
+
+/** A palette hue as it reacts to the accent. */
+export function semanticHue(seedHue: number, accentHue: number, accentChroma: number) {
+	if (Number.isNaN(accentHue) || accentHue === null) return seedHue
+	const weight = Math.min(accentChroma / ACCENT_CHROMA_FULL, 1)
+
+	const toAccent = hueDelta(seedHue, accentHue)
+	const lean = clamp(toAccent * HARMONY_RATIO, -HARMONY_MAX_DEG, HARMONY_MAX_DEG)
+
+	// What's left between them after leaning, and how much further to get clear.
+	const apart = Math.abs(toAccent - lean)
+	const away = toAccent === 0 ? 1 : -Math.sign(toAccent)
+	const shift = apart < SEPARATION_DEG ? lean + away * (SEPARATION_DEG - apart) : lean
+
+	const capped = clamp(shift * weight, -SEMANTIC_MAX_SHIFT_DEG, SEMANTIC_MAX_SHIFT_DEG)
+	return ((seedHue + capped) % 360 + 360) % 360
+}
 
 // Lean a seed hue toward the accent hue along the shorter arc, bounded so it
 // can't leave its canonical band. Returns the seed hue unchanged when either is
@@ -77,13 +113,14 @@ const TEXT = 10 // step 11 — readable token text on the background
 export interface SemanticColors {
 	colorError: string
 	colorErrorSoft: string
+	/** Text and icons on a colorError fill. */
+	colorOnError: string
 	colorWarning: string
 	colorWarningSoft: string
 	colorSuccess: string
 	colorSuccessSoft: string
 	/**
-	 * Recording indicator. Unlike error/alert this is the canonical red, not
-	 * nudged toward the accent: a pinkish accent must not turn REC pink.
+	 * Recording indicator: the canonical red, at its own full intensity.
 	 */
 	colorRec: string
 	colorInfo: string
@@ -92,34 +129,32 @@ export interface SemanticColors {
 	colorAffirmative: string
 }
 
-/**
- * The representative color of a palette hue: the accent's own lightness and
- * chroma, recolored to the (nudged) hue — i.e. "the accent, rendered as red /
- * amber / green". One color per hue, no per-role steps.
- */
-function representativeColor(seedHex: string, accentHex: string): string {
-	const seedHue = new Color(seedHex).to('oklch').coords[2]
-	const [al, ac, ah] = new Color(accentHex).to('oklch').coords
-	const hue = nudgedHue(seedHue, ah)
-
-	return new Color('oklch', [al, ac, Number.isNaN(hue) ? seedHue : hue])
-		.to('srgb')
-		.toString({format: 'hex'})
+function toHex(color: Color) {
+	return color.to('srgb').toGamut({space: 'srgb'}).toString({format: 'hex', collapse: false})
 }
 
-/** Representative color for every palette hue (accent's L & C, nudged hue). */
-export function paletteRepresentatives(
-	accent: string
-): Record<PaletteHue, string> {
-	return Object.fromEntries(
-		Object.entries(PALETTE).map(([name, seed]) => [
-			name,
-			representativeColor(seed, accent),
-		])
-	) as Record<PaletteHue, string>
+function semanticColor(seedHex: string, accentHex: string, background: string): string {
+	const [seedL, seedC, seedH] = new Color(seedHex).to('oklch').coords
+	const [, accentC, accentH] = new Color(accentHex).to('oklch').coords
+	const hue = semanticHue(seedH, accentH, accentC)
+
+	// Readable on the background: move the lightness away from it only as far as
+	// that takes. The blue lifts on dark; the amber drops on white.
+	const step = new Color(background).to('oklch').coords[0] < 0.5 ? 0.01 : -0.01
+	let lightness = seedL
+	let hex = toHex(new Color('oklch', [lightness, seedC, hue]))
+	while (
+		new Color(hex).contrast(new Color(background), 'WCAG21') < MIN_CONTRAST &&
+		lightness > 0.2 &&
+		lightness < 0.95
+	) {
+		lightness += step
+		hex = toHex(new Color('oklch', [lightness, seedC, hue]))
+	}
+	return hex
 }
 
-/** A soft tinted background: the representative blended toward the background. */
+/** A soft tinted background: the color blended toward the background. */
 function softTint(background: string, color: string): string {
 	return new Color(Color.mix(background, color, 0.15, {space: 'oklch'}))
 		.to('srgb')
@@ -133,19 +168,25 @@ export function buildSemanticColors({
 	background: string
 	accent: string
 }): SemanticColors {
-	const rep = paletteRepresentatives(accent)
+	const color = (seed: string) => semanticColor(seed, accent, background)
+
+	const error = color(PALETTE.red)
+	const warning = color(PALETTE.yellow)
+	const success = color(PALETTE.green)
+	const info = color(PALETTE.blue)
 
 	return {
-		colorError: rep.red,
-		colorErrorSoft: softTint(background, rep.red),
-		colorWarning: rep.yellow,
-		colorWarningSoft: softTint(background, rep.yellow),
-		colorSuccess: rep.green,
-		colorSuccessSoft: softTint(background, rep.green),
+		colorError: error,
+		colorErrorSoft: softTint(background, error),
+		colorOnError: '#ffffff',
+		colorWarning: warning,
+		colorWarningSoft: softTint(background, warning),
+		colorSuccess: success,
+		colorSuccessSoft: softTint(background, success),
 		colorRec: PALETTE.red, // canonical, never accent-nudged
-		colorInfo: rep.blue,
-		colorInfoSoft: softTint(background, rep.blue),
-		colorAffirmative: rep.green,
+		colorInfo: info,
+		colorInfoSoft: softTint(background, info),
+		colorAffirmative: success,
 	}
 }
 
