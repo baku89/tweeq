@@ -410,7 +410,7 @@ function onContextMenu(event: MouseEvent) {
 	width: var(--indent);
 	height: var(--tq-icon-size);
 	margin-top: var(--inset);
-	color: var(--tq-color-text-mute);
+	color: var(--tq-color-text-subtle);
 	cursor: pointer;
 }
 .chevron {
