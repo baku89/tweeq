@@ -198,8 +198,11 @@ const {dragging: tweaking} = useDrag($input, {
 	// text area falls through to the <input> to place a caret / edit. `closest` so
 	// a press on a child still counts.
 	shouldDrag(event) {
+		const target = event.target as Element | null
+		// An icon that can be pressed keeps its click, which capturing would take.
+		if (target?.closest('.icon.pressable')) return false
 		if (!focused.value) return true
-		return !!(event.target as Element | null)?.closest('.scrub')
+		return !!target?.closest('.scrub')
 	},
 	onClick() {
 		$input.value?.select()
