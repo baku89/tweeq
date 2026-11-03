@@ -262,6 +262,7 @@ function onContextMenu(event: MouseEvent) {
 }
 /* What can be edited says so, with the line that an input has along its bottom. */
 .name.renamable {
+	color: var(--tq-color-text);
 	cursor: text;
 	box-shadow: inset 0 -1px 0 var(--tq-color-border);
 	transition: box-shadow var(--tq-hover-transition-duration);
