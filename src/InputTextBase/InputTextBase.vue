@@ -29,6 +29,11 @@ export interface InputTextBaseProps extends InputBoxProps {
 	default?: unknown
 	/** Extra right-click menu items appended below "Reset to Default". */
 	menuItems?: MenuItem[]
+	/**
+	 * Grow with its lines. Enter still confirms, and Shift+Enter breaks the line.
+	 * With `inactiveContent`, it stays one line tall until it has focus.
+	 */
+	multiline?: boolean
 }
 
 const model = defineModel<string>({required: true})
@@ -93,7 +98,7 @@ defineExpose({
 
 const hasInactiveContent = computed(() => !!slots.inactiveContent)
 
-const $input = useTemplateRef('$input')
+const $input = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>('$input')
 
 function onInput(e: Event) {
 	model.value = (e.target as HTMLInputElement).value
@@ -123,7 +128,13 @@ function onKeydown(e: KeyboardEvent) {
 	) {
 		e.stopPropagation()
 	}
+	if (props.multiline && e.key === 'Enter' && !e.shiftKey) e.preventDefault()
 	emit('keydown', e)
+}
+
+function onEnter(e: KeyboardEvent) {
+	if (props.multiline && e.shiftKey) return
+	emit('confirm')
 }
 </script>
 
@@ -135,6 +146,7 @@ function onKeydown(e: KeyboardEvent) {
 			active,
 			invalid,
 			hover,
+			multiline,
 		}"
 		:theme="theme"
 		:font="font"
@@ -144,10 +156,12 @@ function onKeydown(e: KeyboardEvent) {
 		@contextmenu="onContextMenu"
 	>
 		<slot name="back" />
-		<input
+		<component
+			:is="multiline ? 'textarea' : 'input'"
 			ref="$input"
 			class="input"
-			type="text"
+			:type="multiline ? undefined : 'text'"
+			:rows="multiline ? 1 : undefined"
 			:class="{ignore: ignoreInput, 'has-inactive-content': hasInactiveContent}"
 			:value="model"
 			:placeholder="placeholder"
@@ -156,7 +170,7 @@ function onKeydown(e: KeyboardEvent) {
 			@blur="onBlur"
 			@input="onInput"
 			@keydown="onKeydown"
-			@keydown.enter="emit('confirm')"
+			@keydown.enter="onEnter"
 		/>
 
 		<div v-if="hasInactiveContent" class="inactive-content">
@@ -249,6 +263,25 @@ function onKeydown(e: KeyboardEvent) {
 
 	&.ignore
 		pointer-events none
+
+.TqInputTextBase.multiline
+	height auto
+	min-height var(--tq-input-height)
+
+	.input
+		position static
+		display block
+		width 100%
+		height auto
+		min-height var(--tq-input-height)
+		max-height 40vh
+		padding calc((var(--tq-input-height) - 1lh) / 2) .5em
+		field-sizing content
+		resize none
+
+		&.has-inactive-content:not(:focus)
+			height var(--tq-input-height)
+			overflow hidden
 
 .inactive-content
 	pointer-events none

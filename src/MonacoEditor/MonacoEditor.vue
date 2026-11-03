@@ -7,12 +7,13 @@ import * as monaco from 'monaco-editor'
 import {useThemeStore} from '../stores/theme'
 import {onMounted, useTemplateRef, watchEffect} from 'vue'
 
-withDefaults(defineProps<MonacoEditorProps>(), {})
+const props = withDefaults(defineProps<MonacoEditorProps>(), {})
 
-defineEmits<{
+const emit = defineEmits<{
 	'update:modelValue': [value: string]
 	'update:cursorIndex': [value: number]
 	'update:cursorPosition': [value: vec2]
+	mount: [editor: monaco.editor.IStandaloneCodeEditor]
 }>()
 
 const theme = useThemeStore()
@@ -20,7 +21,7 @@ const theme = useThemeStore()
 const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
 	minimap: {enabled: false},
 	fontLigatures: true,
-	fontFamily: 'Geist Mono',
+	fontFamily: theme.fontCode,
 	fontSize: theme.rem,
 	folding: false,
 	lineNumbers: 'off',
@@ -39,6 +40,7 @@ const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
 	// @ts-ignore
 	'bracketPairColorization.enabled': false,
 	renderIndentGuides: false,
+	...props.options,
 }
 
 // Register (and keep in sync) the palette-derived editor theme. defineTheme is
@@ -55,6 +57,18 @@ watchEffect(() => {
 })
 
 const $editor = useTemplateRef('$editor')
+
+// The code font is whatever `--tq-font-code` is here, which an app can set for
+// a part of it. A font that arrives late changes the glyphs' widths.
+function onMount(editor: monaco.editor.IStandaloneCodeEditor) {
+	const el = editor.getContainerDomNode()
+	const fontFamily = getComputedStyle(el).getPropertyValue('--tq-font-code')
+	if (fontFamily !== '' && props.options?.fontFamily === undefined) {
+		editor.updateOptions({fontFamily})
+	}
+	void document.fonts.ready.then(() => monaco.editor.remeasureFonts())
+	emit('mount', editor)
+}
 
 onMounted(() => {
 	if (!$editor.value) return
@@ -171,6 +185,7 @@ onMounted(() => {
 		:language="lang"
 		:options="editorOptions"
 		@update:value="$emit('update:modelValue', $event)"
+		@editorDidMount="onMount"
 		height="100%"
 	/>
 </template>

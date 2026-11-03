@@ -41,13 +41,14 @@ function onContextMenu(event: MouseEvent) {
 <template>
 	<Parameter
 		class="TqParameterTreeItem"
-		:class="{selected}"
+		:class="{selected, top: depth === 0}"
 		:hint="hint"
 	>
 		<template #label>
 			<span
 				ref="$label"
 				class="row"
+				:class="{open: expandable && open}"
 				:style="{'--depth': depth}"
 				@click="emit('select')"
 				@contextmenu="onContextMenu"
@@ -55,7 +56,6 @@ function onContextMenu(event: MouseEvent) {
 				<button
 					v-if="expandable"
 					class="toggle"
-					:class="{open}"
 					type="button"
 					@click.stop="open = !open"
 				>
@@ -86,12 +86,21 @@ function onContextMenu(event: MouseEvent) {
 .TqParameterTreeItem {
 	position: relative;
 	isolation: isolate;
+	--inset: calc((var(--tq-input-height) - var(--tq-icon-size)) / 2);
+}
+.TqParameterTreeItem.top:not(:first-child) {
+	margin-top: calc(var(--tq-gap-control) - var(--tq-gap-related));
+}
+/* A row is as tall as its value, which may have many lines. */
+.TqParameterTreeItem :deep(.label) {
+	align-self: stretch;
+	height: auto;
 }
 /* Behind the row, so that inputs keep their own colors. */
 .TqParameterTreeItem.selected::after {
 	content: '';
 	position: absolute;
-	inset: calc(var(--tq-gap-control) / -2) 0 calc(var(--tq-gap-control) / -2) -3px;
+	inset: calc(var(--tq-gap-related) / -2) 0 calc(var(--tq-gap-related) / -2) -3px;
 	z-index: -1;
 	border-radius: var(--tq-radius-input);
 	background: var(--tq-color-accent-soft);
@@ -100,7 +109,7 @@ function onContextMenu(event: MouseEvent) {
 .row {
 	position: relative;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	align-self: stretch;
 	/* The whole label column selects, not only the text in it. */
 	flex: 1 0 auto;
@@ -111,7 +120,7 @@ function onContextMenu(event: MouseEvent) {
 .row::before {
 	content: '';
 	position: absolute;
-	top: calc(-1 * var(--tq-gap-control));
+	top: calc(-1 * var(--tq-gap-related));
 	bottom: 0;
 	left: 0;
 	width: calc(var(--depth) * var(--tq-icon-size));
@@ -123,25 +132,25 @@ function onContextMenu(event: MouseEvent) {
 		transparent 0 var(--tq-icon-size)
 	);
 }
+/* The start of that line, just below the tip of an open chevron. */
+.row.open::after {
+	content: '';
+	position: absolute;
+	top: calc(var(--inset) + var(--tq-icon-size) * 0.64 + 2px);
+	bottom: calc(-1 * var(--tq-gap-related));
+	left: calc((var(--depth) + 0.5) * var(--tq-icon-size));
+	width: 1px;
+	pointer-events: none;
+	background: var(--tq-color-border);
+}
 .toggle {
-	position: relative;
 	display: block;
 	flex-shrink: 0;
 	width: var(--tq-icon-size);
 	height: var(--tq-icon-size);
+	margin-top: var(--inset);
 	color: var(--tq-color-text-mute);
 	cursor: pointer;
-}
-/* The start of that line, just below the tip of an open chevron. */
-.toggle.open::after {
-	content: '';
-	position: absolute;
-	top: calc(64% + 2px);
-	bottom: calc((var(--tq-input-height) - var(--tq-icon-size)) / -2 - var(--tq-gap-control));
-	left: 50%;
-	width: 1px;
-	pointer-events: none;
-	background: var(--tq-color-border);
 }
 .chevron {
 	display: block;
@@ -150,16 +159,15 @@ function onContextMenu(event: MouseEvent) {
 	transform: rotate(-90deg);
 	transition: transform var(--tq-hover-transition-duration) ease;
 }
-.toggle.open .chevron {
+.row.open .chevron {
 	transform: none;
 }
 .icon {
 	flex-shrink: 0;
 	width: var(--tq-icon-size);
 	height: var(--tq-icon-size);
+	margin-top: var(--inset);
+	margin-right: var(--tq-gap-related);
 	color: var(--tq-color-text-subtle);
-}
-.name {
-	padding-inline: 0.25em;
 }
 </style>

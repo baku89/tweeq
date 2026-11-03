@@ -177,6 +177,7 @@ function onReset() {
 		ref="$input"
 		v-model:focused="focused"
 		class="TqInputString"
+		multiline
 		:active="multi.subfocus"
 		:modelValue="display"
 		:menuItems="menuItems"
@@ -193,7 +194,7 @@ function onReset() {
 		@blur="onBlur"
 		@input="onInput"
 		@keydown="onKeyDown"
-		@keydown.enter="confirm"
+		@keydown.enter.exact="confirm"
 		@reset="onReset"
 	/>
 </template>
