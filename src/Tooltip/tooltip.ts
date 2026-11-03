@@ -76,7 +76,7 @@ export const tooltipState = reactive<TooltipState>({
 	open: false,
 })
 
-const SHOW_DELAY = 200
+const SHOW_DELAY = 600
 const HIDE_DELAY = 0
 // An interactive tooltip (one with `actions`) lingers this long after the
 // pointer leaves its element, so the pointer can cross the gap onto it.
