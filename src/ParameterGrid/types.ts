@@ -1,5 +1,6 @@
 import type {InjectionKey} from 'vue'
 
+import type {MenuItem} from '../Menu'
 import type {TooltipValue} from '../Tooltip/vTooltip'
 
 export interface ParameterGroupProps {
@@ -32,4 +33,25 @@ export interface ParameterProps {
 	 * structured two-line layout, or `{content, html}` for rich markup.
 	 */
 	hint?: TooltipValue
+}
+
+/**
+ * How deep a ParameterTreeItem is. Items nest through the `children` slot but
+ * render flat, so that every value stays in the one column of the grid.
+ */
+export const ParameterTreeDepthKey: InjectionKey<number> = Symbol(
+	'parameterTreeDepth'
+)
+
+export interface ParameterTreeItemProps {
+	label: string
+	icon?: string
+	/** Quieter text after the label, such as what kind of thing this is. */
+	note?: string
+	hint?: TooltipValue
+	/** Whether it has a chevron and shows its `children` slot while open. */
+	expandable?: boolean
+	selected?: boolean
+	/** The menu on the label. Right-clicking also selects. */
+	menuItems?: MenuItem[]
 }
