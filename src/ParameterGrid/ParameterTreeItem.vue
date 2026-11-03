@@ -317,7 +317,8 @@ function onContextMenu(event: MouseEvent) {
 		calc(var(--tq-gap-related) / -2)
 		calc((var(--depth) + 1) * var(--indent));
 	z-index: -1;
-	border-radius: var(--tq-radius-input);
+	/* Concentric with the inputs inside it. */
+	border-radius: calc(var(--tq-radius-input) + var(--tq-gap-related) / 2);
 	background: var(--tq-color-accent-soft);
 	pointer-events: none;
 }
