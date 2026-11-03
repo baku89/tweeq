@@ -263,7 +263,7 @@ function onContextMenu(event: MouseEvent) {
 	text-decoration-color: currentColor;
 }
 .name.emphasized {
-	color: var(--tq-color-text);
+	color: var(--tq-color-info);
 	font-weight: 600;
 }
 .name {
