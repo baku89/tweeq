@@ -68,6 +68,8 @@ function commitConfirm() {
 			:max="maxAt(i)"
 			:step="stepAt(i)"
 			:leftIcon="leftIconAt(i)"
+			:precision="precision"
+			:suffix="suffix"
 			:modelValue="v"
 			:inline-position="inlinePositionAt(i)"
 			@update:modelValue="commitChange(i, $event)"

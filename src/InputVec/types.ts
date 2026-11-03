@@ -3,4 +3,6 @@ export interface InputVecProps<T extends readonly number[]> {
 	max?: T | number
 	step?: T | number
 	icon?: string[] | string
+	precision?: number
+	suffix?: string
 }
