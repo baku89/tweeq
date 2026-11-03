@@ -1,7 +1,8 @@
-import type {InjectionKey} from 'vue'
+import type {ComputedRef, InjectionKey} from 'vue'
 
 import type {MenuItem} from '../Menu'
 import type {TooltipValue} from '../Tooltip/vTooltip'
+import type {TreeDropPosition} from './treeDrop'
 
 export interface ParameterGroupProps {
 	name: string
@@ -43,11 +44,35 @@ export const ParameterTreeDepthKey: InjectionKey<number> = Symbol(
 	'parameterTreeDepth'
 )
 
+/** What an item tells its tree, for a drag to work out where it could land. */
+export interface ParameterTreeItemHandle {
+	readonly depth: number
+	id(): string | undefined
+	open(): boolean
+	expandable(): boolean
+	element(): HTMLElement | undefined
+}
+
+export const ParameterTreeContextKey: InjectionKey<{
+	register(item: ParameterTreeItemHandle): () => void
+	draggingId: ComputedRef<string | null>
+	insideId: ComputedRef<string | null>
+}> = Symbol('parameterTreeContext')
+
 export interface ParameterTreeProps {
 	/** What to keep its label column's width under. */
 	name: string
 	/** The width of the label column, until it is resized. */
 	labelWidth?: number
+	/**
+	 * Whether `source` can go `position` of `target`. Without it, items cannot be
+	 * dragged around the tree. Items with a `dragId` are what can be dragged.
+	 */
+	canDrop?: (
+		source: string,
+		target: string,
+		position: TreeDropPosition
+	) => boolean
 }
 
 export interface ParameterTreeItemProps {
@@ -57,12 +82,10 @@ export interface ParameterTreeItemProps {
 	/** Whether it has a chevron and shows its `children` slot while open. */
 	expandable?: boolean
 	selected?: boolean
-	/**
-	 * Items of a group can be dragged by the label to swap places, which emits
-	 * `sort` on the one dropped on. `sortIndex` is its place in the group.
-	 */
-	sortGroup?: string
-	sortIndex?: number
+	/** The label is what drags the item, in a `handleless` InputArray. */
+	sortHandle?: boolean
+	/** The label drags the item around its ParameterTree, which knows it by this. */
+	dragId?: string
 	/** The menu on the label. Right-clicking also selects. */
 	menuItems?: MenuItem[]
 }

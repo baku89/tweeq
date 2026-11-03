@@ -3,8 +3,8 @@
  * An editor for an array, with each item laid out by the default slot. What it
  * lets you do is up to the options:
  *
- * - `sortable`: a drag handle on each item. The item follows the pointer and the
- *   others slide out of its way.
+ * - `sortable`: a drag handle on each item, or none with `handleless`. The item
+ *   follows the pointer and the others slide out of its way.
  * - `removable`: a delete button on each item.
  * - `appendable`: an Add button making an item with `create`. The `add` slot
  *   replaces it, for an item that needs asking about first.
@@ -31,6 +31,12 @@ const props = defineProps<{
 	itemKey: keyof T | ((item: T) => Key)
 	/** Items can be reordered by dragging. */
 	sortable?: boolean
+	/**
+	 * No drag handle of its own: whatever in an item has `data-tq-array-handle`
+	 * is one. A drag starts once the pointer has moved, so that it can still be
+	 * clicked.
+	 */
+	handleless?: boolean
 	/** Items can be removed: all of them, or those this returns true for. */
 	removable?: boolean | ((item: T) => boolean)
 	/** Items can be added. */
@@ -184,6 +190,11 @@ function placeDragged() {
 	drag.el.style.transform = `translateY(${drag.top - drag.el.offsetTop}px)`
 }
 
+/** Pressed on a handle of a `handleless` list, and not yet moved far enough. */
+let pending: {key: Key; el: HTMLElement; event: PointerEvent} | null = null
+
+const DRAG_THRESHOLD = 4
+
 function onPointerDown(e: PointerEvent) {
 	if (e.button !== 0 || drag || !props.sortable) return
 	const target = e.target as Element
@@ -193,8 +204,15 @@ function onPointerDown(e: PointerEvent) {
 	const key = [...elements].find(([, el]) => el === itemEl)?.[0]
 	if (key === undefined) return
 
+	if (props.handleless) {
+		pending = {key, el: itemEl as HTMLElement, event: e}
+		return
+	}
+	startDrag(key, itemEl as HTMLElement, e)
+}
+
+function startDrag(key: Key, el: HTMLElement, e: PointerEvent) {
 	e.preventDefault()
-	const el = itemEl as HTMLElement
 	for (const animation of el.getAnimations()) {
 		if (animation.id === ANIMATION_ID) animation.cancel()
 	}
@@ -218,6 +236,13 @@ function onPointerDown(e: PointerEvent) {
 }
 
 function onPointerMove(e: PointerEvent) {
+	if (pending && e.pointerId === pending.event.pointerId) {
+		const {key, el, event} = pending
+		const distance = Math.hypot(e.clientX - event.clientX, e.clientY - event.clientY)
+		if (distance < DRAG_THRESHOLD) return
+		pending = null
+		startDrag(key, el, event)
+	}
 	if (!drag || e.pointerId !== drag.pointerId) return
 	const {minTop, maxTop, startTop, startY} = drag
 	drag.top = Math.min(maxTop, Math.max(minTop, startTop + e.clientY - startY))
@@ -273,10 +298,12 @@ function endDrag(commit: boolean) {
 }
 
 function onPointerUp(e: PointerEvent) {
+	pending = null
 	if (drag && e.pointerId === drag.pointerId) endDrag(true)
 }
 
 function onPointerCancel(e: PointerEvent) {
+	pending = null
 	if (drag && e.pointerId === drag.pointerId) endDrag(false)
 }
 </script>
@@ -285,7 +312,7 @@ function onPointerCancel(e: PointerEvent) {
 	<div
 		ref="$root"
 		class="TqInputArray"
-		:class="{sortable, removable: !!removable}"
+		:class="{sortable: sortable && !handleless, removable: !!removable}"
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerUp"
@@ -304,7 +331,7 @@ function onPointerCancel(e: PointerEvent) {
 				settling: keyOf(item) === settlingKey,
 			}"
 		>
-			<span v-if="sortable" class="handle" data-tq-array-handle>
+			<span v-if="sortable && !handleless" class="handle" data-tq-array-handle>
 				<Icon icon="mdi:drag-vertical" />
 			</span>
 			<slot :item="item" :index="index" :dragging="keyOf(item) === draggingKey" />
