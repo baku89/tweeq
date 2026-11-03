@@ -234,6 +234,11 @@ function onContextMenu(event: MouseEvent) {
 </template>
 
 <style scoped>
+/* A level is as wide as a chevron looks, which is less than its icon's box. */
+.TqParameterTreeItem,
+.children {
+	--indent: calc(var(--tq-icon-size) * 0.7);
+}
 .TqParameterTreeItem {
 	position: relative;
 	isolation: isolate;
@@ -308,7 +313,7 @@ function onContextMenu(event: MouseEvent) {
 	position: absolute;
 	/* From the icon, past the indent and the chevron. */
 	inset: calc(var(--tq-gap-related) / -2) 0 calc(var(--tq-gap-related) / -2)
-		calc((var(--depth) + 1) * var(--tq-icon-size));
+		calc((var(--depth) + 1) * var(--indent));
 	z-index: -1;
 	border-radius: var(--tq-radius-input);
 	background: var(--tq-color-accent-soft);
@@ -322,7 +327,7 @@ function onContextMenu(event: MouseEvent) {
 	/* The whole label column selects, not only the text in it. */
 	flex: 1 1 0;
 	min-width: 0;
-	padding-left: calc(var(--depth) * var(--tq-icon-size));
+	padding-left: calc(var(--depth) * var(--indent));
 	cursor: pointer;
 	user-select: none;
 }
@@ -373,7 +378,7 @@ function onContextMenu(event: MouseEvent) {
 	position: absolute;
 	top: calc(var(--tip) - var(--tq-input-height) - var(--tq-gap-related));
 	bottom: 0;
-	left: calc((var(--depth) + 0.5) * var(--tq-icon-size));
+	left: calc((var(--depth) + 0.5) * var(--indent));
 	width: 1px;
 	background: var(--tq-color-border);
 	pointer-events: none;
@@ -382,7 +387,7 @@ function onContextMenu(event: MouseEvent) {
 .children.closed::before {
 	box-sizing: border-box;
 	top: 0;
-	width: calc(var(--tq-icon-size) / 2);
+	width: calc(var(--indent) / 2);
 	border: 1px solid var(--tq-color-border);
 	border-right: none;
 	border-radius: calc(var(--tq-icon-size) / 2) 0 0 calc(var(--tq-icon-size) / 2);
@@ -392,7 +397,7 @@ function onContextMenu(event: MouseEvent) {
 	display: flex;
 	align-items: flex-start;
 	grid-column: 1 / -1;
-	padding-left: calc(var(--depth) * var(--tq-icon-size));
+	padding-left: calc(var(--depth) * var(--indent));
 }
 .wide-content {
 	flex: 1 1 0;
@@ -401,7 +406,7 @@ function onContextMenu(event: MouseEvent) {
 .toggle {
 	display: block;
 	flex-shrink: 0;
-	width: var(--tq-icon-size);
+	width: var(--indent);
 	height: var(--tq-icon-size);
 	margin-top: var(--inset);
 	color: var(--tq-color-text-mute);
@@ -409,8 +414,9 @@ function onContextMenu(event: MouseEvent) {
 }
 .chevron {
 	display: block;
-	width: 100%;
+	width: var(--tq-icon-size);
 	height: 100%;
+	margin-left: calc((var(--indent) - var(--tq-icon-size)) / 2);
 	transform: rotate(-90deg);
 	transition: transform var(--tq-hover-transition-duration) ease;
 }

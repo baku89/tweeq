@@ -115,8 +115,7 @@ function onPointerDown(event: PointerEvent) {
 function startDrag(id: string, label: string, pointerId: number) {
 	const root = $root.value
 	if (!root) return
-	const style = getComputedStyle(root)
-	indent = parseFloat(style.getPropertyValue('--tq-icon-size')) || indent
+	indent = root.querySelector('.toggle')?.getBoundingClientRect().width || indent
 	originX = root.getBoundingClientRect().left
 	rows = [...items]
 		.map(item => ({item, rect: item.element()?.getBoundingClientRect()}))
