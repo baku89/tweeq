@@ -139,6 +139,7 @@ function onContextMenu(event: MouseEvent) {
 	<Parameter
 		v-else
 		class="TqParameterTreeItem"
+		:style="{'--depth': depth}"
 		:class="{
 			selected,
 			top: depth === 0,
@@ -282,7 +283,9 @@ function onContextMenu(event: MouseEvent) {
 .TqParameterTreeItem.selected::after {
 	content: '';
 	position: absolute;
-	inset: calc(var(--tq-gap-related) / -2) 0 calc(var(--tq-gap-related) / -2) -3px;
+	/* From the icon, past the indent and the chevron. */
+	inset: calc(var(--tq-gap-related) / -2) 0 calc(var(--tq-gap-related) / -2)
+		calc((var(--depth) + 1) * var(--tq-icon-size));
 	z-index: -1;
 	border-radius: var(--tq-radius-input);
 	background: var(--tq-color-accent-soft);
