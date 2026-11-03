@@ -179,6 +179,7 @@ function onReset() {
 		class="TqInputString"
 		:active="multi.subfocus"
 		:modelValue="display"
+		:placeholder="placeholder"
 		:theme="theme"
 		:font="font"
 		:align="align"

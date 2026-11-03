@@ -10,6 +10,8 @@ export interface InputStringProps extends InputBoxProps {
 	font?: InputFont
 	align?: InputAlign
 	validator?: Validator<string>
+	/** Shown while the input is empty. */
+	placeholder?: string
 	/** Value restored by the right-click "Reset to Default" menu item. */
 	default?: string
 }

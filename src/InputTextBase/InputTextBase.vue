@@ -20,6 +20,8 @@ export interface InputTextBaseProps extends InputBoxProps {
 	align?: InputAlign
 	leftIcon?: string
 	rightIcon?: string
+	/** Shown while the input is empty. */
+	placeholder?: string
 	/**
 	 * When set, the right-click menu offers "Reset to Default" (emits `reset`).
 	 * It's only the presence that matters here — the wrapper holds the value.
@@ -148,6 +150,7 @@ function onKeydown(e: KeyboardEvent) {
 			type="text"
 			:class="{ignore: ignoreInput, 'has-inactive-content': hasInactiveContent}"
 			:value="model"
+			:placeholder="placeholder"
 			:disabled="disabled || undefined"
 			@focus="onFocus"
 			@blur="onBlur"
@@ -233,6 +236,9 @@ function onKeydown(e: KeyboardEvent) {
 
 .input
 	height var(--tq-input-height)
+
+	&::placeholder
+		color var(--tq-color-text-mute)
 
 	@container (max-width: 100px)
 		&
