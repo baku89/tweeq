@@ -64,7 +64,6 @@ function onContextMenu(event: MouseEvent) {
 				<span v-else class="toggle" />
 				<Icon class="icon" :icon="icon ?? DOT" />
 				<span class="name">{{ label }}</span>
-				<span v-if="note" class="note">{{ note }}</span>
 			</span>
 			<!-- Teleported, or the grid's subgrid would clip the fixed popover. -->
 			<Popover
@@ -160,9 +159,5 @@ function onContextMenu(event: MouseEvent) {
 }
 .name {
 	padding-inline: 0.25em;
-}
-.note {
-	margin-left: var(--tq-gap-related);
-	color: var(--tq-color-text-subtle);
 }
 </style>

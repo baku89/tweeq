@@ -46,8 +46,6 @@ export const ParameterTreeDepthKey: InjectionKey<number> = Symbol(
 export interface ParameterTreeItemProps {
 	label: string
 	icon?: string
-	/** Quieter text after the label, such as what kind of thing this is. */
-	note?: string
 	hint?: TooltipValue
 	/** Whether it has a chevron and shows its `children` slot while open. */
 	expandable?: boolean
