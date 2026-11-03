@@ -88,10 +88,12 @@ export interface ParameterTreeItemProps {
 	sortHandle?: boolean
 	/** The label drags the item around its ParameterTree, which knows it by this. */
 	dragId?: string
-	/** A second, slower click on the selected label starts renaming it. */
+	/** A click on the label's text starts renaming it. */
 	renamable?: boolean
 	/** A + at the end of the label, which emits `add`. Says what it adds. */
 	addLabel?: string
+	/** The app edits it elsewhere, so `renaming` only says that it was asked for. */
+	renameElsewhere?: boolean
 	/** What to edit, while `renaming`, if it is not the label as shown. */
 	labelSource?: string
 	/** Whether a name is fine, while `renaming`. */

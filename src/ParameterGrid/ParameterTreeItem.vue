@@ -67,36 +67,9 @@ watch(
 	{immediate: true}
 )
 
-// A click on what has been selected for a moment starts renaming it, as in a file
-// tree. It waits, as it may turn out to be a double click.
-const RENAME_AFTER_SELECTED = 500
-const DOUBLE_CLICK_WINDOW = 300
-let selectedAt = 0
-let renameTimer: ReturnType<typeof setTimeout> | undefined
-
-watch(
-	() => props.selected,
-	selected => {
-		if (selected) selectedAt = performance.now()
-		else clearTimeout(renameTimer)
-	},
-	{immediate: true}
-)
-
 function onNameClick() {
-	if (
-		props.renamable &&
-		props.selected &&
-		performance.now() - selectedAt > RENAME_AFTER_SELECTED
-	) {
-		clearTimeout(renameTimer)
-		renameTimer = setTimeout(() => {
-			renaming.value = true
-		}, DOUBLE_CLICK_WINDOW)
-	}
+	if (props.renamable) renaming.value = true
 }
-
-onBeforeUnmount(() => clearTimeout(renameTimer))
 
 function confirmRename() {
 	if (!renaming.value) return
@@ -118,7 +91,6 @@ defineExpose({
 })
 
 function onDoubleClick() {
-	clearTimeout(renameTimer)
 	if (!renaming.value && props.expandable) open.value = !open.value
 }
 
@@ -185,11 +157,12 @@ function onContextMenu(event: MouseEvent) {
 				<span v-else class="toggle" />
 				<Icon class="icon" :icon="icon ?? DOT" />
 				<InputTextBase
-					v-if="renaming"
+					v-if="renaming && !renameElsewhere"
 					ref="$rename"
 					v-model="draftName"
 					class="rename"
 					theme="underline"
+					font="monospace"
 					:invalid="!nameIsFine"
 					@confirm="confirmRename"
 					@blur="confirmRename"
@@ -265,6 +238,7 @@ function onContextMenu(event: MouseEvent) {
 }
 /* What can be edited says so. */
 .name.renamable {
+	cursor: text;
 	text-decoration: underline;
 	text-decoration-color: var(--tq-color-border);
 	text-underline-offset: 0.2em;
