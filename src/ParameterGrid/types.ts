@@ -57,6 +57,8 @@ export const ParameterTreeContextKey: InjectionKey<{
 	register(item: ParameterTreeItemHandle): () => void
 	draggingId: ComputedRef<string | null>
 	insideId: ComputedRef<string | null>
+	/** The width of the value column, or 0 until it has been measured. */
+	valueWidth: ComputedRef<number>
 }> = Symbol('parameterTreeContext')
 
 export interface ParameterTreeProps {

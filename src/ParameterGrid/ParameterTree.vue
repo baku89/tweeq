@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useEventListener} from '@vueuse/core'
+import {useElementSize, useEventListener} from '@vueuse/core'
 import {clamp} from 'lodash-es'
 import {computed, provide, ref, shallowRef, useTemplateRef} from 'vue'
 
@@ -61,6 +61,19 @@ function onResizeStart(event: PointerEvent) {
 //------------------------------------------------------------------------------
 // Moving items around the tree
 
+const {width: rootWidth} = useElementSize($root)
+// Less the grid's own inset, and the gap between its columns.
+const valueWidth = computed(() =>
+	rootWidth.value === 0
+		? 0
+		: Math.max(0, rootWidth.value - labelWidth.value - 3 - gapControl.value)
+)
+const gapControl = computed(() =>
+	rootWidth.value === 0 || !$root.value
+		? 0
+		: parseFloat(getComputedStyle($root.value).getPropertyValue('--tq-gap-control')) || 0
+)
+
 const items = new Set<ParameterTreeItemHandle>()
 
 const dragging = shallowRef<{id: string; label: string} | null>(null)
@@ -76,6 +89,7 @@ provide(ParameterTreeContextKey, {
 	insideId: computed(() =>
 		drop.value?.position === 'inside' ? drop.value.target : null
 	),
+	valueWidth,
 })
 
 let press: {id: string; label: string; x: number; y: number; pointerId: number} | null = null
