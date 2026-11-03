@@ -820,6 +820,10 @@ const barStyle = computed<StyleValue>(() => {
 		pointer-events auto
 		cursor ew-resize
 
+// Until it has focus, the whole field is there to drag.
+.TqInputNumber:not(:focus-within)
+	cursor ew-resize
+
 // Unranged: a horizontal scrub grip over the left-icon area. Inert until the
 // field is focused (unfocused, the whole field already drags); then it takes the
 // pointer so a focused press here scrubs while the text stays editable.
