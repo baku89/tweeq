@@ -136,8 +136,9 @@ function onContextMenu(event: MouseEvent) {
 .row.open::after {
 	content: '';
 	position: absolute;
-	top: calc(var(--inset) + var(--tq-icon-size) * 0.64 + 2px);
-	bottom: calc(-1 * var(--tq-gap-related));
+	top: calc(var(--inset) + var(--tq-icon-size) * 0.64 + 4px);
+	/* The first child's line takes over from here. They would darken if they met. */
+	bottom: 0;
 	left: calc((var(--depth) + 0.5) * var(--tq-icon-size));
 	width: 1px;
 	pointer-events: none;
