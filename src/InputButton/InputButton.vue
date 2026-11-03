@@ -123,6 +123,7 @@ defineExpose({flash})
 		--focus-ring 0 0 0 1px var(--tq-color-accent)
 
 		&:not(:hover)
+		&:disabled
 			color var(--tq-color-text)
 
 		&:not(:disabled):hover

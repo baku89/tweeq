@@ -52,7 +52,7 @@ defineProps<InputButtonToggleProps>()
 	&:focus-visible
 		fill-focus-style()
 
-	&:hover
+	&:not(:disabled):hover
 		background var(--tq-color-input-hover)
 
 	&.checked
@@ -60,7 +60,7 @@ defineProps<InputButtonToggleProps>()
 		color var(--tq-color-on-accent)
 		--focus-ring inset 0 0 0 1px var(--tq-color-input), 0 0 0 1px var(--tq-color-accent)
 
-		&:hover
+		&:not(:disabled):hover
 			background var(--tq-color-accent-hover)
 
 	&:has(.label)
