@@ -50,6 +50,12 @@ export interface ParameterTreeItemProps {
 	/** Whether it has a chevron and shows its `children` slot while open. */
 	expandable?: boolean
 	selected?: boolean
+	/**
+	 * Items of a group can be dragged by the label to swap places, which emits
+	 * `sort` on the one dropped on. `sortIndex` is its place in the group.
+	 */
+	sortGroup?: string
+	sortIndex?: number
 	/** The menu on the label. Right-clicking also selects. */
 	menuItems?: MenuItem[]
 }

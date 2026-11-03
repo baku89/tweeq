@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import {inject, provide, ref, useTemplateRef} from 'vue'
+<script lang="ts">
+import {computed, inject, provide, ref, shallowRef, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
 import {Menu} from '../Menu'
@@ -7,6 +7,11 @@ import {Popover} from '../Popover'
 import Parameter from './Parameter.vue'
 import {ParameterTreeDepthKey, type ParameterTreeItemProps} from './types'
 
+// One drag at a time, across every tree.
+const dragged = shallowRef<{group: string; index: number} | null>(null)
+</script>
+
+<script setup lang="ts">
 // A row without an icon keeps the rhythm of those with one.
 const DOT = 'fill:M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z'
 
@@ -14,7 +19,11 @@ const props = defineProps<ParameterTreeItemProps>()
 
 const open = defineModel<boolean>('open', {default: false})
 
-const emit = defineEmits<{select: []}>()
+const emit = defineEmits<{
+	select: []
+	/** The item at `from` in this group should move to be at `to`. */
+	sort: [from: number, to: number]
+}>()
 
 defineSlots<{
 	/** The value column. */
@@ -25,6 +34,42 @@ defineSlots<{
 
 const depth = inject(ParameterTreeDepthKey, 0)
 provide(ParameterTreeDepthKey, depth + 1)
+
+const sortable = computed(
+	() => props.sortGroup !== undefined && props.sortIndex !== undefined
+)
+const dropSide = ref<'before' | 'after' | null>(null)
+
+function onDragStart(event: DragEvent) {
+	if (!sortable.value || event.dataTransfer === null) return
+	event.dataTransfer.effectAllowed = 'move'
+	event.dataTransfer.setData('text/plain', props.label)
+	dragged.value = {group: props.sortGroup!, index: props.sortIndex!}
+}
+
+function onDragEnd() {
+	dragged.value = null
+}
+
+function onDragOver(event: DragEvent) {
+	const from = dragged.value
+	if (from === null || from.group !== props.sortGroup || from.index === props.sortIndex) {
+		return
+	}
+	event.preventDefault()
+	const {top, height} = (event.currentTarget as HTMLElement).getBoundingClientRect()
+	dropSide.value = event.clientY < top + height / 2 ? 'before' : 'after'
+}
+
+function onDrop(event: DragEvent) {
+	const from = dragged.value
+	const side = dropSide.value
+	dropSide.value = null
+	if (from === null || side === null) return
+	event.preventDefault()
+	const at = props.sortIndex! + (side === 'after' ? 1 : 0)
+	emit('sort', from.index, from.index < at ? at - 1 : at)
+}
 
 const $label = useTemplateRef<HTMLElement>('$label')
 const menuPosition = ref<[number, number] | null>(null)
@@ -41,8 +86,11 @@ function onContextMenu(event: MouseEvent) {
 <template>
 	<Parameter
 		class="TqParameterTreeItem"
-		:class="{selected, top: depth === 0}"
+		:class="[{selected, top: depth === 0}, dropSide && `drop-${dropSide}`]"
 		:hint="hint"
+		@dragover="onDragOver"
+		@dragleave="dropSide = null"
+		@drop="onDrop"
 	>
 		<template #label>
 			<span
@@ -50,6 +98,9 @@ function onContextMenu(event: MouseEvent) {
 				class="row"
 				:class="{open: expandable && open}"
 				:style="{'--depth': depth}"
+				:draggable="sortable || undefined"
+				@dragstart="onDragStart"
+				@dragend="onDragEnd"
 				@click="emit('select')"
 				@contextmenu="onContextMenu"
 			>
@@ -90,6 +141,12 @@ function onContextMenu(event: MouseEvent) {
 }
 .TqParameterTreeItem.top:not(:first-child) {
 	margin-top: calc(var(--tq-gap-control) - var(--tq-gap-related));
+}
+.TqParameterTreeItem.drop-before {
+	box-shadow: 0 -2px 0 var(--tq-color-accent);
+}
+.TqParameterTreeItem.drop-after {
+	box-shadow: 0 2px 0 var(--tq-color-accent);
 }
 /* A row is as tall as its value, which may have many lines. */
 .TqParameterTreeItem :deep(.label) {
