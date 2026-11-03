@@ -313,7 +313,8 @@ function onContextMenu(event: MouseEvent) {
 	content: '';
 	position: absolute;
 	/* From the icon, past the indent and the chevron. */
-	inset: calc(var(--tq-gap-related) / -2) 0 calc(var(--tq-gap-related) / -2)
+	inset: calc(var(--tq-gap-related) / -2) calc(var(--tq-gap-related) / -2)
+		calc(var(--tq-gap-related) / -2)
 		calc((var(--depth) + 1) * var(--indent));
 	z-index: -1;
 	border-radius: var(--tq-radius-input);
