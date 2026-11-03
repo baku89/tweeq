@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import {useElementSize, useEventListener} from '@vueuse/core'
 import {clamp} from 'lodash-es'
-import {computed, provide, ref, shallowRef, useTemplateRef} from 'vue'
+import {computed, nextTick, provide, ref, shallowRef, useTemplateRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
 import ParameterGrid from './ParameterGrid.vue'
-import {type TreeDrop, type TreeDropPosition, treeDropsAt, type TreeRow} from './treeDrop'
+import {
+	shiftsOf,
+	subtreeEnd,
+	type TreeDrop,
+	type TreeDropPosition,
+	treeDropsAt,
+	type TreeRow,
+} from './treeDrop'
 import {
 	ParameterTreeContextKey,
 	type ParameterTreeItemHandle,
@@ -78,14 +85,12 @@ const items = new Set<ParameterTreeItemHandle>()
 
 const dragging = shallowRef<{id: string; label: string} | null>(null)
 const drop = shallowRef<TreeDrop | null>(null)
-const ghost = ref<[number, number]>([0, 0])
 
 provide(ParameterTreeContextKey, {
 	register(item) {
 		items.add(item)
 		return () => items.delete(item)
 	},
-	draggingId: computed(() => dragging.value?.id ?? null),
 	insideId: computed(() =>
 		drop.value?.position === 'inside' ? drop.value.target : null
 	),
@@ -94,6 +99,9 @@ provide(ParameterTreeContextKey, {
 
 let press: {id: string; label: string; x: number; y: number; pointerId: number} | null = null
 let rows: TreeRow[] = []
+let elements: HTMLElement[] = []
+/** The rows being dragged, by where they are in `rows`, and where the pointer began. */
+let lifted = {from: 0, to: 0, y: 0}
 let indent = 18
 let originX = 0
 
@@ -112,67 +120,118 @@ function onPointerDown(event: PointerEvent) {
 	}
 }
 
-function startDrag(id: string, label: string, pointerId: number) {
+function startDrag(id: string, label: string, pointerId: number, y: number) {
 	const root = $root.value
 	if (!root) return
 	indent = root.querySelector('.toggle')?.getBoundingClientRect().width || indent
 	originX = root.getBoundingClientRect().left
-	rows = [...items]
-		.map(item => ({item, rect: item.element()?.getBoundingClientRect()}))
+	const showing = [...items]
+		.map(item => ({
+			item,
+			element: item.element(),
+			rect: item.element()?.getBoundingClientRect(),
+		}))
 		.filter(({rect}) => rect !== undefined)
 		.sort((a, b) => a.rect!.top - b.rect!.top)
-		.map(({item, rect}) => ({
-			...(item.id() === undefined ? {} : {id: item.id()!}),
-			depth: item.depth,
-			top: rect!.top,
-			bottom: rect!.bottom,
-			open: item.open(),
-			expandable: item.expandable(),
-		}))
+	rows = showing.map(({item, rect}) => ({
+		...(item.id() === undefined ? {} : {id: item.id()!}),
+		depth: item.depth,
+		top: rect!.top,
+		bottom: rect!.bottom,
+		open: item.open(),
+		expandable: item.expandable(),
+	}))
+	elements = showing.map(({element}) => element!)
+	const from = rows.findIndex(row => row.id === id)
+	lifted = {from, to: subtreeEnd(rows, from), y}
+	for (const element of liftedElements()) element.classList.add('lifted')
 	dragging.value = {id, label}
 	root.setPointerCapture(pointerId)
+}
+
+/** The row being dragged, and what it holds, which go together. */
+function liftedElements(): HTMLElement[] {
+	const row = elements[lifted.from]
+	if (!row) return []
+	const inside = row.nextElementSibling
+	return inside?.classList.contains('children') ? [row, inside as HTMLElement] : [row]
+}
+
+/** The dragged row at the pointer, at the level it would land, and the rest around it. */
+function layOut(pointerY: number) {
+	const landed = drop.value
+	const shifts = shiftsOf(
+		rows,
+		lifted.from,
+		lifted.to,
+		landed === null || landed.position === 'inside' ? null : landed.y
+	)
+	elements.forEach((element, i) => {
+		if (i < lifted.from || i >= lifted.to) {
+			element.style.transform = shifts[i] ? `translateY(${shifts[i]}px)` : ''
+		}
+	})
+	const level =
+		landed === null
+			? 0
+			: landed.depth + (landed.position === 'inside' ? 1 : 0) - rows[lifted.from]!.depth
+	for (const element of liftedElements()) {
+		element.style.transform = `translate(${level * indent}px, ${pointerY - lifted.y}px)`
+	}
+}
+
+/** Everything back in its place, and where the dragged row had got to. */
+function settle(): number | undefined {
+	const top = elements[lifted.from]?.getBoundingClientRect().top
+	for (const element of liftedElements()) element.classList.remove('lifted')
+	const inside = liftedElements()[1]
+	if (inside) inside.style.transform = ''
+	for (const element of elements) element.style.transform = ''
+	elements = []
+	return top
 }
 
 function onPointerMove(event: PointerEvent) {
 	if (press && event.pointerId === press.pointerId) {
 		const {x, y} = press
 		if (Math.hypot(event.clientX - x, event.clientY - y) < DRAG_THRESHOLD) return
-		startDrag(press.id, press.label, press.pointerId)
+		startDrag(press.id, press.label, press.pointerId, y)
 		press = null
 	}
 	const source = dragging.value?.id
 	if (source === undefined) return
-	ghost.value = [event.clientX, event.clientY]
 	const candidates = treeDropsAt(rows, event.clientX - originX, event.clientY, indent)
 	drop.value =
 		candidates.find(({target, position}) =>
 			props.canDrop!(source, target, position)
 		) ?? null
+	layOut(event.clientY)
 }
 
 function finishDrag(commit: boolean) {
 	const source = dragging.value?.id
 	const landed = drop.value
 	press = null
+	if (source === undefined) return
+	const top = settle()
 	dragging.value = null
 	drop.value = null
-	if (commit && source !== undefined && landed !== null) {
-		emit('move', source, landed.target, landed.position)
-	}
+	if (!commit || landed === null) return
+	emit('move', source, landed.target, landed.position)
+	// From where it was let go of, to where it has gone, if it is still that row.
+	void nextTick(() => {
+		const element = [...items].find(item => item.id() === source)?.element()
+		if (!element || top === undefined) return
+		const from = top - element.getBoundingClientRect().top
+		element.animate([{transform: `translateY(${from}px)`}, {transform: 'none'}], {
+			duration: 180,
+			easing: 'cubic-bezier(0.2, 0, 0, 1)',
+		})
+	})
 }
 
 useEventListener('keydown', (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && dragging.value) finishDrag(false)
-})
-
-const lineStyle = computed(() => {
-	const root = $root.value
-	const landed = drop.value
-	if (!root || !landed || landed.position === 'inside') return null
-	return {
-		top: `${landed.y - root.getBoundingClientRect().top}px`,
-		left: `${landed.depth * indent}px`,
-	}
 })
 </script>
 
@@ -192,14 +251,6 @@ const lineStyle = computed(() => {
 			<slot />
 		</ParameterGrid>
 		<div class="resizer" :class="{resizing}" @pointerdown="onResizeStart" />
-		<div v-if="lineStyle" class="drop-line" :style="lineStyle" />
-		<div
-			v-if="dragging"
-			class="drag-ghost"
-			:style="{left: `${ghost[0]}px`, top: `${ghost[1]}px`}"
-		>
-			{{ dragging.label }}
-		</div>
 	</div>
 </template>
 
@@ -247,26 +298,19 @@ const lineStyle = computed(() => {
 .resizer.resizing::after {
 	opacity: 1;
 }
-.drop-line {
-	position: absolute;
-	right: 0;
-	z-index: 4;
-	height: 2px;
-	margin-top: -1px;
-	border-radius: 1px;
-	background: var(--tq-color-accent);
+/* What is in the way slides aside, and what is dragged goes by the pointer. */
+.TqParameterTree.dragging :deep(.TqParameterTreeItem) {
+	transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+.TqParameterTree.dragging :deep(.lifted) {
+	position: relative;
+	z-index: 5;
+	transition: none;
 	pointer-events: none;
 }
-.drag-ghost {
-	position: fixed;
-	z-index: 10;
-	padding-inline: 0.5em;
-	line-height: var(--tq-input-height);
+.TqParameterTree.dragging :deep(.TqParameterTreeItem.lifted) {
 	border-radius: var(--tq-radius-input);
 	background: var(--tq-color-surface);
 	box-shadow: 0 2px 12px var(--tq-color-shadow);
-	color: var(--tq-color-text);
-	transform: translate(8px, 8px);
-	pointer-events: none;
 }
 </style>

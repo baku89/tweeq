@@ -14,7 +14,7 @@ export type TreeDropPosition = 'before' | 'after' | 'inside'
 export interface TreeDrop {
 	readonly target: string
 	readonly position: TreeDropPosition
-	/** The level of the line to draw, and where. Not used for `inside`. */
+	/** The level it lands at, and the gap it opens. Only the level, for `inside`. */
 	readonly depth: number
 	readonly y: number
 }
@@ -83,4 +83,38 @@ export function treeDropsAt(
 		}
 	}
 	return drops
+}
+
+/** Where what a row holds ends: the index after it, and after all that is deeper. */
+export function subtreeEnd(rows: readonly TreeRow[], index: number): number {
+	const depth = rows[index]?.depth ?? 0
+	let end = index + 1
+	while (end < rows.length && rows[end]!.depth > depth) end++
+	return end
+}
+
+/**
+ * How far each row moves out of the way while the rows from `from` to `to` are
+ * dragged: those below them close up, and those below `y`, in the rows as they were,
+ * open a gap. With no `y`, nothing is going anywhere, and they all stay. The rows
+ * being dragged go by the pointer, and are 0 here.
+ */
+export function shiftsOf(
+	rows: readonly TreeRow[],
+	from: number,
+	to: number,
+	y: number | null
+): number[] {
+	const first = rows[from]
+	const last = rows[to - 1]
+	if (y === null || first === undefined || last === undefined) return rows.map(() => 0)
+	const after = rows[to]
+	const before = rows[from - 1]
+	const gap = after ? after.top - last.bottom : before ? first.top - before.bottom : 0
+	const height = last.bottom - first.top + gap
+	return rows.map((row, i) =>
+		i >= from && i < to
+			? 0
+			: (row.top >= last.bottom ? -height : 0) + (row.top >= y ? height : 0)
+	)
 }

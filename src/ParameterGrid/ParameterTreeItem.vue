@@ -110,9 +110,6 @@ const unregister = tree?.register({
 })
 onBeforeUnmount(() => unregister?.())
 
-const isDragged = computed(
-	() => props.dragId !== undefined && tree?.draggingId.value === props.dragId
-)
 const isDropTarget = computed(
 	() => props.dragId !== undefined && tree?.insideId.value === props.dragId
 )
@@ -146,7 +143,6 @@ function onContextMenu(event: MouseEvent) {
 		:class="{
 			selected,
 			top: depth === 0,
-			dragged: isDragged,
 			'drop-target': isDropTarget,
 		}"
 		:hint="hint"
@@ -296,9 +292,6 @@ function onContextMenu(event: MouseEvent) {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.TqParameterTreeItem.dragged {
-	opacity: 0.5;
-}
 /* Behind the row, so that inputs keep their own colors. */
 .TqParameterTreeItem.drop-target::after,
 .TqParameterTreeItem.selected::after {
@@ -424,5 +417,10 @@ function onContextMenu(event: MouseEvent) {
 	height: var(--tq-icon-size);
 	margin-top: var(--inset);
 	color: var(--tq-color-text-subtle);
+	opacity: 0.7;
+}
+.icon.emphasized {
+	color: var(--tq-color-info);
+	opacity: 1;
 }
 </style>

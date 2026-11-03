@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {type TreeRow, treeDropsAt} from './treeDrop'
+import {shiftsOf, subtreeEnd, type TreeRow, treeDropsAt} from './treeDrop'
 
 const HEIGHT = 20
 const INDENT = 18
@@ -82,5 +82,41 @@ describe('treeDropsAt', () => {
 
 	it('has nothing for nothing', () => {
 		expect(treeDropsAt([], 0, 0, INDENT)).toEqual([])
+	})
+})
+
+describe('subtreeEnd', () => {
+	it('goes past what is deeper', () => {
+		const r = rows(['a', 0], ['b', 1], ['c', 2], ['d', 1], ['e', 0])
+		expect(subtreeEnd(r, 0)).toBe(4)
+		expect(subtreeEnd(r, 1)).toBe(3)
+		expect(subtreeEnd(r, 4)).toBe(5)
+	})
+})
+
+describe('shiftsOf', () => {
+	const r = rows(['a', 0], ['b', 0], ['c', 0], ['d', 0])
+
+	it('leaves everything with nowhere to go', () => {
+		expect(shiftsOf(r, 1, 2, null)).toEqual([0, 0, 0, 0])
+	})
+
+	it('leaves everything where it would land where it was', () => {
+		expect(shiftsOf(r, 1, 2, r[2]!.top)).toEqual([0, 0, 0, 0])
+	})
+
+	it('closes up below it, and opens up above where it lands', () => {
+		expect(shiftsOf(r, 0, 1, r[2]!.top)).toEqual([0, -HEIGHT, 0, 0])
+		expect(shiftsOf(r, 3, 4, r[1]!.top)).toEqual([0, HEIGHT, HEIGHT, 0])
+	})
+
+	it('counts the gap between rows, wherever the row is', () => {
+		const spaced = r.map((row, i) => ({...row, top: i * 30, bottom: i * 30 + 20}))
+		expect(shiftsOf(spaced, 0, 1, spaced[2]!.top)).toEqual([0, -30, 0, 0])
+		expect(shiftsOf(spaced, 3, 4, spaced[2]!.top)).toEqual([0, 0, 30, 0])
+	})
+
+	it('moves by all that is dragged', () => {
+		expect(shiftsOf(r, 0, 2, r[3]!.top)).toEqual([0, 0, -2 * HEIGHT, 0])
 	})
 })
