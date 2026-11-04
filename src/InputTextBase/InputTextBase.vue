@@ -38,6 +38,8 @@ export interface InputTextBaseProps extends InputBoxProps {
 	 * With `inactiveContent`, it stays one line tall until it has focus.
 	 */
 	multiline?: boolean
+	/** What any space goes in as, however it got there, for what cannot have one, such as a name. */
+	spaceAs?: string
 }
 
 const model = defineModel<string>({required: true})
@@ -106,8 +108,36 @@ const hasInactiveContent = computed(() => !!slots.inactiveContent)
 
 const $input = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>('$input')
 
+function onPaste(e: ClipboardEvent) {
+	const text = e.clipboardData?.getData('text') ?? ''
+	if (props.spaceAs === undefined || !/\s/.test(text)) return
+	e.preventDefault()
+	insertText(text.trim().replace(/\s+/g, props.spaceAs))
+}
+
+/**
+ * What got in some other way, by whatever was being typed with, such as a full-width
+ * space. Not while it is being composed, where a space is what chooses a word.
+ */
+function replaceSpaces(input: HTMLInputElement | HTMLTextAreaElement): void {
+	const {spaceAs} = props
+	if (spaceAs === undefined || !/\s/.test(input.value)) return
+	const caret = input.selectionStart ?? input.value.length
+	const before = input.value.slice(0, caret).replace(/\s/g, spaceAs)
+	input.value = before + input.value.slice(caret).replace(/\s/g, spaceAs)
+	input.setSelectionRange(before.length, before.length)
+}
+
 function onInput(e: Event) {
-	model.value = (e.target as HTMLInputElement).value
+	const input = e.target as HTMLInputElement
+	if (!(e as InputEvent).isComposing) replaceSpaces(input)
+	model.value = input.value
+}
+
+function onCompositionEnd(e: CompositionEvent) {
+	const input = e.target as HTMLInputElement
+	replaceSpaces(input)
+	model.value = input.value
 }
 
 function onFocus(e: FocusEvent) {
@@ -120,7 +150,16 @@ function onBlur(e: FocusEvent) {
 	emit('blur', e)
 }
 
+/** Where the caret is, and so that an undo takes it back out, as any typing would. */
+const insertText = (text: string): void => void document.execCommand('insertText', false, text)
+
 function onKeydown(e: KeyboardEvent) {
+	const isSpace = /^\s$/.test(e.key) && !e.isComposing && !e.metaKey && !e.ctrlKey
+	if (props.spaceAs !== undefined && isSpace) {
+		e.preventDefault()
+		insertText(props.spaceAs)
+		return
+	}
 	// Stop a focused field's typing (incl. single-key shortcuts like "v") from
 	// reaching app-wide shortcut handlers. Let Escape / Enter / Tab and modifier
 	// combos (cmd/ctrl+…) through, so dialog dismissal and global shortcuts still
@@ -189,6 +228,8 @@ function onEnter(e: KeyboardEvent) {
 			@input="onInput"
 			@keydown="onKeydown"
 			@keydown.enter="onEnter"
+			@paste="onPaste"
+			@compositionend="onCompositionEnd"
 		/>
 
 		<div v-if="hasInactiveContent" class="inactive-content">

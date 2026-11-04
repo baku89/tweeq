@@ -95,6 +95,8 @@ export interface ParameterTreeItemProps {
 	labelSource?: string
 	/** Whether a name is fine, while `renaming`. */
 	canRename?: (name: string) => boolean
+	/** What a space goes in as, while `renaming`, for a name that cannot have one. */
+	renameSpaceAs?: string
 	/** The label stands out from those of the others. */
 	emphasized?: boolean
 	/** The guide along its children curves in at both ends, like a `(`. */
