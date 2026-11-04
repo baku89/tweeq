@@ -84,6 +84,17 @@ export interface Theme {
 	colorRec: string
 	colorAffirmative: string
 
+	// Hues, as text on the background: told apart, and neither right nor wrong.
+	colorHueRed: string
+	colorHueOrange: string
+	colorHueYellow: string
+	colorHueGreen: string
+	colorHueTeal: string
+	colorHueCyan: string
+	colorHueBlue: string
+	colorHuePurple: string
+	colorHueMagenta: string
+
 	// Font
 	fontCode: string
 	fontHeading: string

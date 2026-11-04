@@ -15,9 +15,11 @@ export const PALETTE = {
 	orange: '#f76b15',
 	yellow: '#ffc53d', // amber
 	green: '#46a758', // grass
+	teal: '#12a594',
 	cyan: '#00a2c7',
 	blue: '#3e63dd',
 	purple: '#8e4ec6',
+	magenta: '#d6409f', // plum-pink
 } as const
 
 export type PaletteHue = keyof typeof PALETTE
@@ -161,6 +163,43 @@ function softTint(background: string, color: string): string {
 		.toString({format: 'hex'})
 }
 
+export interface HueColors {
+	colorHueRed: string
+	colorHueOrange: string
+	colorHueYellow: string
+	colorHueGreen: string
+	colorHueTeal: string
+	colorHueCyan: string
+	colorHueBlue: string
+	colorHuePurple: string
+	colorHueMagenta: string
+}
+
+/**
+ * Each hue as text on the background, for what is told apart by color and is neither
+ * right nor wrong, as a kind of value is. Not nudged, so that each stays what it is.
+ */
+export function buildHueColors({
+	appearance,
+	background,
+}: {
+	appearance: ColorMode
+	background: string
+}): HueColors {
+	const s = paletteScales(PALETTE, appearance, background)
+	return {
+		colorHueRed: s.red.scale[TEXT],
+		colorHueOrange: s.orange.scale[TEXT],
+		colorHueYellow: s.yellow.scale[TEXT],
+		colorHueGreen: s.green.scale[TEXT],
+		colorHueTeal: s.teal.scale[TEXT],
+		colorHueCyan: s.cyan.scale[TEXT],
+		colorHueBlue: s.blue.scale[TEXT],
+		colorHuePurple: s.purple.scale[TEXT],
+		colorHueMagenta: s.magenta.scale[TEXT],
+	} as HueColors
+}
+
 export function buildSemanticColors({
 	background,
 	accent,
@@ -264,8 +303,10 @@ export function buildMonacoTheme({
 	/** Selection highlight (the soft accent). */
 	selection: string
 }): MonacoThemeData {
-	// Syntax draws from the same themed (accent-nudged) palette as the semantics.
-	const s = paletteScales(nudgePalette(accent), appearance, background)
+	// Syntax keeps the palette's own hues: nudged toward a strong accent, an orange
+	// on its way round to blue turns into a red, which reads as something wrong.
+	void accent
+	const s = paletteScales(PALETTE, appearance, background)
 
 	const red = noHash(s.red.scale[TEXT])
 	const orange = noHash(s.orange.scale[TEXT])
@@ -274,6 +315,8 @@ export function buildMonacoTheme({
 	const cyan = noHash(s.cyan.scale[TEXT])
 	const blue = noHash(s.blue.scale[TEXT])
 	const purple = noHash(s.purple.scale[TEXT])
+	const magenta = noHash(s.magenta.scale[TEXT])
+	const teal = noHash(s.teal.scale[TEXT])
 
 	const fg = noHash(foreground)
 	const muted = noHash(comment)
@@ -288,17 +331,17 @@ export function buildMonacoTheme({
 			{token: 'keyword', foreground: purple},
 			{token: 'storage', foreground: purple},
 			{token: 'string', foreground: green},
-			{token: 'string.escape', foreground: cyan},
-			{token: 'regexp', foreground: cyan},
+			{token: 'string.escape', foreground: teal},
+			{token: 'regexp', foreground: teal},
 			{token: 'number', foreground: orange},
 			{token: 'constant', foreground: orange},
-			{token: 'constant.language', foreground: orange},
+			{token: 'constant.language', foreground: magenta},
 			{token: 'type', foreground: yellow},
 			{token: 'type.identifier', foreground: yellow},
 			{token: 'attribute.name', foreground: yellow},
 			{token: 'function', foreground: blue},
-			{token: 'variable', foreground: red},
-			{token: 'variable.predefined', foreground: red},
+			{token: 'variable', foreground: cyan},
+			{token: 'variable.predefined', foreground: cyan},
 			{token: 'tag', foreground: red},
 			{token: 'delimiter', foreground: fg},
 			{token: 'operator', foreground: fg},

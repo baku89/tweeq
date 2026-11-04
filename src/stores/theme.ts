@@ -5,6 +5,7 @@ import {computed, toRefs, watch} from 'vue'
 
 import {
 	buildMonacoTheme,
+	buildHueColors,
 	buildSemanticColors,
 	type ColorMode,
 	generateThemeColorsRadix,
@@ -112,6 +113,7 @@ export const useThemeStore = defineStore('theme', () => {
 
 			// Semantic Colors (curated palette → see theme/palette.ts)
 			...semanticColors.value,
+			...buildHueColors({appearance: colorMode.value, background: backgroundColor.value}),
 
 			fontCode: "'Geist Mono', monospace",
 			fontHeading: 'Geist, sans-serif',
