@@ -21,7 +21,11 @@ const theme = useThemeStore()
 const $root = useTemplateRef('$root')
 const {width} = useElementSize($root)
 
-const showColorCode = computed(() => width.value > theme.inputHeight * 3.5)
+// A code that does not fit on its line says nothing, so it is the pad alone until it does:
+// that takes the pad, and a code with what is around it, and any alpha.
+const showColorCode = computed(
+	() => width.value >= theme.inputHeight * (props.alpha ? 6 : 4)
+)
 
 const padTweaking = ref(false)
 
