@@ -367,8 +367,10 @@ function onContextMenu(event: MouseEvent) {
 .children::before {
 	content: '';
 	position: absolute;
-	top: calc(var(--tip) - var(--tq-input-height) - var(--tq-gap-related));
-	bottom: 0;
+	top: calc(
+		var(--tip) - var(--tq-input-height) - var(--tq-gap-related) + var(--guide-top, 0px)
+	);
+	bottom: calc(var(--guide-bottom, 0px) * -1);
 	left: calc((var(--depth) + 0.5) * var(--indent));
 	width: 1px;
 	background: var(--tq-color-border);
@@ -383,14 +385,22 @@ function onContextMenu(event: MouseEvent) {
 	--outside: calc(var(--tq-gap-related) / 2 + 3px);
 	--curve: calc(var(--tq-radius-input) + var(--outside));
 	box-sizing: border-box;
-	top: calc(var(--outside) * -1);
-	bottom: calc(var(--outside) * -1);
+	top: calc(var(--guide-top, 0px) - var(--outside));
+	bottom: calc((var(--guide-bottom, 0px) + var(--outside)) * -1);
 	left: calc((var(--depth) + 1) * var(--indent) - var(--outside));
 	width: var(--curve);
 	border: 1px solid var(--tq-color-border);
 	border-right: none;
 	border-radius: var(--curve) 0 0 var(--curve);
 	background: none;
+}
+/* What is dragged would land along this one. */
+.children.drop-parent::before {
+	background: var(--tq-color-accent);
+}
+.children.closed.drop-parent::before {
+	background: none;
+	border-color: var(--tq-color-accent);
 }
 .TqParameterTreeItem.wide {
 	display: flex;

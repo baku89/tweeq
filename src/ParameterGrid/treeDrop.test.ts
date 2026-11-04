@@ -1,6 +1,15 @@
 import {describe, expect, it} from 'vitest'
 
-import {shiftsOf, subtreeEnd, type TreeRow, treeDropsAt} from './treeDrop'
+import {
+	dropParentOf,
+	gapTopOf,
+	guideShiftsOf,
+	liftedHeight,
+	shiftsOf,
+	subtreeEnd,
+	type TreeRow,
+	treeDropsAt,
+} from './treeDrop'
 
 const HEIGHT = 20
 const INDENT = 18
@@ -124,5 +133,47 @@ describe('shiftsOf', () => {
 
 	it('moves by all that is dragged', () => {
 		expect(shiftsOf(r, 0, 2, r[3]!.top)).toEqual([0, 0, -2 * HEIGHT, 0])
+	})
+})
+
+describe('while dragging', () => {
+	// a { b c } d, a row at every 20 from 0
+	const rows: TreeRow[] = [
+		{id: 'a', depth: 0, top: 0, bottom: 18, open: true, expandable: true},
+		{id: 'b', depth: 1, top: 20, bottom: 38, open: false, expandable: false},
+		{id: 'c', depth: 1, top: 40, bottom: 58, open: false, expandable: false},
+		{id: 'd', depth: 0, top: 60, bottom: 78, open: false, expandable: false},
+	]
+	const after = (target: string, depth: number, y: number) =>
+		({target, position: 'after', depth, y}) as const
+
+	it('takes the height of what is lifted, with a gap', () => {
+		expect(liftedHeight(rows, 3, 4)).toBe(20)
+		expect(liftedHeight(rows, 0, 3)).toBe(60)
+	})
+
+	it('has the gap where it is once what is lifted has closed up', () => {
+		expect(gapTopOf(rows, 3, 4, 20)).toBe(20)
+		expect(gapTopOf(rows, 1, 2, 60)).toBe(40)
+	})
+
+	it('knows the row it would land inside', () => {
+		expect(dropParentOf(rows, 3, 4, after('c', 1, 60))).toBe(0)
+		expect(dropParentOf(rows, 3, 4, after('a', 0, 60))).toBeNull()
+		expect(dropParentOf(rows, 1, 2, {target: 'a', position: 'inside', depth: 0, y: 0})).toBe(0)
+	})
+
+	it('carries a guide on past a gap at its end, but not one that goes outside', () => {
+		expect(guideShiftsOf(rows, 3, 4, after('c', 1, 60)).get(0)).toEqual({top: 0, bottom: 20})
+		expect(guideShiftsOf(rows, 3, 4, after('a', 0, 60)).get(0)).toEqual({top: 0, bottom: 0})
+	})
+
+	it('closes a guide up, as what is lifted leaves', () => {
+		expect(guideShiftsOf(rows, 2, 3, after('d', 0, 80)).get(0)).toEqual({top: 0, bottom: -20})
+	})
+
+	it('moves a guide with the rows above it', () => {
+		const moved = guideShiftsOf(rows, 3, 4, {target: 'a', position: 'before', depth: 0, y: 0})
+		expect(moved.get(0)).toEqual({top: 20, bottom: 20})
 	})
 })

@@ -93,6 +93,95 @@ export function subtreeEnd(rows: readonly TreeRow[], index: number): number {
 	return end
 }
 
+/** How much room the rows from `from` to `to` take up, with the gap to the next. */
+export function liftedHeight(rows: readonly TreeRow[], from: number, to: number): number {
+	const first = rows[from]
+	const last = rows[to - 1]
+	if (first === undefined || last === undefined) return 0
+	const after = rows[to]
+	const before = rows[from - 1]
+	const gap = after ? after.top - last.bottom : before ? first.top - before.bottom : 0
+	return last.bottom - first.top + gap
+}
+
+/** Where the gap opened at `y` is, once the rows from `from` to `to` have closed up. */
+export function gapTopOf(
+	rows: readonly TreeRow[],
+	from: number,
+	to: number,
+	y: number
+): number {
+	const last = rows[to - 1]
+	return last !== undefined && y >= last.bottom ? y - liftedHeight(rows, from, to) : y
+}
+
+/**
+ * The row that what is dropped will be inside, by where it is in `rows`, leaving out
+ * the rows being dragged. Null at the top level.
+ */
+export function dropParentOf(
+	rows: readonly TreeRow[],
+	from: number,
+	to: number,
+	drop: TreeDrop
+): number | null {
+	if (drop.position === 'inside') {
+		const index = rows.findIndex(row => row.id === drop.target)
+		return index < 0 ? null : index
+	}
+	if (drop.depth === 0) return null
+	for (let i = rows.length - 1; i >= 0; i--) {
+		const row = rows[i]!
+		if ((i >= from && i < to) || row.top >= drop.y) continue
+		if (row.depth === drop.depth - 1) return i
+		if (row.depth < drop.depth - 1) return null
+	}
+	return null
+}
+
+export interface GuideShift {
+	readonly top: number
+	readonly bottom: number
+}
+
+/**
+ * How far the ends of the guide along each open row's children move, by where it is
+ * in `rows`, so that it goes with the rows around it, and on past a gap at its end.
+ */
+export function guideShiftsOf(
+	rows: readonly TreeRow[],
+	from: number,
+	to: number,
+	drop: TreeDrop | null
+): Map<number, GuideShift> {
+	const y = drop === null || drop.position === 'inside' ? null : drop.y
+	const shifts = shiftsOf(rows, from, to, y)
+	const height = liftedHeight(rows, from, to)
+	const guides = new Map<number, GuideShift>()
+	rows.forEach((row, i) => {
+		if (!row.open || !row.expandable || (i >= from && i < to)) return
+		const end = subtreeEnd(rows, i)
+		if (end === i + 1) return
+		const bottom = rows[end - 1]!.bottom
+		let reached = row.bottom + shifts[i]!
+		for (let j = end - 1; j > i; j--) {
+			if (j >= from && j < to) continue
+			reached = rows[j]!.bottom + shifts[j]!
+			break
+		}
+		const landsAtEnd =
+			y !== null &&
+			drop!.depth > row.depth &&
+			y >= bottom &&
+			y <= (rows[end]?.top ?? Infinity)
+		guides.set(i, {
+			top: shifts[i]!,
+			bottom: reached + (landsAtEnd ? height : 0) - bottom,
+		})
+	})
+	return guides
+}
+
 /**
  * How far each row moves out of the way while the rows from `from` to `to` are
  * dragged: those below them close up, and those below `y`, in the rows as they were,
@@ -108,10 +197,7 @@ export function shiftsOf(
 	const first = rows[from]
 	const last = rows[to - 1]
 	if (y === null || first === undefined || last === undefined) return rows.map(() => 0)
-	const after = rows[to]
-	const before = rows[from - 1]
-	const gap = after ? after.top - last.bottom : before ? first.top - before.bottom : 0
-	const height = last.bottom - first.top + gap
+	const height = liftedHeight(rows, from, to)
 	return rows.map((row, i) =>
 		i >= from && i < to
 			? 0

@@ -6,6 +6,10 @@ import {computed, nextTick, provide, ref, shallowRef, useTemplateRef} from 'vue'
 import {useAppConfigStore} from '../stores/appConfig'
 import ParameterGrid from './ParameterGrid.vue'
 import {
+	dropParentOf,
+	gapTopOf,
+	guideShiftsOf,
+	liftedHeight,
 	shiftsOf,
 	subtreeEnd,
 	type TreeDrop,
@@ -103,7 +107,14 @@ let elements: HTMLElement[] = []
 /** The rows being dragged, by where they are in `rows`, and where the pointer began. */
 let lifted = {from: 0, to: 0, y: 0}
 let indent = 18
-let originX = 0
+let originTop = 0
+/** Where a row at depth 0 starts, within the tree. */
+let baseLeft = 0
+/** Where the pointer began, and the level of what it took: it goes by how far it goes. */
+let pressX = 0
+let liftedDepth = 0
+/** Where it would land, and how much room it takes up there. */
+const landing = shallowRef<{top: number; left: number; height: number} | null>(null)
 
 function onPointerDown(event: PointerEvent) {
 	if (event.button !== 0 || !props.canDrop) return
@@ -118,13 +129,15 @@ function onPointerDown(event: PointerEvent) {
 		y: event.clientY,
 		pointerId: event.pointerId,
 	}
+	pressX = event.clientX
 }
 
 function startDrag(id: string, label: string, pointerId: number, y: number) {
 	const root = $root.value
 	if (!root) return
 	indent = root.querySelector('.toggle')?.getBoundingClientRect().width || indent
-	originX = root.getBoundingClientRect().left
+	const origin = root.getBoundingClientRect()
+	originTop = origin.top
 	const showing = [...items]
 		.map(item => ({
 			item,
@@ -144,6 +157,9 @@ function startDrag(id: string, label: string, pointerId: number, y: number) {
 	elements = showing.map(({element}) => element!)
 	const from = rows.findIndex(row => row.id === id)
 	lifted = {from, to: subtreeEnd(rows, from), y}
+	liftedDepth = rows[from]?.depth ?? 0
+	const start = elements[from]?.querySelector('.row')?.getBoundingClientRect().left
+	baseLeft = (start ?? origin.left) - origin.left - liftedDepth * indent
 	for (const element of liftedElements()) element.classList.add('lifted')
 	dragging.value = {id, label}
 	root.setPointerCapture(pointerId)
@@ -176,7 +192,57 @@ function layOut(pointerY: number) {
 			? 0
 			: landed.depth + (landed.position === 'inside' ? 1 : 0) - rows[lifted.from]!.depth
 	for (const element of liftedElements()) {
-		element.style.transform = `translate(${level * indent}px, ${pointerY - lifted.y}px)`
+		element.style.translate = `${level * indent}px`
+		element.style.transform = `translateY(${pointerY - lifted.y}px)`
+	}
+	layOutGuides(landed)
+	landing.value =
+		landed === null || landed.position === 'inside'
+			? null
+			: {
+					top: gapTopOf(rows, lifted.from, lifted.to, landed.y) - originTop,
+					left: baseLeft + landed.depth * indent,
+					height: Math.max(
+						0,
+						liftedHeight(rows, lifted.from, lifted.to) - gapBelowLifted()
+					),
+				}
+}
+
+const gapBelowLifted = () => {
+	const last = rows[lifted.to - 1]
+	const after = rows[lifted.to]
+	const before = rows[lifted.from - 1]
+	const first = rows[lifted.from]
+	return last && after
+		? after.top - last.bottom
+		: first && before
+			? first.top - before.bottom
+			: 0
+}
+
+/** The guides go with the rows, and the one it would land along says so. */
+function layOutGuides(landed: TreeDrop | null) {
+	const guides = guideShiftsOf(rows, lifted.from, lifted.to, landed)
+	const parent =
+		landed === null ? null : dropParentOf(rows, lifted.from, lifted.to, landed)
+	elements.forEach((element, i) => {
+		const children = element.nextElementSibling
+		if (!(children instanceof HTMLElement) || !children.classList.contains('children')) return
+		const guide = guides.get(i)
+		children.style.setProperty('--guide-top', `${guide?.top ?? 0}px`)
+		children.style.setProperty('--guide-bottom', `${guide?.bottom ?? 0}px`)
+		children.classList.toggle('drop-parent', i === parent)
+	})
+}
+
+function clearGuides() {
+	for (const element of elements) {
+		const children = element.nextElementSibling
+		if (!(children instanceof HTMLElement) || !children.classList.contains('children')) continue
+		children.style.removeProperty('--guide-top')
+		children.style.removeProperty('--guide-bottom')
+		children.classList.remove('drop-parent')
 	}
 }
 
@@ -185,8 +251,16 @@ function settle(): number | undefined {
 	const top = elements[lifted.from]?.getBoundingClientRect().top
 	for (const element of liftedElements()) element.classList.remove('lifted')
 	const inside = liftedElements()[1]
-	if (inside) inside.style.transform = ''
-	for (const element of elements) element.style.transform = ''
+	if (inside) {
+		inside.style.transform = ''
+		inside.style.translate = ''
+	}
+	for (const element of elements) {
+		element.style.transform = ''
+		element.style.translate = ''
+	}
+	clearGuides()
+	landing.value = null
 	elements = []
 	return top
 }
@@ -200,7 +274,11 @@ function onPointerMove(event: PointerEvent) {
 	}
 	const source = dragging.value?.id
 	if (source === undefined) return
-	const candidates = treeDropsAt(rows, event.clientX - originX, event.clientY, indent)
+	// Among the rows that stay, as what is dragged cannot land next to itself. To the
+	// right is a level in, and to the left a level out, from wherever it was taken.
+	const staying = rows.filter((_, i) => i < lifted.from || i >= lifted.to)
+	const x = (liftedDepth + 0.5) * indent + event.clientX - pressX
+	const candidates = treeDropsAt(staying, x, event.clientY, indent)
 	drop.value =
 		candidates.find(({target, position}) =>
 			props.canDrop!(source, target, position)
@@ -251,6 +329,15 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 			<slot />
 		</ParameterGrid>
 		<div class="resizer" :class="{resizing}" @pointerdown="onResizeStart" />
+		<div
+			v-if="landing"
+			class="landing"
+			:style="{
+				top: `${landing.top}px`,
+				left: `${landing.left}px`,
+				height: `${landing.height}px`,
+			}"
+		/>
 	</div>
 </template>
 
@@ -302,11 +389,29 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .TqParameterTree.dragging :deep(.TqParameterTreeItem) {
 	transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
+.TqParameterTree.dragging :deep(.children)::before {
+	transition:
+		top 180ms cubic-bezier(0.2, 0, 0, 1),
+		bottom 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+/* Up and down it follows the pointer, and it steps from level to level. */
 .TqParameterTree.dragging :deep(.lifted) {
 	position: relative;
 	z-index: 5;
-	transition: none;
+	transition: translate 120ms cubic-bezier(0.2, 0, 0, 1);
 	pointer-events: none;
+}
+/* Where it would land, at the level it would land. */
+.landing {
+	position: absolute;
+	right: 0;
+	border-radius: var(--tq-radius-input);
+	background: var(--tq-color-accent-soft);
+	box-shadow: inset 2px 0 0 var(--tq-color-accent);
+	pointer-events: none;
+	transition:
+		top 180ms cubic-bezier(0.2, 0, 0, 1),
+		left 120ms cubic-bezier(0.2, 0, 0, 1);
 }
 .TqParameterTree.dragging :deep(.TqParameterTreeItem.lifted) {
 	border-radius: var(--tq-radius-input);
