@@ -379,7 +379,8 @@ function onContextMenu(event: MouseEvent) {
  * the color of a selected child, which it would otherwise cut across.
  */
 .children.closed::before {
-	--outside: calc(var(--tq-gap-related) / 2 + 2px);
+	/* Past the selection's color, by a gap of 2px and the line's own width. */
+	--outside: calc(var(--tq-gap-related) / 2 + 3px);
 	--curve: calc(var(--tq-radius-input) + var(--outside));
 	box-sizing: border-box;
 	top: calc(var(--outside) * -1);
