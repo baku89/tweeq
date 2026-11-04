@@ -15,7 +15,7 @@ import {useAppConfigStore} from '../stores/appConfig'
 import {keyboardTarget} from '../use/keyboardTarget'
 import {useBndr} from '../use/useBndr'
 import {unsignedMod} from '../util'
-import {ranked} from './holes'
+import {type Candidate, likely, ranked} from './holes'
 
 const actions = useActionsStore()
 
@@ -48,14 +48,18 @@ watch(
 
 const typesInUse = computed(() => actions.context?.types ?? null)
 
-const candidates = computed(() => {
+const candidates = computed((): (Candidate<ActionItem> & {recent?: boolean})[] => {
 	if (!open.value) return []
 
 	if (searchWord.value === '') {
 		const fitting = ranked(
-			Object.values(actions.allActions)
-				.map(action => ({action, filled: actions.filled(action)}))
-				.filter(({filled}) => filled.took !== null && filled.missing.length === 0),
+			likely(
+				Object.values(actions.allActions).map(action => ({
+					action,
+					filled: actions.filled(action),
+				})),
+				typesInUse.value
+			),
 			typesInUse.value
 		)
 		const shown = new Set(fitting.map(({action}) => action.id))
@@ -63,8 +67,8 @@ const candidates = computed(() => {
 			.filter(id => !shown.has(id))
 			.map(id => actions.allActions[id])
 			.filter(action => action !== undefined)
-			.map(action => ({action, filled: actions.filled(action)}))
-			.filter(({filled}) => filled.missing.length === 0)
+			.filter(actions.canRun)
+			.map(action => ({action, filled: actions.filled(action), recent: true}))
 		return [...fitting, ...recent]
 	}
 
@@ -84,23 +88,11 @@ const candidates = computed(() => {
 const filteredActions = computed(() => candidates.value.map(({action}) => action))
 
 /** How many of those listed, with nothing searched for, are there for what is selected. */
-const fittingCount = computed(() =>
-	searchWord.value === ''
-		? candidates.value.filter(({filled}) => filled.took !== null).length
-		: 0
-)
-
-const missingOf = computed(
-	() =>
-		new Map(
-			candidates.value.map(({action, filled}) => [
-				action.id,
-				filled.missing
-					.map(({name, type}) => typesInUse.value?.name?.(type) ?? name)
-					.join(', '),
-			])
-		)
-)
+const fittingCount = computed(() => {
+	if (searchWord.value !== '') return 0
+	const firstRecent = candidates.value.findIndex(({recent}) => recent)
+	return firstRecent < 0 ? candidates.value.length : firstRecent
+})
 
 const selectedAction = ref<null | ActionItemOptions>(null)
 
@@ -135,19 +127,21 @@ function onKeydown(e: KeyboardEvent) {
 	}
 
 	if (e.key === 'Enter' && selectedAction.value) {
+		// It is this that was entered, and not a modal that this may open.
+		e.stopPropagation()
 		perform(selectedAction.value as ActionItemOptions)
 	}
 }
 
 function perform(action: ActionItemOptions) {
-	if (missingOf.value.get(action.id)) return
+	if (!actions.canRun(action as ActionItem)) return
 
 	performedActionsHistory.value = [
 		...new Set([action.id, ...performedActionsHistory.value]),
 	].slice(0, 10)
 
 	$popover.value?.hidePopover()
-	actions.run(action as ActionItem)
+	void actions.request(action as ActionItem)
 }
 </script>
 
@@ -181,18 +175,15 @@ function perform(action: ActionItemOptions) {
 					class="action"
 					:class="{
 						selected: action === selectedAction,
-						missing: missingOf.get(action.id),
+						unavailable: !actions.canRun(action),
 					}"
 					@pointermove="selectedAction = action"
 					@click="perform(action)"
 				>
 					<Icon class="action-icon" :icon="action.icon ?? ''" />
-					<span class="action-label">{{ action.label }}</span>
-					<span v-if="missingOf.get(action.id)" class="action-missing">
-						needs {{ missingOf.get(action.id) }}
-					</span>
+					<span class="action-label">{{ actions.labelOf(action) }}</span>
 					<BindIcon
-						v-else-if="action.bind?.icon"
+						v-if="action.bind?.icon"
 						:icon="action.bind.icon"
 						class="action-bind-icon"
 					/>
@@ -277,10 +268,7 @@ reset-viewport('.TqCommandPalette')
 	opacity .5
 	font-size 1.1em
 
-.action.missing .action-icon,
-.action.missing .action-label
-	opacity .5
-
-.action-missing
+.action.unavailable .action-icon,
+.action.unavailable .action-label
 	opacity .5
 </style>

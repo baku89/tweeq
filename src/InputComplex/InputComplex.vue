@@ -6,6 +6,7 @@ import {InputAngle} from '../InputAngle'
 import {InputCheckbox} from '../InputCheckbox'
 import {InputCode} from '../InputCode'
 import {InputColor} from '../InputColor'
+import {InputDropdown} from '../InputDropdown'
 import {InputNumber} from '../InputNumber'
 import {InputPosition} from '../InputPosition'
 import {InputString} from '../InputString'
@@ -34,6 +35,7 @@ function getComponentName(param: Scheme<T>[keyof T]) {
 	} else if (param.type === 'string') {
 		if (param.ui === 'code') return InputCode
 		if (param.ui === 'color') return InputColor
+		if (param.ui === 'dropdown') return InputDropdown
 		return InputString
 	} else if (param.type === 'boolean') {
 		if (param.ui === 'checkbox') return InputCheckbox

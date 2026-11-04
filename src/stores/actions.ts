@@ -14,11 +14,14 @@ import {
 import {
 	type ActionContext,
 	type ActionParam,
+	asking,
 	type Filled,
 	fill,
 } from '../CommandPalette/holes'
+import type {Scheme} from '../InputComplex'
 import type {MenuCommand, MenuItem} from '../Menu'
 import {keyboardTarget} from '../use/keyboardTarget'
+import {useModalStore} from './modal'
 
 interface ActionItemBase {
 	id: string
@@ -130,15 +133,16 @@ function bindDescriptorToEmitter(
 // whose id matches.
 function buildMenu(
 	items: Action[],
-	extras: Record<string, MenuCommand[]>
+	extras: Record<string, MenuCommand[]>,
+	command: (action: ActionItem) => MenuCommand
 ): MenuItem[] {
 	const sorted = [...items].sort(
 		(a, b) =>
 			(a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
 	)
 	return sorted.map(item => {
-		if (!('children' in item)) return item
-		const children = buildMenu(item.children, extras)
+		if (!('children' in item)) return command(item)
+		const children = buildMenu(item.children, extras, command)
 		const ex = extras[item.id]
 		if (ex?.length) children.push({separator: true}, ...ex)
 		return {...item, children}
@@ -162,7 +166,12 @@ export const useActionsStore = defineStore('actions', () => {
 	}
 
 	const menu = computed(() =>
-		buildMenu(menuRaw.value as Action[], menuExtras.value)
+		buildMenu(menuRaw.value as Action[], menuExtras.value, action =>
+			Object.assign({}, action, {
+				label: labelOf(action),
+				perform: () => void request(action),
+			})
+		)
 	)
 
 	function register(options: ActionOptions[]) {
@@ -262,7 +271,7 @@ export const useActionsStore = defineStore('actions', () => {
 			throw new Error(`Action ${id} is not registered`)
 		}
 
-		await run(action)
+		await request(action)
 	}
 
 	const context = shallowRef<ActionContext | null>(null)
@@ -278,12 +287,39 @@ export const useActionsStore = defineStore('actions', () => {
 
 	const filled = (action: ActionItem): Filled => fill(action.params, context.value)
 
+	const askingFor = (action: ActionItem) =>
+		asking(action.params, filled(action), context.value?.types ?? null)
+
+	/** Whether `action` can run now, by what is selected, or by asking for the rest. */
+	const canRun = (action: ActionItem): boolean =>
+		filled(action).missing.length === 0 || askingFor(action) !== null
+
+	/** What `action` is called, which says so if it will ask for something first. */
+	const labelOf = (action: ActionItem): string =>
+		filled(action).missing.length > 0 && askingFor(action) !== null
+			? `${action.label}...`
+			: action.label
+
 	/** Performs `action` with what is selected, unless that leaves it missing something. */
 	function run(action: ActionItem): unknown {
 		const {args, missing} = filled(action)
 		if (missing.length > 0) return
 		runBeforePerformHooks(action)
 		return action.perform(...args)
+	}
+
+	/** As `run`, but asks for what is missing, in a modal. */
+	async function request(action: ActionItem): Promise<unknown> {
+		const asked = askingFor(action)
+		if (asked === null) return run(action)
+		const entered = await useModalStore().prompt(
+			asked.initial,
+			asked.scheme as Scheme<Record<string, unknown>>,
+			{title: action.label, confirmLabel: 'OK', nullOnCancel: true}
+		)
+		if (entered === null) return
+		runBeforePerformHooks(action)
+		return action.perform(...asked.args(entered))
 	}
 
 	function runBeforePerformHooks(action: ActionItem) {
@@ -306,9 +342,12 @@ export const useActionsStore = defineStore('actions', () => {
 		register,
 		perform,
 		run,
+		request,
 		context,
 		provideContext,
 		filled,
+		canRun,
+		labelOf,
 		onBeforePerform,
 		allActions,
 		menu,

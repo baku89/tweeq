@@ -1,5 +1,6 @@
 export type {
 	ActionContext,
+	ActionInput,
 	ActionParam,
 	ActionTypes,
 } from './CommandPalette/holes'

@@ -1,6 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
-import {type ActionContext, type ActionTypes, fill, ranked} from './holes'
+import {
+	type ActionContext,
+	type ActionTypes,
+	asking,
+	fill,
+	likely,
+	ranked,
+} from './holes'
 
 /** Types as prefixes: 'shape/path' is narrower than 'shape', which is narrower than ''. */
 const types: ActionTypes = {
@@ -67,6 +74,104 @@ describe('fill', () => {
 	it('cannot fill anything with no context', () => {
 		const param = {name: 'x', type: ''}
 		expect(fill([param], null).missing).toEqual([param])
+	})
+})
+
+describe('asking', () => {
+	const answerable: ActionTypes = {
+		...types,
+		input: ({type}) =>
+			type === 'none'
+				? null
+				: {
+						field: {type: 'string'},
+						initial: 'first',
+						value: entered => `${type as string}:${entered as string}`,
+					},
+	}
+	const inContext: ActionContext = {types: answerable, subject: () => ['shape']}
+
+	it('has nothing to ask of what is not missing anything', () => {
+		const params = [{name: 'x', type: 'shape'}]
+		expect(asking(params, fill(params, inContext), answerable)).toBeNull()
+	})
+
+	it('asks only for what is missing, and keeps what was filled', () => {
+		const params = [
+			{name: 'x', type: 'shape'},
+			{name: 'y', type: 'text'},
+		]
+		const asked = asking(params, fill(params, inContext), answerable)!
+		expect(asked.initial).toEqual({y: 'first'})
+		expect(asked.scheme).toEqual({y: {type: 'string'}})
+		expect(asked.args({y: 'hi'})).toEqual(['shape', 'text:hi'])
+	})
+
+	it('gives a parameter that takes many an array', () => {
+		const params = [{name: 'xs', type: 'text', many: true}]
+		const asked = asking(params, fill(params, inContext), answerable)!
+		expect(asked.args({xs: 'hi'})).toEqual([['text:hi']])
+	})
+
+	it('cannot ask at all if one of them cannot be asked for', () => {
+		const params = [
+			{name: 'x', type: 'text'},
+			{name: 'y', type: 'none'},
+		]
+		expect(asking(params, fill(params, inContext), answerable)).toBeNull()
+	})
+
+	it('cannot ask without a way to', () => {
+		const params = [{name: 'x', type: 'text'}]
+		expect(asking(params, fill(params, inContext), types)).toBeNull()
+	})
+})
+
+describe('likely', () => {
+	const taking = (action: string, type: string) => ({
+		action,
+		filled: fill([{name: 'x', type}], selecting('shape/path')),
+	})
+	const offered = (candidates: ReturnType<typeof taking>[], atMost = 3) =>
+		likely(candidates, types, atMost).map(({action}) => action)
+
+	it('leaves out what takes anything, once there are too many of those', () => {
+		expect(
+			offered([
+				taking('any1', ''),
+				taking('any2', ''),
+				taking('any3', ''),
+				taking('shape', 'shape'),
+				taking('path', 'shape/path'),
+			])
+		).toEqual(['path', 'shape'])
+	})
+
+	it('offers all there is, if it is few', () => {
+		expect(offered([taking('any', ''), taking('path', 'shape/path')])).toEqual([
+			'path',
+			'any',
+		])
+	})
+
+	it('offers nothing if too many take the same', () => {
+		expect(
+			offered([
+				taking('a', ''),
+				taking('b', ''),
+				taking('c', ''),
+				taking('d', ''),
+			])
+		).toEqual([])
+	})
+
+	it('offers nothing that takes nothing, or cannot run', () => {
+		expect(
+			offered([
+				{action: 'save', filled: fill([], selecting('shape/path'))},
+				taking('group', 'shape/group'),
+			])
+		).toEqual([])
 	})
 })
 
