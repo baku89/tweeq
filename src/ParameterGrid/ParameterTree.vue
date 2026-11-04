@@ -159,7 +159,8 @@ function startDrag(id: string, label: string, pointerId: number, y: number) {
 	lifted = {from, to: subtreeEnd(rows, from), y}
 	liftedDepth = rows[from]?.depth ?? 0
 	const start = elements[from]?.querySelector('.row')?.getBoundingClientRect().left
-	baseLeft = (start ?? origin.left) - origin.left - liftedDepth * indent
+	// A row starts at the same place at any level, and is indented inside.
+	baseLeft = (start ?? origin.left) - origin.left
 	for (const element of liftedElements()) element.classList.add('lifted')
 	dragging.value = {id, label}
 	root.setPointerCapture(pointerId)
