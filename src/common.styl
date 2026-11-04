@@ -66,12 +66,12 @@ use-input-font()
 // What says that a field has things to choose from, at its right.
 $input-chevron-width = calc(.7 * var(--tq-input-height))
 // How far from the right what is beside it keeps.
-$input-chevron-inset = calc(2px + .7 * var(--tq-input-height))
+$input-chevron-inset = calc(.6 * var(--tq-input-height))
 
 input-chevron()
 	position absolute
 	top 0
-	right 2px
+	right 0
 	z-index 10
 	width $input-chevron-width
 	height 100%
