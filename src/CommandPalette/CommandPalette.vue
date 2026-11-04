@@ -49,7 +49,7 @@ watch(
 const typesInUse = computed(() => actions.context?.types ?? null)
 
 /** How many suggestions can be listed before anything has been searched for. */
-const AT_MOST_SUGGESTED = 8
+const AT_MOST_SUGGESTED = 10
 
 type Listed = Candidate<ActionItem> & {heading: string | null}
 
