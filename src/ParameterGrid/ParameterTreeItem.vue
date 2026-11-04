@@ -32,7 +32,8 @@ const open = defineModel<boolean>('open', {default: false})
 const renaming = defineModel<boolean>('renaming', {default: false})
 
 const emit = defineEmits<{
-	select: []
+	/** By a press, or by opening its menu, which is `contextmenu`. */
+	select: [event: MouseEvent]
 	/** The label itself was pressed, rather than the rest of the row. */
 	nameClick: []
 	/** A new name was confirmed. Nothing changes as it is typed. */
@@ -119,7 +120,7 @@ const menuPosition = ref<[number, number] | null>(null)
 
 function onContextMenu(event: MouseEvent) {
 	event.preventDefault()
-	emit('select')
+	emit('select', event)
 	if (props.menuItems?.length) {
 		menuPosition.value = [event.clientX, event.clientY]
 	}
@@ -157,7 +158,7 @@ function onContextMenu(event: MouseEvent) {
 				:style="{'--depth': depth}"
 				:data-tq-array-handle="sortHandle ? '' : undefined"
 :data-tq-tree-handle="dragId"
-				@click="emit('select')"
+				@click="emit('select', $event)"
 				@dblclick="onDoubleClick"
 				@contextmenu="onContextMenu"
 			>
