@@ -3,7 +3,7 @@ import {computed, nextTick, ref, toRef, useTemplateRef, watch} from 'vue'
 
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import {useValidator} from '../use/useValidator'
 import * as V from '../validator'
 import {type InputStringProps} from './types'

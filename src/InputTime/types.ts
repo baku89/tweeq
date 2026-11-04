@@ -1,4 +1,4 @@
-import {InputBoxProps} from '../types'
+import {type InputBoxProps} from '../types'
 
 export type TimeFormat = 'frames' | 'timecode'
 

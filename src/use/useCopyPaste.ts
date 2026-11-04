@@ -15,13 +15,13 @@ export function useCopyPaste({
 	const {focused} = useFocus(target)
 
 	if (onCopy) {
-		whenever(Meta_C, () => {
+		whenever(Meta_C!, () => {
 			if (focused.value) onCopy()
 		})
 	}
 
 	if (onPaste) {
-		whenever(Meta_V, () => {
+		whenever(Meta_V!, () => {
 			if (focused.value) onPaste()
 		})
 	}

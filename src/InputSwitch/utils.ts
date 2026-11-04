@@ -1,7 +1,7 @@
 import {useEventListener, useFocus} from '@vueuse/core'
-import {computed, Ref, toRef, watch} from 'vue'
+import {computed, type Ref, toRef, watch} from 'vue'
 
-import {InputCheckboxProps} from '../InputCheckbox/types'
+import {type InputCheckboxProps} from '../InputCheckbox/types'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {useDrag} from '../use/useDrag'
 export function useInputSwitch({

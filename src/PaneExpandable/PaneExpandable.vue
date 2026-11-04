@@ -36,7 +36,8 @@ const open = computed<boolean>({
 		if (internalOpen.value === value) return
 		internalOpen.value = value
 		emit('update:open', value)
-		emit(value ? 'expand' : 'collapse')
+		if (value) emit('expand')
+		else emit('collapse')
 	},
 })
 

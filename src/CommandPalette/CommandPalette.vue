@@ -107,7 +107,7 @@ const selectedAction = ref<null | ActionItemOptions>(null)
 
 watch(filteredActions, () => {
 	if (filteredActions.value.length > 0) {
-		selectedAction.value = filteredActions.value[0]
+		selectedAction.value = filteredActions.value[0]!
 	} else {
 		selectedAction.value = null
 	}
@@ -132,7 +132,7 @@ function onKeydown(e: KeyboardEvent) {
 		const move = e.key === 'ArrowDown' ? 1 : -1
 
 		const newIndex = unsignedMod(index + move, length)
-		selectedAction.value = filteredActions.value[newIndex]
+		selectedAction.value = filteredActions.value[newIndex]!
 	}
 
 	if (e.key === 'Enter' && selectedAction.value) {

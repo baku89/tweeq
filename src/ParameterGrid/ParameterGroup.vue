@@ -4,7 +4,7 @@ import {computed, inject, ref, watch} from 'vue'
 import {Icon} from '../Icon'
 import {useAppConfigStore} from '../stores/appConfig'
 import ParameterHeading from './ParameterHeading.vue'
-import {ParameterGroupCollapsibleKey, ParameterGroupProps} from './types'
+import {ParameterGroupCollapsibleKey, type ParameterGroupProps} from './types'
 
 const props = withDefaults(defineProps<ParameterGroupProps>(), {
 	// Not `false` (Vue's cast for an absent Boolean prop): absent means "ask

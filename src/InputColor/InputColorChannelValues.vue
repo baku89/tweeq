@@ -6,7 +6,7 @@ import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
 import {InputString} from '../InputString'
 import * as V from '../validator'
-import {type ColorChannel, type ColorSpace, HSVA} from './types'
+import {type ColorChannel, type ColorSpace, type HSVA} from './types'
 import {hsv2rgb, setHSVAChannel} from './utils'
 
 interface Props {

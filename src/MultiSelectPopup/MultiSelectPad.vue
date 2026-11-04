@@ -23,8 +23,8 @@ let origin: vec2 = vec2.zero
 
 const {x, y, '1': d1, '2': d2} = useMagicKeys()
 
-const constrainsX = computed(() => x.value || d1.value)
-const constrainsY = computed(() => y.value || d2.value)
+const constrainsX = computed(() => x!.value || d1!.value)
+const constrainsY = computed(() => y!.value || d2!.value)
 
 watch(
 	[constrainsX, constrainsY],

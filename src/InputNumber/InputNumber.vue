@@ -7,7 +7,7 @@ import {
 } from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
 import {
-	Component,
+	type Component,
 	computed,
 	nextTick,
 	ref,
@@ -21,7 +21,7 @@ import {
 
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {useValidator} from '../use/useValidator'
 import {
@@ -87,7 +87,7 @@ const validMax = computed(() =>
 
 const {alt: lessSpeedKey, shift: moreSpeedKey, q: snapKey} = useMagicKeys()
 const speedMultiplierKey = computed(() => {
-	return (lessSpeedKey.value ? 0.1 : 1) * (moreSpeedKey.value ? props.snap : 1)
+	return (lessSpeedKey!.value ? 0.1 : 1) * (moreSpeedKey!.value ? props.snap : 1)
 })
 const speedMultiplierGesture = ref(1)
 const speed = computed(() => {
@@ -296,7 +296,7 @@ const {dragging: tweaking} = useDrag($input, {
 			maxSpeed.value
 		)
 
-		snapEnabled.value = snapKey.value
+		snapEnabled.value = snapKey!.value
 	},
 	onDragEnd() {
 		confirm()
@@ -316,7 +316,7 @@ const {dragging: tweaking} = useDrag($input, {
 
 const snapEnabled = ref(false)
 
-whenever(snapKey, () => {
+whenever(snapKey!, () => {
 	snapEnabled.value = tweaking.value
 })
 

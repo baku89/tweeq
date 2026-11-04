@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {Icon} from '../Icon'
-import {IconIndicatorProps} from './types'
+import {type IconIndicatorProps} from './types'
 
 defineProps<IconIndicatorProps>()
 

@@ -7,7 +7,7 @@ import {
 } from '@vueuse/core'
 import {vec2} from 'linearly'
 import {
-	Component,
+	type Component,
 	computed,
 	reactive,
 	type Ref,

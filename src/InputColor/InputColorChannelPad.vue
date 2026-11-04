@@ -6,7 +6,7 @@ import {GlslCanvas} from '../GlslCanvas'
 import {useDrag} from '../use/useDrag'
 import {toPercent} from '../util'
 import FragmentString from './pad.frag'
-import {type ColorChannel, colorChannelToIndex, HSVA} from './types'
+import {type ColorChannel, colorChannelToIndex, type HSVA} from './types'
 import {
 	getHSVAChannel,
 	hsva2hex,

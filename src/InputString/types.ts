@@ -5,7 +5,7 @@ import {
 	type InputTheme,
 } from '../types'
 import type {MenuItem} from '../Menu'
-import {Validator} from '../validator'
+import {type Validator} from '../validator'
 export interface InputStringProps extends InputBoxProps {
 	theme?: InputTheme
 	font?: InputFont

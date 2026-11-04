@@ -2,8 +2,8 @@
 import {uniqueId} from 'lodash-es'
 import {ref, useTemplateRef} from 'vue'
 
-import {InputEmits} from '../types'
-import {InputSwitchProps} from './types'
+import {type InputEmits} from '../types'
+import {type InputSwitchProps} from './types'
 import {useInputSwitch} from './utils'
 
 const model = defineModel<boolean>({required: true})

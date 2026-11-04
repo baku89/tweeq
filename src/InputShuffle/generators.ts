@@ -35,7 +35,7 @@ export function fromEnum<T>(options: readonly T[]) {
 	return (prev: T): T =>
 		options.length === 0
 			? prev
-			: distinct(prev, () => options[random(0, options.length - 1)])
+			: distinct(prev, () => options[random(0, options.length - 1)]!)
 }
 
 const DEFAULT_CHARSET =

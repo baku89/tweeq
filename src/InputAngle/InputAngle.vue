@@ -6,7 +6,7 @@ import {InputNumber} from '../InputNumber'
 import {InputRotary} from '../InputRotary'
 import type {InputRotaryProps} from '../InputRotary/types'
 import {useThemeStore} from '../stores/theme'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 
 const model = defineModel<number>({required: true})
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {Icon} from '../Icon'
-import {InputButtonToggleProps} from './types'
+import {type InputButtonToggleProps} from './types'
 
 const model = defineModel<boolean>({required: true})
 

@@ -156,8 +156,9 @@ const selectMaxHeight = computed(() => {
 })
 
 watch(filteredOptions, filteredOptions => {
-	if (!filteredOptions.includes(model.value)) {
-		model.value = filteredOptions[0]
+	const [first] = filteredOptions
+	if (first !== undefined && !filteredOptions.includes(model.value)) {
+		model.value = first
 	}
 	if (!open.value) return
 	nextTick(() => {
@@ -326,6 +327,7 @@ function onPressArrow(isUp: boolean) {
 	const index = filteredOptions.value.indexOf(model.value)
 	const newIndex = unsignedMod(index + (isUp ? -1 : 1), length)
 	const option = filteredOptions.value[newIndex]
+	if (option === undefined) return
 	model.value = option
 	nextTick(scrollActiveIntoView)
 }
@@ -478,7 +480,7 @@ onBeforeUnmount(() => {
 							<Icon
 								v-if="icons && icons[options.indexOf(item)]"
 								class="option-icon"
-								:icon="icons[options.indexOf(item)]"
+								:icon="icons[options.indexOf(item)]!"
 							/>
 							{{ labelizer(item) }}
 						</slot>

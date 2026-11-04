@@ -85,7 +85,7 @@ const {
 })
 
 const {shift, q, a: absoluteModeKey, r: relativeModeKey} = useMagicKeys()
-const doSnapKey = computed(() => shift.value || q.value)
+const doSnapKey = computed(() => shift!.value || q!.value)
 
 const doSnap = computed(() => {
 	const radius = vec2.dist(center.value, xy.value)
@@ -98,8 +98,8 @@ const doSnap = computed(() => {
 const tweakModeByPointer = ref<'absolute' | 'relative'>('relative')
 
 const tweakModeByKey = useLastActive({
-	absolute: absoluteModeKey,
-	relative: relativeModeKey,
+	absolute: absoluteModeKey!,
+	relative: relativeModeKey!,
 })
 
 const tweakMode = computed(

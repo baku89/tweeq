@@ -3,7 +3,7 @@ import {unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
 import {computed, onMounted, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
-import {MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
+import {type MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
 import {vTooltip} from '../Tooltip'
 import {addAnchorName} from '../util'
 import MultiSelectButton from './MultiSelectButton.vue'
@@ -65,7 +65,7 @@ const actions: MultiSelectAction[] = [
 		type: 'slider',
 		enabled: types => types.every(t => t === 'number'),
 		updator: (px: number) => (values: number[]) =>
-			values.map((v, i) => v + px * (multiSelect.selectedInputs[i].speed ?? 1)),
+			values.map((v, i) => v + px * (multiSelect.selectedInputs[i]!.speed ?? 1)),
 		icon: 'material-symbols:add',
 		label: 'Offset',
 	},
@@ -84,8 +84,8 @@ const actions: MultiSelectAction[] = [
 			vec2.add(
 				values as unknown as vec2,
 				vec2.mul(delta, [
-					multiSelect.selectedInputs[0].speed ?? 1,
-					-(multiSelect.selectedInputs[1].speed ?? 1),
+					multiSelect.selectedInputs[0]!.speed ?? 1,
+					-(multiSelect.selectedInputs[1]!.speed ?? 1),
 				])
 			) as unknown as number[],
 		icon: 'mdi:dots-grid',

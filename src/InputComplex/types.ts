@@ -1,15 +1,15 @@
 import {vec2} from 'linearly'
 
-import {InputCheckboxProps} from '../InputCheckbox/types'
+import {type InputCheckboxProps} from '../InputCheckbox/types'
 import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
 import {type InputNumberProps} from '../InputNumber'
 import {type InputPositionProps} from '../InputPosition'
 import {type InputRotaryProps} from '../InputRotary'
 import {type InputStringProps} from '../InputString'
-import {InputSwitchProps} from '../InputSwitch/types'
-import {InputTimeProps} from '../InputTime'
-import {InputVecProps} from '../InputVec'
+import {type InputSwitchProps} from '../InputSwitch/types'
+import {type InputTimeProps} from '../InputTime'
+import {type InputVecProps} from '../InputVec'
 
 type ParameterBase = {label?: string; icon?: string}
 

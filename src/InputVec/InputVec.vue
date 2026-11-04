@@ -3,8 +3,8 @@ import {nextTick} from 'vue'
 
 import {InputGroup} from '../InputGroup'
 import {InputNumber} from '../InputNumber'
-import {InputEmits} from '../types'
-import {InputVecProps} from './types'
+import {type InputEmits} from '../types'
+import {type InputVecProps} from './types'
 
 const model = defineModel<T>({required: true})
 
@@ -13,15 +13,15 @@ const props = defineProps<InputVecProps<T>>()
 const emit = defineEmits<InputEmits>()
 
 function minAt(i: number): number | undefined {
-	return Array.isArray(props.min) ? props.min[i] : props.min
+	return (Array.isArray(props.min) ? props.min[i] : props.min) as number | undefined
 }
 
 function maxAt(i: number): number | undefined {
-	return Array.isArray(props.max) ? props.max[i] : props.max
+	return (Array.isArray(props.max) ? props.max[i] : props.max) as number | undefined
 }
 
 function stepAt(i: number): number | undefined {
-	return Array.isArray(props.step) ? props.step[i] : props.step
+	return (Array.isArray(props.step) ? props.step[i] : props.step) as number | undefined
 }
 
 function leftIconAt(i: number) {

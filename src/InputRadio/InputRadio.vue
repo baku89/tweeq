@@ -42,7 +42,7 @@ const activeIndex = computed(() =>
 )
 
 function onChange(index: number) {
-	const newValue = completeOptions.value[index].value
+	const newValue = completeOptions.value[index]!.value
 	model.value = newValue
 }
 
@@ -194,7 +194,7 @@ function optionIndexAt(clientX: number, clientY: number): number {
 	if (!ul) return activeIndex.value
 	const labels = ul.querySelectorAll<HTMLElement>(':scope > .list > label')
 	for (let i = 0; i < labels.length; i++) {
-		const rect = labels[i].getBoundingClientRect()
+		const rect = labels[i]!.getBoundingClientRect()
 		const past = vertical.value ? clientY < rect.bottom : clientX < rect.right
 		if (past) return i
 	}

@@ -17,7 +17,7 @@ import {useMultiSelectStore} from '../stores/multiSelect'
 import {useThemeStore} from '../stores/theme'
 import {Tooltip} from '../Tooltip'
 import {TweakOverlay} from '../TweakOverlay'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import {useCopyPaste} from '../use/useCopyPaste'
 import {useDrag} from '../use/useDrag'
 import {useModifierKeys} from '../use/useModifierKeys'
@@ -65,18 +65,18 @@ const {shift, meta, control, alt} = useModifierKeys()
 const ctrlOrCommand = computed(() => meta.value || control.value)
 
 const tweakMode = computed(() => {
-	if (shift.value || h.value || f.value) {
+	if (shift.value || h!.value || f!.value) {
 		return 'h'
 	}
 
-	if (s.value) return 's'
-	if (v.value) return 'v'
+	if (s!.value) return 's'
+	if (v!.value) return 'v'
 
-	if (r.value) return 'r'
-	if (g.value) return 'g'
-	if (b.value) return 'b'
+	if (r!.value) return 'r'
+	if (g!.value) return 'g'
+	if (b!.value) return 'b'
 
-	if (props.alpha && (alt.value || a.value)) {
+	if (props.alpha && (alt.value || a!.value)) {
 		return 'a'
 	}
 

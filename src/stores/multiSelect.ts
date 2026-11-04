@@ -8,7 +8,7 @@ import {
 import {vec2} from 'linearly'
 import {defineStore} from 'pinia'
 import {
-	Component,
+	type Component,
 	computed,
 	hasInjectionContext,
 	inject,
@@ -20,7 +20,7 @@ import {
 	watch,
 } from 'vue'
 
-import {HSVA} from '../InputColor/types'
+import {type HSVA} from '../InputColor/types'
 import {useModifierKeys} from '../use/useModifierKeys'
 import {nodeContains} from '../util'
 import {createMultiEdit} from './multiEdit'

@@ -2,12 +2,12 @@
 import {shallowRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import InputColorChannelPad from './InputColorChannelPad.vue'
 import InputColorChannelSlider from './InputColorChannelSlider.vue'
 import InputColorChannelValues from './InputColorChannelValues.vue'
 import InputColorPresets from './InputColorPresets.vue'
-import {DefaultColorPickers, HSVA, type InputColorProps} from './types'
+import {DefaultColorPickers, type HSVA, type InputColorProps} from './types'
 import {css2hsva, hsva2hex} from './utils'
 
 withDefaults(defineProps<InputColorProps>(), {

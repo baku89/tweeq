@@ -5,7 +5,7 @@ import {clamp} from 'lodash-es'
 import {computed, onMounted, useTemplateRef} from 'vue'
 
 import {useAppConfigStore} from '../stores/appConfig'
-import {PaneSplitProps} from './types'
+import {type PaneSplitProps} from './types'
 
 const props = withDefaults(defineProps<PaneSplitProps>(), {
 	size: 50,

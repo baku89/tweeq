@@ -33,7 +33,7 @@ function onClick(e: MouseEvent) {
 	const name = e.target
 		.closest<HTMLElement>('[data-tooltip-action]')
 		?.getAttribute('data-tooltip-action')
-	if (name && Object.hasOwn(actions, name)) actions[name]()
+	if (name && Object.hasOwn(actions, name)) actions[name]!()
 }
 
 // Sync back the native popover's own close (Esc / programmatic), so the shared

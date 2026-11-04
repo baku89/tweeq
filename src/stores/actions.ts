@@ -240,7 +240,7 @@ export const useActionsStore = defineStore('actions', () => {
 		function registerItem(option: ActionItemOptions, parent: Action[]) {
 			if (option.id in allActions) {
 				const existingAction = allActions[option.id]
-				existingAction.bind?.dispose()
+				existingAction!.bind?.dispose()
 			}
 
 			const label = option.label ? option.label : Case.title(option.id)

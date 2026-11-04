@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 
 import {useAppConfigStore} from '../stores/appConfig'
-import {TimeFormat} from './types'
+import {type TimeFormat} from './types'
 
 export const useInputTimeContext = defineStore('tq.inputTime', () => {
 	// Persisted app-wide so the choice survives reloads. Defaults to plain frame
@@ -85,7 +85,7 @@ export function parseTimecode(timecode: string, frameRate: number) {
 		for (let i = 0; i < digits.length; i++) {
 			const multiplier =
 				i === 0 ? 1 : i === 1 ? frameRate : frameRate * Math.pow(60, i - 1)
-			frames += digits[i] * multiplier
+			frames += digits[i]! * multiplier
 		}
 
 		return sign * frames

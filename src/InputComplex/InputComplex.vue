@@ -13,7 +13,7 @@ import {InputSwitch} from '../InputSwitch'
 import {InputTime} from '../InputTime'
 import {InputVec} from '../InputVec'
 import {Parameter, ParameterGrid, ParameterHeading} from '../ParameterGrid'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import type {InputComplexProps, Scheme} from './types'
 
 const model = defineModel<T>({required: true})

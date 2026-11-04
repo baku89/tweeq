@@ -106,7 +106,7 @@ const arrowOffset = ref(0)
 const shiftX = ref(0)
 const shiftY = ref(0)
 
-const shiftStyle = computed<Record<string, string>>(() =>
+const shiftStyle = computed((): Record<string, string> =>
 	shiftX.value || shiftY.value
 		? {transform: `translate(${shiftX.value}px, ${shiftY.value}px)`}
 		: {}

@@ -5,8 +5,8 @@ import {ref, useTemplateRef} from 'vue'
 import Icon from '../Icon/Icon.vue'
 import InputSwitchOverlay from '../InputSwitch/InputSwitchOverlay.vue'
 import {useInputSwitch} from '../InputSwitch/utils'
-import {InputEmits} from '../types'
-import {InputCheckboxProps} from './types'
+import {type InputEmits} from '../types'
+import {type InputCheckboxProps} from './types'
 
 const model = defineModel<boolean>({required: true})
 

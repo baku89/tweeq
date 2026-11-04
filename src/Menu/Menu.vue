@@ -53,7 +53,7 @@ const theme = useThemeStore()
 const hoverIndex = ref(-1)
 
 const $menuRoot = useTemplateRef<HTMLElement>('$menuRoot')
-const $lists = useTemplateRef('$lists')
+const $lists = useTemplateRef<HTMLLIElement[]>('$lists')
 const $childMenu = useTemplateRef<{getRoot: () => HTMLElement | null}>(
 	'$childMenu'
 )

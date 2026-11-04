@@ -17,10 +17,10 @@ import {type MenuItem} from '../Menu'
 import {useMultiSelectStore} from '../stores/multiSelect'
 import {Tooltip} from '../Tooltip'
 import {TweakOverlay} from '../TweakOverlay'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
-import {ValidateResult} from '../validator'
-import {InputTimeProps, TimeFormat} from './types'
+import {type ValidateResult} from '../validator'
+import {type InputTimeProps, type TimeFormat} from './types'
 import {
 	formatTimecode,
 	replaceTimecodeWithFrames,
@@ -46,7 +46,9 @@ const $input = useTemplateRef('$input')
 // The tweak overlay renders in the browser top layer (a full-viewport popover),
 // so it can't centre on the input with CSS percentages — that would centre it on
 // the viewport. Position it at the input's viewport-space centre instead.
-const inputBounds = useElementBounding($input)
+const inputBounds = useElementBounding(
+	computed(() => $input.value?.$el as HTMLElement | undefined)
+)
 const overlayStyle = computed(() => ({
 	left: `${inputBounds.x.value + inputBounds.width.value / 2}px`,
 	top: `${inputBounds.y.value + inputBounds.height.value / 2}px`,
@@ -67,15 +69,15 @@ const {
 
 const tweakScaleByHover = ref<number>(0)
 const tweakScaleOffset = computed(() => {
-	if (increaseTweakScale.value) return 1
-	if (decreaseTweakScale.value) return -1
+	if (increaseTweakScale!.value) return 1
+	if (decreaseTweakScale!.value) return -1
 	return 0
 })
 const tweakScale = computed(() => {
-	if (forceFrameTweak.value) return 0
-	if (forceSecondTweak.value) return 1
-	if (forceMinuteTweak.value) return 2
-	if (forceHourTweak.value) return 3
+	if (forceFrameTweak!.value) return 0
+	if (forceSecondTweak!.value) return 1
+	if (forceMinuteTweak!.value) return 2
+	if (forceHourTweak!.value) return 3
 
 	return scalar.clamp(tweakScaleByHover.value + tweakScaleOffset.value, 0, 3)
 })
@@ -94,7 +96,7 @@ const tweakSnapParams = computed<[step: number, offset: number]>(() => {
 	const scale = tweakScale.value
 	const fps = props.frameRate
 
-	if (!doSnap.value) return [1, 0]
+	if (!doSnap!.value) return [1, 0]
 
 	if (scale === 0) return [1, 0]
 	if (scale === 1) return [fps, model.value % fps]
@@ -112,13 +114,13 @@ const {dragging: tweaking} = useDrag($input, {
 		if (!target.classList.contains('digit')) {
 			$input.value!.select()
 		} else {
-			const digitsInOrder = digits.value!.toReversed()
+			const digitsInOrder = [...digits.value!].reverse()
 			const len = digitsInOrder.length
 			const i = len - tweakScale.value - 1
 			const str = digitsInOrder.slice(0, i).join(':')
 
 			const start = str.length === 0 ? 0 : str.length + 1
-			const width = digitsInOrder[i].length
+			const width = digitsInOrder[i]!.length
 
 			$input.value!.select(start, start + width)
 		}
@@ -146,7 +148,7 @@ const {dragging: tweaking} = useDrag($input, {
 })
 
 watch(
-	doSnap,
+	doSnap!,
 	(curt, prev) => {
 		if (!curt && prev) {
 			tweakLocal.value = model.value

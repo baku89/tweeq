@@ -1,14 +1,14 @@
 import {
 	computed,
-	MaybeRef,
+	type MaybeRef,
 	readonly,
-	Ref,
+	type Ref,
 	ref,
 	unref,
 	watchSyncEffect,
 } from 'vue'
 
-import {Validator} from '../validator'
+import {type Validator} from '../validator'
 
 export function useValidator<T>(
 	local: Readonly<Ref<T>>,

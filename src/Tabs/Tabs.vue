@@ -27,7 +27,7 @@ provide(AddTabKey, tab => {
 provide(UpdateTabKey, (id: string, data: Tab) => {
 	const tabIndex = state.tabs.findIndex(tab => tab.id === id)
 
-	data.isActive = state.tabs[tabIndex].isActive
+	data.isActive = state.tabs[tabIndex]!.isActive
 
 	state.tabs[tabIndex] = data
 })
@@ -91,7 +91,7 @@ function ensureActiveTab() {
 		(props.options?.defaultTabId &&
 			findTab(props.options.defaultTabId) &&
 			props.options.defaultTabId) ||
-		state.tabs[0].id
+		state.tabs[0]!.id
 
 	selectTab(next)
 }

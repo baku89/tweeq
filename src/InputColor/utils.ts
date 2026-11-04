@@ -2,7 +2,7 @@ import chroma from 'chroma-js'
 import {clamp} from 'lodash-es'
 
 import {unsignedMod} from '../util'
-import {ColorChannel, HSV, HSVA, RGB} from './types'
+import {type ColorChannel, type HSV, type HSVA, type RGB} from './types'
 
 export function tweakHSVAChannel(
 	color: HSVA,

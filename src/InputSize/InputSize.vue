@@ -4,7 +4,7 @@ import {ref} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputVec} from '../InputVec'
-import {InputEmits, InputProps} from '../types'
+import {type InputEmits, type InputProps} from '../types'
 
 const model = defineModel<vec2>({required: true})
 

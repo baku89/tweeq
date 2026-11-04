@@ -4,8 +4,8 @@ import {vec2} from 'linearly'
 import {InputGroup} from '../InputGroup'
 import {InputTranslate} from '../InputTranslate'
 import {InputVec} from '../InputVec'
-import {InputEmits} from '../types'
-import {InputPositionProps} from './types'
+import {type InputEmits} from '../types'
+import {type InputPositionProps} from './types'
 
 const model = defineModel<vec2>({required: true})
 

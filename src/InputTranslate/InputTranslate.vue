@@ -4,10 +4,10 @@ import {scalar, vec2} from 'linearly'
 import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
-import {InputPositionProps} from '../InputPosition'
+import {type InputPositionProps} from '../InputPosition'
 import {Tooltip} from '../Tooltip'
 import {TweakOverlay} from '../TweakOverlay'
-import {InputEmits} from '../types'
+import {type InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {precisionOf} from '../util'
 
@@ -29,14 +29,14 @@ const min = computed(() => decompose(props.min))
 const max = computed(() => decompose(props.max))
 
 const speed = computed(() => {
-	if (shift.value) return 5
-	if (alt.value) return 0.1
+	if (shift!.value) return 5
+	if (alt!.value) return 0.1
 	return 1
 })
 
 const gridScale = computed(() => {
-	if (shift.value) return 0.5
-	if (alt.value) return 4
+	if (shift!.value) return 0.5
+	if (alt!.value) return 4
 	return 2
 })
 
@@ -87,11 +87,11 @@ const {dragging: tweaking} = useDrag($button, {
 	onDrag({delta}) {
 		const modelDelta = vec2.scale(delta, speed.value) as vec2.Mutable
 
-		if (x.value) {
+		if (x!.value) {
 			modelDelta[1] = 0
 		}
 
-		if (y.value) {
+		if (y!.value) {
 			modelDelta[0] = 0
 		}
 

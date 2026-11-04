@@ -2,7 +2,7 @@
 export function moveItem<T>(items: readonly T[], from: number, to: number): T[] {
 	const moved = [...items]
 	const [item] = moved.splice(from, 1)
-	moved.splice(to, 0, item)
+	moved.splice(to, 0, item!)
 	return moved
 }
 
@@ -28,7 +28,7 @@ export function dropIndex(heights: readonly number[], from: number, gap: number,
 			bestDistance = distance
 			best = index
 		}
-		slot += heights[i] + gap
+		slot += heights[i]! + gap
 		index++
 	}
 	return Math.abs(slot - top) < bestDistance ? index : best
