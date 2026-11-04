@@ -1,7 +1,10 @@
+import type {NumberDisplay} from './display'
 import type {MenuItem} from '../Menu'
 import {type InputBoxProps} from '../types'
 
 export interface InputNumberProps extends InputBoxProps {
+	/** How it is shown, if not as what it is. `min`, `max` and `step` stay in terms of the value. */
+	display?: NumberDisplay
 	/** Extra right-click menu items, below "Reset to Default". */
 	menuItems?: MenuItem[]
 	min?: number
