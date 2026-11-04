@@ -302,6 +302,9 @@ export const useActionsStore = defineStore('actions', () => {
 	const labelOf = (action: ActionItem): string =>
 		asks(action) ? `${action.label}...` : action.label
 
+	/** The keys that run the action of this id, as anything that mentions them shows them. */
+	const shortcutOf = (id: string) => allActions[id]?.bind?.icon
+
 	/** Performs `action` with what is selected, unless that leaves it missing something. */
 	function run(action: ActionItem): unknown {
 		const {args, missing} = filled(action)
@@ -366,6 +369,7 @@ export const useActionsStore = defineStore('actions', () => {
 		filled,
 		canRun,
 		labelOf,
+		shortcutOf,
 		onBeforePerform,
 		allActions,
 		menu,
