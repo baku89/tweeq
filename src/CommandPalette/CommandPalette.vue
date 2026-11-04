@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useEventListener} from '@vueuse/core'
-import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
 import {computed, ref, shallowRef, useTemplateRef, watch} from 'vue'
 
@@ -12,8 +11,6 @@ import {
 	useActionsStore,
 } from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
-import {keyboardTarget} from '../use/keyboardTarget'
-import {useBndr} from '../use/useBndr'
 import {unsignedMod} from '../util'
 import {type Candidate, likely, ranked} from './holes'
 
@@ -129,18 +126,20 @@ watch(filteredActions, () => {
 	}
 })
 
-useBndr($popover, $popover => {
-	Bndr.keyboard(keyboardTarget())
-		.hotkey('command+p', {preventDefault: true, capture: true})
-		.on(() => $popover instanceof HTMLElement && $popover.togglePopover())
-})
+// Whatever has the focus, as what is being typed in would otherwise leave it to the browser to print.
+useEventListener(
+	window,
+	'keydown',
+	(e: KeyboardEvent) => {
+		if (e.key.toLowerCase() !== 'p' || !(e.metaKey || e.ctrlKey) || e.shiftKey || e.altKey) return
+		e.preventDefault()
+		e.stopPropagation()
+		$popover.value?.togglePopover()
+	},
+	{capture: true}
+)
 
 function onKeydown(e: KeyboardEvent) {
-	if (e.key === 'p' && e.metaKey) {
-		e.preventDefault()
-		$popover.value?.hidePopover()
-	}
-
 	if (selectedAction.value && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
 		const index = filteredActions.value.indexOf(selectedAction.value as any)
 		const length = filteredActions.value.length

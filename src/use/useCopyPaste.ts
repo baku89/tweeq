@@ -1,7 +1,7 @@
 import {useFocus, useMagicKeys, whenever} from '@vueuse/core'
 import {type ShallowRef} from 'vue'
 
-const {Meta_C, Meta_V} = useMagicKeys()
+const {Meta_C, Meta_V, alt} = useMagicKeys()
 
 export function useCopyPaste({
 	target,
@@ -16,7 +16,8 @@ export function useCopyPaste({
 
 	if (onCopy) {
 		whenever(Meta_C!, () => {
-			if (focused.value) onCopy()
+			// With Option it is something else, as copying a reference to it is.
+			if (focused.value && !alt!.value) onCopy()
 		})
 	}
 
