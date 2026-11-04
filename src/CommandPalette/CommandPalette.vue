@@ -48,8 +48,16 @@ watch(
 
 const typesInUse = computed(() => actions.context?.types ?? null)
 
-const candidates = computed((): (Candidate<ActionItem> & {recent?: boolean})[] => {
+/** How many suggestions can be listed before anything has been searched for. */
+const AT_MOST_SUGGESTED = 8
+
+type Listed = Candidate<ActionItem> & {heading: string | null}
+
+const candidates = computed((): Listed[] => {
 	if (!open.value) return []
+
+	const suggested = actions.context?.suggestions?.() ?? null
+	const suggestions = (suggested?.items ?? []) as unknown as ActionItem[]
 
 	if (searchWord.value === '') {
 		const fitting = ranked(
@@ -68,12 +76,20 @@ const candidates = computed((): (Candidate<ActionItem> & {recent?: boolean})[] =
 			.map(id => actions.allActions[id])
 			.filter(action => action !== undefined)
 			.filter(actions.canRun)
-			.map(action => ({action, filled: actions.filled(action), recent: true}))
-		return [...fitting, ...recent]
+		const under = (heading: string, list: Candidate<ActionItem>[]): Listed[] =>
+			list.map((item, i) => ({...item, heading: i === 0 ? heading : null}))
+		const plain = (action: ActionItem) => ({action, filled: actions.filled(action)})
+		return [
+			...under('For Selection', fitting),
+			...(suggestions.length <= AT_MOST_SUGGESTED
+				? under(suggested?.heading ?? '', suggestions.map(plain))
+				: []),
+			...under('Recent Actions', recent.map(plain)),
+		]
 	}
 
 	return ranked(
-		search(searchWord.value, Object.values(actions.allActions), {
+		search(searchWord.value, [...Object.values(actions.allActions), ...suggestions], {
 			keySelector: action => action.label,
 			returnMatchData: true,
 		}).map(({item, score}) => ({
@@ -82,17 +98,10 @@ const candidates = computed((): (Candidate<ActionItem> & {recent?: boolean})[] =
 			score,
 		})),
 		typesInUse.value
-	)
+	).map(item => ({...item, heading: null}))
 })
 
 const filteredActions = computed(() => candidates.value.map(({action}) => action))
-
-/** How many of those listed, with nothing searched for, are there for what is selected. */
-const fittingCount = computed(() => {
-	if (searchWord.value !== '') return 0
-	const firstRecent = candidates.value.findIndex(({recent}) => recent)
-	return firstRecent < 0 ? candidates.value.length : firstRecent
-})
 
 const selectedAction = ref<null | ActionItemOptions>(null)
 
@@ -159,17 +168,8 @@ function perform(action: ActionItemOptions) {
 		</div>
 		<ul>
 			<template v-for="(action, index) in filteredActions" :key="action.id">
-				<li
-					v-if="searchWord === '' && index === 0 && fittingCount > 0"
-					class="recentActions"
-				>
-					For Selection
-				</li>
-				<li
-					v-if="searchWord === '' && index === fittingCount"
-					class="recentActions"
-				>
-					Recent Actions
+				<li v-if="candidates[index]?.heading" class="recentActions">
+					{{ candidates[index]?.heading }}
 				</li>
 				<li
 					class="action"

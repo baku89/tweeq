@@ -61,6 +61,23 @@ export interface ActionContext<Type = unknown, Value = unknown> {
 	readonly types: ActionTypes<Type, Value>
 	/** What is selected right now. */
 	subject(): readonly Value[]
+	/**
+	 * What there is to do to that, past the actions there always are. These are offered by the
+	 * palette under `heading`, if they are few enough to read, and can always be searched for.
+	 */
+	suggestions?(): {
+		readonly heading: string
+		readonly items: readonly SuggestedAction[]
+	} | null
+}
+
+export interface SuggestedAction {
+	readonly id: string
+	readonly label: string
+	readonly icon?: string
+	/** What it has yet to be given, which is asked for, as any other action's is. */
+	readonly params?: readonly ActionParam[]
+	perform(...args: any[]): unknown
 }
 
 export interface Filled {
@@ -235,6 +252,9 @@ export interface Candidate<Action> {
 /** How much a match on what is selected counts for, against what was searched for. */
 const FITS_SELECTION = 0.1
 
+/** How much having to be asked for something counts against it, against what was searched for. */
+const HAS_TO_ASK = 0.05
+
 /** How many can be offered before anything has been searched for, and still say something. */
 const AT_MOST_LIKELY = 5
 
@@ -297,7 +317,9 @@ export function ranked<Action>(
 	const stuck = ({filled}: Candidate<Action>): boolean =>
 		filled.missing.length > 0 && !canAsk(filled, types)
 	const weight = (candidate: Candidate<Action>): number =>
-		(candidate.score ?? 0) + (candidate.filled.took ? FITS_SELECTION : 0)
+		(candidate.score ?? 0) +
+		(candidate.filled.took ? FITS_SELECTION : 0) -
+		(candidate.filled.missing.length > 0 ? HAS_TO_ASK : 0)
 	return [...candidates].sort(
 		(a, b) =>
 			Number(stuck(a)) - Number(stuck(b)) ||

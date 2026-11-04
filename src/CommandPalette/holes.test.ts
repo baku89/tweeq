@@ -294,6 +294,15 @@ describe('ranked', () => {
 		])
 	})
 
+	it('has what has to ask come after what does not, if they match as well', () => {
+		const asks: ActionTypes = {...types, input: () => ({field: {}, initial: 0})}
+		const candidates = [
+			{action: 'asks', filled: fill(group, {types: asks, subject: () => []}), score: 0.9},
+			{action: 'ready', filled: fill([], selecting()), score: 0.9},
+		]
+		expect(ranked(candidates, asks).map(({action}) => action)).toEqual(['ready', 'asks'])
+	})
+
 	it('has taking what is selected count for less than a clear search', () => {
 		expect(order(candidate('path', path, 0.7), candidate('save', [], 1))).toEqual([
 			'save',

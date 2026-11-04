@@ -379,8 +379,9 @@ export const useActionsStore = defineStore('actions', () => {
 
 	watch(
 		() => (form.value === null ? null : context.value?.subject()),
-		subject => {
-			if (form.value === null || !subject) return
+		(subject, before) => {
+			// What was already selected when it opened had its chance, and did not fill it.
+			if (form.value === null || !subject || !before) return
 			form.value = tookSelection(form.value, subject, context.value?.types ?? null)
 		}
 	)
