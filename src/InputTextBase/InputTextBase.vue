@@ -259,7 +259,7 @@ function onEnter(e: KeyboardEvent) {
 			v-if="hasPresets"
 			class="chevron"
 			:class="{open: openMenu === 'presets'}"
-			icon="mdi:unfold-more-horizontal"
+			icon="mdi:chevron-down"
 			@pointerdown.stop
 			@click="onPresetsClick"
 		/>
