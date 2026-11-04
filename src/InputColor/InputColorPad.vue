@@ -436,6 +436,7 @@ defineOptions({
 		:open="open && !temporarilyHidePopup"
 		:reference="$button"
 		placement="bottom-start"
+		:offset="4"
 		@update:open="open = $event"
 	>
 		<div ref="$floating" class="floating">

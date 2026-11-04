@@ -93,6 +93,8 @@ async function pickColor() {
 .TqInputColorPicker
 	padding 0
 	display grid
+	// As wide as the popup, whatever is inside of it asks for.
+	grid-template-columns minmax(0, 1fr)
 	gap var(--tq-gap-control)
 
 
