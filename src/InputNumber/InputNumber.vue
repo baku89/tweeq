@@ -11,8 +11,9 @@ import {type InputNumberProps} from './types'
  */
 const model = defineModel<number>({required: true})
 
-// As the field has them, as a boolean that is not given would otherwise come to it as false.
+// As the field has them, as what can be a boolean and is not given would otherwise be false.
 const props = withDefaults(defineProps<InputNumberProps>(), {
+	bar: 0,
 	clampMin: true,
 	clampMax: true,
 })
