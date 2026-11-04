@@ -177,9 +177,13 @@ useEventListener(window, 'pointermove', (event: PointerEvent) => {
 useEventListener(
 	window,
 	'pointerup',
-	() => {
+	(event: PointerEvent) => {
 		const at = dropOn.value
-		if (at !== null) fill(at, [dragged[at]])
+		if (at !== null) {
+			fill(at, [dragged[at]])
+			// It was only ever being brought here, as what it was dragged from can tell by this.
+			event.preventDefault()
+		}
 		dropOn.value = null
 		dragged = []
 	},
