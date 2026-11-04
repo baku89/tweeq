@@ -89,7 +89,8 @@ function shuffle() {
 
 	hover-transition(background, color)
 
-	&:focus
+	// Only for the keyboard: it stays focused once it has been clicked.
+	&:focus-visible
 		background var(--tq-color-accent-hover)
 
 	&:hover
