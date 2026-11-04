@@ -23,6 +23,13 @@ const icon = computed(() => {
 		}
 	}
 
+	if (props.icon.startsWith('stroke:')) {
+		return {
+			type: 'stroke',
+			value: props.icon.slice(7),
+		}
+	}
+
 	return {
 		type: 'iconify',
 		value: props.icon,
@@ -60,6 +67,24 @@ defineOptions({
 		v-bind="$attrs"
 	>
 		<path fill="currentColor" :d="icon.value" />
+	</svg>
+	<svg
+		v-else-if="icon.type === 'stroke'"
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		class="TqIcon fill"
+		v-bind="$attrs"
+	>
+		<path
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.5"
+			stroke-linejoin="round"
+			stroke-linecap="round"
+			:d="icon.value"
+		/>
 	</svg>
 </template>
 
