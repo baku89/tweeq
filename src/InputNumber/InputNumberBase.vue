@@ -628,6 +628,7 @@ const barStyle = computed<StyleValue>(() => {
 		:ignoreInput="!focused"
 		:modelValue="display"
 		:menuItems="menuItems"
+		:presets="presets"
 		:active="multi.subfocus"
 		:font="expressionEnabled ? 'monospace' : 'numeric'"
 		align="center"

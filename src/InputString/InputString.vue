@@ -185,6 +185,7 @@ function onReset() {
 		:active="multi.subfocus"
 		:modelValue="display"
 		:menuItems="menuItems"
+		:presets="presets"
 		:placeholder="placeholder"
 		:leftIcon="leftIcon"
 		:leftIconPressable="leftIconPressable"

@@ -251,6 +251,7 @@ Lets one of a few values be chosen, in a row if they fit (see `InputRadio`) and 
 </DemoComponent>
 
  - `Click`: edit the number
+ - `presets`: a chevron at the right lists these, as menu items
  - While focusing
 	- `↑` / `↓`: increase / decrease the number by 1
 	- `Shift + ↑` / `Shift + ↓`: increase / decrease the number by `snap`

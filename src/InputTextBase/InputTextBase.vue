@@ -34,6 +34,11 @@ export interface InputTextBaseProps extends InputBoxProps {
 	/** Extra right-click menu items appended below "Reset to Default". */
 	menuItems?: MenuItem[]
 	/**
+	 * What there is a reason to choose rather than to arrive at, listed from a chevron at the
+	 * right, which is in place of `rightIcon`. A value, or what depends on more than this field.
+	 */
+	presets?: MenuItem[]
+	/**
 	 * Grow with its lines. Enter still confirms, and Shift+Enter breaks the line.
 	 * With `inactiveContent`, it stays one line tall until it has focus.
 	 */
@@ -60,8 +65,8 @@ const emit = defineEmits<{
 // Right-click context menu, shared by every InputTextBase-based field. Opens at
 // the cursor via a coordinate-placed Popover.
 const $root = useTemplateRef('$root')
-const menuOpen = ref(false)
 const menuPosition = ref<[number, number]>([0, 0])
+const openMenu = ref<'context' | 'presets' | null>(null)
 
 const contextMenuItems = computed<MenuItem[]>(() => {
 	const items: MenuItem[] = []
@@ -83,7 +88,14 @@ function onContextMenu(e: MouseEvent) {
 	if (contextMenuItems.value.length === 0) return
 	e.preventDefault()
 	menuPosition.value = [e.clientX, e.clientY]
-	menuOpen.value = true
+	openMenu.value = 'context'
+}
+
+const hasPresets = computed(() => (props.presets?.length ?? 0) > 0)
+
+function onPresetsClick(e: MouseEvent) {
+	e.stopPropagation()
+	openMenu.value = openMenu.value === 'presets' ? null : 'presets'
 }
 
 const slots = defineSlots<{
@@ -244,7 +256,15 @@ function onEnter(e: KeyboardEvent) {
 			@click="onLeftIconClick"
 		/>
 		<Icon
-			v-if="rightIcon"
+			v-if="hasPresets"
+			class="icon right pressable presets"
+			:class="{open: openMenu === 'presets'}"
+			icon="mdi:chevron-down"
+			@pointerdown.stop
+			@click="onPresetsClick"
+		/>
+		<Icon
+			v-else-if="rightIcon"
 			class="icon right"
 			:class="{pressable: rightIconPressable}"
 			:icon="rightIcon"
@@ -256,14 +276,17 @@ function onEnter(e: KeyboardEvent) {
 		<!-- Teleported out of this box: its container-type / overflow would
 			otherwise become the containing block for the fixed popover and clip it. -->
 		<Popover
-			v-if="menuOpen"
+			v-if="openMenu"
 			:reference="$root"
-			:placement="menuPosition"
-			:open="menuOpen"
+			:placement="openMenu === 'presets' ? 'bottom-end' : menuPosition"
+			:open="true"
 			teleport=".TqViewport"
-			@update:open="menuOpen = $event"
+			@update:open="openMenu = $event ? openMenu : null"
 		>
-			<Menu :items="contextMenuItems" @close="menuOpen = false" />
+			<Menu
+				:items="openMenu === 'presets' ? (presets ?? []) : contextMenuItems"
+				@close="openMenu = null"
+			/>
 		</Popover>
 	</div>
 </template>

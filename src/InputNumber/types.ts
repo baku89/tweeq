@@ -7,6 +7,8 @@ export interface InputNumberProps extends InputBoxProps {
 	display?: NumberDisplay
 	/** Extra right-click menu items, below "Reset to Default". */
 	menuItems?: MenuItem[]
+	/** What there is a reason to choose rather than to arrive at, from a chevron at the right. */
+	presets?: MenuItem[]
 	min?: number
 	max?: number
 	step?: number
