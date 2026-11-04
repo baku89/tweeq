@@ -270,7 +270,10 @@ const tweakUIOffset = computed(() => {
 })
 
 const defaultButtonStyle = computed(() => {
-	const contrast = Color.contrastWCAG21(model.value, theme.backgroundColor)
+	// A string that is no color, as `none` is, has nothing to contrast.
+	const contrast = chroma.valid(model.value)
+		? Color.contrastWCAG21(model.value, theme.backgroundColor)
+		: 0
 
 	return {
 		color: model.value,
