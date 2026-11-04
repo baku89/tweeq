@@ -20,6 +20,11 @@ export interface InputNumberProps extends InputBoxProps {
 	rightIcon?: string
 	/** The right icon can be pressed, for `rightIconClick`. */
 	rightIconPressable?: boolean
+	/**
+	 * What to make of what is typed that is not a number, in place of evaluating it as
+	 * JavaScript: it is up to this what comes of it, and it says what is wrong, if anything.
+	 */
+	expression?: (text: string) => string | null
 	/** Value restored by the right-click "Reset to Default" menu item. */
 	default?: number
 }

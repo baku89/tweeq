@@ -376,6 +376,12 @@ function onInput(e: Event) {
 	const value = (e.target as HTMLInputElement).value
 	display.value = value
 
+	if (props.expression && value.trim() !== '' && !Number.isFinite(Number(value))) {
+		expressionEnabled.value = true
+		expressionError.value = props.expression(value) ?? undefined
+		return
+	}
+
 	if (!/^[0-9.]*$/.test(value)) {
 		enableExpression()
 	}
