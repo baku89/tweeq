@@ -374,14 +374,21 @@ function onContextMenu(event: MouseEvent) {
 	background: var(--tq-color-border);
 	pointer-events: none;
 }
-/* Closed at both ends, around just its children, like a `(`. */
+/*
+ * Closed at both ends, around just its children, like a `(`, and concentric outside
+ * the color of a selected child, which it would otherwise cut across.
+ */
 .children.closed::before {
+	--outside: calc(var(--tq-gap-related) / 2 + 2px);
+	--curve: calc(var(--tq-radius-input) + var(--outside));
 	box-sizing: border-box;
-	top: 0;
-	width: calc(var(--indent) / 2);
+	top: calc(var(--outside) * -1);
+	bottom: calc(var(--outside) * -1);
+	left: calc((var(--depth) + 1) * var(--indent) - var(--outside));
+	width: var(--curve);
 	border: 1px solid var(--tq-color-border);
 	border-right: none;
-	border-radius: calc(var(--tq-icon-size) / 2) 0 0 calc(var(--tq-icon-size) / 2);
+	border-radius: var(--curve) 0 0 var(--curve);
 	background: none;
 }
 .TqParameterTreeItem.wide {
