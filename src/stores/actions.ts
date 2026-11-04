@@ -1,4 +1,5 @@
 import * as Bndr from 'bndr-js'
+import type {IconSequence} from 'bndr-js'
 import Case from 'case'
 import {defineStore} from 'pinia'
 import {
@@ -43,6 +44,10 @@ interface ActionItemBase {
 	 * With some, `perform` gets one argument for each.
 	 */
 	params?: readonly ActionParam[]
+	/** What it is called and looks like given what it would be performed with, if that differs. */
+	describe?(...args: any[]): {label?: string; icon?: string} | null
+	/** The keys that do this, if something else handles them, for showing beside it. */
+	hint?: IconSequence
 	perform(...args: any[]): any
 }
 
@@ -299,11 +304,50 @@ export const useActionsStore = defineStore('actions', () => {
 		filled(action).missing.length === 0 || asks(action)
 
 	/** What `action` is called, which says so if it will ask for something first. */
-	const labelOf = (action: ActionItem): string =>
-		asks(action) ? `${action.label}...` : action.label
+	const labelOf = (action: ActionItem): string => {
+		if (asks(action)) return `${action.label}...`
+		const {args, missing} = filled(action)
+		return (missing.length === 0 && action.describe?.(...args)?.label) || action.label
+	}
 
 	/** The keys that run the action of this id, as anything that mentions them shows them. */
-	const shortcutOf = (id: string) => allActions[id]?.bind?.icon
+	const shortcutOf = (id: string) =>
+		allActions[id]?.bind?.icon ?? allActions[id]?.hint
+
+	/**
+	 * The actions that can take `subject`, as a menu, in the order of the app's menus and
+	 * with a separator between those. This is what a right click on something offers.
+	 */
+	function menuFor(subject: readonly unknown[]): MenuItem[] {
+		const types = context.value?.types
+		if (!types || subject.length === 0) return []
+		const given = {types, subject: () => subject}
+		const offered = (item: MenuItem): MenuCommand[] => {
+			if ('separator' in item) return []
+			if ('children' in item && item.children) return item.children.flatMap(offered)
+			const action = item as unknown as ActionItem
+			const {args, took, missing} = fill(action.params, given)
+			if (took === null || missing.length > 0) return []
+			const described = action.describe?.(...args)
+			return [
+				{
+					label: described?.label ?? action.label,
+					icon: described?.icon ?? action.icon ?? '',
+					bindIcon: action.bind?.icon ?? action.hint,
+					perform() {
+						runBeforePerformHooks(action)
+						action.perform(...args)
+					},
+				} as MenuCommand,
+			]
+		}
+		const groups = buildMenu(menuRaw.value as Action[], {}, action => action as unknown as MenuCommand)
+			.map(offered)
+			.filter(group => group.length > 0)
+		return groups.flatMap((group, i): MenuItem[] =>
+			i === 0 ? group : [{separator: true}, ...group]
+		)
+	}
 
 	/** Performs `action` with what is selected, unless that leaves it missing something. */
 	function run(action: ActionItem): unknown {
@@ -370,6 +414,7 @@ export const useActionsStore = defineStore('actions', () => {
 		canRun,
 		labelOf,
 		shortcutOf,
+		menuFor,
 		onBeforePerform,
 		allActions,
 		menu,

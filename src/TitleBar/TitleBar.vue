@@ -36,7 +36,10 @@ function convertToMenuItem(item: MenuItem): MenuItem {
 	if ('perform' in item) {
 		// Registered actions carry a Bndr `bind` whose icon is the shortcut hint
 		// (dynamic extras have none).
-		return {...item, bindIcon: (item as ActionItem).bind?.icon}
+		return {
+			...item,
+			bindIcon: (item as ActionItem).bind?.icon ?? (item as ActionItem).hint,
+		}
 	}
 	return {...item, children: item.children.map(convertToMenuItem)}
 }

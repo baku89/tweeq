@@ -183,8 +183,8 @@ function perform(action: ActionItemOptions) {
 					<Icon class="action-icon" :icon="action.icon ?? ''" />
 					<span class="action-label">{{ actions.labelOf(action) }}</span>
 					<BindIcon
-						v-if="action.bind?.icon"
-						:icon="action.bind.icon"
+						v-if="action.bind?.icon ?? action.hint"
+						:icon="(action.bind?.icon ?? action.hint)!"
 						class="action-bind-icon"
 					/>
 				</li>
