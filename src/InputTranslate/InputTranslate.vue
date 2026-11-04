@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {useMagicKeys, useRafFn} from '@vueuse/core'
 import {scalar, vec2} from 'linearly'
-import {computed, ref, useTemplateRef} from 'vue'
+import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {Icon} from '../Icon'
 import {InputPositionProps} from '../InputPosition'
 import {Tooltip} from '../Tooltip'
+import {TweakOverlay} from '../TweakOverlay'
 import {InputEmits} from '../types'
 import {useDrag} from '../use/useDrag'
 import {precisionOf} from '../util'
@@ -59,10 +60,28 @@ const overlayLabelValues = computed(() => {
 	return [xd, yd]
 })
 
+// In the top layer, so that no pane around the button clips it. There it no
+// longer has the button to go by, so it takes the button's place on the screen.
+const overlayBox = ref<Record<string, string>>({})
+const overlayCenter = ref<readonly [number, number]>([0, 0])
+
+// The grid fades out from halfway to its 150px, so what is solid stays in view.
+const OVERLAY_REACH = 75
+
 const {dragging: tweaking} = useDrag($button, {
 	lockPointer: true,
 	dragDelaySeconds: 0,
 	onDragStart() {
+		const rect = $button.value?.getBoundingClientRect()
+		if (rect) {
+			overlayCenter.value = [rect.left + rect.width / 2, rect.top + rect.height / 2]
+			overlayBox.value = {
+				left: `${rect.left}px`,
+				top: `${rect.top}px`,
+				width: `${rect.width}px`,
+				height: `${rect.height}px`,
+			}
+		}
 		emit('focus')
 	},
 	onDrag({delta}) {
@@ -86,6 +105,12 @@ const {dragging: tweaking} = useDrag($button, {
 		emit('confirm')
 		emit('blur')
 	},
+})
+
+// Stays in the top layer until the overlay has finished leaving.
+const overlayMounted = ref(false)
+watch(tweaking, on => {
+	if (on) overlayMounted.value = true
 })
 
 const overlayStyles = computed(() => {
@@ -138,21 +163,26 @@ function decompose(value?: number | vec2): vec2 | undefined {
 <template>
 	<button ref="$button" class="TqInputTranslate">
 		<Icon class="grid-icon" icon="mingcute:dot-grid-fill" />
-		<Transition>
-			<div v-if="tweaking" class="overlay">
-				<div class="overlay-grid" :style="overlayStyles">
-					<div v-if="x" class="axis x" />
-					<div v-if="y" class="axis y" />
-					<div class="zero" :style="zeroStyle" />
+		<TweakOverlay
+			v-if="overlayMounted"
+			:keepInView="{center: overlayCenter, reach: OVERLAY_REACH}"
+		>
+			<Transition appear @after-leave="overlayMounted = false">
+				<div v-if="tweaking" class="overlay" :style="overlayBox">
+					<div class="overlay-grid" :style="overlayStyles">
+						<div v-if="x" class="axis x" />
+						<div v-if="y" class="axis y" />
+						<div class="zero" :style="zeroStyle" />
+					</div>
+					<Tooltip v-if="showOverlayLabel" class="overlay-label">
+						<label>X</label>
+						{{ overlayLabelValues[0] }}
+						<label>Y</label>
+						{{ overlayLabelValues[1] }}
+					</Tooltip>
 				</div>
-				<Tooltip v-if="showOverlayLabel" class="overlay-label">
-					<label>X</label>
-					{{ overlayLabelValues[0] }}
-					<label>Y</label>
-					{{ overlayLabelValues[1] }}
-				</Tooltip>
-			</div>
-		</Transition>
+			</Transition>
+		</TweakOverlay>
 	</button>
 </template>
 
@@ -182,6 +212,7 @@ function decompose(value?: number | vec2): vec2 | undefined {
 	z-index 1
 
 .overlay
+	position fixed
 	pointer-events none
 	transition-duration var(--tq-hover-transition-duration)
 
