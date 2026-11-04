@@ -2,6 +2,7 @@
 import {useEventListener} from '@vueuse/core'
 import {computed, useTemplateRef} from 'vue'
 
+import {BindIcon} from '../BindIcon'
 import {Popover} from '../Popover'
 import {
 	enterTooltip,
@@ -75,7 +76,12 @@ function onUpdateOpen(open: boolean) {
 				v-html="tooltipState.content"
 			/>
 			<div v-else class="TqTooltipContent plain">
-				{{ tooltipState.content }}
+				<span>{{ tooltipState.content }}</span>
+				<BindIcon
+					v-if="tooltipState.shortcut"
+					class="shortcut"
+					:icon="tooltipState.shortcut"
+				/>
 			</div>
 		</div>
 	</Popover>
@@ -88,8 +94,15 @@ function onUpdateOpen(open: boolean) {
 
 // Plain string tooltips read as a caption.
 .plain
+	display flex
+	align-items center
+	gap 1em
 	max-width 24em
 	white-space pre-line
+
+// As a menu shows them.
+.shortcut
+	opacity .5
 
 // Rich (html) tooltips carry their own structured layout (e.g. a grid), so
 // keep them left-aligned and give them room.

@@ -1,3 +1,4 @@
+import type {IconSequence} from 'bndr-js'
 import {reactive, shallowRef} from 'vue'
 
 import type {Placement} from '../Popover/types'
@@ -58,6 +59,8 @@ export interface TooltipContent {
 	html: boolean
 	title: string
 	description: string
+	/** The keys that do the same, shown as a menu shows them. */
+	shortcut: IconSequence | null
 	actions: TooltipActions | null
 	placement: Placement
 }
@@ -71,6 +74,7 @@ export const tooltipState = reactive<TooltipState>({
 	html: false,
 	title: '',
 	description: '',
+	shortcut: null,
 	actions: null,
 	placement: 'top',
 	open: false,

@@ -1,3 +1,4 @@
+import type {IconSequence} from 'bndr-js'
 import type {Directive} from 'vue'
 
 import type {Placement} from '../Popover/types'
@@ -16,6 +17,8 @@ import {
 // `v-tooltip="{title, description}"` (bold title + muted description — use this
 // instead of an em-dash "Title — subtext" string).
 //
+// `shortcut` shows the keys that do the same, beside the text, as a menu does.
+//
 // `actions` (with `html` content) makes parts of the tooltip clickable: an
 // element with `data-tooltip-action="name"` runs `actions.name` on click, and
 // the tooltip stays open while the pointer is over it.
@@ -29,6 +32,7 @@ export type TooltipValue =
 			html?: boolean
 			title?: string
 			description?: string
+			shortcut?: IconSequence
 			actions?: TooltipActions
 			placement?: Placement
 	  }
@@ -42,6 +46,7 @@ function parse(value: TooltipValue): TooltipContent {
 			html: false,
 			title: '',
 			description: '',
+			shortcut: null,
 			actions: null,
 			placement: 'top',
 		}
@@ -52,6 +57,7 @@ function parse(value: TooltipValue): TooltipContent {
 		html: value?.html ?? false,
 		title: value?.title ?? '',
 		description: value?.description ?? '',
+		shortcut: value?.shortcut ?? null,
 		actions: actions && Object.keys(actions).length > 0 ? actions : null,
 		placement: value?.placement ?? 'top',
 	}
