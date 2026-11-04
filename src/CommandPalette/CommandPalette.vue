@@ -2,7 +2,7 @@
 import {useEventListener} from '@vueuse/core'
 import * as Bndr from 'bndr-js'
 import {search} from 'fast-fuzzy'
-import {computed, ref, useTemplateRef, watch} from 'vue'
+import {computed, ref, shallowRef, useTemplateRef, watch} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
@@ -103,7 +103,8 @@ const candidates = computed((): Listed[] => {
 
 const filteredActions = computed(() => candidates.value.map(({action}) => action))
 
-const selectedAction = ref<null | ActionItemOptions>(null)
+// Shallow, as it is told from the others by being the same object, and a suggestion is a plain one.
+const selectedAction = shallowRef<null | ActionItemOptions>(null)
 
 watch(filteredActions, () => {
 	if (filteredActions.value.length > 0) {
