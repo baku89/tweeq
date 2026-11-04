@@ -69,7 +69,7 @@ const {
 			local.value += diff
 		}
 
-		multi.capture()
+		multi.begin()
 	},
 	onDrag({xy, previous}) {
 		const p = vec2.sub(xy, center.value)
@@ -80,7 +80,7 @@ const {
 	},
 	onDragEnd() {
 		emit('confirm')
-		multi.confirm()
+		multi.commit()
 	},
 })
 
@@ -133,11 +133,11 @@ watch(
 
 		if (tweaking.value) {
 			if (tweakMode.value === 'absolute') {
-				multi.update(() => result.value)
+				multi.apply(() => result.value)
 			} else {
 				const delta = result.value - initialValueOnTweak.value
 
-				multi.update(x => {
+				multi.apply(x => {
 					const newX = x + delta
 					return doSnap.value ? scalar.quantize(newX, props.snap) : newX
 				})
@@ -288,8 +288,8 @@ useCopyPaste({
 
 		model.value = value
 
-		multi.update(() => value)
-		multi.confirm()
+		multi.apply(() => value)
+		multi.commit()
 	},
 })
 </script>

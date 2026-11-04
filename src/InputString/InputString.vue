@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {computed, nextTick, ref, useTemplateRef, watch} from 'vue'
+import {computed, nextTick, ref, toRef, useTemplateRef, watch} from 'vue'
 
 import {InputTextBase} from '../InputTextBase'
 import {useMultiSelectStore} from '../stores/multiSelect'
@@ -64,7 +64,7 @@ watch(
 )
 
 function onFocus() {
-	multi.capture()
+	multi.begin()
 	emit('focus')
 }
 
@@ -98,25 +98,28 @@ function onInput(e: Event) {
 				}
 				throw new Error('Value is not a string or number')
 			}`)
-			local.value = fn(localAtFocus, {i: multi.index})
+			multi.batch(() => {
+				local.value = fn(localAtFocus, {i: multi.index})
+				multi.apply(fn)
+			})
 			expressionError.value = undefined
-			multi.update(fn)
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error('[InputString] Error evaluating expression', e)
 			expressionError.value = (e as Error).message
-			multi.update(x => x)
+			multi.apply(x => x)
 		}
 	} else {
-		local.value = newValue
-		multi.update(() => newValue)
+		multi.batch(() => {
+			local.value = newValue
+			multi.apply(() => newValue)
+		})
 	}
 }
 
 function confirm() {
 	emit('confirm')
-	multi.capture()
-	multi.confirm()
+	multi.commit()
 
 	expressionEnabled.value = false
 	expressionError.value = undefined
@@ -158,6 +161,7 @@ const multi = useMultiSelectStore().register({
 	type: 'string',
 	el: $input,
 	focusing: focused,
+	data: toRef(() => props.multiSelectData),
 	getValue: () => local.value,
 	setValue(value) {
 		local.value = value

@@ -124,7 +124,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	},
 	onDragStart() {
 		local.value = localOnTweak = decompose(model.value)
-		multi.capture()
+		multi.begin()
 		emit('update:tweaking', true)
 	},
 	onDrag({delta}) {
@@ -139,7 +139,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 			const {s: is, v: iv} = localOnTweak!
 			const {s: cs, v: cv} = local.value
 
-			multi.update(hsva => {
+			multi.apply(hsva => {
 				if (cs !== is) {
 					hsva = setHSVAChannel(hsva, 's', s =>
 						cs < is
@@ -164,10 +164,10 @@ const {origin, dragging: tweaking} = useDrag($button, {
 
 			if (mode === 'h' || initial === 0) {
 				const delta = current - initial
-				multi.update(hsva => tweakHSVAChannel(hsva, 'h', delta))
+				multi.apply(hsva => tweakHSVAChannel(hsva, 'h', delta))
 			} else {
 				const scale = current / initial
-				multi.update(hsva => {
+				multi.apply(hsva => {
 					const v = getHSVAChannel(hsva, mode)
 					return setHSVAChannel(hsva, mode, v * scale)
 				})
@@ -178,7 +178,7 @@ const {origin, dragging: tweaking} = useDrag($button, {
 	},
 	onDragEnd() {
 		emit('confirm')
-		multi.confirm()
+		multi.commit()
 		emit('update:tweaking', false)
 	},
 })
@@ -201,7 +201,7 @@ useEventListener(
 
 			const delta =
 				getHSVAChannel(local.value, 'h') - getHSVAChannel(localOnTweak!, 'h')
-			multi.update(hsva => tweakHSVAChannel(hsva, 'h', delta))
+			multi.apply(hsva => tweakHSVAChannel(hsva, 'h', delta))
 		}
 		wheelTweaking.value = true
 		clearTimeout(wheelTweakingTimeout)
@@ -216,7 +216,7 @@ watch(tweakMode, () => {
 	if (!tweaking.value) return
 
 	localOnTweak = local.value
-	multi.capture()
+	multi.begin()
 })
 
 // Update local value when model value changes externally
@@ -402,8 +402,8 @@ useCopyPaste({
 
 		const hsva = decompose(text)
 
-		multi.update(() => hsva)
-		multi.confirm()
+		multi.apply(() => hsva)
+		multi.commit()
 	},
 })
 

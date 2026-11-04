@@ -11,6 +11,7 @@ import {
 	computed,
 	nextTick,
 	ref,
+	toRef,
 	type StyleValue,
 	unref,
 	useTemplateRef,
@@ -215,24 +216,26 @@ const {dragging: tweaking} = useDrag($input, {
 		if (barVisible.value && insideRange.value && !grabbed) {
 			// Absolute Mode — jump to the pressed position. Only reachable while
 			// unfocused; focused presses on the bar go to the text input instead.
-			local.value = roundToShown(
-				scalar.fit(
-					state.xy[0],
-					left.value,
-					right.value,
-					props.min,
-					props.max
+			multi.batch(() => {
+				local.value = roundToShown(
+					scalar.fit(
+						state.xy[0],
+						left.value,
+						right.value,
+						props.min,
+						props.max
+					)
 				)
-			)
 
-			multi.update(() => local.value)
+				multi.apply(() => local.value)
+			})
 		}
 
 		deltaAccumulated = 0
 		speedMultiplierGesture.value = 1
 
 		if (!dragStartedFocused) emit('focus')
-		multi.capture()
+		multi.begin()
 	},
 	onDrag(state) {
 		const [dx, dy] = state.delta
@@ -275,10 +278,12 @@ const {dragging: tweaking} = useDrag($input, {
 		// drags still add up.
 		const shown = roundToShown(newLocal)
 		dragRemainder = newLocal - shown
-		local.value = shown
-
 		deltaAccumulated += delta
-		multi.update(v => v + deltaAccumulated)
+
+		multi.batch(() => {
+			local.value = shown
+			multi.apply(v => v + deltaAccumulated)
+		})
 
 		// Adjustment sensitivity by y-axis
 		speedMultiplierGesture.value = scalar.clamp(
@@ -334,8 +339,7 @@ const invalid = computed(() => {
 
 function confirm() {
 	emit('confirm')
-	multi.confirm()
-	multi.capture()
+	multi.commit()
 
 	expressionEnabled.value = false
 	expressionError.value = undefined
@@ -352,7 +356,7 @@ function confirm() {
 let localAtFocus = 0
 
 function onFocus() {
-	multi.capture()
+	multi.begin()
 	emit('focus')
 }
 
@@ -384,9 +388,11 @@ function onInput(e: Event) {
 			}
 			throw new Error('Value is not a number')
 		}`)
-		local.value = fn(localAtFocus, {i: multi.index})
+		multi.batch(() => {
+			local.value = fn(localAtFocus, {i: multi.index})
+			multi.apply(fn)
+		})
 		expressionError.value = undefined
-		multi.update(fn)
 	} catch (e) {
 		expressionError.value = (e as Error).message
 	}
@@ -479,6 +485,7 @@ const multi = useMultiSelectStore().register({
 	type: 'number',
 	el: $input,
 	focusing: computed(() => focused.value || tweaking.value),
+	data: toRef(() => props.multiSelectData),
 	speed: computed(() => {
 		if (!barVisible.value) return 1
 		return (props.max - props.min) / width.value

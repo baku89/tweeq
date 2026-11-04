@@ -12,7 +12,10 @@ export function useInputSwitch({
 }: {
 	track: Ref<HTMLElement | null>
 	input: Ref<HTMLInputElement | null>
-	props: Pick<InputCheckboxProps, 'modelValue' | 'disabled'>
+	props: Pick<
+		InputCheckboxProps,
+		'modelValue' | 'disabled' | 'multiSelectData'
+	>
 	emit: any
 }) {
 	const tweakThreshold = 3
@@ -25,11 +28,14 @@ export function useInputSwitch({
 		dragDelaySeconds: 0.2,
 		onClick() {
 			if (!multi.readyToBeSelected) {
-				emit('update:modelValue', !props.modelValue)
-				multi.update(value => !value)
+				multi.batch(() => {
+					emit('update:modelValue', !props.modelValue)
+					multi.apply(value => !value)
+				})
 			}
 
 			emit('confirm')
+			multi.commit()
 			input.value?.focus()
 		},
 		onDragStart() {
@@ -38,6 +44,7 @@ export function useInputSwitch({
 		},
 		onDragEnd() {
 			emit('confirm')
+			multi.commit()
 			input.value?.focus()
 		},
 	})
@@ -56,8 +63,10 @@ export function useInputSwitch({
 
 	watch(tweakingValue, value => {
 		if (value === null) return
-		multi.update(() => value)
-		emit('update:modelValue', value)
+		multi.batch(() => {
+			multi.apply(() => value)
+			emit('update:modelValue', value)
+		})
 	})
 
 	useEventListener(input, 'keydown', (e: KeyboardEvent) => {
@@ -102,6 +111,7 @@ export function useInputSwitch({
 		type: 'boolean',
 		el: track,
 		focusing: focused,
+		data: toRef(() => props.multiSelectData),
 		getValue: () => props.modelValue,
 		setValue(value) {
 			emit('update:modelValue', value)

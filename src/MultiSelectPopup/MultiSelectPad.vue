@@ -29,8 +29,8 @@ const constrainsY = computed(() => y.value || d2.value)
 watch(
 	[constrainsX, constrainsY],
 	([x, y]) => {
-		if (x || y) {
-			multiSelect.captureValues()
+		if ((x || y) && dragging.value) {
+			multiSelect.edit.begin()
 			origin = xy.value
 		}
 	},
@@ -40,14 +40,14 @@ watch(
 const {xy, dragging} = useDrag($root, {
 	lockPointer: true,
 	onDragStart({xy}) {
-		multiSelect.captureValues()
+		multiSelect.edit.begin()
 		origin = xy
 	},
 	onDrag({xy}) {
 		let delta = vec2.sub(xy, origin)
 		if (props.type === 'slider') {
 			const f = props.updator(delta[0] as any)
-			multiSelect.updateValues(f)
+			multiSelect.edit.update(f)
 		} else {
 			if (constrainsX.value) {
 				delta = vec2.mul(delta, [1, 0])
@@ -56,11 +56,11 @@ const {xy, dragging} = useDrag($root, {
 			}
 
 			const f = props.updator(delta as any)
-			multiSelect.updateValues(f)
+			multiSelect.edit.update(f)
 		}
 	},
 	onDragEnd() {
-		multiSelect.confirmValues()
+		multiSelect.edit.commit()
 	},
 })
 </script>

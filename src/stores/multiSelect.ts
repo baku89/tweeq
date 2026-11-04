@@ -10,6 +10,10 @@ import {defineStore} from 'pinia'
 import {
 	Component,
 	computed,
+	hasInjectionContext,
+	inject,
+	type InjectionKey,
+	markRaw,
 	onBeforeUnmount,
 	reactive,
 	type Ref,
@@ -19,6 +23,7 @@ import {
 import {HSVA} from '../InputColor/types'
 import {useModifierKeys} from '../use/useModifierKeys'
 import {nodeContains} from '../util'
+import {createMultiEdit} from './multiEdit'
 
 export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
 
@@ -29,6 +34,8 @@ export interface MultiSelectSource {
 	el: Ref<HTMLElement | Component | null>
 	focusing: Readonly<Ref<boolean>>
 	speed?: Readonly<Ref<number>>
+	/** What the input stands for, to whoever provides its host. */
+	data?: Readonly<Ref<unknown>>
 	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
 	confirm: () => void
@@ -36,8 +43,33 @@ export interface MultiSelectSource {
 
 interface MultiSelectInput extends MultiSelectSource {
 	id: symbol
-	capturedValue?: MultiSelectValue
+	host: MultiSelectHost | null
 }
+
+/** Something that can be done to what is selected, shown in the popup as an icon. */
+export interface MultiSelectCommand {
+	label: string
+	icon: string
+	/** Do it, and say why not if it cannot be done. */
+	perform?: () => string | void
+	children?: {label: string; perform: () => string | void}[]
+}
+
+/**
+ * What the app around a group of inputs knows about them, which is provided to them
+ * with `MULTI_SELECT_HOST`.
+ */
+export interface MultiSelectHost {
+	/** Have all that `write` writes count as one change. */
+	batch?: (write: () => void) => void
+	/** What can be done to the selection, when all of it belongs to this host. */
+	commands?: (
+		selected: readonly {type: MultiSelectType; data: unknown}[]
+	) => MultiSelectCommand[]
+}
+
+export const MULTI_SELECT_HOST: InjectionKey<MultiSelectHost> =
+	Symbol('tq-multi-select-host')
 
 export const useMultiSelectStore = defineStore('multiSelect', () => {
 	const {meta, shift, control} = useModifierKeys()
@@ -78,6 +110,51 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		selectedIds.clear()
 	}
 
+	// Pressing one of those selected may be to drag them all, or to go on with that one
+	// alone, and that is only known once it has been let go of: a press that has hardly
+	// moved is a click. Moves are counted up, as a locked pointer stays where it is.
+	const CLICK_TRAVEL = 3
+
+	let press: {travel: number; narrowTo: symbol | null} | null = null
+
+	function narrowTo(id: symbol) {
+		if (!inputs.has(id)) return
+		defocusAll()
+		selectId(id)
+	}
+
+	const pressOptions = {capture: true, passive: true}
+
+	useEventListener(
+		'pointerdown',
+		e => {
+			if (e.button === 0) press = {travel: 0, narrowTo: null}
+		},
+		pressOptions
+	)
+	useEventListener(
+		'pointermove',
+		e => {
+			if (press) press.travel += Math.abs(e.movementX) + Math.abs(e.movementY)
+		},
+		pressOptions
+	)
+	useEventListener(
+		'pointerup',
+		() => {
+			if (press?.narrowTo && press.travel <= CLICK_TRAVEL) narrowTo(press.narrowTo)
+			press = null
+		},
+		pressOptions
+	)
+	useEventListener(
+		'pointercancel',
+		() => {
+			press = null
+		},
+		pressOptions
+	)
+
 	// Defocus all when clicking outside of inputs except for popup
 	useEventListener('pointerdown', e => {
 		// Ignore non-primary pointer
@@ -99,8 +176,11 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		}
 	})
 
-	// Defocus all when pressing Escape
-	onKeyStroke('Escape', defocusAll)
+	// Defocus all when pressing Escape, unless that is for a menu or the like to close.
+	onKeyStroke('Escape', () => {
+		if (document.querySelector('[popover="auto"]:popover-open')) return
+		defocusAll()
+	})
 	onKeyStroke('Tab', defocusAll)
 
 	const multiSelected = computed(() => {
@@ -133,11 +213,37 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		inbetweenIds.forEach(({id}) => selectId(id))
 	}
 
+	// Through every host among the selected, of which there is usually the one.
+	function batch(write: () => void) {
+		const hosts = new Set(selectedInputs.value.map(input => input.host))
+		;[...hosts]
+			.reduce<() => void>(
+				(inner, host) => (host?.batch ? () => host.batch!(inner) : inner),
+				write
+			)()
+	}
+
+	const edit = createMultiEdit(() => selectedInputs.value, batch)
+
+	const commands = computed<MultiSelectCommand[]>(() => {
+		const selected = selectedInputs.value
+		if (selected.length <= 1) return []
+		const host = selected[0]?.host
+		if (!host?.commands || selected.some(input => input.host !== host)) return []
+		return host.commands(selected.map(({type, data}) => ({type, data})))
+	})
+
 	// Entry point for multi select for each input component
 	function register(source: MultiSelectSource) {
 		const id = Symbol()
 
-		const store = reactive({id, ...source})
+		const host = hasInjectionContext() ? inject(MULTI_SELECT_HOST, null) : null
+
+		const store = reactive({
+			id,
+			...source,
+			host: host && markRaw(host),
+		})
 
 		const subfocus = computed(
 			() => selectedIds.has(id) && !source.focusing.value
@@ -169,13 +275,17 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 						selectInbetween(lastRect, newRect)
 					}
 
-					if (!subfocus.value && !ctrlOrCommand.value && !shift.value) {
-						defocusAll()
+					const modified = ctrlOrCommand.value || shift.value
+
+					if (!modified && selectedIds.has(id) && selectedIds.size > 1) {
+						if (press) press.narrowTo = id
+						else narrowTo(id)
+						return
 					}
 
-					if (!subfocus.value) {
-						selectId(id)
-					}
+					if (!modified) defocusAll()
+
+					selectId(id)
 				}
 			},
 			{flush: 'sync'}
@@ -188,70 +298,45 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			selectedIds.delete(id)
 		})
 
-		function update(updator: (value: any, context: {i: number}) => any) {
-			selectedInputs.value.forEach((input, i) => {
-				if (input.id === id || input.type !== source.type) return
+		// What the input carries along: the others selected of its type. It writes its
+		// own value itself, with whatever it does to it, such as rounding.
+		const others = () =>
+			selectedInputs.value.filter(
+				input => input.id !== id && input.type === source.type
+			)
 
-				const context = {i}
+		const othersEdit = createMultiEdit(others, batch)
 
-				const newValue = updator(
-					input.capturedValue ?? input.getValue(),
-					context
+		function apply(updator: (value: any, context: {i: number}) => any) {
+			othersEdit.update(values => {
+				const targets = others()
+				return values.map((value, k) =>
+					updator(value, {
+						i: selectedInputs.value.findIndex(
+							input => input.id === targets[k]?.id
+						),
+					})
 				)
-
-				input.setValue(newValue)
-			})
-		}
-
-		function confirm() {
-			selectedInputs.value.forEach(input => {
-				if (input.id === id) return
-				input.confirm()
 			})
 		}
 
 		return reactiveComputed(() => ({
 			subfocus,
 			index: selectedInputs.value.findIndex(input => input.id === id),
-			capture: captureValues,
 			readyToBeSelected,
-			update,
-			confirm,
+			begin: othersEdit.begin,
+			apply,
+			commit: othersEdit.commit,
+			batch,
 			multiSelected,
 		}))
-	}
-
-	function captureValues() {
-		selectedInputs.value.forEach(input => {
-			input.capturedValue = input.getValue()
-		})
-	}
-
-	function updateValues(updator: (values: any[]) => MultiSelectValue[]) {
-		const values = selectedInputs.value.map(
-			input => input.capturedValue ?? input.getValue()
-		)
-
-		const updatedValues = updator(values)
-
-		selectedInputs.value.forEach((input, i) => {
-			input.setValue(updatedValues[i])
-		})
-	}
-
-	function confirmValues() {
-		selectedInputs.value.forEach(input => {
-			input.confirm()
-			input.capturedValue = undefined
-		})
 	}
 
 	return {
 		register,
 		focusedElement,
-		captureValues,
-		updateValues,
-		confirmValues,
+		edit,
+		commands,
 		selectedInputs,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el

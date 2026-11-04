@@ -14,6 +14,8 @@ export type InputPosition = 'start' | 'middle' | 'end'
 export interface InputProps {
 	invalid?: boolean
 	disabled?: boolean
+	/** What this stands for, to the host of a selection it is part of. */
+	multiSelectData?: unknown
 }
 
 export interface InputEmits {

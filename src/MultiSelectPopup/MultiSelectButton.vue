@@ -10,8 +10,8 @@ const props = defineProps<{
 const multiSelect = useMultiSelectStore()
 
 function edit() {
-	multiSelect.updateValues(props.updator)
-	multiSelect.confirmValues()
+	multiSelect.edit.update(props.updator)
+	multiSelect.edit.commit()
 }
 </script>
 
