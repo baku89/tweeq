@@ -30,6 +30,11 @@ const icon = computed(() => {
 		}
 	}
 
+	if (props.icon.startsWith('paint:')) {
+		const [fill = 'none', stroke = 'none', d = ''] = props.icon.slice(6).split('|')
+		return {type: 'paint', value: d, fill, stroke}
+	}
+
 	return {
 		type: 'iconify',
 		value: props.icon,
@@ -83,6 +88,28 @@ defineOptions({
 			stroke-width="1.5"
 			stroke-linejoin="round"
 			stroke-linecap="round"
+			:d="icon.value"
+		/>
+	</svg>
+	<!-- Its colors are what it says, so nothing around it may fade them. -->
+	<svg
+		v-else-if="icon.type === 'paint'"
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		class="TqIcon fill"
+		v-bind="$attrs"
+		style="opacity: 1"
+	>
+		<path :fill="icon.fill" :d="icon.value" />
+		<path
+			fill="none"
+			stroke-linejoin="round"
+			stroke-linecap="round"
+			:stroke="icon.stroke === 'none' ? 'currentColor' : icon.stroke"
+			:stroke-width="icon.stroke === 'none' ? 1 : 2"
+			:stroke-opacity="icon.stroke === 'none' ? 0.35 : 1"
 			:d="icon.value"
 		/>
 	</svg>
