@@ -51,6 +51,9 @@ export interface Theme {
 	/** The color of the shadow, such as the shadow of the dropdown */
 	colorShadow: string
 
+	/** The shadow of what floats over the rest, in a box-shadow or a drop-shadow() */
+	shadowPopup: string
+
 	// Input
 
 	/** Background of the input box */

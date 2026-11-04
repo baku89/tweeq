@@ -393,7 +393,7 @@ function onPointerCancel(e: PointerEvent) {
 
 	&.dragging
 		background var(--tq-color-surface)
-		box-shadow 0 2px 12px var(--tq-color-shadow)
+		box-shadow var(--tq-shadow-popup)
 
 		.handle
 			cursor grabbing

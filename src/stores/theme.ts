@@ -94,8 +94,10 @@ export const useThemeStore = defineStore('theme', () => {
 			colorBorder: radixColors.grayScaleAlpha[3],
 			colorBorderSubtle: radixColors.grayScaleAlpha[2],
 			colorShadow: dark
-				? '#000000aa'
-				: `color-mix(in srgb, transparent, ${radixColors.grayScale[11]} 20%)`,
+				? '#00000080'
+				: `color-mix(in srgb, transparent, ${radixColors.grayScale[11]} 12%)`,
+			// No spread, so that it also goes in a drop-shadow().
+			shadowPopup: `0 2px 8px var(--tq-color-shadow)`,
 
 			// Input
 			colorInput: radixColors.grayScale[2],

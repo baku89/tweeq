@@ -183,7 +183,7 @@ const transformOrigin = computed(() => {
 	// blanks the blur (it samples the empty wrapper instead of the page behind
 	// the balloon). On .fill itself the shadow still follows the clipped outline
 	// (filters apply after clip-path) while backdrop-filter keeps working.
-	filter drop-shadow(0 2px 12px var(--tq-color-shadow))
+	filter drop-shadow(var(--tq-shadow-popup))
 
 .stroke
 	position absolute
@@ -221,9 +221,9 @@ const transformOrigin = computed(() => {
 
 @keyframes tq-balloon-flash-fill
 	0%, 100%
-		filter drop-shadow(0 2px 12px var(--tq-color-shadow))
+		filter drop-shadow(var(--tq-shadow-popup))
 	50%
-		filter drop-shadow(0 2px 12px var(--tq-color-shadow)) drop-shadow(0 0 9px var(--tq-color-accent))
+		filter drop-shadow(var(--tq-shadow-popup)) drop-shadow(0 0 9px var(--tq-color-accent))
 
 @keyframes tq-balloon-flash-stroke
 	0%, 100%
