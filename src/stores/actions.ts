@@ -8,8 +8,15 @@ import {
 	onUnmounted,
 	reactive,
 	ref,
+	shallowRef,
 } from 'vue'
 
+import {
+	type ActionContext,
+	type ActionParam,
+	type Filled,
+	fill,
+} from '../CommandPalette/holes'
 import type {MenuCommand, MenuItem} from '../Menu'
 import {keyboardTarget} from '../use/keyboardTarget'
 
@@ -24,7 +31,12 @@ interface ActionItemBase {
 	 * after the explicitly-ordered ones.
 	 */
 	order?: number
-	perform(): any
+	/**
+	 * What it needs, which what is selected can provide. Without any, it can always run.
+	 * With some, `perform` gets one argument for each.
+	 */
+	params?: readonly ActionParam[]
+	perform(...args: any[]): any
 }
 
 export interface ActionItem extends ActionItemBase {
@@ -221,8 +233,7 @@ export const useActionsStore = defineStore('actions', () => {
 			const action: ActionItem = markRaw({...option, label, bind})
 
 			bind?.on(() => {
-				runBeforePerformHooks(action)
-				option.perform()
+				run(action)
 			})
 
 			allActions[option.id] = action
@@ -251,8 +262,28 @@ export const useActionsStore = defineStore('actions', () => {
 			throw new Error(`Action ${id} is not registered`)
 		}
 
+		await run(action)
+	}
+
+	const context = shallowRef<ActionContext | null>(null)
+
+	/** Says what actions are offered in, for as long as the component calling this is there. */
+	function provideContext<Type, Value>(provided: ActionContext<Type, Value>) {
+		const held = provided as unknown as ActionContext
+		context.value = held
+		onBeforeUnmount(() => {
+			if (context.value === held) context.value = null
+		})
+	}
+
+	const filled = (action: ActionItem): Filled => fill(action.params, context.value)
+
+	/** Performs `action` with what is selected, unless that leaves it missing something. */
+	function run(action: ActionItem): unknown {
+		const {args, missing} = filled(action)
+		if (missing.length > 0) return
 		runBeforePerformHooks(action)
-		await action.perform()
+		return action.perform(...args)
 	}
 
 	function runBeforePerformHooks(action: ActionItem) {
@@ -274,6 +305,10 @@ export const useActionsStore = defineStore('actions', () => {
 	return {
 		register,
 		perform,
+		run,
+		context,
+		provideContext,
+		filled,
 		onBeforePerform,
 		allActions,
 		menu,

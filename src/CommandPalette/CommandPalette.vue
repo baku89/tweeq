@@ -6,11 +6,16 @@ import {computed, ref, useTemplateRef, watch} from 'vue'
 
 import {BindIcon} from '../BindIcon'
 import {Icon} from '../Icon'
-import {type ActionItemOptions, useActionsStore} from '../stores/actions'
+import {
+	type ActionItem,
+	type ActionItemOptions,
+	useActionsStore,
+} from '../stores/actions'
 import {useAppConfigStore} from '../stores/appConfig'
 import {keyboardTarget} from '../use/keyboardTarget'
 import {useBndr} from '../use/useBndr'
 import {unsignedMod} from '../util'
+import {ranked} from './holes'
 
 const actions = useActionsStore()
 
@@ -41,17 +46,61 @@ watch(
 	{immediate: true}
 )
 
-const filteredActions = computed(() => {
-	if (searchWord.value === '' && open.value) {
-		return performedActionsHistory.value
+const typesInUse = computed(() => actions.context?.types ?? null)
+
+const candidates = computed(() => {
+	if (!open.value) return []
+
+	if (searchWord.value === '') {
+		const fitting = ranked(
+			Object.values(actions.allActions)
+				.map(action => ({action, filled: actions.filled(action)}))
+				.filter(({filled}) => filled.took !== null && filled.missing.length === 0),
+			typesInUse.value
+		)
+		const shown = new Set(fitting.map(({action}) => action.id))
+		const recent = performedActionsHistory.value
+			.filter(id => !shown.has(id))
 			.map(id => actions.allActions[id])
 			.filter(action => action !== undefined)
+			.map(action => ({action, filled: actions.filled(action)}))
+			.filter(({filled}) => filled.missing.length === 0)
+		return [...fitting, ...recent]
 	}
 
-	return search(searchWord.value, Object.values(actions.allActions), {
-		keySelector: action => action.label,
-	})
+	return ranked(
+		search(searchWord.value, Object.values(actions.allActions), {
+			keySelector: action => action.label,
+			returnMatchData: true,
+		}).map(({item, score}) => ({
+			action: item,
+			filled: actions.filled(item),
+			score,
+		})),
+		typesInUse.value
+	)
 })
+
+const filteredActions = computed(() => candidates.value.map(({action}) => action))
+
+/** How many of those listed, with nothing searched for, are there for what is selected. */
+const fittingCount = computed(() =>
+	searchWord.value === ''
+		? candidates.value.filter(({filled}) => filled.took !== null).length
+		: 0
+)
+
+const missingOf = computed(
+	() =>
+		new Map(
+			candidates.value.map(({action, filled}) => [
+				action.id,
+				filled.missing
+					.map(({name, type}) => typesInUse.value?.name?.(type) ?? name)
+					.join(', '),
+			])
+		)
+)
 
 const selectedAction = ref<null | ActionItemOptions>(null)
 
@@ -91,12 +140,14 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 function perform(action: ActionItemOptions) {
+	if (missingOf.value.get(action.id)) return
+
 	performedActionsHistory.value = [
 		...new Set([action.id, ...performedActionsHistory.value]),
 	].slice(0, 10)
 
 	$popover.value?.hidePopover()
-	action.perform()
+	actions.run(action as ActionItem)
 }
 </script>
 
@@ -112,29 +163,41 @@ function perform(action: ActionItemOptions) {
 				@keydown="onKeydown"
 			/>
 		</div>
-		<div
-			v-if="searchWord === '' && filteredActions.length > 0"
-			class="recentActions"
-		>
-			Recent Actions
-		</div>
 		<ul>
-			<li
-				v-for="action in filteredActions"
-				:key="action.id"
-				class="action"
-				:class="{selected: action === selectedAction}"
-				@pointermove="selectedAction = action"
-				@click="perform(action)"
-			>
-				<Icon class="action-icon" :icon="action.icon ?? ''" />
-				<span class="action-label">{{ action.label }}</span>
-				<BindIcon
-					v-if="action.bind?.icon"
-					:icon="action.bind.icon"
-					class="action-bind-icon"
-				/>
-			</li>
+			<template v-for="(action, index) in filteredActions" :key="action.id">
+				<li
+					v-if="searchWord === '' && index === 0 && fittingCount > 0"
+					class="recentActions"
+				>
+					For Selection
+				</li>
+				<li
+					v-if="searchWord === '' && index === fittingCount"
+					class="recentActions"
+				>
+					Recent Actions
+				</li>
+				<li
+					class="action"
+					:class="{
+						selected: action === selectedAction,
+						missing: missingOf.get(action.id),
+					}"
+					@pointermove="selectedAction = action"
+					@click="perform(action)"
+				>
+					<Icon class="action-icon" :icon="action.icon ?? ''" />
+					<span class="action-label">{{ action.label }}</span>
+					<span v-if="missingOf.get(action.id)" class="action-missing">
+						needs {{ missingOf.get(action.id) }}
+					</span>
+					<BindIcon
+						v-else-if="action.bind?.icon"
+						:icon="action.bind.icon"
+						class="action-bind-icon"
+					/>
+				</li>
+			</template>
 		</ul>
 	</div>
 </template>
@@ -213,4 +276,11 @@ reset-viewport('.TqCommandPalette')
 .action-bind-icon
 	opacity .5
 	font-size 1.1em
+
+.action.missing .action-icon,
+.action.missing .action-label
+	opacity .5
+
+.action-missing
+	opacity .5
 </style>
