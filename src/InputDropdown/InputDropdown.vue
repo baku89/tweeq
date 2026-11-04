@@ -476,9 +476,9 @@ onBeforeUnmount(() => {
 					>
 						<slot name="option" :item="item">
 							<Icon
-								v-if="icons && icons[index]"
+								v-if="icons && icons[options.indexOf(item)]"
 								class="option-icon"
-								:icon="icons[index]"
+								:icon="icons[options.indexOf(item)]"
 							/>
 							{{ labelizer(item) }}
 						</slot>

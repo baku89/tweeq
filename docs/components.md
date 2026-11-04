@@ -174,6 +174,28 @@ A horizontal "slot machine" picker: the selected option sits in the centre and i
  - `←` / `↑`: previous option
  - `→` / `↓`: next option
 
+### InputEnum
+
+Lets one of a few values be chosen, in a row if they fit (see `InputRadio`) and in a list if they do not (see `InputDropdown`). Use either of those directly to have it stay one way, such as when the options can change while it is on screen.
+
+<DemoComponent
+	name="InputEnum"
+	initialValue="round"
+	:scheme="{}"
+	:options="{}"
+	v-slot="{modelValue, options, listeners}"
+>
+	<InputEnum
+		:modelValue="modelValue"
+		:options="['butt', 'round', 'square']"
+		v-bind="options"
+		@update:modelValue="listeners.update"
+		@focus="listeners.focus"
+		@blur="listeners.blur"
+		@confirm="listeners.confirm"
+	/>
+</DemoComponent>
+
 ### InputNumber
 
 <DemoComponent
