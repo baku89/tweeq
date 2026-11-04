@@ -96,6 +96,9 @@ const temporarilyHidePopup = computed(() => {
 
 const tweakWidth = theme.popupWidth
 
+// Most of the wheel stays in view near an edge. A little of it may stick out.
+const OVERLAY_REACH = tweakWidth * 0.35
+
 let localOnTweak: HSVA | null = null
 
 // Whether the picker was open when this press began. The native popover is
@@ -449,7 +452,10 @@ defineOptions({
 			/>
 		</div>
 	</Popover>
-	<TweakOverlay v-if="tweaking">
+	<TweakOverlay
+		v-if="tweaking"
+		:keepInView="{center: origin, reach: OVERLAY_REACH}"
+	>
 		<div class="overlay" :style="overlayStyle">
 			<template
 				v-if="
