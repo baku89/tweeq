@@ -2,11 +2,19 @@ import {describe, expect, it} from 'vitest'
 
 import {
 	type ActionContext,
+	type ActionParam,
 	type ActionTypes,
-	asking,
+	activated,
+	argsOf,
+	canAsk,
+	entered,
 	fill,
+	formOf,
+	isComplete,
 	likely,
+	picked,
 	ranked,
+	tookSelection,
 } from './holes'
 
 /** Types as prefixes: 'shape/path' is narrower than 'shape', which is narrower than ''. */
@@ -77,53 +85,106 @@ describe('fill', () => {
 	})
 })
 
-describe('asking', () => {
+describe('a form', () => {
+	const pick = {placeholder: 'Select', label: (value: unknown) => String(value)}
 	const answerable: ActionTypes = {
 		...types,
 		input: ({type}) =>
 			type === 'none'
 				? null
-				: {
-						field: {type: 'string'},
-						initial: 'first',
-						value: entered => `${type as string}:${entered as string}`,
-					},
+				: type === 'count'
+					? {field: {type: 'number'}, initial: 1, value: n => (n as number) * 2}
+					: pick,
 	}
-	const inContext: ActionContext = {types: answerable, subject: () => ['shape']}
+	const over = (subject: string[]): ActionContext => ({
+		types: answerable,
+		subject: () => subject,
+	})
+	const start = (params: ActionParam[], subject: string[] = []) =>
+		formOf('act', params, fill(params, over(subject)), answerable)!
 
-	it('has nothing to ask of what is not missing anything', () => {
-		const params = [{name: 'x', type: 'shape'}]
-		expect(asking(params, fill(params, inContext), answerable)).toBeNull()
+	const x = {name: 'x', type: 'shape'}
+	const y = {name: 'y', type: 'text'}
+
+	it('is not needed by what is missing nothing', () => {
+		expect(formOf('act', [x], fill([x], over(['shape'])), answerable)).toBeNull()
 	})
 
-	it('asks only for what is missing, and keeps what was filled', () => {
-		const params = [
-			{name: 'x', type: 'shape'},
-			{name: 'y', type: 'text'},
-		]
-		const asked = asking(params, fill(params, inContext), answerable)!
-		expect(asked.initial).toEqual({y: 'first'})
-		expect(asked.scheme).toEqual({y: {type: 'string'}})
-		expect(asked.args({y: 'hi'})).toEqual(['shape', 'text:hi'])
+	it('cannot be had if something cannot be asked for', () => {
+		const none = {name: 'n', type: 'none'}
+		expect(formOf('act', [x, none], fill([x, none], over([])), answerable)).toBeNull()
+		expect(canAsk(fill([x, none], over([])), answerable)).toBe(false)
+		expect(canAsk(fill([x], over([])), types)).toBe(false)
 	})
 
-	it('gives a parameter that takes many an array', () => {
-		const params = [{name: 'xs', type: 'text', many: true}]
-		const asked = asking(params, fill(params, inContext), answerable)!
-		expect(asked.args({xs: 'hi'})).toEqual([['text:hi']])
+	it('keeps what was selected, and asks for the rest', () => {
+		const form = start([x, y], ['shape'])
+		expect(form.holes.map(({param}) => param.name)).toEqual(['y'])
+		expect(argsOf(picked(form, 0, ['text'], answerable))).toEqual(['shape', 'text'])
 	})
 
-	it('cannot ask at all if one of them cannot be asked for', () => {
-		const params = [
-			{name: 'x', type: 'text'},
-			{name: 'y', type: 'none'},
-		]
-		expect(asking(params, fill(params, inContext), answerable)).toBeNull()
+	it('goes from one empty hole on to the next', () => {
+		const form = start([x, y])
+		expect(form.active).toBe(0)
+		const next = tookSelection(form, ['shape'], answerable)
+		expect(next.active).toBe(1)
+		expect(isComplete(next)).toBe(false)
+		const last = tookSelection(next, ['text'], answerable)
+		expect(last.active).toBeNull()
+		expect(isComplete(last)).toBe(true)
+		expect(argsOf(last)).toEqual(['shape', 'text'])
 	})
 
-	it('cannot ask without a way to', () => {
-		const params = [{name: 'x', type: 'text'}]
-		expect(asking(params, fill(params, inContext), types)).toBeNull()
+	it('ignores what does not fit, and having nothing selected', () => {
+		const form = start([x])
+		expect(tookSelection(form, ['text'], answerable)).toBe(form)
+		expect(tookSelection(form, [], answerable)).toBe(form)
+	})
+
+	it('takes all of what is selected in a hole that takes many', () => {
+		const form = start([{...x, many: true}])
+		expect(argsOf(tookSelection(form, ['shape/a', 'shape/b'], answerable))).toEqual([
+			['shape/a', 'shape/b'],
+		])
+	})
+
+	it('does not take several in a hole that takes one', () => {
+		const form = start([x])
+		expect(tookSelection(form, ['shape/a', 'shape/b'], answerable)).toBe(form)
+	})
+
+	it('keeps taking more in a hole that takes many', () => {
+		const form = start([{...x, many: true}])
+		const one = tookSelection(form, ['shape/a'], answerable)
+		expect(isComplete(one)).toBe(true)
+		const both = tookSelection(one, ['shape/a', 'shape/b'], answerable)
+		expect(argsOf(both)).toEqual([['shape/a', 'shape/b']])
+	})
+
+	it('has nothing go in after it is all filled', () => {
+		const full = tookSelection(start([x]), ['shape/a'], answerable)
+		expect(argsOf(tookSelection(full, ['shape/b'], answerable))).toEqual(['shape/a'])
+	})
+
+	it('can have a hole filled again', () => {
+		const full = tookSelection(start([x]), ['shape/a'], answerable)
+		const again = activated(full, 0)
+		expect(isComplete(again)).toBe(false)
+		expect(argsOf(tookSelection(again, ['shape/b'], answerable))).toEqual(['shape/b'])
+	})
+
+	it('has what is typed start from its initial value, and come out as a value', () => {
+		const count = {name: 'n', type: 'count', asked: true}
+		const form = start([count], ['count'])
+		expect(isComplete(form)).toBe(true)
+		expect(form.active).toBeNull()
+		expect(argsOf(form)).toEqual([2])
+		expect(argsOf(entered(form, 0, 5))).toEqual([10])
+	})
+
+	it('asks for what is always asked for, even with something that fits selected', () => {
+		const asked = {name: 'x', type: 'shape', asked: true}
+		expect(fill([asked], over(['shape'])).missing).toEqual([asked])
 	})
 })
 
@@ -199,6 +260,22 @@ describe('ranked', () => {
 		expect(order(candidate('group', group, 1), candidate('path', path, 0.7))).toEqual([
 			'path',
 			'group',
+		])
+	})
+
+	it('has what can ask for what it is missing go by the search like any other', () => {
+		const asks: ActionTypes = {...types, input: () => ({field: {}, initial: 0})}
+		const candidates = [
+			{action: 'near', filled: fill([], selecting()), score: 0.7},
+			{
+				action: 'exact',
+				filled: fill(group, {types: asks, subject: () => []}),
+				score: 1,
+			},
+		]
+		expect(ranked(candidates, asks).map(({action}) => action)).toEqual([
+			'exact',
+			'near',
 		])
 	})
 

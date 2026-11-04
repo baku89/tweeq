@@ -3,7 +3,6 @@ import {vec2} from 'linearly'
 import {InputCheckboxProps} from '../InputCheckbox/types'
 import {type InputCodeProps} from '../InputCode'
 import {type InputColorProps} from '../InputColor'
-import {type InputDropdownProps} from '../InputDropdown/types'
 import {type InputNumberProps} from '../InputNumber'
 import {type InputPositionProps} from '../InputPosition'
 import {type InputRotaryProps} from '../InputRotary'
@@ -32,10 +31,6 @@ type ParameterDescString = Desc<
 >
 type ParameterDescCode = Desc<{type: 'string'; ui: 'code'}, InputCodeProps>
 type ParameterDescColor = Desc<{type: 'string'; ui: 'color'}, InputColorProps>
-type ParameterDescChoice = Desc<
-	{type: 'string'; ui: 'dropdown'},
-	InputDropdownProps<string>
->
 
 type ParameterDescBoolean = Desc<
 	{type: 'boolean'; ui?: undefined},
@@ -49,11 +44,7 @@ type ParameterDescCheckbox = Desc<
 type ParameterDescForType<T> = T extends number
 	? ParameterDescNumber | ParameterDescAngle | ParameterDescTime
 	: T extends string
-		?
-				| ParameterDescString
-				| ParameterDescCode
-				| ParameterDescColor
-				| ParameterDescChoice
+		? ParameterDescString | ParameterDescCode | ParameterDescColor
 		: T extends boolean
 			? ParameterDescBoolean | ParameterDescCheckbox
 			: T extends vec2

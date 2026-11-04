@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {CommandPalette} from '../CommandPalette'
+import {ActionForm, CommandPalette} from '../CommandPalette'
 import {MultiSelectPopup} from '../MultiSelectPopup'
 import {PaneModalComplex} from '../PaneModalComplex'
 import {PaneModalTabs} from '../PaneModalTabs'
@@ -12,6 +12,7 @@ defineSlots<{default: () => unknown}>()
 	<slot />
 	<MultiSelectPopup />
 	<CommandPalette />
+	<ActionForm />
 	<PaneModalComplex />
 	<PaneModalTabs />
 	<TooltipRoot />

@@ -280,10 +280,15 @@ function onPointerMove(event: PointerEvent) {
 	const staying = rows.filter((_, i) => i < lifted.from || i >= lifted.to)
 	const x = (liftedDepth + 0.5) * indent + event.clientX - pressX
 	const candidates = treeDropsAt(staying, x, event.clientY, indent)
-	drop.value =
-		candidates.find(({target, position}) =>
-			props.canDrop!(source, target, position)
-		) ?? null
+	// Something else over there is taking it, and then it has not landed here.
+	const taken = document
+		.elementFromPoint(event.clientX, event.clientY)
+		?.closest('[data-tq-takes-drag]')
+	drop.value = taken
+		? null
+		: (candidates.find(({target, position}) =>
+				props.canDrop!(source, target, position)
+			) ?? null)
 	layOut(event.clientY)
 }
 

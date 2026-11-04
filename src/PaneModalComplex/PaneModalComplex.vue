@@ -55,7 +55,7 @@ onBeforeUnmount(() => modal.registerPrompt(null))
 // Cancel restores the value the modal opened with; Save keeps the edits. The
 // modal can't be light-dismissed, so these buttons are the only way out.
 function onCancel() {
-	endEdit(desc.value!.options?.nullOnCancel ? null : desc.value!.initialValue)
+	endEdit(desc.value!.initialValue)
 }
 
 function onConfirm() {
@@ -112,10 +112,7 @@ defineExpose({
 			</div>
 			<div class="footer">
 				<InputButton subtle label="Cancel" @click="onCancel" />
-				<InputButton
-					:label="desc.options?.confirmLabel ?? 'Save'"
-					@click="onConfirm"
-				/>
+				<InputButton label="Save" @click="onConfirm" />
 			</div>
 		</div>
 	</PaneModal>

@@ -9,19 +9,23 @@ import {
 	reactive,
 	ref,
 	shallowRef,
+	watch,
 } from 'vue'
 
 import {
 	type ActionContext,
 	type ActionParam,
-	asking,
+	argsOf,
+	canAsk,
 	type Filled,
 	fill,
+	type Form,
+	formOf,
+	isComplete,
+	tookSelection,
 } from '../CommandPalette/holes'
-import type {Scheme} from '../InputComplex'
 import type {MenuCommand, MenuItem} from '../Menu'
 import {keyboardTarget} from '../use/keyboardTarget'
-import {useModalStore} from './modal'
 
 interface ActionItemBase {
 	id: string
@@ -287,18 +291,16 @@ export const useActionsStore = defineStore('actions', () => {
 
 	const filled = (action: ActionItem): Filled => fill(action.params, context.value)
 
-	const askingFor = (action: ActionItem) =>
-		asking(action.params, filled(action), context.value?.types ?? null)
+	const asks = (action: ActionItem): boolean =>
+		canAsk(filled(action), context.value?.types ?? null)
 
 	/** Whether `action` can run now, by what is selected, or by asking for the rest. */
 	const canRun = (action: ActionItem): boolean =>
-		filled(action).missing.length === 0 || askingFor(action) !== null
+		filled(action).missing.length === 0 || asks(action)
 
 	/** What `action` is called, which says so if it will ask for something first. */
 	const labelOf = (action: ActionItem): string =>
-		filled(action).missing.length > 0 && askingFor(action) !== null
-			? `${action.label}...`
-			: action.label
+		asks(action) ? `${action.label}...` : action.label
 
 	/** Performs `action` with what is selected, unless that leaves it missing something. */
 	function run(action: ActionItem): unknown {
@@ -308,19 +310,33 @@ export const useActionsStore = defineStore('actions', () => {
 		return action.perform(...args)
 	}
 
-	/** As `run`, but asks for what is missing, in a modal. */
-	async function request(action: ActionItem): Promise<unknown> {
-		const asked = askingFor(action)
+	/** The action waiting for what it is missing, which goes on while anything else does. */
+	const form = shallowRef<Form<ActionItem> | null>(null)
+
+	/** As `run`, but asks for what is missing, in a form. */
+	function request(action: ActionItem): unknown {
+		const types = context.value?.types ?? null
+		const asked = formOf(action, action.params, filled(action), types)
 		if (asked === null) return run(action)
-		const entered = await useModalStore().prompt(
-			asked.initial,
-			asked.scheme as Scheme<Record<string, unknown>>,
-			{title: action.label, confirmLabel: 'OK', nullOnCancel: true}
-		)
-		if (entered === null) return
-		runBeforePerformHooks(action)
-		return action.perform(...asked.args(entered))
+		form.value = asked
 	}
+
+	/** Performs what the form is for, if it has all it needs. */
+	function submitForm() {
+		const current = form.value
+		if (current === null || !isComplete(current)) return
+		form.value = null
+		runBeforePerformHooks(current.action)
+		return current.action.perform(...argsOf(current))
+	}
+
+	watch(
+		() => (form.value === null ? null : context.value?.subject()),
+		subject => {
+			if (form.value === null || !subject) return
+			form.value = tookSelection(form.value, subject, context.value?.types ?? null)
+		}
+	)
 
 	function runBeforePerformHooks(action: ActionItem) {
 		for (const hook of onBeforePerformHooks) {
@@ -343,6 +359,8 @@ export const useActionsStore = defineStore('actions', () => {
 		perform,
 		run,
 		request,
+		form,
+		submitForm,
 		context,
 		provideContext,
 		filled,

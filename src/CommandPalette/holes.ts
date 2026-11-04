@@ -15,14 +15,35 @@ export interface ActionTypes<Type = unknown, Value = unknown> {
 	input?(param: ActionParam<Type>): ActionInput<Value> | null
 }
 
-/** One field of a modal, in the terms of `InputComplex`. */
-export interface ActionInput<Value = unknown> {
+/** How a hole is filled: typed in, or by pointing at what is already there. */
+export type ActionInput<Value = unknown> = ActionLiteral<Value> | ActionPick<Value>
+
+/** Something that can be entered right there, as a field in the terms of `InputComplex`. */
+export interface ActionLiteral<Value = unknown> {
 	/** A description of the field, as in a `Scheme`. */
 	readonly field: Readonly<Record<string, unknown>>
 	readonly initial: unknown
 	/** What was entered, as a value of the type. It is taken as it is without this. */
 	value?(entered: unknown): Value
 }
+
+/**
+ * Something that is somewhere already. While its hole is the active one, selecting it fills
+ * the hole. It can also be pulled from the hole to it, or dragged from where it is.
+ */
+export interface ActionPick<Value = unknown> {
+	/** What it says while empty, like "Select path". */
+	readonly placeholder: string
+	/** What it says with `value` in it. */
+	label(value: Value): string
+	/** What is at this place on screen, to pull a line from the hole to. */
+	at?(x: number, y: number): Value | null
+	/** What a drag beginning at this place on screen would be dragging. */
+	from?(x: number, y: number): Value | null
+}
+
+export const isPick = <Value>(input: ActionInput<Value>): input is ActionPick<Value> =>
+	'placeholder' in input
 
 export interface ActionParam<Type = unknown> {
 	readonly name: string
@@ -31,6 +52,8 @@ export interface ActionParam<Type = unknown> {
 	readonly many?: boolean
 	/** The action can run with this left empty, which comes to it as `undefined`. */
 	readonly optional?: boolean
+	/** It is always asked for, and what happens to be selected has no say in it. */
+	readonly asked?: boolean
 }
 
 /** What actions are being offered in, which is for a host to say. */
@@ -64,6 +87,7 @@ export function fill(
 	for (const param of params) {
 		const takes =
 			took === null &&
+			param.asked !== true &&
 			context !== null &&
 			subject.length > 0 &&
 			(param.many === true || subject.length === 1) &&
@@ -79,46 +103,114 @@ export function fill(
 	return {args, took, missing}
 }
 
-export interface Asking {
-	/** What a modal starts with, by the name of the parameter. */
-	readonly initial: Record<string, unknown>
-	readonly scheme: Record<string, unknown>
-	/** What to perform the action with, once the modal has been filled in. */
-	args(entered: Readonly<Record<string, unknown>>): unknown[]
+/** Whether all that is missing can be asked for. */
+export const canAsk = (
+	{missing}: Filled,
+	types: ActionTypes | null
+): boolean =>
+	missing.length > 0 && missing.every(param => (types?.input?.(param) ?? null) !== null)
+
+export interface Hole {
+	readonly param: ActionParam
+	/** Which of the arguments it is. */
+	readonly index: number
+	readonly input: ActionInput
+	/** What is in it, which is an array if it takes many. */
+	readonly value: unknown
+	readonly empty: boolean
 }
 
-/** How to ask for what is missing. Null if something of it cannot be asked for. */
-export function asking(
+/** An action, waiting for its holes to be filled. */
+export interface Form<Action> {
+	readonly action: Action
+	readonly args: readonly unknown[]
+	readonly holes: readonly Hole[]
+	/** The hole that what is selected next goes in. */
+	readonly active: number | null
+}
+
+const nextEmpty = (holes: readonly Hole[]): number | null => {
+	const at = holes.findIndex(hole => hole.empty && isPick(hole.input))
+	return at < 0 ? null : at
+}
+
+/** A form for what is missing. Null if something of it cannot be asked for. */
+export function formOf<Action>(
+	action: Action,
 	params: readonly ActionParam[] | undefined,
-	{args, missing}: Filled,
+	filled: Filled,
 	types: ActionTypes | null
-): Asking | null {
-	if (params === undefined || missing.length === 0) return null
-	const inputs = new Map<ActionParam, ActionInput>()
-	for (const param of missing) {
-		const input = types?.input?.(param) ?? null
-		if (input === null) return null
-		inputs.set(param, input)
+): Form<Action> | null {
+	if (params === undefined || !canAsk(filled, types)) return null
+	const holes = filled.missing.map((param): Hole => {
+		const input = types!.input!(param)!
+		return isPick(input)
+			? {param, index: params.indexOf(param), input, value: undefined, empty: true}
+			: {param, index: params.indexOf(param), input, value: input.initial, empty: false}
+	})
+	return {action, args: filled.args, holes, active: nextEmpty(holes)}
+}
+
+const withHole = <Action>(
+	form: Form<Action>,
+	at: number,
+	hole: Partial<Hole>
+): Form<Action> => {
+	const holes = form.holes.map((it, i) => (i === at ? {...it, ...hole} : it))
+	return {...form, holes, active: nextEmpty(holes)}
+}
+
+/** With something typed into a hole. */
+export const entered = <Action>(
+	form: Form<Action>,
+	at: number,
+	value: unknown
+): Form<Action> => withHole(form, at, {value, empty: false})
+
+/** With `values` in a hole, if they fit it. Otherwise it is as it was. */
+export function picked<Action>(
+	form: Form<Action>,
+	at: number,
+	values: readonly unknown[],
+	types: ActionTypes | null
+): Form<Action> {
+	const hole = form.holes[at]
+	if (hole === undefined || types === null || values.length === 0) return form
+	const many = hole.param.many === true
+	if (!many && values.length !== 1) return form
+	if (!values.every(value => types.fits(value, hole.param.type))) return form
+	const filled = withHole(form, at, {value: many ? values : values[0], empty: false})
+	// There may be more of them to come, by adding to what is selected.
+	return many ? {...filled, active: at} : filled
+}
+
+/** What was selected goes in the active hole, if it fits. */
+export const tookSelection = <Action>(
+	form: Form<Action>,
+	subject: readonly unknown[],
+	types: ActionTypes | null
+): Form<Action> =>
+	form.active === null ? form : picked(form, form.active, subject, types)
+
+/** With a hole as the active one, emptied if something is in it, for filling it again. */
+export const activated = <Action>(form: Form<Action>, at: number): Form<Action> => ({
+	...form,
+	holes: form.holes.map((hole, i) =>
+		i === at ? {...hole, value: undefined, empty: true} : hole
+	),
+	active: at,
+})
+
+export const isComplete = <Action>({holes}: Form<Action>): boolean =>
+	holes.every(({empty}) => !empty)
+
+/** What to perform the action with. */
+export function argsOf<Action>({args, holes}: Form<Action>): unknown[] {
+	const all = [...args]
+	for (const {index, input, value} of holes) {
+		all[index] = !isPick(input) && input.value ? input.value(value) : value
 	}
-	const initial: Record<string, unknown> = {}
-	const scheme: Record<string, unknown> = {}
-	for (const [{name}, input] of inputs) {
-		initial[name] = input.initial
-		scheme[name] = input.field
-	}
-	return {
-		initial,
-		scheme,
-		args: entered =>
-			params.map((param, i) => {
-				const input = inputs.get(param)
-				if (input === undefined) return args[i]
-				const value = input.value
-					? input.value(entered[param.name])
-					: entered[param.name]
-				return param.many === true ? [value] : value
-			}),
-	}
+	return all
 }
 
 export interface Candidate<Action> {
@@ -190,11 +282,13 @@ export function ranked<Action>(
 	types: ActionTypes | null
 ): Candidate<Action>[] {
 	const particular = particularity(candidates, types)
+	const stuck = ({filled}: Candidate<Action>): boolean =>
+		filled.missing.length > 0 && !canAsk(filled, types)
 	const weight = (candidate: Candidate<Action>): number =>
 		(candidate.score ?? 0) + (candidate.filled.took ? FITS_SELECTION : 0)
 	return [...candidates].sort(
 		(a, b) =>
-			Number(a.filled.missing.length > 0) - Number(b.filled.missing.length > 0) ||
+			Number(stuck(a)) - Number(stuck(b)) ||
 			weight(b) - weight(a) ||
 			particular(b) - particular(a)
 	)
