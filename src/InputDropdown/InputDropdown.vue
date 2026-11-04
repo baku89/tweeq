@@ -513,7 +513,6 @@ onBeforeUnmount(() => {
 @import '../common.styl'
 
 $right-arrow-width = 1em
-$chevron-width = calc(.7 * var(--tq-input-height))
 
 .TqInputDropdown
 	position relative
@@ -532,7 +531,10 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 .field
 	flex-grow 1
 	cursor default
-	padding-right $chevron-width
+
+	// Centred in what the chevron leaves, as the options and the overlay are.
+	& :deep(.input)
+		right $input-chevron-inset
 
 	// While the resting icon overlay is shown, hide the field's own text so the
 	// overlay's label (next to the icon) is the only one visible.
@@ -543,7 +545,7 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 .value-display
 	position absolute
 	inset 0
-	padding 0 $chevron-width
+	padding 0 $input-chevron-inset 0 .5em
 	display flex
 	align-items center
 	justify-content center
@@ -566,16 +568,8 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 	text-overflow ellipsis
 
 .chevron
-	position absolute
-	top 0
-	z-index 10
-	right 2px
-	width $chevron-width
-	height 100%
+	input-chevron()
 	pointer-events none
-	color var(--tq-color-text-subtle)
-	opacity .4
-	hover-transition(opacity)
 
 	.TqInputDropdown:hover &,
 	.TqInputDropdown:focus-within &
@@ -633,7 +627,7 @@ $chevron-width = calc(.7 * var(--tq-input-height))
 		background linear-gradient(to top, var(--tq-color-input) 45%, transparent)
 
 .option
-	padding 0 $chevron-width 0 .5em
+	padding 0 $input-chevron-inset 0 .5em
 	height var(--tq-input-height)
 	line-height var(--tq-input-height)
 	display flex

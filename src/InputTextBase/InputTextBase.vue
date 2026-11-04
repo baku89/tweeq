@@ -257,9 +257,9 @@ function onEnter(e: KeyboardEvent) {
 		/>
 		<Icon
 			v-if="hasPresets"
-			class="icon right pressable presets"
+			class="chevron"
 			:class="{open: openMenu === 'presets'}"
-			icon="mdi:chevron-down"
+			icon="mdi:unfold-more-horizontal"
 			@pointerdown.stop
 			@click="onPresetsClick"
 		/>
@@ -343,12 +343,8 @@ function onEnter(e: KeyboardEvent) {
 	.TqInputTextBase:has(.icon.right) &
 		right var(--tq-input-height)
 
-	// What is centered stays in the middle of the input, whichever side has an icon.
-	.TqInputTextBase[align=center]:has(.icon.left) &
-		right var(--tq-input-height)
-
-	.TqInputTextBase[align=center]:has(.icon.right) &
-		left var(--tq-input-height)
+	.TqInputTextBase:has(.chevron) &
+		right $input-chevron-inset
 
 .input
 	height var(--tq-input-height)
@@ -420,4 +416,11 @@ function onEnter(e: KeyboardEvent) {
 
 	&.right
 		right 2px
+
+.chevron
+	input-chevron()
+	cursor pointer
+
+	.TqInputTextBase:hover &, .TqInputTextBase:focus-within &, &.open
+		opacity 1
 </style>

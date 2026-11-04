@@ -63,6 +63,22 @@ use-input-font()
 	&[font=monospace]
 		font-family var(--tq-font-code)
 
+// What says that a field has things to choose from, at its right.
+$input-chevron-width = calc(.7 * var(--tq-input-height))
+// How far from the right what is beside it keeps.
+$input-chevron-inset = calc(2px + .7 * var(--tq-input-height))
+
+input-chevron()
+	position absolute
+	top 0
+	right 2px
+	z-index 10
+	width $input-chevron-width
+	height 100%
+	color var(--tq-color-text-subtle)
+	opacity .4
+	hover-transition(opacity)
+
 use-input-align()
 	&[align=left]
 		text-align left
