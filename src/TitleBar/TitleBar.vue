@@ -86,6 +86,7 @@ const menus = computed(() => actions.menu.map(convertToMenuItem))
 <style lang="stylus" scoped>
 .TqTitleBar
 	--titlebar-area-height: env(titlebar-area-height, 38px)
+	--background: var(--tq-titlebar-background, var(--tq-color-background))
 
 	position fixed
 	display grid
@@ -97,7 +98,7 @@ const menus = computed(() => actions.menu.map(convertToMenuItem))
 
 	z-index 100
 	user-select none
-	background linear-gradient(to bottom, var(--tq-color-background), transparent)
+	background linear-gradient(to bottom, var(--background), transparent)
 	backdrop-filter blur(2px)
 	gap var(--tq-gap-control)
 	padding calc((var(--titlebar-area-height) - var(--tq-input-height)) / 2) 9px
@@ -110,8 +111,8 @@ const menus = computed(() => actions.menu.map(convertToMenuItem))
 
 	@media (display-mode: window-controls-overlay)
 		background \
-			linear-gradient(to bottom, var(--tq-color-background) 20%, transparent), \
-			linear-gradient(to right, var(--tq-color-background) 0, transparent 15%, transparent 85%, var(--tq-color-background) 100%)
+			linear-gradient(to bottom, var(--background) 20%, transparent), \
+			linear-gradient(to right, var(--background) 0, transparent 15%, transparent 85%, var(--background) 100%)
 
 .left, .center, .right
 	display flex
