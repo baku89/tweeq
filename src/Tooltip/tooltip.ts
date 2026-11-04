@@ -108,6 +108,10 @@ export function showTooltip(reference: HTMLElement, content: TooltipContent) {
 
 export function hideTooltip(reference: HTMLElement) {
 	clearTimeout(showTimer)
+	// Leaving one element leaves what is around it as well, which has no say over
+	// a tooltip that isn't its own, and must not call off the hide of the one that
+	// is.
+	if (tooltipReference.value !== reference) return
 	clearTimeout(hideTimer)
 	const interactive =
 		tooltipState.open &&
