@@ -37,7 +37,7 @@ const AH = 7
 // Breathing room between the arrow tip and the layer edge (i.e. the anchor), so
 // the balloon doesn't sit dead-flush against what it points at. The layer/wrapper
 // grow by this on the arrow side; the arrow still protrudes only AH from the box.
-const GAP = 2
+const GAP = 4
 
 const $content = useTemplateRef<HTMLElement>('$content')
 const {width, height} = useElementSize(

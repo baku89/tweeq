@@ -5,6 +5,7 @@ import {computed, ref, useTemplateRef, watch, watchEffect} from 'vue'
 import {Balloon} from '../Balloon'
 import {BALLOON_ARROW_INSET} from '../Balloon/constants'
 import {addAnchorName} from '../util'
+import {clearanceOf, surroundingsOf} from './clearance'
 import type {PopoverProps} from './types'
 
 type ArrowSide = 'top' | 'bottom' | 'left' | 'right'
@@ -111,6 +112,10 @@ const shiftStyle = computed<Record<string, string>>(() =>
 		: {}
 )
 
+// How much further to stand off, for the arrow to point at the reference from
+// outside of the toolbar or row it sits on, rather than from over its edge.
+const clearance = ref(0)
+
 // Keep this much gap between the popover and the viewport edge when shifting.
 const VIEWPORT_MARGIN = 8
 
@@ -144,6 +149,10 @@ function update() {
 
 	const [side] = props.placement.split('-')
 	const horizontal = side === 'top' || side === 'bottom'
+
+	clearance.value = props.arrow
+		? clearanceOf(r, surroundingsOf(reference), horizontal)
+		: 0
 
 	// Work from the *natural* position (measured rect minus the shift already
 	// applied) so this converges instead of drifting frame to frame.
@@ -234,7 +243,7 @@ const styles = computed<Record<string, string>>(() => {
 
 	const [side, align] = placement.split('-')
 	const {mainAxis, crossAxis} = offsetOption.value
-	const main = `${mainAxis}px`
+	const main = `${mainAxis + clearance.value}px`
 	const cross = `${crossAxis}px`
 	const horizontal = side === 'top' || side === 'bottom'
 	// A centred popover must not flip on its cross axis: near a viewport edge
