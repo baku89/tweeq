@@ -48,8 +48,17 @@ watch(
 
 const typesInUse = computed(() => actions.context?.types ?? null)
 
-/** How many suggestions can be listed before anything has been searched for. */
-const AT_MOST_SUGGESTED = 10
+/** How many suggestions are listed before anything has been searched for. */
+const AT_MOST_SUGGESTED = 6
+
+/** Those last used first, and otherwise as they were given. */
+const lastUsedFirst = (items: readonly ActionItem[]): ActionItem[] => {
+	const when = (item: ActionItem): number => {
+		const at = performedActionsHistory.value.indexOf(item.id)
+		return at < 0 ? Infinity : at
+	}
+	return [...items].sort((a, b) => when(a) - when(b) || 0)
+}
 
 type Listed = Candidate<ActionItem> & {heading: string | null}
 
@@ -81,16 +90,20 @@ const candidates = computed((): Listed[] => {
 		const plain = (action: ActionItem) => ({action, filled: actions.filled(action)})
 		return [
 			...under('For Selection', fitting),
-			...(suggestions.length <= AT_MOST_SUGGESTED
-				? under(suggested?.heading ?? '', suggestions.map(plain))
-				: []),
+			...under(
+				suggested?.heading ?? '',
+				lastUsedFirst(suggestions).slice(0, AT_MOST_SUGGESTED).map(plain)
+			),
 			...under('Recent Actions', recent.map(plain)),
 		]
 	}
 
 	return ranked(
 		search(searchWord.value, [...Object.values(actions.allActions), ...suggestions], {
-			keySelector: action => action.label,
+			keySelector: action => [
+				action.label,
+				...((action as {keywords?: string[]}).keywords ?? []),
+			],
 			returnMatchData: true,
 		}).map(({item, score}) => ({
 			action: item,
@@ -100,6 +113,8 @@ const candidates = computed((): Listed[] => {
 		typesInUse.value
 	).map(item => ({...item, heading: null}))
 })
+
+const tagOf = (action: unknown): string | undefined => (action as {tag?: string}).tag
 
 const filteredActions = computed(() => candidates.value.map(({action}) => action))
 
@@ -183,6 +198,9 @@ function perform(action: ActionItemOptions) {
 				>
 					<Icon class="action-icon" :icon="action.icon ?? ''" />
 					<span class="action-label">{{ actions.labelOf(action) }}</span>
+					<span v-if="searchWord !== '' && tagOf(action)" class="action-tag">
+						{{ tagOf(action) }}
+					</span>
 					<BindIcon
 						v-if="action.bind?.icon ?? action.hint"
 						:icon="(action.bind?.icon ?? action.hint)!"
@@ -261,6 +279,10 @@ reset-viewport('.TqCommandPalette')
 
 .action-icon
 	width 20px
+
+.action-tag
+	opacity .5
+	font-size .9em
 
 .action-label
 	flex-grow 1

@@ -62,8 +62,8 @@ export interface ActionContext<Type = unknown, Value = unknown> {
 	/** What is selected right now. */
 	subject(): readonly Value[]
 	/**
-	 * What there is to do to that, past the actions there always are. These are offered by the
-	 * palette under `heading`, if they are few enough to read, and can always be searched for.
+	 * What there is to do to that, past the actions there always are. The palette offers a few of
+	 * them under `heading`, those last used first, and any of them can be searched for.
 	 */
 	suggestions?(): {
 		readonly heading: string
@@ -75,6 +75,10 @@ export interface SuggestedAction {
 	readonly id: string
 	readonly label: string
 	readonly icon?: string
+	/** What else it can be found by. */
+	readonly keywords?: readonly string[]
+	/** What kind of thing it is, to say so where no heading does. */
+	readonly tag?: string
 	/** What it has yet to be given, which is asked for, as any other action's is. */
 	readonly params?: readonly ActionParam[]
 	perform(...args: any[]): unknown
