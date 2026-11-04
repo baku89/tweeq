@@ -196,4 +196,10 @@ onMounted(() => {
 
 :deep(.monaco-editor)
 	--vscode-editor-background transparent !important
+
+// What takes the keys is not anything to see, being only as large as a line, with a cursor
+// of its own at the start of that. The editor draws the one that shows where things go.
+:deep(.monaco-editor .native-edit-context:focus)
+	outline none !important
+	caret-color transparent
 </style>
