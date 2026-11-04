@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useEventListener} from '@vueuse/core'
+import {useEventListener, useWindowSize} from '@vueuse/core'
 import Case from 'case'
 import {computed, ref} from 'vue'
 
@@ -8,12 +8,14 @@ import {InputButton} from '../InputButton'
 import {InputComplex, type Scheme} from '../InputComplex'
 import {Parameter, ParameterGrid} from '../ParameterGrid'
 import {useActionsStore} from '../stores/actions'
+import {useAppConfigStore} from '../stores/appConfig'
 import {
 	activated,
 	entered,
 	type Hole,
 	isComplete,
 	isPick,
+	keptOnScreen,
 	picked,
 } from './holes'
 
@@ -28,6 +30,50 @@ const complete = computed(() => form.value !== null && isComplete(form.value))
 const types = computed(() => actions.context?.types ?? null)
 
 const nameOf = ({param}: Hole) => Case.capital(param.name)
+
+// -----------------------------------------------------------------------------
+// Being put somewhere, which it is again next time
+// -----------------------------------------------------------------------------
+
+const WIDTH = 300
+/** As much of it as stays on screen: its title, to take hold of it by. */
+const HOLD = 36
+
+const placed = useAppConfigStore().ref<[number, number] | null>(
+	'actionForm.position',
+	null
+)
+const {width: screenWidth, height: screenHeight} = useWindowSize()
+
+const place = computed(() => {
+	if (placed.value === null) return undefined
+	const [left, top] = keptOnScreen(
+		placed.value,
+		[WIDTH, HOLD],
+		[screenWidth.value, screenHeight.value]
+	)
+	return {left: `${left}px`, top: `${top}px`, transform: 'none'}
+})
+
+function onTitlePress(event: PointerEvent) {
+	if (event.button !== 0 || (event.target as Element).closest('.close')) return
+	event.preventDefault()
+	const title = event.currentTarget as HTMLElement
+	const box = title.parentElement!.getBoundingClientRect()
+	const [fromX, fromY] = [event.clientX - box.left, event.clientY - box.top]
+	title.setPointerCapture(event.pointerId)
+	const onMove = (move: PointerEvent) => {
+		placed.value = [move.clientX - fromX, move.clientY - fromY]
+	}
+	const onUp = () => {
+		title.removeEventListener('pointermove', onMove)
+		title.removeEventListener('pointerup', onUp)
+		title.removeEventListener('pointercancel', onUp)
+	}
+	title.addEventListener('pointermove', onMove)
+	title.addEventListener('pointerup', onUp)
+	title.addEventListener('pointercancel', onUp)
+}
 
 function dismiss() {
 	actions.form = null
@@ -172,8 +218,8 @@ useEventListener(
 </script>
 
 <template>
-	<div v-if="form" class="TqActionForm" data-tq-takes-drag>
-		<div class="header">
+	<div v-if="form" class="TqActionForm" :style="place" data-tq-takes-drag>
+		<div class="header" @pointerdown="onTitlePress">
 			<span class="title">{{ form.action.label }}</span>
 			<button class="close" type="button" aria-label="Close" @click="dismiss">
 				<Icon icon="mdi:close" />
@@ -252,6 +298,9 @@ reset-viewport('.TqActionForm')
 	display flex
 	align-items center
 	justify-content space-between
+	cursor move
+	touch-action none
+	user-select none
 
 .title
 	font-weight bold

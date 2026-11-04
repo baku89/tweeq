@@ -11,6 +11,7 @@ import {
 	fill,
 	formOf,
 	isComplete,
+	keptOnScreen,
 	likely,
 	picked,
 	ranked,
@@ -185,6 +186,20 @@ describe('a form', () => {
 	it('asks for what is always asked for, even with something that fits selected', () => {
 		const asked = {name: 'x', type: 'shape', asked: true}
 		expect(fill([asked], over(['shape'])).missing).toEqual([asked])
+	})
+})
+
+describe('keptOnScreen', () => {
+	const screen = [1000, 800] as const
+	const box = [300, 40] as const
+
+	it('leaves what is on screen where it is', () => {
+		expect(keptOnScreen([100, 100], box, screen)).toEqual([100, 100])
+	})
+
+	it('brings back what went past an edge', () => {
+		expect(keptOnScreen([-50, -50], box, screen)).toEqual([0, 0])
+		expect(keptOnScreen([900, 900], box, screen)).toEqual([700, 760])
 	})
 })
 

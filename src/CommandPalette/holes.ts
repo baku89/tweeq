@@ -213,6 +213,18 @@ export function argsOf<Action>({args, holes}: Form<Action>): unknown[] {
 	return all
 }
 
+/** Where a box goes so that enough of it stays on screen to take hold of it again. */
+export function keptOnScreen(
+	[x, y]: readonly [number, number],
+	[width, height]: readonly [number, number],
+	[screenWidth, screenHeight]: readonly [number, number]
+): [number, number] {
+	return [
+		Math.max(0, Math.min(x, screenWidth - width)),
+		Math.max(0, Math.min(y, screenHeight - height)),
+	]
+}
+
 export interface Candidate<Action> {
 	readonly action: Action
 	readonly filled: Filled
