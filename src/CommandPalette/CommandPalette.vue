@@ -131,7 +131,10 @@ useEventListener(
 	window,
 	'keydown',
 	(e: KeyboardEvent) => {
-		if (e.key.toLowerCase() !== 'p' || !(e.metaKey || e.ctrlKey) || e.shiftKey || e.altKey) return
+		// On a Mac, Control+P goes up a line, in anything that is typed in.
+		const isMac = /mac|ipod|iphone|ipad/i.test(navigator.userAgent)
+		const held = isMac ? e.metaKey : e.metaKey || e.ctrlKey
+		if (e.key.toLowerCase() !== 'p' || !held || e.shiftKey || e.altKey) return
 		e.preventDefault()
 		e.stopPropagation()
 		$popover.value?.togglePopover()
