@@ -151,7 +151,8 @@ function onKeydown(e: KeyboardEvent) {
 	}
 
 	if (e.key === 'Enter' && selectedAction.value) {
-		// It is this that was entered, and not a modal that this may open.
+		// It is this that was entered, and not a modal that this may open, nor what the focus goes back to.
+		e.preventDefault()
 		e.stopPropagation()
 		perform(selectedAction.value as ActionItemOptions)
 	}
