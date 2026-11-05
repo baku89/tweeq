@@ -3,6 +3,7 @@ import {unrefElement} from '@vueuse/core'
 import {vec2} from 'linearly'
 import {computed, onMounted, ref, useTemplateRef, watch, watchEffect} from 'vue'
 
+import {rotated} from '../stores/multiEdit'
 import {type MultiSelectType, useMultiSelectStore} from '../stores/multiSelect'
 import {vTooltip} from '../Tooltip'
 import {addAnchorName} from '../util'
@@ -94,10 +95,24 @@ const actions: MultiSelectAction[] = [
 	{
 		type: 'button',
 		enabled: types =>
-			types.length === 2 && types[0] !== 'boolean' && types[0] === types[1],
-		updator: values => values.reverse(),
+			types.length === 2 &&
+			types[0] !== 'boolean' &&
+			types[0] !== 'opaque' &&
+			types[0] === types[1],
+		updator: rotated,
 		icon: 'material-symbols:swap-vert',
 		label: 'Swap',
+	},
+	{
+		type: 'button',
+		enabled: types =>
+			types.length > 2 &&
+			types[0] !== 'boolean' &&
+			types[0] !== 'opaque' &&
+			types.every(t => t === types[0]),
+		updator: rotated,
+		icon: 'material-symbols:rotate-right',
+		label: 'Rotate',
 	},
 ]
 

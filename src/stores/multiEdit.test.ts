@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {createMultiEdit, type MultiEditTarget} from './multiEdit'
+import {createMultiEdit, type MultiEditTarget, rotated} from './multiEdit'
 
 function target(value: number) {
 	const t = {
@@ -80,5 +80,13 @@ describe('createMultiEdit', () => {
 		const b = target(2)
 		createMultiEdit(() => [a, b]).commit()
 		expect([a.confirmed, b.confirmed]).toEqual([1, 1])
+	})
+})
+
+describe('rotated', () => {
+	it('has each go on to the next, and the last back to the first', () => {
+		expect(rotated([1, 2, 3])).toEqual([3, 1, 2])
+		expect(rotated([1, 2])).toEqual([2, 1])
+		expect(rotated([])).toEqual([])
 	})
 })

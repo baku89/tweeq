@@ -25,7 +25,13 @@ import {useModifierKeys} from '../use/useModifierKeys'
 import {nodeContains} from '../util'
 import {createMultiEdit} from './multiEdit'
 
-export type MultiSelectType = 'number' | 'color' | 'string' | 'boolean'
+/** `opaque` is what only its host can do anything to, by what it says in `commands`. */
+export type MultiSelectType =
+	| 'number'
+	| 'color'
+	| 'string'
+	| 'boolean'
+	| 'opaque'
 
 type MultiSelectValue = number | string | boolean | HSVA
 
@@ -213,6 +219,54 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		inbetweenIds.forEach(({id}) => selectId(id))
 	}
 
+	const inputsWithin = (el: Element) =>
+		[...inputs.values()].filter(({el: input}) => {
+			const inside = unrefElement(input)
+			return inside && nodeContains(el, inside)
+		})
+
+	/** Whether what is in `el` is all selected, along with something else or not. */
+	function allSelectedWithin(el: Element | null | undefined) {
+		if (!el || selectedInputs.value.length < 2) return false
+		const within = inputsWithin(el)
+		return within.length > 0 && within.every(({id}) => selectedIds.has(id))
+	}
+
+	/**
+	 * Select the inputs in `el`, such as those of what a label is the label of: those
+	 * alone, along with what is selected, or along with all from there to the last.
+	 * Along with it, those that are all selected already are no longer.
+	 */
+	function selectWithin(el: Element, how: 'only' | 'along' | 'through') {
+		const within = inputsWithin(el)
+		if (how === 'only') defocusAll()
+		if (how === 'along' && allSelectedWithin(el)) {
+			within.forEach(({id}) => selectedIds.delete(id))
+			return
+		}
+		if (how === 'through' && focusedElement.value) {
+			// In the order they are in, to go on from each to the next.
+			const area = Rect.unite(
+				Rect.fromDOMRect(focusedElement.value.getBoundingClientRect()),
+				Rect.fromDOMRect(el.getBoundingClientRect())
+			)
+			;[...inputs.values()]
+				.flatMap(({id, el: input}) => {
+					const at = unrefElement(input) as HTMLElement | undefined
+					const rect = at?.getBoundingClientRect()
+					return at && rect && rect.width > 0 && Rect.intersects(area, Rect.fromDOMRect(rect))
+						? [{id, at}]
+						: []
+				})
+				.sort((a, b) =>
+					a.at.compareDocumentPosition(b.at) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+				)
+				.forEach(({id}) => selectId(id))
+			return
+		}
+		within.forEach(({id}) => selectId(id))
+	}
+
 	// Through every host among the selected, of which there is usually the one.
 	function batch(write: () => void) {
 		const hosts = new Set(selectedInputs.value.map(input => input.host))
@@ -338,6 +392,8 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		edit,
 		commands,
 		selectedInputs,
+		selectWithin,
+		allSelectedWithin,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
 		},

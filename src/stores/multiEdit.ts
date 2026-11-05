@@ -5,6 +5,10 @@ export interface MultiEditTarget {
 	confirm(): void
 }
 
+/** Each going where the one after it was, and the last to where the first was. */
+export const rotated = <T>(values: readonly T[]): T[] =>
+	values.length === 0 ? [] : [values.at(-1)!, ...values.slice(0, -1)]
+
 export type MultiEditBatch = (write: () => void) => void
 
 /**
