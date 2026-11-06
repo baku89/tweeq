@@ -2,7 +2,7 @@
 import {onBeforeUnmount, watch} from 'vue'
 
 import {Icon} from '../Icon'
-import {vTooltip} from '../Tooltip'
+import {InputButton} from '../InputButton'
 import {type Toast, TOAST_DURATION, useToastStore} from './toast'
 
 const store = useToastStore()
@@ -55,24 +55,22 @@ function perform(toast: Toast, action: () => void) {
 		>
 			<Icon v-if="toast.icon" class="icon" :icon="toast.icon" />
 			<span class="message">{{ toast.message }}</span>
-			<button
+			<InputButton
 				v-for="action in toast.actions ?? []"
 				:key="action.label"
-				v-tooltip="action.tooltip"
 				class="action"
-				type="button"
+				:label="action.label"
+				:tooltip="action.tooltip"
+				subtle
 				@click="perform(toast, action.perform)"
-			>
-				{{ action.label }}
-			</button>
-			<button
+			/>
+			<InputButton
 				class="close"
-				type="button"
+				icon="mdi:close"
 				aria-label="Dismiss"
+				subtle
 				@click="store.dismiss(toast.id)"
-			>
-				<Icon icon="mdi:close" />
-			</button>
+			/>
 		</div>
 	</TransitionGroup>
 </template>
@@ -96,20 +94,15 @@ reset-viewport('.TqToastRoot')
 	max-width calc(100vw - 32px)
 	pointer-events none
 
-// A pill, as a tooltip is, being as light a thing as one.
 .toast
+	popup-style()
 	pointer-events auto
 	display flex
 	align-items center
-	gap .5em
+	gap var(--tq-gap-related, 4px)
 	max-width 100%
-	padding 3px 3px 3px 12px
-	border-radius 9999px
-	border 1px solid var(--tq-color-border)
-	background var(--tq-color-surface)
-	color var(--tq-color-text)
-	backdrop-filter blur(var(--tq-popup-blur))
-	box-shadow var(--tq-shadow-popup)
+	padding var(--tq-popup-padding)
+	padding-left calc(var(--tq-popup-padding) * 2)
 
 .icon
 	flex none
@@ -119,32 +112,10 @@ reset-viewport('.TqToastRoot')
 
 .message
 	min-width 0
-	padding-right .25em
+	padding-right .5em
 
-.action
+.action, .close
 	flex none
-	height var(--tq-input-height)
-	padding 0 .75em
-	border-radius 9999px
-	background var(--tq-color-input)
-	hover-transition(background)
-
-	&:hover
-		background var(--tq-color-input-hover)
-
-.close
-	flex none
-	display grid
-	place-items center
-	width var(--tq-input-height)
-	height var(--tq-input-height)
-	border-radius 9999px
-	color var(--tq-color-text-mute)
-	hover-transition(background, color)
-
-	&:hover
-		background var(--tq-color-input-hover)
-		color var(--tq-color-text)
 
 .toast-enter-active, .toast-leave-active
 	transition opacity var(--tq-hover-transition-duration) ease, transform var(--tq-hover-transition-duration) ease
