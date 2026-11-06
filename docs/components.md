@@ -38,12 +38,14 @@
 		label: {type: 'string'},
 		icon: {type: 'string'},
 		subtle: {type: 'boolean'},
+		ghost: {type: 'boolean'},
 		blink: {type: 'boolean'},
 	}"
 	:options="{
 		label: 'Click me',
 		icon: '',
 		subtle: false,
+		ghost: false,
 		blink: false,
 	}"
 	v-slot="{options}"

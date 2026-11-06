@@ -68,7 +68,7 @@ function perform(toast: Toast, action: () => void) {
 				class="close"
 				icon="mdi:close"
 				aria-label="Dismiss"
-				subtle
+				ghost
 				@click="store.dismiss(toast.id)"
 			/>
 		</div>

@@ -20,6 +20,11 @@ export interface InputButtonProps {
 	/** Achromatic neutral fill at rest that lights up to accent on hover. */
 	subtle?: boolean
 	/**
+	 * Nothing but its label or icon at rest, with a fill only while hovered: for what is
+	 * there to be pressed and is not what anything is about, such as closing or minimizing.
+	 */
+	ghost?: boolean
+	/**
 	 * Drop the square `input-height` min-width so an icon-only button hugs its
 	 * glyph (a slim affordance for tight clusters, e.g. ± steppers flanking an
 	 * input). No effect once a label widens the button past the icon.

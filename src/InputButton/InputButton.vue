@@ -43,7 +43,7 @@ const tooltipContent = computed(
 <template>
 	<button
 		class="TqInputButton"
-		:class="{blink, subtle, narrow, flashing}"
+		:class="{blink, subtle, ghost, narrow, flashing}"
 		:inline-position="inlinePosition"
 		:block-position="blockPosition"
 		:disabled="disabled"
@@ -84,6 +84,8 @@ const tooltipContent = computed(
 	gap var(--tq-gap-related)
 	--bg var(--tq-color-accent)
 	--bg-blink var(--tq-color-accent-hover)
+	// Its own, rather than whatever it is in has, such as a grab where it is dragged by.
+	cursor pointer
 
 	// Default button is accent-filled: an inner ring in the off-state button
 	// color (input) sits on the fill, plus an accent ring just OUTSIDE that reads
@@ -163,6 +165,17 @@ const tooltipContent = computed(
 
 		&:not(:disabled):hover
 			background var(--tq-color-accent-hover)
+
+	// Ghost: nothing but its label at rest, and a fill only while hovered, for what is
+	// there to be pressed and is not what anything is about, such as closing something.
+	&.ghost
+		background transparent
+		color var(--tq-color-text-mute)
+		--focus-ring 0 0 0 1px var(--tq-color-accent)
+
+		&:not(:disabled):hover
+			background var(--tq-color-input-hover)
+			color var(--tq-color-text)
 
 	&.blink
 		animation blink .5s infinite
