@@ -1,6 +1,6 @@
 import type {ComputedRef, InjectionKey} from 'vue'
 
-import type {MenuItem} from '../Menu'
+import type {MenuItems} from '../Menu'
 import type {TooltipValue} from '../Tooltip/vTooltip'
 import type {TreeDropPosition} from './treeDrop'
 
@@ -102,5 +102,5 @@ export interface ParameterTreeItemProps {
 	/** The guide along its children curves in at both ends, like a `(`. */
 	closedGuide?: boolean
 	/** The menu on the label. Right-clicking also selects. */
-	menuItems?: MenuItem[]
+	menuItems?: MenuItems
 }

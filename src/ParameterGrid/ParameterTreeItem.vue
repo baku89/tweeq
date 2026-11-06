@@ -12,7 +12,7 @@ import {
 
 import {Icon} from '../Icon'
 import {InputTextBase} from '../InputTextBase'
-import {Menu} from '../Menu'
+import {Menu, type MenuItem, menuItemsOf} from '../Menu'
 import {Popover} from '../Popover'
 import {vTooltip} from '../Tooltip'
 import Parameter from './Parameter.vue'
@@ -117,11 +117,15 @@ const isDropTarget = computed(
 	() => props.dragId !== undefined && tree?.insideId.value === props.dragId
 )
 const menuPosition = ref<[number, number] | null>(null)
+// What the menu has in it, made once it is opened rather than each time the row is drawn.
+const shownItems = ref<MenuItem[]>([])
 
 function onContextMenu(event: MouseEvent) {
 	event.preventDefault()
 	emit('select', event)
-	if (props.menuItems?.length) {
+	const items = menuItemsOf(props.menuItems)
+	if (items.length) {
+		shownItems.value = items
 		menuPosition.value = [event.clientX, event.clientY]
 	}
 }
@@ -218,7 +222,7 @@ function onContextMenu(event: MouseEvent) {
 				teleport=".TqViewport"
 				@update:open="$event || (menuPosition = null)"
 			>
-				<Menu :items="menuItems ?? []" @close="menuPosition = null" />
+				<Menu :items="shownItems" @close="menuPosition = null" />
 			</Popover>
 		</template>
 		<slot />

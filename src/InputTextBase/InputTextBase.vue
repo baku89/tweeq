@@ -2,7 +2,7 @@
 import {computed, ref, useTemplateRef} from 'vue'
 
 import {Icon} from '../Icon'
-import {Menu, type MenuItem} from '../Menu'
+import {Menu, type MenuItem, type MenuItems, menuItemsOf} from '../Menu'
 import {Popover} from '../Popover'
 import {
 	type InputAlign,
@@ -32,7 +32,7 @@ export interface InputTextBaseProps extends InputBoxProps {
 	 */
 	default?: unknown
 	/** Extra right-click menu items appended below "Reset to Default". */
-	menuItems?: MenuItem[]
+	menuItems?: MenuItems
 	/**
 	 * What there is a reason to choose rather than to arrive at, listed from a chevron at the
 	 * right, which is in place of `rightIcon`. A value, or what depends on more than this field.
@@ -77,9 +77,10 @@ const contextMenuItems = computed<MenuItem[]>(() => {
 			perform: () => emit('reset'),
 		})
 	}
-	if (props.menuItems?.length) {
+	const offered = menuItemsOf(props.menuItems)
+	if (offered.length > 0) {
 		if (items.length > 0) items.push({separator: true})
-		items.push(...props.menuItems)
+		items.push(...offered)
 	}
 	return items
 })
