@@ -120,23 +120,34 @@ const enabledActions = computed(() =>
 	actions.filter(a => a.enabled(selectedTypes.value))
 )
 
-const visible = computed(() => {
-	if (multiSelect.selectedInputs.length <= 1) return false
-	return enabledActions.value.length > 0 || multiSelect.commands.length > 0
-})
+// How many are selected is said whenever there are several, with nothing to be done to them
+// together or not, for it to be seen what is selected as one and what is not.
+const visible = computed(() => multiSelect.selectedInputs.length > 1)
+
+// With nothing to be done to them together, it stays as the count, as it would only open
+// to nothing: smaller than the pill, out from under the pointer, and back again, over and over.
+const empty = computed(
+	() => enabledActions.value.length === 0 && multiSelect.commands.length === 0
+)
 
 // Each time one more joins, all of them wobble, one after another, and the count goes
-// up: what is selected shows itself as it builds up.
+// up: what is selected shows itself as it builds up. The outline thickens a little in the
+// color it already has, and goes back, rather than fading out.
 const WOBBLE: Keyframe[] = [
 	{transform: 'scale(1)', boxShadow: '0 0 0 0 var(--tq-color-accent)'},
 	{
 		transform: 'scale(1.07, 0.92)',
-		boxShadow: '0 0 0 2px var(--tq-color-accent)',
+		boxShadow: '0 0 0 1px var(--tq-color-accent)',
 		offset: 0.3,
 	},
 	{transform: 'scale(0.97, 1.05)', offset: 0.6},
-	{transform: 'scale(1)', boxShadow: '0 0 0 0 transparent'},
+	{transform: 'scale(1)', boxShadow: '0 0 0 0 var(--tq-color-accent)'},
 ]
+
+// One after another, however many there are, within this much in all, so that many of
+// them do not take long to finish.
+const WOBBLE_STAGGER = 30
+const WOBBLE_SPREAD = 100
 
 const BUMP: Keyframe[] = [
 	{transform: 'scale(1)'},
@@ -151,10 +162,11 @@ watch(
 		if (count <= previous || count < 2) return
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
+		const step = Math.min(WOBBLE_STAGGER, WOBBLE_SPREAD / (count - 1))
 		multiSelect.selectedInputs.forEach((input, i) => {
 			unrefElement(input.el)?.animate(WOBBLE, {
 				duration: 340,
-				delay: i * 30,
+				delay: i * step,
 				easing: 'ease-out',
 			})
 		})
@@ -180,7 +192,7 @@ watchEffect(() => {
 <template>
 	<div
 		ref="$root"
-		:class="{visible}"
+		:class="{visible, empty}"
 		class="TqMultiSelectPopup"
 		:style="anchorStyle"
 		popover="manual"
@@ -242,6 +254,11 @@ reset-viewport('.TqMultiSelectPopup')
 
 	// How many are being edited as one, until it is reached for. A menu it has opened
 	// keeps it open, while the pointer goes over to the menu.
+	// Never smaller than the pill it opens from, for the pointer on it to stay on it.
+	min-width 22px
+	min-height 18px
+
+	&.empty,
 	&:not(:hover):not(:has(:popover-open))
 		width 22px
 		height 18px

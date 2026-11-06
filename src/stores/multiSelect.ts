@@ -42,6 +42,11 @@ export interface MultiSelectSource {
 	speed?: Readonly<Ref<number>>
 	/** What the input stands for, to whoever provides its host. */
 	data?: Readonly<Ref<unknown>>
+	/**
+	 * It stands for all that is in its element, such as a parameter for the fields of its
+	 * value, to be selected as one with others, rather than each of those being selected.
+	 */
+	whole?: boolean
 	getValue: () => MultiSelectValue
 	setValue: (value: any) => void
 	confirm: () => void
@@ -303,6 +308,50 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 			() => selectedIds.has(id) && !source.focusing.value
 		)
 
+		const selected = computed(() => selectedIds.has(id))
+
+		/**
+		 * Select it, as what it is in is selected: alone, along with what is selected (or
+		 * no longer, if it is already), or along with all of its kind from there to it.
+		 */
+		function select(how: 'only' | 'along' | 'through') {
+			if (how === 'along' && selectedIds.has(id)) {
+				selectedIds.delete(id)
+				return
+			}
+			const from = focusedElement.value
+			const el = unrefElement(source.el.value) as HTMLElement | undefined
+			if (how === 'through' && from && el) {
+				const area = Rect.unite(
+					Rect.fromDOMRect(from.getBoundingClientRect()),
+					Rect.fromDOMRect(el.getBoundingClientRect())
+				)
+				;[...inputs.values()]
+					.flatMap(input => {
+						const at = unrefElement(input.el) as HTMLElement | undefined
+						const rect = at?.getBoundingClientRect()
+						return input.whole === source.whole &&
+							at &&
+							rect &&
+							rect.width > 0 &&
+							Rect.intersects(area, Rect.fromDOMRect(rect))
+							? [{id: input.id, at}]
+							: []
+					})
+					.sort((a, b) =>
+						a.at.compareDocumentPosition(b.at) &
+						Node.DOCUMENT_POSITION_FOLLOWING
+							? -1
+							: 1
+					)
+					.forEach(({id}) => selectId(id))
+				selectId(id)
+				return
+			}
+			if (how === 'only') defocusAll()
+			selectId(id)
+		}
+
 		inputs.set(id, store)
 
 		const readyToBeSelected = computed(() => {
@@ -376,6 +425,8 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 
 		return reactiveComputed(() => ({
 			subfocus,
+			selected: selected.value,
+			select,
 			index: selectedInputs.value.findIndex(input => input.id === id),
 			readyToBeSelected,
 			begin: othersEdit.begin,
