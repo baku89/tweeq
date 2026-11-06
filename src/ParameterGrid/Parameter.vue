@@ -64,6 +64,9 @@ defineSlots<{
 	display grid
 	gap var(--tq-gap-related)
 	align-items center
-	// Allow the value column to shrink with the panel instead of overflowing.
+	// Allow the value column to shrink with the panel instead of overflowing:
+	// its own column too, or it is as wide as what is in it, and what can
+	// fold itself up to fit (as a radio does) never sees that it has to.
 	min-width 0
+	grid-template-columns minmax(0, 1fr)
 </style>
