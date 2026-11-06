@@ -111,14 +111,20 @@ const actions: MultiSelectAction[] = [
 			types[0] !== 'opaque' &&
 			types.every(t => t === types[0]),
 		updator: rotated,
-		icon: 'material-symbols:rotate-right',
-		label: 'Rotate',
+		// Each passes its value on to the next, as balls go round in juggling.
+		icon: 'material-symbols:cycle',
+		label: 'Pass Along',
 	},
 ]
 
-const enabledActions = computed(() =>
-	actions.filter(a => a.enabled(selectedTypes.value))
-)
+// What the host does itself goes by that instead, as it knows what each input stands for, such
+// as a field of several things that has a place in each, which are what trade places.
+const enabledActions = computed(() => {
+	const byHost = new Set(multiSelect.commands.map(command => command.label))
+	return actions.filter(
+		a => a.enabled(selectedTypes.value) && !(a.type === 'button' && byHost.has(a.label))
+	)
+})
 
 // How many are selected is said whenever there are several, with nothing to be done to them
 // together or not, for it to be seen what is selected as one and what is not.
