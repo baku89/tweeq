@@ -4,6 +4,7 @@ import {useActionsStore} from './stores/actions'
 import {useAppConfigStore} from './stores/appConfig'
 import {useModalStore} from './stores/modal'
 import {useThemeStore} from './stores/theme'
+import {useToastStore} from './Toast/toast'
 import type {ColorMode} from './theme'
 
 interface TweeqOptions {
@@ -30,6 +31,7 @@ export function useTweeq() {
 	const actions = useActionsStore()
 	const config = useAppConfigStore()
 	const modal = useModalStore()
+	const toast = useToastStore()
 
-	return {theme, actions, config, modal, ...components}
+	return {theme, actions, config, modal, toast, ...components}
 }

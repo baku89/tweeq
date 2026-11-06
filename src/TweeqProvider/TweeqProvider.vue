@@ -3,6 +3,7 @@ import {ActionForm, CommandPalette} from '../CommandPalette'
 import {MultiSelectPopup} from '../MultiSelectPopup'
 import {PaneModalComplex} from '../PaneModalComplex'
 import {PaneModalTabs} from '../PaneModalTabs'
+import {ToastRoot} from '../Toast'
 import {TooltipRoot} from '../Tooltip'
 
 defineSlots<{default: () => unknown}>()
@@ -15,5 +16,6 @@ defineSlots<{default: () => unknown}>()
 	<ActionForm />
 	<PaneModalComplex />
 	<PaneModalTabs />
+	<ToastRoot />
 	<TooltipRoot />
 </template>
