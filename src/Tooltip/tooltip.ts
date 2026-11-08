@@ -85,9 +85,19 @@ const HIDE_DELAY = 0
 // An interactive tooltip (one with `actions`) lingers this long after the
 // pointer leaves its element, so the pointer can cross the gap onto it.
 const INTERACTIVE_HIDE_DELAY = 150
+// For this long after one has closed, the next opens at once. The delay is there so
+// that a tooltip does not flash up on everything the pointer crosses, and once it has
+// been waited out, going along a row of options should show each in turn, gaps and all.
+const WARM_FOR = 300
 
 let showTimer: ReturnType<typeof setTimeout> | undefined
 let hideTimer: ReturnType<typeof setTimeout> | undefined
+let closedAt = -Infinity
+
+function close() {
+	tooltipState.open = false
+	closedAt = Date.now()
+}
 
 export function showTooltip(reference: HTMLElement, content: TooltipContent) {
 	clearTimeout(hideTimer)
@@ -99,10 +109,10 @@ export function showTooltip(reference: HTMLElement, content: TooltipContent) {
 		tooltipState.open = true
 	}
 
-	// Hand off instantly when moving straight from one tooltipped element to
-	// another; otherwise wait out the hover delay. The anchor-name is already on
+	// Hand off instantly when moving from one tooltipped element to another, across
+	// a gap or not; otherwise wait out the hover delay. The anchor-name is already on
 	// the element (the directive set it on enter), so no first-frame race.
-	if (tooltipState.open) apply()
+	if (tooltipState.open || Date.now() - closedAt < WARM_FOR) apply()
 	else showTimer = setTimeout(apply, SHOW_DELAY)
 }
 
@@ -119,9 +129,7 @@ export function hideTooltip(reference: HTMLElement) {
 		!!tooltipState.actions
 	hideTimer = setTimeout(
 		() => {
-			if (tooltipReference.value === reference) {
-				tooltipState.open = false
-			}
+			if (tooltipReference.value === reference) close()
 		},
 		interactive ? INTERACTIVE_HIDE_DELAY : HIDE_DELAY
 	)
@@ -136,9 +144,7 @@ export function enterTooltip() {
 export function leaveTooltip() {
 	if (!tooltipState.open || !tooltipState.actions) return
 	clearTimeout(hideTimer)
-	hideTimer = setTimeout(() => {
-		tooltipState.open = false
-	}, INTERACTIVE_HIDE_DELAY)
+	hideTimer = setTimeout(close, INTERACTIVE_HIDE_DELAY)
 }
 
 // Live-update the text while this element's tooltip is showing (e.g. a status
@@ -157,6 +163,6 @@ export function closeTooltip(reference: HTMLElement) {
 	clearTimeout(showTimer)
 	if (tooltipReference.value === reference) {
 		clearTimeout(hideTimer)
-		tooltipState.open = false
+		close()
 	}
 }
