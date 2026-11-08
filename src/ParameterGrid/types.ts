@@ -36,6 +36,9 @@ export interface ParameterProps {
 	hint?: TooltipValue
 }
 
+/** The icon of a row without one, which keeps the rhythm of those with one. */
+export const ROW_DOT = 'fill:M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z'
+
 /**
  * How deep a ParameterTreeItem is. Items nest through the `children` slot but
  * render flat, so that every value stays in the one column of the grid.

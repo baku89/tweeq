@@ -20,10 +20,8 @@ import {
 	ParameterTreeContextKey,
 	ParameterTreeDepthKey,
 	type ParameterTreeItemProps,
+	ROW_DOT as DOT,
 } from './types'
-
-// A row without an icon keeps the rhythm of those with one.
-const DOT = 'fill:M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z'
 
 const props = defineProps<ParameterTreeItemProps>()
 

@@ -1,9 +1,21 @@
 <script setup lang="ts">
+import {inject} from 'vue'
+
 import {Icon} from '../Icon'
 import {vTooltip} from '../Tooltip'
-import type {ParameterProps} from './types'
+import {
+	type ParameterProps,
+	ParameterTreeContextKey,
+	ParameterTreeDepthKey,
+	ROW_DOT,
+} from './types'
 
 defineProps<ParameterProps>()
+
+// In a tree, a plain row lines up with the items around it, which have a chevron, or
+// the room for one, and an icon before their names: nothing moves as rows come and go.
+const inTree = inject(ParameterTreeContextKey, null) !== null
+const depth = inject(ParameterTreeDepthKey, 0)
 
 defineSlots<{
 	default: void
@@ -17,10 +29,22 @@ defineSlots<{
 			text (the un-abbreviated term, e.g. "Apr." → "Aperture"), while an object
 			like {title, description} opts into the structured two-line layout.
 		-->
-		<div class="label" v-tooltip="hint">
+		<div
+			class="label"
+			:class="{'in-tree': inTree}"
+			:style="inTree ? {'--depth': depth} : undefined"
+			v-tooltip="hint"
+		>
 			<slot name="label">
-				<Icon v-if="icon" class="icon" :icon="icon" />
-				<template v-if="label">{{ label }}</template>
+				<template v-if="inTree">
+					<span class="toggle" />
+					<Icon class="icon" :icon="icon ?? ROW_DOT" />
+					<span v-if="label" class="name">{{ label }}</span>
+				</template>
+				<template v-else>
+					<Icon v-if="icon" class="icon" :icon="icon" />
+					<template v-if="label">{{ label }}</template>
+				</template>
 			</slot>
 		</div>
 		<div class="input">
@@ -59,6 +83,31 @@ defineSlots<{
 	width calc(var(--tq-input-height) - 4px)
 	height calc(var(--tq-input-height) - 4px)
 	color var(--tq-color-text-subtle)
+
+// As a ParameterTreeItem lays out its row: a level as wide as a chevron looks, then the
+// icon in its box, then the name as far in as an input's text.
+.label.in-tree
+	--indent calc(var(--tq-icon-size) * 0.7)
+	gap 0
+	padding-left calc(var(--depth) * var(--indent))
+	min-width 0
+
+	.toggle
+		display block
+		flex-shrink 0
+		width var(--indent)
+		height var(--tq-icon-size)
+
+	.icon
+		width var(--tq-icon-size)
+		height var(--tq-icon-size)
+
+	.name
+		display block
+		min-width 0
+		padding-inline 0.5em
+		overflow hidden
+		text-overflow ellipsis
 
 .input
 	display grid
