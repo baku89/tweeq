@@ -3,7 +3,6 @@ import {
 	unrefElement,
 	useElementBounding,
 	useEventListener,
-	usePointerLock,
 } from '@vueuse/core'
 import {vec2} from 'linearly'
 import {
@@ -115,8 +114,6 @@ export function useDrag(
 
 	const bound = useElementBounding(targetEl)
 
-	const {lock, unlock} = usePointerLock(targetEl as any)
-
 	watchEffect(
 		() => {
 			state.top = unref(bound.top)
@@ -158,16 +155,27 @@ export function useDrag(
 	})
 
 	function fireDragStart(event: PointerEvent) {
+		const el = targetEl.value
+		// An element that has left the document by now (a delayed start, after a re-render)
+		// has no document to lock the pointer to, and asking would only throw.
 		if (
 			unref(lockPointer) &&
 			target.value &&
-			targetEl.value &&
-			'requestPointerLock' in targetEl.value
+			el &&
+			'requestPointerLock' in el &&
+			el.isConnected
 		) {
 			// The grant is asynchronous; a rejection (headless, no focus, a lock exited
-			// by Esc moments ago) is not an error for the drag itself.
-			lock(event).catch(() => {})
-			state.pointerLocked = true
+			// by Esc moments ago) is not an error for the drag itself. It is asked of the
+			// element directly, as usePointerLock's lock() drops the promise it gives back,
+			// which would make that rejection an unhandled one.
+			try {
+				const asked = (el.requestPointerLock as () => Promise<void> | void)()
+				if (asked instanceof Promise) asked.catch(() => {})
+				state.pointerLocked = true
+			} catch {
+				// Not to be had here: the drag goes on without it.
+			}
 		}
 
 		state.dragging = true
@@ -206,7 +214,12 @@ export function useDrag(
 		// can re-render or unmount mid-drag (e.g. a grab zone that only exists while
 		// the value is at an edge), which would implicitly release capture and let
 		// the drag break the moment the pointer leaves the element's box.
-		targetEl.value?.setPointerCapture(event.pointerId)
+		try {
+			targetEl.value?.setPointerCapture(event.pointerId)
+		} catch {
+			// The pointer is no longer active, or the element is no longer in the document:
+			// the press goes on uncaptured, and ends as a click or a short drag.
+		}
 	}
 
 	function onPointerMove(event: PointerEvent) {
@@ -254,11 +267,9 @@ export function useDrag(
 
 	function onPointerUp(event: PointerEvent) {
 		if (state.pointerLocked) {
-			// usePointerLock's unlock() is a no-op until it has *seen* the lock get
-			// granted; a release that lands before the grant would leave the lock
-			// on (hidden cursor, every click swallowed). Exit directly as well, and
-			// the pointerlockchange guard below catches a grant that lands later.
-			unlock().catch(() => {})
+			// A release that lands before the grant would leave the lock on (hidden
+			// cursor, every click swallowed): exit now, and the pointerlockchange guard
+			// above catches a grant that lands later.
 			if (document.pointerLockElement) document.exitPointerLock()
 		}
 		state.pointerLocked = false
