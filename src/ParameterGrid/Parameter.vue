@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {inject} from 'vue'
+import {computed, inject, useSlots} from 'vue'
 
 import {Icon} from '../Icon'
 import {vTooltip} from '../Tooltip'
@@ -14,8 +14,11 @@ defineProps<ParameterProps>()
 
 // In a tree, a plain row lines up with the items around it, which have a chevron, or
 // the room for one, and an icon before their names: nothing moves as rows come and go.
-const inTree = inject(ParameterTreeContextKey, null) !== null
+// A ParameterTreeItem lays out its own label, and is left to it.
+const slots = useSlots()
+const tree = inject(ParameterTreeContextKey, null)
 const depth = inject(ParameterTreeDepthKey, 0)
+const inTree = computed(() => tree !== null && !slots.label)
 
 defineSlots<{
 	default: void
