@@ -135,8 +135,9 @@ function onContextMenu(event: MouseEvent) {
 		class="TqParameterTreeItem wide"
 		:style="{'--depth': depth}"
 	>
-		<span class="toggle" />
-		<Icon class="icon" :class="{emphasized}" :icon="icon ?? DOT" />
+		<span class="toggle placeholder"><Icon class="dot" :icon="DOT" /></span>
+		<Icon v-if="icon !== undefined" class="icon" :class="{emphasized}" :icon="icon" />
+		<span v-else class="icon placeholder" />
 		<div class="wide-content">
 			<slot name="wide" />
 		</div>
@@ -173,8 +174,10 @@ function onContextMenu(event: MouseEvent) {
 				>
 					<Icon class="chevron" icon="mdi:chevron-down" />
 				</button>
-				<span v-else class="toggle" />
-				<Icon class="icon" :class="{emphasized}" :icon="icon ?? DOT" />
+				<!-- A row that does not open has a dot where its chevron would be, as a leaf of a tree. -->
+				<span v-else class="toggle placeholder"><Icon class="dot" :icon="DOT" /></span>
+				<Icon v-if="icon !== undefined" class="icon" :class="{emphasized}" :icon="icon" />
+				<span v-else class="icon placeholder" />
 				<InputTextBase
 					v-if="renaming"
 					ref="$rename"
@@ -436,6 +439,13 @@ function onContextMenu(event: MouseEvent) {
 }
 .toggle:hover .chevron {
 	opacity: 1;
+}
+.dot {
+	display: block;
+	width: var(--tq-icon-size);
+	height: 100%;
+	margin-left: calc((var(--indent) - var(--tq-icon-size)) / 2);
+	opacity: 0.5;
 }
 .row.open .chevron {
 	transform: none;

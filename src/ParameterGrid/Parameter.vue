@@ -40,8 +40,9 @@ defineSlots<{
 		>
 			<slot name="label">
 				<template v-if="inTree">
-					<span class="toggle" />
-					<Icon class="icon" :icon="icon ?? ROW_DOT" />
+					<span class="toggle placeholder"><Icon class="dot" :icon="ROW_DOT" /></span>
+					<Icon v-if="icon" class="icon" :icon="icon" />
+					<span v-else class="icon placeholder" />
 					<span v-if="label" class="name">{{ label }}</span>
 				</template>
 				<template v-else>
@@ -100,6 +101,14 @@ defineSlots<{
 		flex-shrink 0
 		width var(--indent)
 		height var(--tq-icon-size)
+		color var(--tq-color-text-subtle)
+
+	.dot
+		display block
+		width var(--tq-icon-size)
+		height 100%
+		margin-left calc((var(--indent) - var(--tq-icon-size)) / 2)
+		opacity 0.5
 
 	.icon
 		width var(--tq-icon-size)

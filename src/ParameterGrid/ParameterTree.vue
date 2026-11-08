@@ -365,6 +365,45 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .TqParameterGrid.grid > :deep(.TqInputArray) {
 	row-gap: var(--tq-gap-control);
 }
+/*
+ * A level none of whose rows has an icon has no column for one, and one none of whose rows
+ * opens has no column for a chevron: what keeps a row in step with those that have one is
+ * only there while there are some. The top level is the grid's own, and each item's
+ * children are a level of their own, which says for itself.
+ */
+.TqParameterGrid.grid,
+:deep(.children) {
+	--tq-placeholder-icon: block;
+	--tq-placeholder-toggle: block;
+}
+.TqParameterGrid.grid:not(
+		:has(
+			> .TqParameterTreeItem .row > .icon:not(.placeholder),
+			> .TqParameterTreeItem.wide > .icon:not(.placeholder),
+			> .TqParameter > .label > .icon:not(.placeholder)
+		)
+	),
+:deep(
+		.children:not(
+				:has(
+					> .TqParameterTreeItem .row > .icon:not(.placeholder),
+					> .TqParameterTreeItem.wide > .icon:not(.placeholder),
+					> .TqParameter > .label > .icon:not(.placeholder)
+				)
+			)
+	) {
+	--tq-placeholder-icon: none;
+}
+.TqParameterGrid.grid:not(:has(> .TqParameterTreeItem .row > .toggle:not(.placeholder))),
+:deep(.children:not(:has(> .TqParameterTreeItem .row > .toggle:not(.placeholder)))) {
+	--tq-placeholder-toggle: none;
+}
+:deep(.icon.placeholder) {
+	display: var(--tq-placeholder-icon, block);
+}
+:deep(.toggle.placeholder) {
+	display: var(--tq-placeholder-toggle, block);
+}
 /* In the gap between the columns, and seen only when reached for. */
 .resizer {
 	position: absolute;

@@ -36,7 +36,7 @@ export interface ParameterProps {
 	hint?: TooltipValue
 }
 
-/** The icon of a row without one, which keeps the rhythm of those with one. */
+/** The mark of a row that does not open, where its chevron would be: a leaf of the tree. */
 export const ROW_DOT = 'fill:M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z'
 
 /**
