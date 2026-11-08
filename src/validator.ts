@@ -1,5 +1,21 @@
 import {scalar} from 'linearly'
-import validateColor from 'validate-color'
+import * as validateColorModule from 'validate-color'
+
+/**
+ * validate-color is a CommonJS bundle, and what its default import comes to depends on the
+ * loader: the function itself under one, and under another (Vite's pre-bundling, for one) the
+ * module's exports object with the function as its `default`. Whichever it is, this is the
+ * function.
+ */
+const validateColor = (value: string): boolean => {
+	const exported: unknown =
+		(validateColorModule as {default?: unknown}).default ?? validateColorModule
+	const fn =
+		typeof exported === 'function'
+			? exported
+			: (exported as {default?: unknown} | null)?.default
+	return typeof fn === 'function' && Boolean(fn(value))
+}
 
 export type ValidateResult<T> = {value: T | undefined; log: string[]}
 
