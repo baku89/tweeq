@@ -17,6 +17,7 @@ import {
 	onBeforeUnmount,
 	reactive,
 	type Ref,
+	unref,
 	watch,
 } from 'vue'
 
@@ -272,6 +273,17 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		within.forEach(({id}) => selectId(id))
 	}
 
+	/**
+	 * Select the inputs whose `data` is as `matches` says, and those alone: what something
+	 * else has chosen, such as handles on a canvas, is then what is selected here too.
+	 */
+	function selectWhere(matches: (data: unknown) => boolean) {
+		defocusAll()
+		for (const input of inputs.values()) {
+			if (input.data !== undefined && matches(unref(input.data))) selectId(input.id)
+		}
+	}
+
 	// Through every host among the selected, of which there is usually the one.
 	function batch(write: () => void) {
 		const hosts = new Set(selectedInputs.value.map(input => input.host))
@@ -444,6 +456,7 @@ export const useMultiSelectStore = defineStore('multiSelect', () => {
 		commands,
 		selectedInputs,
 		selectWithin,
+		selectWhere,
 		allSelectedWithin,
 		setPopupEl: (el: HTMLElement) => {
 			popupEl = el
