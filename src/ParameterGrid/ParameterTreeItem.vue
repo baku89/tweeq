@@ -98,7 +98,8 @@ defineExpose({
 })
 
 function onDoubleClick() {
-	if (!renaming.value && props.expandable) open.value = !open.value
+	if (renaming.value || props.activate?.()) return
+	if (props.expandable) open.value = !open.value
 }
 
 const tree = inject(ParameterTreeContextKey, null)

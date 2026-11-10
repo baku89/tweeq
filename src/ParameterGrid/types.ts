@@ -106,4 +106,9 @@ export interface ParameterTreeItemProps {
 	closedGuide?: boolean
 	/** The menu on the label. Right-clicking also selects. */
 	menuItems?: MenuItems
+	/**
+	 * What a double click on it does in place of opening or closing it, as going into it does.
+	 * It opens and closes it as ever if this says that it did nothing.
+	 */
+	activate?: () => boolean
 }
