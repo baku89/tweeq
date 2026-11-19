@@ -178,6 +178,7 @@ export const useActionsStore = defineStore('actions', () => {
 		buildMenu(menuRaw.value as Action[], menuExtras.value, action =>
 			Object.assign({}, action, {
 				label: labelOf(action),
+				icon: iconOf(action),
 				perform: () => void request(action),
 			})
 		)
@@ -308,6 +309,12 @@ export const useActionsStore = defineStore('actions', () => {
 		if (asks(action)) return `${action.label}...`
 		const {args, missing} = filled(action)
 		return (missing.length === 0 && action.describe?.(...args)?.label) || action.label
+	}
+
+	/** What `action` looks like, which what it would be performed with can say, as its name. */
+	const iconOf = (action: ActionItem): string | undefined => {
+		const {args, missing} = filled(action)
+		return (missing.length === 0 ? action.describe?.(...args)?.icon : undefined) ?? action.icon
 	}
 
 	/** The keys that run the action of this id, as anything that mentions them shows them. */
